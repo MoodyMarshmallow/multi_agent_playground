@@ -13,6 +13,13 @@ with an added **Godot frontend** for real-time simulation and interaction.
 
 Work in progress.
 
+---
+
+Currently, the project uses: but feel free to modify 
+
+fastapi – A fast, modern Python web framework for building backend APIs. Used to serve agent states and interact with the frontend (Godot).
+
+uvicorn – A lightweight ASGI server that runs your FastAPI app.
 
 ---
 ## ⚙️ Setup Instructions
@@ -28,12 +35,5 @@ python3 -m venv .env
 source .env/bin/activate  # On Windows: .env\Scripts\activate
 
 pip install -r requirements.txt
-
-Currently, the project uses: but feel free to modify 
-
-fastapi – A fast, modern Python web framework for building backend APIs. Used to serve agent states and interact with the frontend (Godot).
-
-uvicorn – A lightweight ASGI server that runs your FastAPI app.
-
 
 
