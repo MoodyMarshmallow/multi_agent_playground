@@ -124,7 +124,7 @@ class Character:
         # Example:
         # [
         #     ['sleeping', 360],
-        #     ['wakes up and ... (wakes up and stretches ...)', 5], 
+        #     ['wakes up and stretches ...', 5], 
         #     ['wakes up and starts her morning routine (out of bed)', 10],
         #     ['having lunch', 60],
         #     ['working on her painting', 180]
@@ -156,7 +156,7 @@ class Character:
         # Format: "{world}:{sector}:{arena}:{game_objects}"
         # WARNING: Avoid negative indexing as latter elements may be missing
         # 
-        # Example: "dolores double studio:double studio:bedroom 1:bed"
+        # Example: "world 1:residential buildings:dolores double studio:bedroom 1:bed"
         self.act_address = None
         
         # act_start_time: datetime | None
@@ -178,7 +178,7 @@ class Character:
         self.act_pronunciation = None
         
         # act_event: tuple[str, Any, Any]
-        # Event triple for current character engagement
+        # Event triple (subject, verb, object) for current character engagement
         self.act_event = (self.name, None, None)
 
         # Object Interaction
@@ -187,12 +187,12 @@ class Character:
         # Description of object being interacted with
         self.act_obj_description = None
         
-        # act_obj_pronunciatio: str | None
+        # act_obj_pronunciation: str | None
         # Descriptive expression for object action (emojis)
-        self.act_obj_pronunciatio = None
+        self.act_obj_pronunciation = None
         
         # act_obj_event: tuple[str, Any, Any]
-        # Event triple for object interaction
+        # Event triple (subject, verb, object) for object interaction
         self.act_obj_event = (self.name, None, None)
 
         # =====================================================================
