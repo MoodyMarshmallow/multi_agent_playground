@@ -1,5 +1,5 @@
 """
-Agent Data structure
+This file contains an example of the JSON data structures  used by an agent. 
 """
 
 class Agent: 
@@ -131,26 +131,32 @@ class Agent:
 
     
 """
-Memory structure per agent
+==============================================
+MEMORY STRUCTURE PER AGENT
+==============================================
+
+Each memory entry contains timestamped information about events,
+locations, and emotional significance.
 """
-[
+memory_structure_example = [
   {
     "timestamp": "2023-10-01T12:00:00Z",
     "location": "dolores double studio:double studio:bedroom 1",
     "event": "wakes up and starts her morning routine",
-    "poignancy": 0.8, # 0 to 1 scale, where 1 is most poignant
-    
-  }
+    "poignancy": 5  # Integer emotional significance scale: 0 (low) to 10 (high)
+  } 
 ]
 
 
-
 """
-Backend to frontend communication
-action type: move, chat, toggle objects
-move - location
-toggle_objects: object, new state 
-subclass
+==============================================
+BACKEND TO FRONTEND COMMUNICATION
+==============================================
+
+Action types supported:
+- move: Agent movement to new coordinates
+- chat: Agent communication with other agents  
+- interact: Agent interaction with objects (toggle states, etc.)
 """
 
 agent_actions = [
@@ -161,11 +167,12 @@ agent_actions = [
             "destination_coordinates": [50, 10]
         },
         "emoji": "🚶"
+        # Optional fields:
         # "current_tile": [50, 10],
         # "current_location": "kitchen",
     },
     {
-        "agent_id": "agent_123",
+        "agent_id": "agent_123", 
         "action_type": "chat",
         "content": {
             "chatting_with": "Maeve Jenson",
@@ -175,7 +182,7 @@ agent_actions = [
     },
     {
         "agent_id": "agent_123",
-        "action_type": "toggle_objects",
+        "action_type": "interact", 
         "content": {
             "object": "light switch",
             "new_state": "on"
@@ -185,7 +192,12 @@ agent_actions = [
 ]
 
 """
-Frontend to backend communication
+==============================================
+FRONTEND TO BACKEND COMMUNICATION
+==============================================
+
+Messages sent from frontend to backend include agent actions
+along with perception data about the environment.
 """
 
 frontend_to_backend = [
@@ -197,11 +209,14 @@ frontend_to_backend = [
             "destination_coordinates": [50, 10]
         },
         "perception": {
+            # Objects currently visible to the agent
             "visible_objects": {
                 "bed": {"state": "unmade"},
                 "light switch": {"state": "on"}
             },
+            # Other agents currently visible
             "visible_agents": ["Maeve Jenson", "Dolores Murphy"],
+            # Current world time as perceived by agent
             "current_time": "2023-10-01T12:00:00Z"
         }
     }
