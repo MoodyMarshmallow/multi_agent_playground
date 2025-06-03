@@ -1,223 +1,380 @@
 """
-This file contains an example of the JSON data structures  used by an agent. 
+Character JSON Data Structure Documentation
+=======================================
+
+This file documents the JSON data structures and communication protocols
+used by characters in the multi-agent playground system.
+
+Table of Contents:
+1. Character Core Structure
+2. Memory System
+3. Backend-to-Frontend Communication
+4. Frontend-to-Backend Communication
 """
 
-class Agent: 
-  def __init__(self, f_saved): 
-    # PERSONA HYPERPARAMETERS
-    # <vision_r> denotes the number of tiles that the persona can see around 
-    # them. 
-    self.vision_r = 4
-    # <retention> TODO 
-    self.retention = 5
+# =============================================================================
+# 1. CHARACTER CORE STRUCTURE
+# =============================================================================
 
-    # WORLD INFORMATION
-    # Perceived world time. 
-    self.curr_time = None
-    # Current x,y tile coordinate of the persona. 
-    self.curr_tile = None
-    # Perceived world daily requirement. 
-    self.daily_plan_req = None
+class Character:
+    """
+    Core data structure representing a character in the simulation.
     
-    # THE CORE IDENTITY OF THE PERSONA 
-    # Base information about the persona.
-    self.name = None
-    self.first_name = None
-    self.last_name = None
-    self.age = None
-    # L0 permanent core traits.  
-    self.innate = None
-    # L1 stable traits.
-    self.learned = None
-    # L2 external implementation. 
-    self.currently = None
-    self.lifestyle = None
-    self.living_area = None
-
-    # PERSONA PLANNING 
-    # <daily_req> is a list of various goals the persona is aiming to achieve
-    # today. 
-    # e.g., ['Work on her paintings for her upcoming show', 
-    #        'Take a break to watch some TV', 
-    #        'Make lunch for herself', 
-    #        'Work on her paintings some more', 
-    #        'Go to bed early']
-    # They have to be renewed at the end of the day, which is why we are
-    # keeping track of when they were first generated. 
-    self.daily_req = []
-    # <f_daily_schedule> denotes a form of long term planning. This lays out 
-    # the persona's daily plan. 
-    # Note that we take the long term planning and short term decomposition 
-    # appoach, which is to say that we first layout hourly schedules and 
-    # gradually decompose as we go. 
-    # Three things to note in the example below: 
-    # 1) See how "sleeping" was not decomposed -- some of the common events 
-    #    really, just mainly sleeping, are hard coded to be not decomposable.
-    # 2) Some of the elements are starting to be decomposed... More of the 
-    #    things will be decomposed as the day goes on (when they are 
-    #    decomposed, they leave behind the original hourly action description
-    #    in tact).
-    # 3) The latter elements are not decomposed. When an event occurs, the
-    #    non-decomposed elements go out the window.  
-    # e.g., [['sleeping', 360], 
-    #         ['wakes up and ... (wakes up and stretches ...)', 5], 
-    #         ['wakes up and starts her morning routine (out of bed )', 10],
-    #         ...
-    #         ['having lunch', 60], 
-    #         ['working on her painting', 180], ...]
-    self.f_daily_schedule = []
-    # <f_daily_schedule_hourly_org> is a replica of f_daily_schedule
-    # initially, but retains the original non-decomposed version of the hourly
-    # schedule. 
-    # e.g., [['sleeping', 360], 
-    #        ['wakes up and starts her morning routine', 120],
-    #        ['working on her painting', 240], ... ['going to bed', 60]]
-    self.f_daily_schedule_hourly_org = []
+    This class defines all the attributes that make up an agent's state,
+    including their identity, planning, current actions, and spatial information.
+    """
     
-    # CURR ACTION 
-    # <address> is literally the string address of where the action is taking 
-    # place.  It comes in the form of 
-    # "{world}:{sector}:{arena}:{game_objects}". It is important that you 
-    # access this without doing negative indexing (e.g., [-1]) because the 
-    # latter address elements may not be present in some cases. 
-    # e.g., "dolores double studio:double studio:bedroom 1:bed"
-    self.act_address = None
-    # <start_time> is a python datetime instance that indicates when the 
-    # action has started. 
-    self.act_start_time = None
-    # <duration> is the integer value that indicates the number of minutes an
-    # action is meant to last. 
-    self.act_duration = None
-    # <description> is a string description of the action. 
-    self.act_description = None
-    # <pronunciatio> is the descriptive expression of the self.description. 
-    # Currently, it is implemented as emojis. 
-    self.act_pronunciatio = None
-    # <event_form> represents the event triple that the persona is currently 
-    # engaged in. 
-    self.act_event = (self.name, None, None)
+    def __init__(self, f_saved):
+        
+        # =====================================================================
+        # CHARACTER HYPERPARAMETERS
+        # =====================================================================
+        
+        # vision_r: int
+        # Number of tiles the character can see around them
+        self.vision_r = 4
+        
+        # retention: int  
+        # TODO: Define retention mechanism
+        self.retention = 5
 
-    # <obj_description> is a string description of the object action. 
-    self.act_obj_description = None
-    # <obj_pronunciatio> is the descriptive expression of the object action. 
-    # Currently, it is implemented as emojis. 
-    self.act_obj_pronunciatio = None
-    # <obj_event_form> represents the event triple that the action object is  
-    # currently engaged in. 
-    self.act_obj_event = (self.name, None, None)
+        # =====================================================================
+        # WORLD INFORMATION
+        # =====================================================================
+        
+        # curr_time: datetime | None
+        # Current perceived world time
+        self.curr_time = None
+        
+        # curr_tile: tuple[int, int] | None
+        # Current (x, y) tile coordinates of the character
+        self.curr_tile = None
+        
+        # daily_plan_req: str | None
+        # Perceived world daily requirement
+        self.daily_plan_req = None
+        
+        # =====================================================================
+        # CORE IDENTITY
+        # =====================================================================
+        
+        # Basic Information
+        # -----------------
+        # name: str | None - Full name of the character
+        self.name = None
+        
+        # first_name: str | None - First name
+        self.first_name = None
+        
+        # last_name: str | None - Last name  
+        self.last_name = None
+        
+        # age: int | None - Age in years
+        self.age = None
+        
+        # Personality Layers
+        # ------------------
+        # innate: str | None - L0: Permanent core traits
+        self.innate = None
+        
+        # learned: str | None - L1: Stable learned traits
+        self.learned = None
+        
+        # currently: str | None - L2: Current state/activity
+        self.currently = None
+        
+        # lifestyle: str | None - General lifestyle description
+        self.lifestyle = None
+        
+        # living_area: str | None - Where the character lives
+        self.living_area = None
 
-    # <chatting_with> is the string name of the persona that the current 
-    # persona is chatting with. None if it does not exist. 
-    self.chatting_with = None
-    # <chat> is a list of list that saves a conversation between two personas.
-    # It comes in the form of: [["Dolores Murphy", "Hi"], 
-    #                           ["Maeve Jenson", "Hi"] ...]
-    self.chat = None
-    # <chatting_with_buffer>  
-    # e.g., ["Dolores Murphy"] = self.vision_r
-    self.chatting_with_buffer = dict()
-    self.chatting_end_time = None
+        # =====================================================================
+        # PLANNING SYSTEM
+        # =====================================================================
+        
+        # Daily Requirements
+        # ------------------
+        # daily_req: list[str]
+        # List of goals the character aims to achieve today
+        # Must be renewed at the end of each day
+        # 
+        # Example:
+        # [
+        #     'Work on her paintings for her upcoming show',
+        #     'Take a break to watch some TV', 
+        #     'Make lunch for herself',
+        #     'Work on her paintings some more',
+        #     'Go to bed early'
+        # ]
+        self.daily_req = []
+        
+        # Daily Schedule (Decomposed)
+        # ---------------------------
+        # f_daily_schedule: list[list[str, int]]
+        # Long-term planning with hierarchical decomposition
+        # 
+        # Format: [['action_description', duration_in_minutes], ...]
+        # 
+        # Key features:
+        # 1. Some events (like 'sleeping') are not decomposed
+        # 2. Events get progressively decomposed as the day progresses
+        # 3. Non-decomposed future events may be replaced when new events occur
+        #
+        # Example:
+        # [
+        #     ['sleeping', 360],
+        #     ['wakes up and ... (wakes up and stretches ...)', 5], 
+        #     ['wakes up and starts her morning routine (out of bed)', 10],
+        #     ['having lunch', 60],
+        #     ['working on her painting', 180]
+        # ]
+        self.f_daily_schedule = []
+        
+        # Daily Schedule (Original)
+        # -------------------------
+        # f_daily_schedule_hourly_org: list[list[str, int]]
+        # Replica of f_daily_schedule that retains original non-decomposed hourly schedule
+        #
+        # Example:
+        # [
+        #     ['sleeping', 360], 
+        #     ['wakes up and starts her morning routine', 120],
+        #     ['working on her painting', 240],
+        #     ['going to bed', 60]
+        # ]
+        self.f_daily_schedule_hourly_org = []
+        
+        # =====================================================================
+        # CURRENT ACTION
+        # =====================================================================
+        
+        # Location & Timing
+        # -----------------
+        # act_address: str | None
+        # String address where action takes place
+        # Format: "{world}:{sector}:{arena}:{game_objects}"
+        # WARNING: Avoid negative indexing as latter elements may be missing
+        # 
+        # Example: "dolores double studio:double studio:bedroom 1:bed"
+        self.act_address = None
+        
+        # act_start_time: datetime | None
+        # When the current action started
+        self.act_start_time = None
+        
+        # act_duration: int | None  
+        # Duration of action in minutes
+        self.act_duration = None
+        
+        # Action Description
+        # ------------------
+        # act_description: str | None
+        # Text description of the current action
+        self.act_description = None
+        
+        # act_pronunciation: str | None
+        # Descriptive expression (currently implemented as emojis)
+        self.act_pronunciation = None
+        
+        # act_event: tuple[str, Any, Any]
+        # Event triple for current character engagement
+        self.act_event = (self.name, None, None)
 
-    # <path_set> is True if we've already calculated the path the persona will
-    # take to execute this action. That path is stored in the persona's 
-    # scratch.planned_path.
-    self.act_path_set = False
-    # <planned_path> is a list of x y coordinate tuples (tiles) that describe
-    # the path the persona is to take to execute the <curr_action>. 
-    # The list does not include the persona's current tile, and includes the 
-    # destination tile. 
-    # e.g., [(50, 10), (49, 10), (48, 10), ...]
-    self.planned_path = []
+        # Object Interaction
+        # ------------------
+        # act_obj_description: str | None
+        # Description of object being interacted with
+        self.act_obj_description = None
+        
+        # act_obj_pronunciatio: str | None
+        # Descriptive expression for object action (emojis)
+        self.act_obj_pronunciatio = None
+        
+        # act_obj_event: tuple[str, Any, Any]
+        # Event triple for object interaction
+        self.act_obj_event = (self.name, None, None)
 
-    
+        # =====================================================================
+        # SOCIAL INTERACTIONS
+        # =====================================================================
+        
+        # chatting_with: str | None
+        # Name of character currently being chatted with (None if not chatting)
+        self.chatting_with = None
+        
+        # chat: list[list[str, str]] | None
+        # Conversation log between two personas
+        # Format: [["Speaker Name", "Message"], ...]
+        # 
+        # Example:
+        # [
+        #     ["Dolores Murphy", "Hi"], 
+        #     ["Maeve Jenson", "Hi back!"]
+        # ]
+        self.chat = None
+        
+        # chatting_with_buffer: dict[str, int]
+        # Tracks chatting history (name -> vision_r value)
+        self.chatting_with_buffer = dict()
+        
+        # chatting_end_time: datetime | None
+        # When current chat session will end
+        self.chatting_end_time = None
+
+        # =====================================================================
+        # PATHFINDING
+        # =====================================================================
+        
+        # act_path_set: bool
+        # Whether path for current action has been calculated
+        self.act_path_set = False
+        
+        # planned_path: list[tuple[int, int]]
+        # List of (x, y) coordinate tuples describing movement path
+        # Excludes current tile, includes destination tile
+        # 
+        # Example: [(50, 10), (49, 10), (48, 10)]
+        self.planned_path = []
+
+
+# =============================================================================
+# 2. MEMORY SYSTEM
+# =============================================================================
+
 """
-==============================================
-MEMORY STRUCTURE PER AGENT
-==============================================
+Memory Structure per Agent
+--------------------------
 
-Each memory entry contains timestamped information about events,
-locations, and emotional significance.
+Each agent maintains a memory system with timestamped events, locations,
+and emotional significance ratings.
 """
+
+# Memory Entry Schema
 memory_structure_example = [
-  {
-    "timestamp": "2023-10-01T12:00:00Z",
-    "location": "dolores double studio:double studio:bedroom 1",
-    "event": "wakes up and starts her morning routine",
-    "poignancy": 5  # Integer emotional significance scale: 0 (low) to 10 (high)
-  } 
-]
-
-
-"""
-==============================================
-BACKEND TO FRONTEND COMMUNICATION
-==============================================
-
-Action types supported:
-- move: Agent movement to new coordinates
-- chat: Agent communication with other agents  
-- interact: Agent interaction with objects (toggle states, etc.)
-"""
-
-agent_actions = [
     {
-        "agent_id": "agent_123",
-        "action_type": "move",
-        "content": {
-            "destination_coordinates": [50, 10]
-        },
-        "emoji": "🚶"
-        # Optional fields:
-        # "current_tile": [50, 10],
-        # "current_location": "kitchen",
-    },
-    {
-        "agent_id": "agent_123", 
-        "action_type": "chat",
-        "content": {
-            "chatting_with": "Maeve Jenson",
-            "message": "Hi Maeve, how are you?"
-        },
-        "emoji": "💬"
-    },
-    {
-        "agent_id": "agent_123",
-        "action_type": "interact", 
-        "content": {
-            "object": "light switch",
-            "new_state": "on"
-        },
-        "emoji": "💡"
+        "timestamp": "2023-10-01T12:00:00Z",          # str: ISO 8601 format
+        "location": "dolores double studio:double studio:bedroom 1",  # str: Location address
+        "event": "wakes up and starts her morning routine",           # str: Event description  
+        "poignancy": 5  # int: Emotional significance (0=low, 10=high)
     }
 ]
 
+
+# =============================================================================
+# 3. BACKEND-TO-FRONTEND COMMUNICATION
+# =============================================================================
+
 """
-==============================================
-FRONTEND TO BACKEND COMMUNICATION
-==============================================
+Agent Actions
+-------------
+
+The backend sends agent actions to the frontend for visualization.
+Supported action types: move, chat, interact
+"""
+
+# Action Type Schemas
+agent_actions = [
+    # Movement Action
+    {
+        "agent_id": "agent_123",                      # str: Unique agent identifier
+        "action_type": "move",                        # str: Type of action
+        "content": {
+            "destination_coordinates": [50, 10]       # list[int, int]: Target (x, y)
+        },
+        "emoji": "🚶",                               # str: Visual representation
+        
+        # Optional fields:
+        # "current_tile": [50, 10],                  # list[int, int]: Current position
+        # "current_location": "kitchen"              # str: Semantic location
+    },
+    
+    # Chat Action  
+    {
+        "agent_id": "agent_123",                      # str: Agent identifier
+        "action_type": "chat",                        # str: Action type
+        "content": {
+            "chatting_with": "Maeve Jenson",          # str: Target agent name
+            "message": "Hi Maeve, how are you?"       # str: Chat message
+        },
+        "emoji": "💬"                                # str: Visual representation
+    },
+    
+    # Interaction Action
+    {
+        "agent_id": "agent_123",                      # str: Agent identifier  
+        "action_type": "interact",                    # str: Action type
+        "content": {
+            "object": "light switch",                 # str: Object being interacted with
+            "new_state": "on"                         # str: New state after interaction
+        },
+        "emoji": "💡"                                # str: Visual representation
+    }
+]
+
+
+# =============================================================================
+# 4. FRONTEND-TO-BACKEND COMMUNICATION  
+# =============================================================================
+
+"""
+Frontend Messages
+-----------------
 
 Messages sent from frontend to backend include agent actions
-along with perception data about the environment.
+along with environmental perception data.
 """
 
+# Frontend Message Schema
 frontend_to_backend = [
     {
-        "agent_id": "agent_123",
-        "timestamp": "2023-10-01T12:00:00Z",
-        "action_type": "move",
+        "agent_id": "agent_123",                      # str: Agent identifier
+        "timestamp": "2023-10-01T12:00:00Z",         # str: When action occurred
+        "action_type": "move",                        # str: Type of action performed
         "content": {
-            "destination_coordinates": [50, 10]
+            "destination_coordinates": [50, 10]       # list[int, int]: Movement target
         },
         "perception": {
             # Objects currently visible to the agent
-            "visible_objects": {
+            "visible_objects": {                      # dict[str, dict]: Object states
                 "bed": {"state": "unmade"},
                 "light switch": {"state": "on"}
             },
-            # Other agents currently visible
-            "visible_agents": ["Maeve Jenson", "Dolores Murphy"],
+            # Other agents currently visible  
+            "visible_agents": [                       # list[str]: Agent names in sight
+                "Maeve Jenson", 
+                "Dolores Murphy"
+            ],
             # Current world time as perceived by agent
-            "current_time": "2023-10-01T12:00:00Z"
+            "current_time": "2023-10-01T12:00:00Z"   # str: Agent's perceived time
         }
     }
 ]
+
+
+# =============================================================================
+# USAGE EXAMPLES
+# =============================================================================
+
+"""
+Example Usage Patterns
+-----------------------
+
+1. Creating a new agent:
+   agent = Agent(f_saved=None)
+   agent.name = "John Doe"
+   agent.vision_r = 4
+
+2. Setting up daily schedule:
+   agent.daily_req = ["Go to work", "Have lunch", "Exercise"]
+   agent.f_daily_schedule = [["work", 480], ["lunch", 60], ["exercise", 120]]
+
+3. Handling movement:
+   agent.act_address = "office:main floor:desk 1"
+   agent.planned_path = [(10, 5), (11, 5), (12, 5)]
+   agent.act_path_set = True
+
+4. Managing conversations:
+   agent.chatting_with = "Alice"
+   agent.chat = [["John Doe", "Hello"], ["Alice", "Hi there!"]]
+"""
