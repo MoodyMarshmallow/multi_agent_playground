@@ -11,4 +11,4 @@ class ActMixin:
     """
     @ai_function()
     def act(self, ) -> None:
-        
+        pass

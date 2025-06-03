@@ -12,7 +12,7 @@ class Agent:
         Input:
             config_path (str): path to the JSON config.
         """
-        agent_dir = Path(agent_dir)
+        agent_dir = Path(config_path)
         with open(agent_dir / "agent.json", "r") as file:
             data = json.load(file)
         self.agent_id = data.get("agent_id")
