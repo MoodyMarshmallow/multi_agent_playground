@@ -5,6 +5,8 @@ Character JSON Data Structure Documentation
 This file documents the JSON data structures and communication protocols
 used by characters in the multi-agent playground system.
 
+**NOTE:** This is a simplified version of the JSON data structure which we should use for now.
+
 Table of Contents:
 1. Character Core Structure
 2. Memory System
@@ -270,7 +272,7 @@ Agent Actions
 -------------
 
 The backend sends agent actions to the frontend for visualization.
-Supported action types: move, chat, interact
+Supported action types: move, chat, interact, perceive
 """
 
 # Action Type Schemas
@@ -280,16 +282,16 @@ agent_actions = [
         "agent_id": "agent_123",                      # str: Unique agent identifier
         "action_type": "move",                        # str: Type of action
         "content": {
-            "destination_coordinates": [50, 10]       # list[int, int]: Target (x, y)
+            "destination_coordinates": [50, 10]       # Tuple[int, int]: Coordinates to move to (x, y)
         },
         "emoji": "🚶",                               # str: Visual representation
         
         # Optional fields:
-        # "current_tile": [50, 10],                  # list[int, int]: Current position
+        # "current_tile": [50, 10],                  # Tuple[int, int]: Current position
         # "current_location": "kitchen"              # str: Semantic location
     },
     
-    # Chat Action  
+    # Chat Action  TODO
     {
         "agent_id": "agent_123",                      # str: Agent identifier
         "action_type": "chat",                        # str: Action type
@@ -309,6 +311,16 @@ agent_actions = [
             "new_state": "on"                         # str: New state after interaction
         },
         "emoji": "💡"                                # str: Visual representation
+    },
+    
+    # Perception Action
+    {
+        "agent_id": "agent_123",                      # str: Agent identifier
+        "action_type": "perceive",                    # str: Action type
+        "content": {
+            # TODO: Nothing for now. Could eventually include vision range, focus, etc.
+        },
+        "emoji": "👀"                                # str: Visual representation
     }
 ]
 
@@ -329,19 +341,20 @@ along with environmental perception data.
 frontend_to_backend = [
     {
         "agent_id": "agent_123",                      # str: Agent identifier
-        "timestamp": "2023-10-01T12:00:00Z",         # str: When action occurred
+        "timestamp": "2023-10-01T12:00:00Z",          # str: When action occurred
         "action_type": "move",                        # str: Type of action performed
         "content": {
-            "destination_coordinates": [50, 10]       # list[int, int]: Movement target
+            "destination_coordinates": (50, 10)       # Tuple[int, int]: Movement target
         },
         "perception": {
+            "self_state": "walking to the office",    # str: Description of the agent's current state
             # Objects currently visible to the agent
             "visible_objects": {                      # dict[str, dict]: Object states
                 "bed": {"state": "unmade"},
                 "light switch": {"state": "on"}
             },
             # Other agents currently visible  
-            "visible_agents": [                       # list[str]: Agent names in sight
+            "visible_agents": [                       # List[str]: Agent names in sight
                 "Maeve Jenson", 
                 "Dolores Murphy"
             ],
