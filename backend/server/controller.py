@@ -1,5 +1,5 @@
-from agents.agent import Agent
-from actions.perceive import perceive
+from backend.character_agents.agent import Agent
+from backend.character_agents.action_tools.perceive import perceive
 from actions.act import act
 
 def handle_frontend_message(agent_dir, message):
