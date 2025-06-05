@@ -1,0 +1,23 @@
+{
+  "first_floor": {
+    "kitchen": {
+      "sink": {},
+      "cutting_board": {},
+      "oven": {},
+      "stove": {}
+    },
+    "living_room": {
+      "couch": {},
+      "TV": {},
+      "fireplace": {}
+    }
+  },
+  "second_floor": {
+    "bedroom": {
+      "bed": {},
+      "blanket": {},
+      "mattress": {},
+      "lamp": {}
+    }
+  }
+}
