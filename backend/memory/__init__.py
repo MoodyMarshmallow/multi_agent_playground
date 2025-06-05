@@ -16,8 +16,10 @@ Usage Example
     from memory import SpatialMemory
 
     obj = SpatialMemory()
-    obj.add_nodes(["room1", "room2"])
-    obj.add_edges([("room1", ["room2"])])
+    obj.add({
+        "nodes": ["room1", "room2"],
+        "edges": [("room1", ["room2"])]
+    })
     result = obj.convert_to_JSON()
 
 Author

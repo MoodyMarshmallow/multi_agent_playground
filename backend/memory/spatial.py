@@ -6,24 +6,21 @@ spatial
    :synopsis: Module containing SpatialMemory.
 """
 
+from typing import Dict, List, Tuple
+
 class SpatialMemory:
     """
     A spatial memory implementation using a graph structure.
 
     :ivar dict graph: The graph representation of spatial relationships.
 
-    .. method:: add_nodes(nodes)
+    .. method:: add(data)
 
-       Add multiple nodes to the spatial graph.
+       Add nodes and edges to the spatial graph from a dictionary.
 
-       :param list[str] nodes: A list of node identifiers to add.
-       :returns: None
-
-    .. method:: add_edge(edges)
-
-       Add multiple edges between nodes in the spatial graph.
-
-       :param list[tuple[str, str]] edges: A list of tuples containing (source_node, destination_node) pairs.
+       :param dict data: A dictionary containing "nodes" (list of node 
+                         identifiers) and "edges" (list of tuples with source 
+                         nodes and their destination lists).
        :returns: None
 
     .. method:: convert_to_JSON()
@@ -38,61 +35,55 @@ class SpatialMemory:
     .. code-block:: python
 
        memory = SpatialMemory()
-       memory.add_nodes(["room1", "room2", "room3"])
-       memory.add_edge([("room1", "room2"), ("room1", "room3")])
+       memory.add({
+           "nodes": ["room1", "room2", "room3"],
+           "edges": [("room1", ["room2"]), ("room1", ["room3"])]
+       })
        json_data = memory.convert_to_JSON()
     """
 
-    def __init__(self):
+    def __init__(self, data: Dict[str, List] = None):
         """
         Initialize a new instance of :class:`SpatialMemory`.
 
         Creates an empty graph dictionary to store spatial relationships.
         """
         self.graph = dict()
+        if data is not None:
+            self.add(data)
     
 
-    def add_nodes(self, nodes: list[str]):
+    def add(self, data: Dict[str, List]) -> None:
         """
-        Add multiple nodes to the spatial graph.
+        Add nodes and edges to the spatial graph from a dictionary.
 
-        :param list[str] nodes: A list of node identifiers to add.
+        The dictionary must contain "nodes" and "edges" keys. Nodes are added 
+        first, then edges are created between them. Edges are directed from 
+        source to destination nodes.
+
+        :param Dict[str, List] data: A dictionary with "nodes" (List[str]) and 
+                                     "edges" (List[Tuple[str, List[str]]]) keys.
         :returns: None
+        :raises KeyError: If required keys "nodes" or "edges" are missing from 
+                          data.
+        :raises TypeError: If data types don't match expected format.
         """
+        # Type checking for required keys
+        if "nodes" not in data or "edges" not in data:
+            raise KeyError("Dictionary must contain both 'nodes' and 'edges' "
+                          "keys")
+        
+        nodes: List[str] = data["nodes"]
+        edges: List[Tuple[str, List[str]]] = data["edges"]
+        
+        # Add nodes first
         for node in nodes:
             self.graph[node] = list()
-    
-
-    def add_edges(self, edges: list[tuple[str, str]]):
-        """
-        Add multiple edges between nodes in the spatial graph.
-
-        The edges are directed from source to destination nodes. If a source node 
-        doesn't exist, that edge is not added.
-
-        :param list[tuple[str, str]] edges: A list of tuples where each tuple contains (source_node, destination_node).
-        :returns: None
-        """
-        for u, v in edges:
-            if u in self.graph:
-                self.graph[u].append(v)
-    
-
-    def add_edges(self, edges: list[tuple[str, list[str]]]):
-        """
-        Add multiple edges from nodes to their adjacency lists.
-
-        Each tuple contains a source node and a list of destination nodes. 
-        All edges are directed from the source to each destination in the list.
-        If a source node doesn't exist, those edges are not added.
-
-        :param list[tuple[str, list[str]]] edges: A list of tuples where each tuple contains (source_node, [destination_nodes]).
-        :returns: None
-        """
+        
+        # Add edges
         for u, adj_u in edges:
             if u in self.graph:
                 self.graph[u].extend(adj_u)
-
 
     def convert_to_JSON(self):
         """
@@ -104,27 +95,31 @@ class SpatialMemory:
         :returns: The graph as a nested tree structure.
         :rtype: dict
         """
+        # Find root nodes (nodes that are not referenced by any other node)
+        all_children = set()
+        for node, children in self.graph.items():
+            all_children.update(children)
+        
+        # Root nodes are those that exist in the graph but are not children of 
+        # any other node
+        root_nodes = [node for node in self.graph.keys() 
+                      if node not in all_children]
+        
         def build_tree(node):
-            """Recursively build tree structure for a node and its children."""
+            """Recursively build the tree structure for a given node."""
             children = self.graph.get(node, [])
             if not children:
                 return {}
             
-            tree = {}
+            result = {}
             for child in children:
-                tree[child] = build_tree(child)
-            return tree
+                result[child] = build_tree(child)
+            return result
         
-        # Find root nodes (nodes that are not contained by any other node)
-        all_children = set()
-        for connections in self.graph.values():
-            all_children.update(connections)
-        
-        root_nodes = [node for node in self.graph.keys() if node not in all_children]
-        
-        # Build the complete tree structure
+        # Build the final tree structure
         result = {}
         for root in root_nodes:
             result[root] = build_tree(root)
         
         return result
+
