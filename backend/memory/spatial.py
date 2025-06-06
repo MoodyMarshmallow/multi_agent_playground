@@ -87,12 +87,13 @@ class SpatialMemory:
 
     def convert_to_JSON(self):
         """
-        Convert the spatial graph to JSON format as a nested tree structure.
+        Convert the spatial graph to JSON format matching environment.json structure.
 
         Creates a JSON structure that describes spatial relationships as a 
-        hierarchical tree where each location contains its sub-locations.
+        hierarchical tree where each location contains its sub-locations with
+        shape coordinates, interaction points, and optional descriptions.
 
-        :returns: The graph as a nested tree structure.
+        :returns: The graph as a nested tree structure with spatial data.
         :rtype: dict
         """
         # Find root nodes (nodes that are not referenced by any other node)
@@ -109,7 +110,12 @@ class SpatialMemory:
             """Recursively build the tree structure for a given node."""
             children = self.graph.get(node, [])
             if not children:
-                return {}
+                # Leaf nodes should have shape and interact properties
+                # Default empty values if no spatial data is stored
+                return {
+                    "shape": [],
+                    "interact": []
+                }
             
             result = {}
             for child in children:
