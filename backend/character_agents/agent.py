@@ -1,20 +1,24 @@
 import json
 from pathlib import Path
 from datetime import datetime
+from typing import Any, Dict, List
 
 class Agent:
     """
-    Represents an agent in the system with attributes and methods
+    Represents an agent in the system with attributes and methods.
+    Each agent's data and memory are stored in local JSON files under the agent's directory.
     """
-    def __init__(self, config_path):
+    def __init__(self, config_path: str):
         """
-        loads agent configuration from a JSON file.
-        Input:
-            config_path (str): path to the JSON config.
+        Loads agent configuration and memory from JSON files.
+        Args:
+            config_path (str): Path to the agent's directory (should contain agent.json and memory.json).
         """
-        agent_dir = Path(agent_dir)
-        with open(agent_dir / "agent.json", "r") as file:
+        self.agent_dir = Path(config_path)
+        with open(self.agent_dir / "agent.json", "r") as file:
             data = json.load(file)
+
+        # Core state fields
         self.agent_id = data.get("agent_id")
         self.vision_r = data.get("vision_r", 4)
         self.retention = data.get("retention", 5)
@@ -48,25 +52,79 @@ class Agent:
         self.chatting_end_time = data.get("chatting_end_time")
         self.act_path_set = data.get("act_path_set", False)
         self.planned_path = data.get("planned_path", [])
-        
-        mem_path = agent_dir / "memory.json"
+
+        # Memory
+        mem_path = self.agent_dir / "memory.json"
         if mem_path.exists():
             with open(mem_path, "r") as f:
                 self.memory = json.load(f)
         else:
             self.memory = []
-        
-    def update_perception(self, perception):
+
+        # Runtime-only (not persisted, updated per perception)
+        self.visible_objects = {}
+        self.visible_agents = []
+
+    def update_perception(self, perception: Dict[str, Any]):
         """
-        Updates visible objects/agents from a dict.
-        Input: perception (dict)
+        Updates visible objects and agents from the perception dict.
+        Args:
+            perception (dict): Typically from the frontend.
         """
         self.visible_objects = perception.get("visible_objects", {})
         self.visible_agents = perception.get("visible_agents", [])
-    
+
+    def update_agent_data(self, data: Dict[str, Any]):
+        """
+        Updates core agent fields if present in the data dict.
+        Args:
+            data (dict): New values for agent state.
+        """
+        if "curr_tile" in data:
+            self.curr_tile = data["curr_tile"]
+        if "curr_time" in data:
+            self.curr_time = data["curr_time"]
+        if "currently" in data:
+            self.currently = data["currently"]
+
+    def add_memory_event(self, timestamp: str, location: str, event: str, poignancy: int):
+        """
+        Adds a new event to the agent's memory.
+        Args:
+            timestamp (str): ISO8601 time.
+            location (str): Location string.
+            event (str): Event description.
+            poignancy (int): Emotional significance.
+        """
+        self.memory.append({
+            "timestamp": timestamp,
+            "location": location,
+            "event": event,
+            "poignancy": poignancy
+        })
+
+    def save(self):
+        """
+        Saves the agent's core data to agent.json.
+        """
+        data = self.__dict__.copy()
+        data.pop("memory", None)         # Do not persist memory here
+        data.pop("agent_dir", None)      # Do not persist the path itself
+        data.pop("visible_objects", None)
+        data.pop("visible_agents", None)
+        with open(self.agent_dir / "agent.json", "w") as f:
+            json.dump(data, f, indent=2, default=str)
+
+    def save_memory(self):
+        """
+        Saves the agent's memory to memory.json.
+        """
+        with open(self.agent_dir / "memory.json", "w") as f:
+            json.dump(self.memory, f, indent=2, default=str)
+
     def to_state_dict(self):
         """
-        Returns a dict with agent state suitable for tools/LLM/pipeline.
+        Returns a dict with the agent's state, suitable for LLMs/planners.
         """
         return {
             "agent_id": self.agent_id,
@@ -76,6 +134,6 @@ class Agent:
             "memory": self.memory,
             "visible_objects": self.visible_objects,
             "visible_agents": self.visible_agents,
-            # Add more fields if tools need them
+            "currently": self.currently,
+            # Add more fields as needed
         }
-        
