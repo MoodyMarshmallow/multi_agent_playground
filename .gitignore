@@ -17,3 +17,6 @@ frontend/godot/export/
 # OS-specific
 .DS_Store
 Thumbs.db
+
+# Project Testing
+frontend/frontend_server/
