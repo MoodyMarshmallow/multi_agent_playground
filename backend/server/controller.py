@@ -1,47 +1,47 @@
 from backend.character_agents.agent import Agent
-from backend.character_agents.action_tools.perceive import perceive
-from actions.act import act
+from character_agents.actions import ActionsMixin
+from config.schema import AgentActionInput, AgentActionOutput, AgentPerception
 
-def handle_frontend_message(agent_dir, message):
+def plan_next_action(agent_id: str, perception: AgentPerception) -> AgentActionOutput:
     """
-    Loads agent and memory from local files, processes perception/action, returns action.
-    Args:
-        agent_dir (str): path to the agent's directory.
-        message (dict): frontend message (should contain "perception").
-    Returns:
-        dict: action (for frontend)
+    Step 1: Decide the next action (LLM/planner), given current perception.
+    Do NOT update agent data yet.
     """
-    # 1. Load agent and memory
+    agent_dir = f"agents/{agent_id}"
     agent = Agent(agent_dir)
-
-    # 2. Update perception (can be a tool in future)
-    agent.update_perception(message.get("perception", {}))
+    agent.update_perception(perception.dict())
     agent_state = agent.to_state_dict()
-    
-    # === KANI LLM INTEGRATION PLACEHOLDER ===
-    # Here is where you would call Kani LLM to perform planning or tool selection.
-    # Example:
-    # kani_result = call_kani_llm(agent_state, message)
-    # thought = kani_result["thought"]
-    # action = kani_result["action"]
 
-    # 3. LLM 'think' (planning step)
-    if agent_state["daily_req"]:
-        thought = {"goal": agent_state["daily_req"][0]}
-    else:
-        thought = {"goal": None}
+    # LLM/planner call (replace with real LLM logic to generate a json file that will be sent from backend to frontend!)
+    next_action = call_llm_or_react(agent_state, perception.dict())
 
-    # 4. Act (can be a tool in future)
-    action = act(agent_state, thought)
-    return action
+    return AgentActionOutput(
+        agent_id=next_action["agent_id"],
+        action_type=next_action["action_type"],
+        content=next_action["content"],
+        emoji=next_action["emoji"],
+        current_tile=None,
+        current_location=None,
+    )
 
-# Example usage/testing
-if __name__ == "__main__":
-    agent_dir = "data/alex"
-    msg = {
-        "perception": {
-            "visible_objects": {"bed": {"state": "unmade"}, "light switch": {"state": "off"}},
-            "visible_agents": ["Maeve Jenson"]
-        }
-    }
-    print(handle_frontend_message(agent_dir, msg))
+
+def confirm_action_and_update(agent_msg: AgentActionInput) -> AgentActionOutput:
+    """
+    Step 2: After frontend executes the action, it POSTs new perception/result.
+    Backend updates state/memory using the reported result.
+    """
+    agent_dir = f"agents/{agent_msg.agent_id}"
+    agent = Agent(agent_dir)
+    agent.update_perception(agent_msg.perception.dict())
+    agent.update_agent_data(agent_msg.content)
+    # Log memory event if relevant fields are present:
+    if "event" in agent_msg.content and "poignancy" in agent_msg.content:
+        agent.add_memory_event(
+            timestamp=agent_msg.timestamp,
+            location=str(agent_msg.content.get("location", "")),
+            event=agent_msg.content["event"],
+            poignancy=agent_msg.content["poignancy"]
+        )
+    agent.save()
+    agent.save_memory()
+
