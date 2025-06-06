@@ -3,25 +3,25 @@
       "timestamp": "2023-10-01T08:00:00Z",
       "location": "downtown studio:main:bedroom",
       "event": "wakes up and stretches",
-      "poignancy": 6
+      "salience": 6
     },
     {
       "timestamp": "2023-10-01T08:15:00Z",
       "location": "downtown studio:main:kitchen",
       "event": "has breakfast",
-      "poignancy": 4
+      "salience": 4
     },
     {
       "timestamp": "2023-10-01T09:00:00Z",
       "location": "downtown studio:main:artroom",
       "event": "working on her painting",
-      "poignancy": 8
+      "salience": 8
     },
     {
       "timestamp": "2023-10-01T12:30:00Z",
       "location": "downtown studio:main:kitchen",
       "event": "makes lunch",
-      "poignancy": 3
+      "salience": 3
     }
   ]
   

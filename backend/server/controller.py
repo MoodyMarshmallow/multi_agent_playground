@@ -12,8 +12,9 @@ and the agent system, handling the flow of perception data, action
 planning, and state updates for all agents in the simulation.
 """
 
-from backend.character_agents.agent import Agent
-from character_agents.actions import ActionsMixin
+from backend.character_agent.agent import Agent
+from character_agent.actions import ActionsMixin
+from character_agent.llm_agent import call_llm_or_ReAct
 from config.schema import AgentActionInput, AgentActionOutput, AgentPerception
 
 def plan_next_action(agent_id: str, perception: AgentPerception) -> AgentActionOutput:
@@ -21,7 +22,7 @@ def plan_next_action(agent_id: str, perception: AgentPerception) -> AgentActionO
     Step 1: Decide the next action (LLM/planner), given current perception.
     Do NOT update agent data yet.
     """
-    agent_dir = f"agents/{agent_id}"
+    agent_dir = f"data/agents/{agent_id}"
     agent = Agent(agent_dir)
     agent.update_perception(perception.model_dump())
     agent_state = agent.to_state_dict()
@@ -44,17 +45,17 @@ def confirm_action_and_update(agent_msg: AgentActionInput) -> AgentActionOutput:
     Step 2: After frontend executes the action, it POSTs new perception/result.
     Backend updates state/memory using the reported result.
     """
-    agent_dir = f"agents/{agent_msg.agent_id}"
+    agent_dir = f"data/agents/{agent_msg.agent_id}"
     agent = Agent(agent_dir)
     agent.update_perception(agent_msg.perception.model_dump())
     agent.update_agent_data(agent_msg.content)
     # Log memory event if relevant fields are present:
-    if "event" in agent_msg.content and "poignancy" in agent_msg.content:
+    if "event" in agent_msg.content and "salience" in agent_msg.content:
         agent.add_memory_event(
             timestamp=agent_msg.timestamp,
             location=str(agent_msg.content.get("location", "")),
             event=agent_msg.content["event"],
-            poignancy=agent_msg.content["poignancy"]
+            salience=agent_msg.content["salience"]
         )
     agent.save()
     agent.save_memory()
