@@ -1,3 +1,19 @@
+"""
+Multi-Agent Playground - FastAPI Backend Server
+==============================================
+Main entry point for the FastAPI backend that handles agent simulation.
+
+This file defines the core API endpoints that enable communication between
+the frontend (Godot) and the backend agent system. It provides endpoints for:
+- Planning agent actions based on current perception
+- Confirming and updating agent state after action execution
+- Retrieving current agent state
+
+The server follows a two-step action protocol:
+1. /agent_act/plan - Get next action plan from agent
+2. /agent_act/confirm - Confirm execution and update agent memory
+"""
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -52,7 +68,7 @@ def get_agent_state(agent_id: str):
 """
 On simulation start, the frontend POSTs to /agent_act/ with:
 
-The initial world perception (could be “empty” or the initial environment)
+The initial world perception (could be "empty" or the initial environment)
 
 Usually, no action or an action_type="perceive".
 

@@ -1,3 +1,20 @@
+"""
+Multi-Agent Playground - Core Agent Implementation
+=================================================
+Core Agent class representing individual agents in the multi-agent simulation.
+
+This module implements the Agent class which encapsulates:
+- Agent identity and personality traits (innate, learned, current state)
+- Planning system (daily schedules, requirements, current actions)
+- Memory system (event storage with timestamp, location, poignancy)
+- Perception handling (visible objects and agents)
+- State persistence (JSON file-based storage)
+
+Each agent maintains its data in separate JSON files (agent.json, memory.json)
+and provides methods for updating state, adding memories, and serializing
+data for LLM/planner consumption.
+"""
+
 import json
 from pathlib import Path
 from datetime import datetime
