@@ -1,3 +1,20 @@
+"""
+Multi-Agent Playground - Core Agent Implementation
+=================================================
+Core Agent class representing individual agents in the multi-agent simulation.
+
+This module implements the Agent class which encapsulates:
+- Agent identity and personality traits (innate, learned, current state)
+- Planning system (daily schedules, requirements, current actions)
+- Memory system (event storage with timestamp, location, salience)
+- Perception handling (visible objects and agents)
+- State persistence (JSON file-based storage)
+
+Each agent maintains its data in separate JSON files (agent.json, memory.json)
+and provides methods for updating state, adding memories, and serializing
+data for LLM/planner consumption.
+"""
+
 import json
 from pathlib import Path
 from datetime import datetime
@@ -87,20 +104,20 @@ class Agent:
         if "currently" in data:
             self.currently = data["currently"]
 
-    def add_memory_event(self, timestamp: str, location: str, event: str, poignancy: int):
+    def add_memory_event(self, timestamp: str, location: str, event: str, salience: int):
         """
         Adds a new event to the agent's memory.
         Args:
             timestamp (str): ISO8601 time.
             location (str): Location string.
             event (str): Event description.
-            poignancy (int): Emotional significance.
+            salience (int): Emotional significance.
         """
         self.memory.append({
             "timestamp": timestamp,
             "location": location,
             "event": event,
-            "poignancy": poignancy
+            "salience": salience
         })
 
     def save(self):
