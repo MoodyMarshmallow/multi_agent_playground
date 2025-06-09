@@ -5,9 +5,13 @@ var http_request: HTTPRequest
 @export var agent_id: String = "agent_1"
 @export var update_interval: float = 5.0  # Seconds between updates
 @export var base_url: String = "http://localhost:8000"
+@export var default_navigation_x : float = 5.0
+@export var default_navigation_y : float = 5.0
 
 var is_action_in_progress: bool = false
 var current_action: Dictionary = {}
+var current_request_type: String = ""  # "plan" or "confirm"
+
 
 signal new_destination(coordinates: Vector2)
 signal update_position(tile_position: Vector2)
@@ -22,7 +26,9 @@ func _ready() -> void:
 	#request_next_action()
 
 func request_next_action() -> void:
+	print("In request next action")
 	if is_action_in_progress:
+		print("already have action in progress")
 		return
 		
 	var perception_data = {
@@ -37,15 +43,31 @@ func request_next_action() -> void:
 	var query = "?agent_id=" + agent_id
 	var headers = PackedStringArray(["Content-Type: application/json"])
 	var json = JSON.stringify(perception_data)
-	
+	print("making http request")
+	current_request_type = "plan"
 	var error = http_request.request(url + query, headers, HTTPClient.METHOD_POST, json)
 	if error != OK:
-		push_error("Failed to request next action")
+		print("Failed to request next action")
 		# Retry after a delay
 		#await get_tree().create_timer(1.0).timeout
 		#request_next_action()
 
+func _get_default_plan_response() -> Dictionary:
+	print("running default_plan")
+	return {
+	"agent_id": "agent_1",
+	"action_type": "move",
+	"content": {
+		"destination_coordinates": [default_navigation_x, default_navigation_y]
+	},
+	"emoji": "",
+	"current_tile": "",
+	"current_location": ""
+}
+
+
 func _confirm_action(action_type: String, content: Dictionary) -> void:
+	print("confirming action")
 	var confirmation_data = {
 		"agent_id": agent_id,
 		"timestamp": Time.get_datetime_string_from_system(),
@@ -64,22 +86,29 @@ func _confirm_action(action_type: String, content: Dictionary) -> void:
 	var headers = PackedStringArray(["Content-Type: application/json"])
 	var json = JSON.stringify(confirmation_data)
 	
+	current_request_type = "confirm"
+	is_action_in_progress = false
 	var error = http_request.request(url, headers, HTTPClient.METHOD_POST, json)
 	if error != OK:
-		push_error("Failed to confirm action")
+		print("Failed to confirm action. Backend failed with error: ", error)
 
 func _on_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
+	print("request completed")
 	if result != HTTPRequest.RESULT_SUCCESS:
-		push_error("HTTP Request failed")
+		print("HTTP Request failed")
+		if current_request_type == "plan":
+			_handle_plan_response(_get_default_plan_response())
 		return
 		
 	if response_code != 200:
-		push_error("Received response code: " + str(response_code))
+		print("Received response code: " + str(response_code))
+		if current_request_type == "plan":
+			_handle_plan_response(_get_default_plan_response())
 		return
 		
 	var json = JSON.parse_string(body.get_string_from_utf8())
 	if json == null:
-		push_error("JSON Parse Error")
+		print("JSON Parse Error")
 		return
 	
 	# Check which endpoint responded based on the URL
@@ -98,7 +127,9 @@ func _handle_plan_response(response: Dictionary) -> void:
 	
 	match response.action_type:
 		"move":
+			print("action type move")
 			if "destination_coordinates" in response.content:
+				print("found destination_coordinates")
 				var coords = response.content.destination_coordinates
 				new_destination.emit(Vector2(coords[0], coords[1]))
 		"interact":
@@ -107,7 +138,7 @@ func _handle_plan_response(response: Dictionary) -> void:
 		"perceive":
 			_action_completed()
 		_:
-			push_error("Unknown action type: " + response.action_type)
+			print("Unknown action type: " + response.action_type)
 			_action_completed()
 
 func _handle_confirm_response(_response: Dictionary) -> void:
@@ -119,6 +150,7 @@ func _handle_confirm_response(_response: Dictionary) -> void:
 
 # Called by the navigation system when an action is completed
 func notify_action_completed() -> void:
+	print("http_controller notified that action was completed")
 	if current_action.is_empty():
 		return
 	

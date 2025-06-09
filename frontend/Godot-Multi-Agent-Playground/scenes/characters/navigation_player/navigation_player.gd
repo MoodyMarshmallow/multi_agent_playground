@@ -2,7 +2,11 @@ class_name NavigationPlayer
 extends Player
 
 @onready var navigation_agent_2d: NavigationAgent2D = $NavigationAgent2D
-@onready var agent_controller: Node = $AgentController
+@onready var http_controller: Node = $http_controller
+@onready var state_machine: NodeNavigationFiniteStateMachine = $StateMachine
+@onready var idle: Node = $StateMachine/Idle
+@onready var walk: Node = $StateMachine/Walk
+
 
 var target_position: Vector2 = Vector2.ZERO
 var is_moving: bool = false
@@ -26,10 +30,9 @@ func _ready():
 	navigation_agent_2d.simplify_path = false
 	
 	# Get reference to the HTTP controller and connect signals
-	var controller = get_node("../AgentController")
-	if controller:
-		controller.new_destination.connect(_on_new_destination)
-		controller.update_position.connect(_on_update_position)
+	if http_controller:
+		http_controller.new_destination.connect(_on_new_destination)
+		http_controller.update_position.connect(_on_update_position)
 	
 	target_position = position
 
@@ -58,19 +61,39 @@ func update_visible_objects() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("request_next_action"):
-		request_next_action()
+		http_controller.request_next_action()
+		print("requesting next action")
 	if event.is_action_pressed("debug"):
 		print_visible_objects()
 
 func request_next_action() -> void:
-	if agent_controller:
-		agent_controller.request_next_action()
+	if http_controller:
+		http_controller.request_next_action()
 
 func _on_new_destination(coordinates):
 	# Handle new destination coordinates
 	# coordinates will be an array [x, y]
+	print("setting new destination", coordinates)
+	var clicked_position: Vector2 = (coordinates + Vector2(16, 3)) * 16
 	target_position = coordinates * TILE_SIZE
 	is_moving = true
+	if navigation_agent_2d:
+			navigation_agent_2d.set_target_position(clicked_position)
+			var next_path_position = navigation_agent_2d.get_next_path_position()
+			
+			# Wait a frame for navigation to calculate, then check if reachable
+			await get_tree().process_frame
+			
+			if navigation_agent_2d.is_target_reachable():
+				print("navigating")
+				idle.transition.emit("Walk")
+			else:
+				print("Target not reachable!")
+				# goto closest point instead
+				var closest_point = NavigationServer2D.map_get_closest_point(navigation_agent_2d.get_navigation_map(), clicked_position)
+				navigation_agent_2d.set_target_position(closest_point)
+				print("Navigating to closest reachable point")
+				idle.transition.emit("Walk")
 
 func _on_update_position(tile_position):
 	# Handle absolute position updates

@@ -5,7 +5,7 @@ extends NodeState
 @export var speed: int = 50
 @onready var navigation_agent_2d: NavigationAgent2D = $"../../NavigationAgent2D"
 @onready var collision_shape_2d: CollisionShape2D = $"../../CollisionShape2D"
-@onready var http_controller: Node = $"../../AgentController"
+@onready var http_controller: Node = $"../../http_controller"
 
 # Stuck detection variables
 var stuck_timer: float = 0.0
@@ -86,7 +86,9 @@ func on_next_transitions() -> void:
 			transition.emit("Idle")
 
 func _complete_movement() -> void:
+	print("completed movement")
 	if http_controller:
+		print("walk state notifying http_controller")
 		http_controller.notify_action_completed()
 
 func on_enter():
