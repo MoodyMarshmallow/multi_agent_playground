@@ -1,0 +1,62 @@
+[gd_scene load_steps=11 format=3 uid="uid://bp2pmr12iwavx"]
+
+[ext_resource type="PackedScene" uid="uid://c2w2uh4fkyjpq" path="res://scenes/components/interactable_component.tscn" id="1_5ph3y"]
+[ext_resource type="Shader" path="res://scenes/characters/guide/replace_color.gdshader" id="1_eblfn"]
+[ext_resource type="Script" path="res://scenes/characters/guide/guide.gd" id="1_obvo6"]
+[ext_resource type="Texture2D" uid="uid://c87y01j7xmy3i" path="res://assets/game/characters/basic_character_sprites.png" id="2_nfsfl"]
+[ext_resource type="PackedScene" uid="uid://b3t7okvnvvq8k" path="res://scenes/components/interactable_label_component.tscn" id="5_8lxm1"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_msqee"]
+radius = 22.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_n74jv"]
+shader = ExtResource("1_eblfn")
+shader_parameter/original_0 = Color(0.360784, 0.309804, 0.572549, 1)
+shader_parameter/original_1 = Color(0.458824, 0.427451, 0.666667, 1)
+shader_parameter/replace_0 = Color(0.864014, 0, 0.398799, 1)
+shader_parameter/replace_1 = Color(0.956994, 0.460718, 9.62615e-07, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p4e3b"]
+atlas = ExtResource("2_nfsfl")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_40uin"]
+atlas = ExtResource("2_nfsfl")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_t6qeq"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_p4e3b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_40uin")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 3.0
+}]
+
+[node name="Guide" type="Node2D"]
+script = ExtResource("1_obvo6")
+
+[node name="InteractableComponent" parent="." instance=ExtResource("1_5ph3y")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractableComponent"]
+position = Vector2(0, -8)
+shape = SubResource("CircleShape2D_msqee")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+material = SubResource("ShaderMaterial_n74jv")
+position = Vector2(0, -8)
+sprite_frames = SubResource("SpriteFrames_t6qeq")
+animation = &"idle"
+autoplay = "idle"
+frame_progress = 0.339355
+
+[node name="InteractableLabelComponent" parent="." instance=ExtResource("5_8lxm1")]
+offset_left = -29.0
+offset_top = -40.0
+offset_right = -29.0
+offset_bottom = -40.0
