@@ -12,12 +12,20 @@ This module implements the LLMAgent class which combines:
 import asyncio
 import json
 import os
+import sys
+from pathlib import Path
 from typing import Dict, Any, Optional
 from kani import Kani
 from kani.engines.openai import OpenAIEngine
-from .actions import ActionsMixin
-from .agent import Agent
-from ..config.llm_config import LLMConfig
+from actions import ActionsMixin
+from agent import Agent
+
+# Add the backend directory to Python path for imports
+backend_dir = Path(__file__).parent.parent
+if str(backend_dir) not in sys.path:
+    sys.path.insert(0, str(backend_dir))
+
+from config.llm_config import LLMConfig
 
 
 class LLMAgent(Kani, ActionsMixin):
@@ -42,12 +50,51 @@ class LLMAgent(Kani, ActionsMixin):
             api_key = LLMConfig.get_openai_api_key()
         
         # Initialize Kani engine with GPT-4o
-        engine = OpenAIEngine(
-            api_key, 
-            model=LLMConfig.OPENAI_MODEL,
-            temperature=LLMConfig.OPENAI_TEMPERATURE,
-            max_tokens=LLMConfig.OPENAI_MAX_TOKENS
-        )
+        # Handle SSL issues in Windows conda environments 
+
+        # ==================== WARNING ==========================
+        # (TODO: THIS IS A WORKAROUND AND MAY CAUSE SECURITY ISSUES)
+        # =======================================================
+        try:
+            engine = OpenAIEngine(
+                api_key, 
+                model=LLMConfig.OPENAI_MODEL,
+                temperature=LLMConfig.OPENAI_TEMPERATURE,
+                max_tokens=LLMConfig.OPENAI_MAX_TOKENS
+            )
+        except OSError as e:
+            if "Invalid argument" in str(e) or "SSL" in str(e):
+                # Try with custom HTTP client that handles SSL issues
+                import httpx
+                import ssl
+                
+                # Create a custom SSL context that's more permissive
+                ssl_context = ssl.create_default_context()
+                ssl_context.check_hostname = False
+                ssl_context.verify_mode = ssl.CERT_NONE
+                
+                # Create custom HTTP client
+                http_client = httpx.AsyncClient(
+                    verify=False,  # Disable SSL verification for testing
+                    timeout=30.0
+                )
+                
+                from openai import AsyncOpenAI
+                openai_client = AsyncOpenAI(
+                    api_key=api_key,
+                    http_client=http_client
+                )
+                
+                # When providing a client, don't pass api_key to OpenAIEngine
+                engine = OpenAIEngine(
+                    model=LLMConfig.OPENAI_MODEL,
+                    temperature=LLMConfig.OPENAI_TEMPERATURE,
+                    max_tokens=LLMConfig.OPENAI_MAX_TOKENS,
+                    client=openai_client
+                )
+                print("Warning: SSL verification disabled for testing purposes")
+            else:
+                raise
         
         # Initialize Kani with system prompt
         system_prompt = self._build_system_prompt()
@@ -122,24 +169,33 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         # Build context message for the LLM
         context_message = self._build_context_message(perception_data)
         
-        # Get LLM response with function calling
-        response = await self.chat_round(context_message)
+        # Get LLM response with function calling - iterate through the async generator
+        action_result = None
+        async for message in self.full_round(context_message):
+            # Check if this is a function result message
+            if message.role.value == 'function' and message.content:
+                # Try to parse the function result as JSON
+                try:
+                    import json
+                    parsed_result = json.loads(message.content)
+                    # Check if this looks like one of our action results
+                    if isinstance(parsed_result, dict) and 'action_type' in parsed_result:
+                        action_result = parsed_result
+                        break
+                except (json.JSONDecodeError, TypeError):
+                    # If parsing fails, continue looking for other messages
+                    continue
         
-        # The response should contain a function call result
-        # If the LLM called one of our action functions, it will return the JSON
-        if hasattr(response, 'function_calls') and response.function_calls:
-            # Get the last function call result (should be our action)
-            last_call = response.function_calls[-1]
-            if hasattr(last_call, 'result') and isinstance(last_call.result, dict):
-                return last_call.result
+        # If no action was determined, default to perceive
+        if not action_result:
+            action_result = {
+                "agent_id": self.agent_id,
+                "action_type": "perceive",
+                "content": {},
+                "emoji": "👀"
+            }
         
-        # Fallback: if no function was called, default to perceive action
-        return {
-            "agent_id": self.agent_id,
-            "action_type": "perceive",
-            "content": {},
-            "emoji": "👀"
-        }
+        return action_result
     
     def _build_context_message(self, perception_data: Dict[str, Any]) -> str:
         """
@@ -189,7 +245,7 @@ Respond naturally as {self.agent.first_name} would, and use the available action
 
 async def call_llm_for_action(agent_state: Dict[str, Any], perception_data: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Replacement function for call_llm_or_ReAct that uses the Kani-based LLM agent.
+    Replacement function for call_llm_agent that uses the Kani-based LLM agent.
     
     Args:
         agent_state (dict): Current agent state
@@ -212,10 +268,10 @@ async def call_llm_for_action(agent_state: Dict[str, Any], perception_data: Dict
 
 
 # Synchronous wrapper for compatibility with existing code
-def call_llm_or_ReAct(agent_state: Dict[str, Any], perception_data: Dict[str, Any]) -> Dict[str, Any]:
+def call_llm_agent(agent_state: Dict[str, Any], perception_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Synchronous wrapper for the LLM action planning function.
-    This replaces the original call_llm_or_ReAct function.
+    This replaces the original call_llm_agent function.
     
     Args:
         agent_state (dict): Current agent state

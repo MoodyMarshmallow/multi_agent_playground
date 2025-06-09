@@ -10,7 +10,7 @@ Before running this script, make sure to:
 """
 
 import asyncio
-from character_agent.llm_agent import LLMAgent, call_llm_or_ReAct
+from backend.character_agent.kani_implementation import LLMAgent, call_llm_or_ReAct
 from character_agent.agent import Agent
 
 
@@ -50,7 +50,7 @@ async def demo_llm_agent():
     try:
         # Test the direct async function
         print("Testing async Character agent function...")
-        from character_agent.llm_agent import call_llm_for_action
+        from backend.character_agent.kani_implementation import call_llm_for_action
         result = await call_llm_for_action(agent_state, perception_data)
         print(f"📤 LLM Action Result:")
         print(f"   Agent ID: {result['agent_id']}")
