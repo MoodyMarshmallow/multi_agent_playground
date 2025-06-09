@@ -2,7 +2,7 @@
 This file implements action functions for character agents.
 """
 
-from typing import Annotated, Dict, Any
+from typing import Annotated, Dict, Any, List
 from kani import ai_function
 import json
 
@@ -18,7 +18,7 @@ class ActionsMixin:
     
     @ai_function()
     def move(self,
-             destination_coordinates: Annotated[tuple[int, int], "The coordinates to move to"],
+             destination_coordinates: Annotated[List[int], "The coordinates to move to as [x, y]"],
              action_emoji: Annotated[str, "The emoji representing the action"]
              ) -> Dict[str, Any]:
         """
@@ -112,7 +112,7 @@ class ActionsMixin:
             "agent_id": getattr(self, 'agent_id', 'unknown_agent'),
             "action_type": "move",
             "content": {
-                "destination_coordinates": list(destination_coordinates)  # Convert tuple to list for JSON
+                "destination_coordinates": destination_coordinates
             },
             "emoji": action_emoji
         }

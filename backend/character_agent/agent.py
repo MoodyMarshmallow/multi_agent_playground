@@ -1,3 +1,20 @@
+"""
+Multi-Agent Playground - Core Agent Implementation
+=================================================
+Core Agent class representing individual agents in the multi-agent simulation.
+
+This module implements the Agent class which encapsulates:
+- Agent identity and personality traits (innate, learned, current state)
+- Planning system (daily schedules, requirements, current actions)
+- Memory system (event storage with timestamp, location, salience)
+- Perception handling (visible objects and agents)
+- State persistence (JSON file-based storage)
+
+Each agent maintains its data in separate JSON files (agent.json, memory.json)
+and provides methods for updating state, adding memories, and serializing
+data for LLM/planner consumption.
+"""
+
 import json
 from pathlib import Path
 from datetime import datetime
@@ -15,7 +32,7 @@ class Agent:
             config_path (str): Path to the agent's directory (should contain agent.json and memory.json).
         """
         self.agent_dir = Path(config_path)
-        with open(self.agent_dir / "agent.json", "r") as file:
+        with open(self.agent_dir / "agent.json", "r", encoding="utf-8") as file:
             data = json.load(file)
 
         # Core state fields
@@ -56,7 +73,7 @@ class Agent:
         # Memory
         mem_path = self.agent_dir / "memory.json"
         if mem_path.exists():
-            with open(mem_path, "r") as f:
+            with open(mem_path, "r", encoding="utf-8") as f:
                 self.memory = json.load(f)
         else:
             self.memory = []
@@ -87,20 +104,20 @@ class Agent:
         if "currently" in data:
             self.currently = data["currently"]
 
-    def add_memory_event(self, timestamp: str, location: str, event: str, poignancy: int):
+    def add_memory_event(self, timestamp: str, location: str, event: str, salience: int):
         """
         Adds a new event to the agent's memory.
         Args:
             timestamp (str): ISO8601 time.
             location (str): Location string.
             event (str): Event description.
-            poignancy (int): Emotional significance.
+            salience (int): Emotional significance.
         """
         self.memory.append({
             "timestamp": timestamp,
             "location": location,
             "event": event,
-            "poignancy": poignancy
+            "salience": salience
         })
 
     def save(self):
@@ -112,14 +129,14 @@ class Agent:
         data.pop("agent_dir", None)      # Do not persist the path itself
         data.pop("visible_objects", None)
         data.pop("visible_agents", None)
-        with open(self.agent_dir / "agent.json", "w") as f:
+        with open(self.agent_dir / "agent.json", "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, default=str)
 
     def save_memory(self):
         """
         Saves the agent's memory to memory.json.
         """
-        with open(self.agent_dir / "memory.json", "w") as f:
+        with open(self.agent_dir / "memory.json", "w", encoding="utf-8") as f:
             json.dump(self.memory, f, indent=2, default=str)
 
     def to_state_dict(self):

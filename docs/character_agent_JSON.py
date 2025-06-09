@@ -258,7 +258,7 @@ memory_structure_example = [
         "timestamp": "2023-10-01T12:00:00Z",          # str: ISO 8601 format
         "location": "dolores double studio:double studio:bedroom 1",  # str: Location address
         "event": "wakes up and starts her morning routine",           # str: Event description  
-        "poignancy": 5  # int: Emotional significance (0=low, 10=high)
+        "salience": 5  # int: Emotional significance (0=low, 10=high)
     }
 ]
 
