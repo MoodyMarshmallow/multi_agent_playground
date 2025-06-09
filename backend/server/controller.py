@@ -13,9 +13,9 @@ planning, and state updates for all agents in the simulation.
 """
 
 from backend.character_agent.agent import Agent
-from character_agent.actions import ActionsMixin
+from backend.character_agent.actions import ActionsMixin
 from backend.character_agent.kani_implementation import call_llm_agent
-from config.schema import AgentActionInput, AgentActionOutput, AgentPerception
+from backend.config.schema import AgentActionInput, AgentActionOutput, AgentPerception
 
 def plan_next_action(agent_id: str, perception: AgentPerception) -> AgentActionOutput:
     """
