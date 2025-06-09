@@ -19,8 +19,7 @@ backend_dir = Path(__file__).parent.parent
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
-from kani_implementation import LLMAgent, call_llm_agent
-from agent import Agent
+from kani_implementation import LLMAgent
 from config.llm_config import LLMConfig
 
 
@@ -89,8 +88,7 @@ async def demo_llm_agent():
     try:
         # Test the direct async function
         print("Testing async Character agent function...")
-        from kani_implementation import call_llm_for_action
-        result = await call_llm_for_action(agent_state, perception_data)
+        result = await LLMAgent.call_llm_for_action(agent_state, perception_data)
         print(f"📤 LLM Action Result:")
         print(f"   Agent ID: {result['agent_id']}")
         print(f"   Action Type: {result['action_type']}")
@@ -135,7 +133,7 @@ def demo_sync_wrapper():
     
     try:
         # Test the synchronous wrapper (this is what the controller uses)
-        result = call_llm_agent(agent_state, perception_data)
+        result = LLMAgent.call_llm_agent(agent_state, perception_data)
         print(f"📤 Sync Wrapper Result:")
         print(f"   Agent ID: {result['agent_id']}")
         print(f"   Action Type: {result['action_type']}")

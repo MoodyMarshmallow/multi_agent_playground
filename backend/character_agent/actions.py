@@ -234,6 +234,7 @@ class ActionsMixin:
 
     @ai_function()
     def perceive(self,
+                 content: Annotated[str, "What you observe, notice, or want to communicate about your environment and surroundings"],
                  action_emoji: Annotated[str, "The emoji representing the action"]
                  ) -> Dict[str, Any]:
         """
@@ -243,11 +244,15 @@ class ActionsMixin:
         Focus on HOW you perceive rather than just WHAT you perceive. The manner of perception is everything - 
         it reveals your character's awareness style, attention patterns, emotional state, and cognitive approach.
         
+        Use the content field to describe what you observe, notice, or want to communicate about your surroundings.
+        This enables discourse functionality - you can share your observations, thoughts, or reactions to the environment.
+        
         PERCEPTION PRINCIPLES:
         - This action represents actively focusing your senses and attention
         - Different perception styles reveal different aspects of the environment
         - Your perception method affects what details you might notice or miss
         - Perception is an active choice that consumes mental energy and time
+        - Use content to communicate your observations or thoughts to others
         
         EMOJI SELECTION FOR PERCEPTION MANNER:
         The emoji is the soul of your observation. Choose it to paint a vivid picture of HOW your character takes in information:
@@ -316,13 +321,13 @@ class ActionsMixin:
         - 🤐 Suppressed awareness - trying not to see certain things
         
         USAGE EXAMPLES:
-        - perceive("🔍") - Methodically examine surroundings like detective
-        - perceive("💖") - Feel the emotional atmosphere of the space
-        - perceive("👁️") - Stay sharply vigilant for any threats or changes
-        - perceive("🤔") - Puzzle over confusing or mysterious elements
-        - perceive("🌿") - Attune to natural rhythms and environmental cues
-        - perceive("👥") - Watch social dynamics and people's interactions
-        - perceive("😴") - Struggle to maintain focus while tired
+        - perceive("I notice the computer is off and there's a chair nearby. Perfect setup for starting work.", "🔍") 
+        - perceive("The room feels tense and heavy. Something's not right here.", "💖")
+        - perceive("Scanning for exits and potential threats. All clear for now.", "👁️")
+        - perceive("This place is confusing... where did everyone go?", "🤔")
+        - perceive("The morning light streaming through makes everything peaceful.", "🌿")
+        - perceive("Bob seems distracted today. Wonder what's bothering him.", "👥")
+        - perceive("Too tired to focus properly... everything looks blurry.", "😴")
         
         BEST PRACTICES:
         - Think like an actor: HOW would your character approach observation?
@@ -332,6 +337,7 @@ class ActionsMixin:
         - Different perception styles notice different types of information
         - Use perception as character development and world-building
         - Show your character's relationship with their environment
+        - Use content to share observations that others can read and respond to
         
         Returns JSON action for frontend communication.
         """
@@ -339,8 +345,7 @@ class ActionsMixin:
         action_json = {
             "agent_id": getattr(self, 'agent_id', 'unknown_agent'),
             "action_type": "perceive",
-            "content": {
-            },
+            "content": content,
             "emoji": action_emoji
         }
         

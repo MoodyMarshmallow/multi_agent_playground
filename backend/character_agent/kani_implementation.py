@@ -12,17 +12,19 @@ This module implements the LLMAgent class which combines:
 import asyncio
 import json
 import os
+import ssl
 import sys
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List, Union, AsyncGenerator
 from kani import Kani
 from kani.engines.openai import OpenAIEngine
+from kani.models import ChatMessage
 
 from actions import ActionsMixin
 from agent import Agent
 
 # Add the backend directory to Python path for imports
-backend_dir = Path(__file__).parent.parent
+backend_dir: Path = Path(__file__).parent.parent
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
@@ -34,7 +36,10 @@ class LLMAgent(Kani, ActionsMixin):
     Character agent for the Multi-Agent Playground.
     """
     
-    def __init__(self, agent: Agent, api_key: Optional[str] = None):
+    agent_id: str
+    agent: Agent
+    
+    def __init__(self, agent: Agent, api_key: Optional[str] = None) -> None:
         """
         Initialize the character agent with Kani engine and agent state.
         
@@ -53,7 +58,7 @@ class LLMAgent(Kani, ActionsMixin):
         # Initialize Kani engine with GPT-4o
         # Initialize OpenAI engine with proper SSL handling
         try:
-            engine = OpenAIEngine(
+            engine: OpenAIEngine = OpenAIEngine(
                 api_key, 
                 model=LLMConfig.OPENAI_MODEL,
                 temperature=LLMConfig.OPENAI_TEMPERATURE,
@@ -67,12 +72,12 @@ class LLMAgent(Kani, ActionsMixin):
                 import certifi
                 
                 # Create SSL context with proper certificate verification
-                ssl_context = ssl.create_default_context(cafile=certifi.where())
+                ssl_context: ssl.SSLContext = ssl.create_default_context(cafile=certifi.where())
                 ssl_context.check_hostname = True
                 ssl_context.verify_mode = ssl.CERT_REQUIRED
                 
                 # Create HTTP client with proper SSL configuration
-                http_client = httpx.AsyncClient(
+                http_client: httpx.AsyncClient = httpx.AsyncClient(
                     verify=ssl_context,
                     timeout=30.0,
                     follow_redirects=True
@@ -80,7 +85,7 @@ class LLMAgent(Kani, ActionsMixin):
                 
                 from openai import AsyncOpenAI
                 try:
-                    openai_client = AsyncOpenAI(
+                    openai_client: AsyncOpenAI = AsyncOpenAI(
                         api_key=api_key,
                         http_client=http_client
                     )
@@ -103,7 +108,7 @@ class LLMAgent(Kani, ActionsMixin):
                 raise
         
         # Initialize Kani with system prompt
-        system_prompt = self._build_system_prompt()
+        system_prompt: str = self._build_system_prompt()
         super().__init__(engine, system_prompt=system_prompt)
         
         # Initialize ActionsMixin
@@ -116,7 +121,7 @@ class LLMAgent(Kani, ActionsMixin):
         Returns:
             str: The system prompt for the LLM
         """
-        agent_info = f"""
+        agent_info: str = f"""
 You are {self.agent.name}, a character in a multi-agent simulation.
 
 PERSONALITY & BACKGROUND:
@@ -139,7 +144,7 @@ CAPABILITIES:
 You have three main actions available:
 1. move(destination_coordinates, action_emoji) - Move to specific coordinates
 2. interact(object, new_state, action_emoji) - Interact with objects to change their state
-3. perceive(action_emoji) - Perceive objects and agents in your visible area
+3. perceive(content, action_emoji) - Perceive objects and agents in your visible area
 
 BEHAVIOR GUIDELINES:
 - Always stay in character based on your personality traits
@@ -148,6 +153,9 @@ BEHAVIOR GUIDELINES:
 - Use appropriate emojis to represent your actions
 - Make decisions based on your current state and visible environment
 - Keep actions realistic and contextually appropriate
+
+JSON FORMATTING GUIDELINES:
+- Always use double quotes (\\") to label strings in the files.
 
 When deciding on actions:
 1. Consider your current needs and daily requirements
@@ -174,17 +182,17 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         self.agent.update_perception(perception_data)
         
         # Build context message for the LLM
-        context_message = self._build_context_message(perception_data)
+        context_message: str = self._build_context_message(perception_data)
         
         # Get LLM response with function calling - iterate through the async generator
-        action_result = None
+        action_result: Optional[Dict[str, Any]] = None
+        message: ChatMessage
         async for message in self.full_round(context_message):
             # Check if this is a function result message
             if message.role.value == 'function' and message.content:
-                # Try to parse the function result as JSON
+                # Try to parse the function result as Dict.
                 try:
-                    import json
-                    parsed_result = json.loads(message.content)
+                    parsed_result: Dict[str, Any] = eval(message.content)
                     # Check if this looks like one of our action results
                     if isinstance(parsed_result, dict) and 'action_type' in parsed_result:
                         action_result = parsed_result
@@ -195,7 +203,7 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         
         # If no action was determined, default to perceive
         if not action_result:
-            action_result = {
+            action_result: Dict[str, Any] = {
                 "agent_id": self.agent_id,
                 "action_type": "perceive",
                 "content": {},
@@ -215,25 +223,27 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         Returns:
             str: Context message for the LLM
         """
-        message_parts = [
+        message_parts: List[str] = [
             f"Current time: {self.agent.curr_time}",
             f"Your current location: {self.agent.curr_tile}",
             f"You are currently: {self.agent.currently}",
         ]
         
         # Add visible objects information
-        visible_objects = perception_data.get("visible_objects", {})
+        visible_objects: Dict[str, Any] = perception_data.get("visible_objects", {})
         if visible_objects:
             message_parts.append("\nVisible objects around you:")
+            obj_name: str
+            obj_info: Dict[str, Any]
             for obj_name, obj_info in visible_objects.items():
-                state = obj_info.get("state", "unknown")
-                location = obj_info.get("location", "unknown")
+                state: str = obj_info.get("state", "unknown")
+                location: str = obj_info.get("location", "unknown")
                 message_parts.append(f"- {obj_name}: {state} (at {location})")
         else:
             message_parts.append("\nNo objects are currently visible.")
         
         # Add visible agents information
-        visible_agents = perception_data.get("visible_agents", [])
+        visible_agents: List[str] = perception_data.get("visible_agents", [])
         if visible_agents:
             message_parts.append(f"\nOther agents nearby: {', '.join(visible_agents)}")
         else:
@@ -241,8 +251,9 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         
         # Add recent memories if available
         if self.agent.memory:
-            recent_memories = self.agent.memory[-3:]  # Last 3 memories
+            recent_memories: List[Dict[str, Any]] = self.agent.memory[-3:]  # Last 3 memories
             message_parts.append("\nRecent memories:")
+            memory: Dict[str, Any]
             for memory in recent_memories:
                 message_parts.append(f"- {memory['timestamp']}: {memory['event']} (at {memory['location']})")
         
@@ -251,6 +262,7 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         return "\n".join(message_parts)
 
 
+    @staticmethod
     async def call_llm_for_action(agent_state: Dict[str, Any], perception_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Replacement function for call_llm_agent that uses the Kani-based LLM agent.
@@ -263,19 +275,20 @@ Respond naturally as {self.agent.first_name} would, and use the available action
             dict: Action JSON in the format expected by the frontend
         """
         # Create Agent instance from state
-        agent_dir = f"data/agents/{agent_state['agent_id']}"
-        agent = Agent(agent_dir)
+        agent_dir: str = f"data/agents/{agent_state['agent_id']}"
+        agent: Agent = Agent(agent_dir)
         
         # Create LLM agent
-        llm_agent = LLMAgent(agent)
+        llm_agent: LLMAgent = LLMAgent(agent)
         
         # Plan next action
-        action_result = await llm_agent.plan_next_action(perception_data)
+        action_result: Dict[str, Any] = await llm_agent.plan_next_action(perception_data)
         
         return action_result
 
 
     # Synchronous wrapper for compatibility with existing code
+    @staticmethod
     def call_llm_agent(agent_state: Dict[str, Any], perception_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Synchronous wrapper for the LLM action planning function.

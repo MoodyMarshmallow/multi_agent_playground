@@ -1,7 +1,7 @@
 import unittest
 import json
 
-from memory.spatial import SpatialMemory
+from spatial import SpatialMemory
 
 
 class SpatialTestCase(unittest.TestCase):
