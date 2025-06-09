@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 from kani import Kani
 from kani.engines.openai import OpenAIEngine
+
 from actions import ActionsMixin
 from agent import Agent
 
@@ -50,11 +51,7 @@ class LLMAgent(Kani, ActionsMixin):
             api_key = LLMConfig.get_openai_api_key()
         
         # Initialize Kani engine with GPT-4o
-        # Handle SSL issues in Windows conda environments 
-
-        # ==================== WARNING ==========================
-        # (TODO: THIS IS A WORKAROUND AND MAY CAUSE SECURITY ISSUES)
-        # =======================================================
+        # Initialize OpenAI engine with proper SSL handling
         try:
             engine = OpenAIEngine(
                 api_key, 
@@ -64,35 +61,44 @@ class LLMAgent(Kani, ActionsMixin):
             )
         except OSError as e:
             if "Invalid argument" in str(e) or "SSL" in str(e):
-                # Try with custom HTTP client that handles SSL issues
+                # Handle SSL issues securely by updating certificate bundle
                 import httpx
                 import ssl
+                import certifi
                 
-                # Create a custom SSL context that's more permissive
-                ssl_context = ssl.create_default_context()
-                ssl_context.check_hostname = False
-                ssl_context.verify_mode = ssl.CERT_NONE
+                # Create SSL context with proper certificate verification
+                ssl_context = ssl.create_default_context(cafile=certifi.where())
+                ssl_context.check_hostname = True
+                ssl_context.verify_mode = ssl.CERT_REQUIRED
                 
-                # Create custom HTTP client
+                # Create HTTP client with proper SSL configuration
                 http_client = httpx.AsyncClient(
-                    verify=False,  # Disable SSL verification for testing
-                    timeout=30.0
+                    verify=ssl_context,
+                    timeout=30.0,
+                    follow_redirects=True
                 )
                 
                 from openai import AsyncOpenAI
-                openai_client = AsyncOpenAI(
-                    api_key=api_key,
-                    http_client=http_client
-                )
-                
-                # When providing a client, don't pass api_key to OpenAIEngine
-                engine = OpenAIEngine(
-                    model=LLMConfig.OPENAI_MODEL,
-                    temperature=LLMConfig.OPENAI_TEMPERATURE,
-                    max_tokens=LLMConfig.OPENAI_MAX_TOKENS,
-                    client=openai_client
-                )
-                print("Warning: SSL verification disabled for testing purposes")
+                try:
+                    openai_client = AsyncOpenAI(
+                        api_key=api_key,
+                        http_client=http_client
+                    )
+                    
+                    engine = OpenAIEngine(
+                        model=LLMConfig.OPENAI_MODEL,
+                        temperature=LLMConfig.OPENAI_TEMPERATURE,
+                        max_tokens=LLMConfig.OPENAI_MAX_TOKENS,
+                        client=openai_client
+                    )
+                    print("Using custom SSL configuration with certificate verification")
+                except Exception as ssl_error:
+                    # If SSL still fails, provide clear error message instead of bypassing security
+                    raise RuntimeError(
+                        f"SSL configuration failed: {ssl_error}. "
+                        "Please update your SSL certificates or check your network configuration. "
+                        "Consider updating certifi package: pip install --upgrade certifi"
+                    ) from ssl_error
             else:
                 raise
         
@@ -153,6 +159,7 @@ Respond naturally as {self.agent.first_name} would, and use the available action
 """
         return agent_info
     
+    
     async def plan_next_action(self, perception_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Plan the next action based on current perception and agent state.
@@ -197,6 +204,7 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         
         return action_result
     
+
     def _build_context_message(self, perception_data: Dict[str, Any]) -> str:
         """
         Build a context message describing the current situation to the LLM.
@@ -243,41 +251,41 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         return "\n".join(message_parts)
 
 
-async def call_llm_for_action(agent_state: Dict[str, Any], perception_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Replacement function for call_llm_agent that uses the Kani-based LLM agent.
-    
-    Args:
-        agent_state (dict): Current agent state
-        perception_data (dict): Current perception data
+    async def call_llm_for_action(agent_state: Dict[str, Any], perception_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Replacement function for call_llm_agent that uses the Kani-based LLM agent.
         
-    Returns:
-        dict: Action JSON in the format expected by the frontend
-    """
-    # Create Agent instance from state
-    agent_dir = f"data/agents/{agent_state['agent_id']}"
-    agent = Agent(agent_dir)
-    
-    # Create LLM agent
-    llm_agent = LLMAgent(agent)
-    
-    # Plan next action
-    action_result = await llm_agent.plan_next_action(perception_data)
-    
-    return action_result
+        Args:
+            agent_state (dict): Current agent state
+            perception_data (dict): Current perception data
+            
+        Returns:
+            dict: Action JSON in the format expected by the frontend
+        """
+        # Create Agent instance from state
+        agent_dir = f"data/agents/{agent_state['agent_id']}"
+        agent = Agent(agent_dir)
+        
+        # Create LLM agent
+        llm_agent = LLMAgent(agent)
+        
+        # Plan next action
+        action_result = await llm_agent.plan_next_action(perception_data)
+        
+        return action_result
 
 
-# Synchronous wrapper for compatibility with existing code
-def call_llm_agent(agent_state: Dict[str, Any], perception_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Synchronous wrapper for the LLM action planning function.
-    This replaces the original call_llm_agent function.
-    
-    Args:
-        agent_state (dict): Current agent state
-        perception_data (dict): Current perception data
+    # Synchronous wrapper for compatibility with existing code
+    def call_llm_agent(agent_state: Dict[str, Any], perception_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Synchronous wrapper for the LLM action planning function.
+        This replaces the original call_llm_agent function.
         
-    Returns:
-        dict: Action JSON in the format expected by the frontend
-    """
-    return asyncio.run(call_llm_for_action(agent_state, perception_data)) 
+        Args:
+            agent_state (dict): Current agent state
+            perception_data (dict): Current perception data
+            
+        Returns:
+            dict: Action JSON in the format expected by the frontend
+        """
+        return asyncio.run(LLMAgent.call_llm_for_action(agent_state, perception_data)) 
