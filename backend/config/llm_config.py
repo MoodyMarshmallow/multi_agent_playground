@@ -5,7 +5,19 @@ Configuration settings for LLM integration including API keys and model paramete
 """
 
 import os
+from pathlib import Path
 from typing import Optional
+
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    # Look for .env file in the project root (two levels up from this file)
+    env_path = Path(__file__).parent.parent.parent / '.env'
+    if env_path.exists():
+        load_dotenv(env_path)
+except ImportError:
+    # python-dotenv not installed, skip loading .env file
+    pass
 
 
 class LLMConfig:

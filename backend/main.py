@@ -52,7 +52,7 @@ def post_confirm_action(agent_msg: AgentActionInput):
 
 @app.get("/agent_state/", response_model=AgentActionOutput)
 def get_agent_state(agent_id: str):
-    from character_agents.agent import Agent
+    from character_agent.agent import Agent
     agent = Agent(agent_id)
     # Provide current state (may expand as needed)
     return AgentActionOutput(

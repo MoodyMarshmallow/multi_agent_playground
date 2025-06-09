@@ -32,10 +32,10 @@ This directory contains the LLM-powered agent implementation using the Kani libr
 
 ### Basic Usage (Synchronous)
 
-The `call_llm_or_ReAct` function is the main entry point, replacing the previous placeholder function:
+The `call_llm_agent` function is the main entry point, replacing the previous placeholder function:
 
 ```python
-from character_agents.llm_agent import call_llm_or_ReAct
+from character_agents.llm_agent import call_llm_agent
 
 # Agent state from your agent system
 agent_state = {
@@ -59,7 +59,7 @@ perception_data = {
 }
 
 # Get LLM-planned action
-action_json = call_llm_or_ReAct(agent_state, perception_data)
+action_json = call_llm_agent(agent_state, perception_data)
 ```
 
 ### Advanced Usage (Asynchronous)
@@ -156,7 +156,7 @@ python example_llm_usage.py
 
 ## Integration
 
-The LLM agent is already integrated into the controller system. The `server/controller.py` file imports and uses `call_llm_or_ReAct` to replace the previous placeholder function.
+The LLM agent is already integrated into the controller system. The `server/controller.py` file imports and uses `call_llm_agent` to replace the previous placeholder function.
 
 ## Troubleshooting
 
