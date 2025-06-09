@@ -114,17 +114,18 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 	# Check which endpoint responded based on the URL
 	var url = String(headers[headers.find("X-Request-URL")] if headers.find("X-Request-URL") >= 0 else "")
 	
-	if "/agent_act/plan" in url:
+	if current_request_type == "plan":
 		_handle_plan_response(json)
-	elif "/agent_act/confirm" in url:
+	elif current_request_type == "confirm":
 		_handle_confirm_response(json)
 	else:
+		print("ELSINGALL")
 		_handle_plan_response(json)
 
 func _handle_plan_response(response: Dictionary) -> void:
 	is_action_in_progress = true
 	current_action = response
-	
+	print(response)
 	match response.action_type:
 		"move":
 			print("action type move")

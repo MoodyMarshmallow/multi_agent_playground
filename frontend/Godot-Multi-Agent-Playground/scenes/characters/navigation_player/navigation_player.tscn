@@ -426,4 +426,3 @@ animated_sprite_2d = NodePath("../../AnimatedSprite2D")
 
 [node name="http_controller" type="Node" parent="."]
 script = ExtResource("7_gk2d1")
-default_navigation_x = 10.0

@@ -20,8 +20,8 @@ from kani import Kani
 from kani.engines.openai import OpenAIEngine
 from kani.models import ChatMessage
 
-from actions import ActionsMixin
-from agent import Agent
+from backend.character_agent.actions import ActionsMixin
+from backend.character_agent.agent import Agent
 
 # Add the backend directory to Python path for imports
 backend_dir: Path = Path(__file__).parent.parent

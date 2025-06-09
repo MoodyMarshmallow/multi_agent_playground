@@ -49,4 +49,11 @@ class AgentActionOutput(BaseModel):
     emoji: str                          # Visual representation (e.g., '🚶', '💡', '👀')
     current_tile: Optional[List[int]] = None     # (Optional) Updated [x, y] tile position
     current_location: Optional[str] = None       # (Optional) Updated semantic location (e.g., 'kitchen')
+    
+    
+# -----------------------------------------------------------------------------
+# simple response message
+# -----------------------------------------------------------------------------
+class StatusMsg(BaseModel):
+    status: str
 
