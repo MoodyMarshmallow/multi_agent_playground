@@ -23,7 +23,7 @@ class AgentPerception(BaseModel):
     self_state: Optional[str] = None                        # Description of agent's current state
     visible_objects: Optional[Dict[str, Dict[str, Any]]] = None  # Objects visible and their states
     visible_agents: Optional[List[str]] = None              # Other agents currently visible
-    current_time: Optional[str] = None                      # Perceived world time (ISO format)
+    timestamp: Optional[str] = None                      # Perceived world time (ISO format)
 
 # -----------------------------------------------------------------------------
 # AgentActionInput (Frontend → Backend)

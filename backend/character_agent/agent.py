@@ -99,10 +99,10 @@ class Agent:
         Args:
             data (dict): New values for agent state.
         """
-        if "curr_tile" in data:
-            self.curr_tile = data["curr_tile"]
+        if "position" in data:
+            self.curr_tile = data["position"]
         if "curr_time" in data:
-            self.curr_time = data["curr_time"]
+            self.timestamp = data["curr_time"]
         if "currently" in data:
             self.currently = data["currently"]
 
