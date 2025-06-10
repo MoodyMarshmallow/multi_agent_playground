@@ -20,8 +20,8 @@ from kani import Kani
 from kani.engines.openai import OpenAIEngine
 from kani.models import ChatMessage
 
-from actions import ActionsMixin
-from agent import Agent
+from .actions import ActionsMixin
+from .agent import Agent
 
 # Add the backend directory to Python path for imports
 backend_dir: Path = Path(__file__).parent.parent
@@ -256,7 +256,7 @@ Respond naturally as {self.agent.first_name} would, and use the available action
                 location: str = obj_info.get("location", "unknown")
                 message_parts.append(f"- {obj_name}: {state} (at {location})")
             message_parts.append(
-            "\nConsider moving toward or interacting with one of these objects, especially if it helps you achieve your daily requirements or current goals."
+                "\nConsider moving toward or interacting with one of these objects, especially if it helps you achieve your daily requirements or current goals."
             )
         else:
             message_parts.append("\nNo objects are currently visible.Consider moving to a new area to explore your environment mostly in the house if you are in the house.")

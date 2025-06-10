@@ -22,5 +22,23 @@
     "location": "downtown studio:main:kitchen",
     "event": "makes lunch",
     "salience": 3
+  },
+  {
+    "timestamp": "2025-06-10T13:16:36",
+    "location": "bathroom",
+    "event": "I was walk. I could see: sink in bathroom, toilet in bathroom, towel in bathroom",
+    "salience": 1
+  },
+  {
+    "timestamp": "2025-06-10T13:17:46",
+    "location": "bedroom",
+    "event": "I was walk. I could see: books_on_floor in bedroom, globe in bedroom, right_bookshelf in bedroom",
+    "salience": 1
+  },
+  {
+    "timestamp": "2025-06-10T13:17:54",
+    "location": "bedroom",
+    "event": "I was walk. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
+    "salience": 1
   }
 ]
