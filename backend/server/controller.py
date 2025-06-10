@@ -50,7 +50,12 @@ def confirm_action_and_update(agent_msg: AgentActionInput) -> AgentActionOutput:
     agent = Agent(agent_dir)
     perception = agent_msg.perception.model_dump()
     agent.update_perception(perception)
-    agent.update_agent_data(agent_msg.content)
+    agent_data = agent_msg.content.copy()
+    agent_data.update({
+        "timestamp": agent_msg.timestamp,
+        "current_tile": agent_msg.perception.current_tile,
+    })
+    agent.update_agent_data(agent_data)
 
     
     # Get location based on visible objects' rooms
