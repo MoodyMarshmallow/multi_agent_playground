@@ -14,7 +14,7 @@ planning, and state updates for all agents in the simulation.
 
 from backend.character_agent.agent import Agent
 from backend.character_agent.actions import ActionsMixin
-from backend.character_agent.kani_implementation import call_llm_agent
+from backend.character_agent.kani_implementation import LLMAgent
 from backend.config.schema import AgentActionInput, AgentActionOutput, AgentPerception
 
 def plan_next_action(agent_id: str, perception: AgentPerception) -> AgentActionOutput:
@@ -28,7 +28,7 @@ def plan_next_action(agent_id: str, perception: AgentPerception) -> AgentActionO
     agent_state = agent.to_state_dict()
 
     # LLM/planner call (replace with real LLM logic to generate a json file that will be sent from backend to frontend!)
-    next_action = call_llm_agent(agent_state, perception.model_dump())
+    next_action = LLMAgent.call_llm_agent(agent_state, perception.model_dump())
 
     return AgentActionOutput(
         agent_id=next_action["agent_id"],

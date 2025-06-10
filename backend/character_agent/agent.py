@@ -32,8 +32,10 @@ class Agent:
             config_path (str): Path to the agent's directory (should contain agent.json and memory.json).
         """
         self.agent_dir = Path(config_path)
-        with open(self.agent_dir / "memory.json", "r", encoding="utf-8") as file:
-            data: Dict[str, Any] = json.load(file)[0]
+        
+        # Load agent configuration from agent.json
+        with open(self.agent_dir / "agent.json", "r", encoding="utf-8") as file:
+            data: Dict[str, Any] = json.load(file)
 
         # Core state fields
         self.agent_id = data.get("agent_id")
@@ -70,7 +72,7 @@ class Agent:
         self.act_path_set = data.get("act_path_set", False)
         self.planned_path = data.get("planned_path", [])
 
-        # Memory
+        # Load memory from memory.json
         mem_path = self.agent_dir / "memory.json"
         if mem_path.exists():
             with open(mem_path, "r", encoding="utf-8") as f:
@@ -129,7 +131,7 @@ class Agent:
         data.pop("agent_dir", None)      # Do not persist the path itself
         data.pop("visible_objects", None)
         data.pop("visible_agents", None)
-        with open(self.agent_dir / "memory.json", "w", encoding="utf-8") as f:
+        with open(self.agent_dir / "agent.json", "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, default=str)
 
     def save_memory(self):
