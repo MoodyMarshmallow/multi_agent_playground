@@ -277,7 +277,7 @@ Respond naturally as {self.agent.first_name} would, and use the available action
                 message_parts.append(f"- {memory['timestamp']}: {memory['event']} (at {memory['location']})")
         
         message_parts.append(
-        "\nWhat would you like to do next? Most of the time, you should choose to move or interact with objects or agents unless you have a specific reason to perceive again. Only perceive again if you have new information to check."
+            "\nWhat would you like to do next? Most of the time, you should choose to move or interact with objects or agents unless you have a specific reason to perceive again. Only perceive again if you have new information to check."
         )
         
         return "\n".join(message_parts)
