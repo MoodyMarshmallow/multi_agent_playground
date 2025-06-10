@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dylsarm37j0p5"
-path="res://.godot/imported/sprout_lands_defautlt_palette_snip.PNG-f2a86d7e5bbbdd478feac3e5b01cd9a5.ctex"
+path="res://.godot/imported/sprout_lands_defautlt_palette_snip.PNG-8de7a44f2d221e68100529d8a7fbbdd5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/sprout_lands_color_pallet/sprout_lands_defautlt_palette_snip.PNG"
-dest_files=["res://.godot/imported/sprout_lands_defautlt_palette_snip.PNG-f2a86d7e5bbbdd478feac3e5b01cd9a5.ctex"]
+source_file="res://assets 2/game/sprout_lands_color_pallet/sprout_lands_defautlt_palette_snip.PNG"
+dest_files=["res://.godot/imported/sprout_lands_defautlt_palette_snip.PNG-8de7a44f2d221e68100529d8a7fbbdd5.ctex"]
 
 [params]
 

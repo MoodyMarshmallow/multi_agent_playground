@@ -1,8 +1,8 @@
 [gd_resource type="TileSet" load_steps=12 format=3 uid="uid://clqkkmcjq30g"]
 
-[ext_resource type="Texture2D" uid="uid://f17ljwao0slp" path="res://assets/game/tilesets/water.png" id="1_kqi08"]
-[ext_resource type="Texture2D" uid="uid://d4dfviisbs6ra" path="res://assets/game/tilesets/grass.png" id="2_cas1q"]
-[ext_resource type="Texture2D" uid="uid://cdh3i6py4uqjv" path="res://assets/game/tilesets/tiled_dirt_wide.png" id="3_eopd4"]
+[ext_resource type="Texture2D" uid="uid://f17ljwao0slp" path="res://assets 2/game/tilesets/water.png" id="1_kqi08"]
+[ext_resource type="Texture2D" uid="uid://d4dfviisbs6ra" path="res://assets 2/game/tilesets/grass.png" id="2_cas1q"]
+[ext_resource type="Texture2D" uid="uid://cdh3i6py4uqjv" path="res://assets 2/game/tilesets/tiled_dirt_wide.png" id="3_eopd4"]
 [ext_resource type="Texture2D" uid="uid://cbwmtk4qhqy45" path="res://assets/game/objects/basic_grass_biom_things.png" id="4_toun0"]
 [ext_resource type="PackedScene" uid="uid://c4k1uqhj4v47p" path="res://scenes/houses/large_house.tscn" id="5_bkrag"]
 [ext_resource type="PackedScene" uid="uid://fymdmmtewgdu" path="res://scenes/houses/larger_house.tscn" id="6_wqwix"]

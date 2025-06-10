@@ -1,13 +1,13 @@
 [gd_resource type="TileSet" load_steps=17 format=3 uid="uid://bnikvukiumm85"]
 
-[ext_resource type="Texture2D" uid="uid://b40gtkuslmkgh" path="res://assets/game/tilesets/wooden_house_walls.png" id="1_ffjub"]
-[ext_resource type="Texture2D" uid="uid://v86an1tb5ju8" path="res://assets/game/objects/basic_furniture.png" id="2_u8nh3"]
+[ext_resource type="Texture2D" uid="uid://b40gtkuslmkgh" path="res://assets 2/game/tilesets/wooden_house_walls.png" id="1_ffjub"]
+[ext_resource type="Texture2D" uid="uid://d1l6e2rc0d615" path="res://assets/game/objects/basic_furniture.png" id="2_u8nh3"]
 [ext_resource type="PackedScene" uid="uid://dh4uhlpchv66g" path="res://scenes/houses/door.tscn" id="3_c7qxc"]
-[ext_resource type="Texture2D" uid="uid://1p58jprkw3ui" path="res://assets/game/objects/more_house_assets/bathroom_furniture.png" id="4_7frhq"]
-[ext_resource type="Texture2D" uid="uid://ck3m7ooty1i1" path="res://assets/game/objects/more_house_assets/more_basic_furnitures.png" id="5_8276g"]
-[ext_resource type="Texture2D" uid="uid://c4kpmhm61ab03" path="res://assets/game/objects/more_house_assets/walls.png" id="5_pgvf3"]
-[ext_resource type="Texture2D" uid="uid://dug7t0go4cc63" path="res://assets/game/objects/more_house_assets/most_basic_furniture.png" id="6_a0m5c"]
-[ext_resource type="Texture2D" uid="uid://lib2y0nk17g1" path="res://assets/game/objects/more_house_assets/bedroom_furniture.png" id="8_00iud"]
+[ext_resource type="Texture2D" uid="uid://1p58jprkw3ui" path="res://assets 2/game/objects/more_house_assets/bathroom_furniture.png" id="4_7frhq"]
+[ext_resource type="Texture2D" uid="uid://ck3m7ooty1i1" path="res://assets 2/game/objects/more_house_assets/more_basic_furnitures.png" id="5_8276g"]
+[ext_resource type="Texture2D" uid="uid://c4kpmhm61ab03" path="res://assets 2/game/objects/more_house_assets/walls.png" id="5_pgvf3"]
+[ext_resource type="Texture2D" uid="uid://dug7t0go4cc63" path="res://assets 2/game/objects/more_house_assets/most_basic_furniture.png" id="6_a0m5c"]
+[ext_resource type="Texture2D" uid="uid://lib2y0nk17g1" path="res://assets 2/game/objects/more_house_assets/bedroom_furniture.png" id="8_00iud"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_m24i5"]
 texture = ExtResource("1_ffjub")

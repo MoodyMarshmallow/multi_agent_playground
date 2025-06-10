@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c4kpmhm61ab03"
-path="res://.godot/imported/walls.png-6dccc0343b109ac7e08190e846de9737.ctex"
+path="res://.godot/imported/walls.png-5cf2061200ef4c037ca39cfd4f3e3c26.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/objects/more_house_assets/walls.png"
-dest_files=["res://.godot/imported/walls.png-6dccc0343b109ac7e08190e846de9737.ctex"]
+source_file="res://assets 2/game/objects/more_house_assets/walls.png"
+dest_files=["res://.godot/imported/walls.png-5cf2061200ef4c037ca39cfd4f3e3c26.ctex"]
 
 [params]
 

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://lib2y0nk17g1"
-path="res://.godot/imported/bedroom_furniture.png-2fdd510d253381a034b239eaaed4e2a0.ctex"
+path="res://.godot/imported/bedroom_furniture.png-7d14c5a927875f2d0e8b782caa16cd18.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/objects/more_house_assets/bedroom_furniture.png"
-dest_files=["res://.godot/imported/bedroom_furniture.png-2fdd510d253381a034b239eaaed4e2a0.ctex"]
+source_file="res://assets 2/game/objects/more_house_assets/bedroom_furniture.png"
+dest_files=["res://.godot/imported/bedroom_furniture.png-7d14c5a927875f2d0e8b782caa16cd18.ctex"]
 
 [params]
 

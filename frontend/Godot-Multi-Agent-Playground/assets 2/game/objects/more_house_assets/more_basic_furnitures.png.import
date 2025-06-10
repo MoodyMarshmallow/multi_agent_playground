@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ck3m7ooty1i1"
-path="res://.godot/imported/more_basic_furnitures.png-5bcd2296931497decd106d11f92f3372.ctex"
+path="res://.godot/imported/more_basic_furnitures.png-09e669e911a310373754ae0a6938d9d7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/objects/more_house_assets/more_basic_furnitures.png"
-dest_files=["res://.godot/imported/more_basic_furnitures.png-5bcd2296931497decd106d11f92f3372.ctex"]
+source_file="res://assets 2/game/objects/more_house_assets/more_basic_furnitures.png"
+dest_files=["res://.godot/imported/more_basic_furnitures.png-09e669e911a310373754ae0a6938d9d7.ctex"]
 
 [params]
 

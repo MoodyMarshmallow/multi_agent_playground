@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://1p58jprkw3ui"
-path="res://.godot/imported/bathroom_furniture.png-64d072f0a878368ce9cb7e27e6c61934.ctex"
+path="res://.godot/imported/bathroom_furniture.png-497b6558b78f72029e2308e160125300.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/objects/more_house_assets/bathroom_furniture.png"
-dest_files=["res://.godot/imported/bathroom_furniture.png-64d072f0a878368ce9cb7e27e6c61934.ctex"]
+source_file="res://assets 2/game/objects/more_house_assets/bathroom_furniture.png"
+dest_files=["res://.godot/imported/bathroom_furniture.png-497b6558b78f72029e2308e160125300.ctex"]
 
 [params]
 
