@@ -2,7 +2,7 @@ extends Node
 
 # HTTP Client for API communication
 var http_request: HTTPRequest
-@export var agent_id: String = "agent_1"
+@export var agent_id: String = "alex_001"
 @export var update_interval: float = 5.0  # Seconds between updates
 @export var base_url: String = "http://localhost:8000"
 @export var default_navigation_x : float = 5.0
@@ -35,9 +35,9 @@ func request_next_action() -> void:
 		"self_state": _get_current_state(),
 		"visible_objects": _get_visible_objects(),
 		"visible_agents": _get_visible_agents(),
-		"current_time": Time.get_datetime_string_from_system()
+		"timestamp": Time.get_datetime_string_from_system()
 	}
-	
+	print("perception data: ", perception_data)
 	# Make the planning request
 	var url = base_url + "/agent_act/plan"
 	var query = "?agent_id=" + agent_id
@@ -68,6 +68,7 @@ func _get_default_plan_response() -> Dictionary:
 
 func _confirm_action(action_type: String, content: Dictionary) -> void:
 	print("confirming action")
+	
 	var confirmation_data = {
 		"agent_id": agent_id,
 		"timestamp": Time.get_datetime_string_from_system(),
@@ -80,6 +81,7 @@ func _confirm_action(action_type: String, content: Dictionary) -> void:
 			"current_time": Time.get_datetime_string_from_system()
 		}
 	}
+	print("confirmation data: ", confirmation_data)
 	
 	# Make the confirmation request
 	var url = base_url + "/agent_act/confirm"

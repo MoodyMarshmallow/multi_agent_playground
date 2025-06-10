@@ -45,18 +45,43 @@ def confirm_action_and_update(agent_msg: AgentActionInput) -> AgentActionOutput:
     Step 2: After frontend executes the action, it POSTs new perception/result.
     Backend updates state/memory using the reported result.
     """
+    print(agent_msg)
     agent_dir = f"data/agents/{agent_msg.agent_id}"
     agent = Agent(agent_dir)
-    agent.update_perception(agent_msg.perception.model_dump())
+    perception = agent_msg.perception.model_dump()
+    agent.update_perception(perception)
     agent.update_agent_data(agent_msg.content)
-    # Log memory event if relevant fields are present:
-    if "event" in agent_msg.content and "salience" in agent_msg.content:
-        agent.add_memory_event(
-            timestamp=agent_msg.timestamp,
-            location=str(agent_msg.content.get("location", "")),
-            event=agent_msg.content["event"],
-            salience=agent_msg.content["salience"]
-        )
+
+    
+    # Get location based on visible objects' rooms
+    rooms = set(obj["room"] for obj in perception["visible_objects"].values())
+    location = " and ".join(rooms) if rooms else "unknown location"
+    
+    # Create event summary from perception
+    visible_items = [f"{obj['name']} in {obj['room']}" for obj in perception["visible_objects"].values()]
+    visible_agents = [f"{agent_info['name']}" for agent_info in perception["visible_agents"]]
+    
+    event_parts = []
+    if perception.get("self_state"):
+        event_parts.append(f"I was {perception['self_state']}")
+    if visible_items:
+        event_parts.append(f"I could see: {', '.join(visible_items)}")
+    if visible_agents:
+        event_parts.append(f"I saw these people: {', '.join(visible_agents)}")
+    
+    event = ". ".join(event_parts) if event_parts else "Nothing notable happened"
+    
+    # Update agent's currently field with the event
+    agent.update_agent_data({"currently": event})
+    
+    # Add memory event with either specified or default salience
+    agent.add_memory_event(
+        timestamp=agent_msg.timestamp,
+        location=location,
+        event=event,
+        salience=agent_msg.content.get("salience", 1)  # Default salience of 1 for basic perceptions
+    )
+    
     agent.save()
     agent.save_memory()
 
