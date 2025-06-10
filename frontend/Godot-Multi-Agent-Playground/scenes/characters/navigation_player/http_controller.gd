@@ -180,11 +180,11 @@ func _get_visible_agents() -> Array:
 		return parent.get_visible_agents()
 	return []
 	
-func _get_current_tile() -> Vector2i:
+func _get_current_tile() -> Array:
 	var parent = get_parent()
 	if parent and parent.has_method("get_visible_agents"):
-		return parent.get_current_tile()
-	return Vector2i(0, 0)
+		return [parent.get_current_tile().x, parent.get_current_tile().y]
+	return [0, 0]
 
 func _action_completed() -> void:
 	notify_action_completed()
