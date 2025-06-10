@@ -20,15 +20,22 @@ from kani import Kani
 from kani.engines.openai import OpenAIEngine
 from kani.models import ChatMessage
 
-from .actions import ActionsMixin
-from .agent import Agent
-
-# Add the backend directory to Python path for imports
-backend_dir: Path = Path(__file__).parent.parent
-if str(backend_dir) not in sys.path:
-    sys.path.insert(0, str(backend_dir))
-
-from ..config.llm_config import LLMConfig
+# Handle imports for both standalone and package usage
+try:
+    # Try relative imports first (when used as package)
+    from .actions import ActionsMixin
+    from .agent import Agent
+    from ..config.llm_config import LLMConfig
+except ImportError:
+    # Fall back to absolute imports (when run as standalone script)
+    # Add the backend directory to Python path for imports
+    backend_dir: Path = Path(__file__).parent.parent
+    if str(backend_dir) not in sys.path:
+        sys.path.insert(0, str(backend_dir))
+    
+    from character_agent.actions import ActionsMixin
+    from character_agent.agent import Agent
+    from config.llm_config import LLMConfig
 
 
 class LLMAgent(Kani, ActionsMixin):

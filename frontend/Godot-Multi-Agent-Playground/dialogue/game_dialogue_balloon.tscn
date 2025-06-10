@@ -1,9 +1,11 @@
 [gd_scene load_steps=5 format=3 uid="uid://b6fdjxdnfnnxn"]
 
-[ext_resource type="Script" uid="uid://c32prrnvxqauw" path="res://dialogue/game_dialogue_balloon.gd" id="1_f8h5r"]
+[ext_resource type="Script" uid="uid://cxqxbi8ednnvg" path="res://dialogue/game_dialogue_balloon.gd" id="1_f8h5r"]
 [ext_resource type="PackedScene" uid="uid://ckvgyvclnwggo" path="res://addons/dialogue_manager/dialogue_label.tscn" id="2_awm0h"]
 [ext_resource type="Theme" uid="uid://bw5uv50tghjat" path="res://dialogue/dialogue_balloon_theme.tres" id="2_ye7th"]
-[ext_resource type="Script" uid="uid://c1cbg3vbf3sos" path="res://addons/dialogue_manager/dialogue_reponses_menu.gd" id="3_fnshe"]
+
+[sub_resource type="Resource" id="Resource_sjhsj"]
+metadata/__load_path__ = "res://addons/dialogue_manager/dialogue_reponses_menu.gd"
 
 [node name="GameDialogueBalloon" type="CanvasLayer"]
 layer = 100
@@ -84,7 +86,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_constants/separation = 2
-script = ExtResource("3_fnshe")
+script = SubResource("Resource_sjhsj")
 response_template = NodePath("ResponseExample")
 
 [node name="ResponseExample" type="Button" parent="Balloon/Responses/ResponsesMenu"]

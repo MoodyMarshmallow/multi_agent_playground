@@ -1,6 +1,7 @@
 [gd_scene load_steps=2 format=3 uid="uid://ckvgyvclnwggo"]
 
-[ext_resource type="Script" uid="uid://bbs1eh1f0vknv" path="res://addons/dialogue_manager/dialogue_label.gd" id="1_cital"]
+[sub_resource type="Resource" id="Resource_sjn1j"]
+metadata/__load_path__ = "res://addons/dialogue_manager/dialogue_label.gd"
 
 [node name="DialogueLabel" type="RichTextLabel"]
 anchors_preset = 10
@@ -15,5 +16,5 @@ meta_underlined = false
 hint_underlined = false
 deselect_on_focus_loss_enabled = false
 visible_characters_behavior = 1
-script = ExtResource("1_cital")
+script = SubResource("Resource_sjn1j")
 skip_pause_at_abbreviations = PackedStringArray("Mr", "Mrs", "Ms", "Dr", "etc", "eg", "ex")
