@@ -114,6 +114,10 @@ func get_visible_objects() -> Dictionary:
 func get_visible_agents() -> Array:
 	return [] 
 
+func get_current_tile() -> Vector2i:
+	var tile = Vector2i(floor(global_position.x / TILE_SIZE) - 16, floor(global_position.y / TILE_SIZE) - 3)
+	return tile
+
 # Debug function to print visible objects
 func print_visible_objects() -> void:
 	print("Currently visible objects:")
