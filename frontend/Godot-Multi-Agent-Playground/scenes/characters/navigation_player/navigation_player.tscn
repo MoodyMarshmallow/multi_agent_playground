@@ -1,12 +1,12 @@
 [gd_scene load_steps=50 format=3 uid="uid://cuv3m0snjjd6h"]
 
-[ext_resource type="Script" path="res://scenes/characters/navigation_player/navigation_player.gd" id="1_7oq7b"]
+[ext_resource type="Script" uid="uid://c17l7136ghr75" path="res://scenes/characters/navigation_player/navigation_player.gd" id="1_7oq7b"]
 [ext_resource type="Texture2D" uid="uid://bcxy7j7mwbvmq" path="res://assets/game/characters/character_sprites.png" id="2_jdypw"]
 [ext_resource type="Texture2D" uid="uid://c87y01j7xmy3i" path="res://assets/game/characters/basic_character_sprites.png" id="3_xiv4g"]
-[ext_resource type="Script" path="res://scenes/characters/navigation_player/navigation_state_machine.gd" id="4_m2p2k"]
-[ext_resource type="Script" path="res://scenes/characters/navigation_player/navigation_idle.gd" id="5_7a1uy"]
-[ext_resource type="Script" path="res://scenes/characters/navigation_player/navigation_walk.gd" id="6_dngm0"]
-[ext_resource type="Script" path="res://scenes/characters/navigation_player/http_controller.gd" id="7_gk2d1"]
+[ext_resource type="Script" uid="uid://co618thcifdl3" path="res://scenes/characters/navigation_player/navigation_state_machine.gd" id="4_m2p2k"]
+[ext_resource type="Script" uid="uid://bdvrbkpaonei3" path="res://scenes/characters/navigation_player/navigation_idle.gd" id="5_7a1uy"]
+[ext_resource type="Script" uid="uid://dr1oxauiigxgy" path="res://scenes/characters/navigation_player/navigation_walk.gd" id="6_dngm0"]
+[ext_resource type="Script" uid="uid://dhacy4rvxfvfx" path="res://scenes/characters/navigation_player/http_controller.gd" id="7_gk2d1"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_x6jik"]
 atlas = ExtResource("2_jdypw")
