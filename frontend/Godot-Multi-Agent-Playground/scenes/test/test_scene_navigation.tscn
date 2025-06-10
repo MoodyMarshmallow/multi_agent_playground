@@ -21,6 +21,7 @@ tile_map_data = PackedByteArray("AAASABEAAQABAAEAAAASABAAAQABAAEAAAASAA8AAQABAAE
 tile_set = ExtResource("1_hmdro")
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+position = Vector2(-5, 8)
 navigation_polygon = SubResource("NavigationPolygon_1ojii")
 
 [node name="House" type="TileMapLayer" parent="NavigationRegion2D"]
