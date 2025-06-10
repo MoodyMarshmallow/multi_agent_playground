@@ -22,9 +22,9 @@ class AgentActionContent(BaseModel):
 class AgentPerception(BaseModel):
     self_state: Optional[str] = None                        # Description of agent's current state
     visible_objects: Optional[Dict[str, Dict[str, Any]]] = None  # Objects visible and their states
-    visible_agents: Optional[List[str]] = None              # Other agents currently visible
+    visible_agents: Optional[List[Dict[str, Any]]] = None   # Other agents currently visible (as dicts with 'name' field)
     timestamp: Optional[str] = None                      # Perceived world time (ISO format)
-    current_tile: Optional[List[int]]   # (Optional) Updated [x, y] tile position
+    curr_tile: Optional[List[int]] = None   # (Optional) Updated [x, y] tile position
 
 
 # -----------------------------------------------------------------------------

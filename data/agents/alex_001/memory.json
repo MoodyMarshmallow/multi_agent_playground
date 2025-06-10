@@ -40,5 +40,41 @@
     "location": "bedroom",
     "event": "I was walk. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
     "salience": 1
+  },
+  {
+    "timestamp": "2025-06-10T14:02:26",
+    "location": "entryway and dining_area and living_room",
+    "event": "I was walk. I could see: bookshelf_living in living_room, dining_chairs in dining_area, dining_table in dining_area, door in entryway, left in entryway",
+    "salience": 1
+  },
+  {
+    "timestamp": "2025-06-10T14:02:44",
+    "location": "unknown location",
+    "event": "I was walk",
+    "salience": 1
+  },
+  {
+    "timestamp": "2025-06-10T14:07:50",
+    "location": "bedroom",
+    "event": "I was walk. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
+    "salience": 1
+  },
+  {
+    "timestamp": "2025-06-10T14:08:38",
+    "location": "bedroom",
+    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
+    "salience": 1
+  },
+  {
+    "timestamp": "2025-06-10T14:08:44",
+    "location": "bedroom",
+    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
+    "salience": 1
+  },
+  {
+    "timestamp": "2025-06-10T14:09:09",
+    "location": "bedroom",
+    "event": "I was walk. I could see: wardrobe in bedroom",
+    "salience": 1
   }
 ]
