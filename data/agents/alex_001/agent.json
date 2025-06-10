@@ -3,7 +3,10 @@
   "vision_r": 4,
   "retention": 5,
   "curr_time": "2025-06-09T12:30:00Z",
-  "curr_tile": "tile_15",
+  "curr_tile": [
+    5,
+    6
+  ],
   "daily_plan_req": "Finish painting, make lunch, call gallery",
   "name": "Alex",
   "first_name": "Alex",
