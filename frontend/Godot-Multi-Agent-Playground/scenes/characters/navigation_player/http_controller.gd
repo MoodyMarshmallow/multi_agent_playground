@@ -35,7 +35,7 @@ func request_next_action() -> void:
 		"self_state": _get_current_state(),
 		"visible_objects": _get_visible_objects(),
 		"visible_agents": _get_visible_agents(),
-		"current_time": Time.get_datetime_string_from_system()
+		"timestamp": Time.get_datetime_string_from_system()
 	}
 	print("perception data: ", perception_data)
 	# Make the planning request
