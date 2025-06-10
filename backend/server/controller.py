@@ -45,15 +45,16 @@ def confirm_action_and_update(agent_msg: AgentActionInput) -> AgentActionOutput:
     Step 2: After frontend executes the action, it POSTs new perception/result.
     Backend updates state/memory using the reported result.
     """
-    print(agent_msg)
+    print("Agent message:", agent_msg)
+    print("Perception data:", agent_msg.perception.model_dump())
     agent_dir = f"data/agents/{agent_msg.agent_id}"
     agent = Agent(agent_dir)
     perception = agent_msg.perception.model_dump()
     agent.update_perception(perception)
     agent_data = agent_msg.content.copy()
     agent_data.update({
-        "timestamp": agent_msg.timestamp,
-        "current_tile": agent_msg.perception.current_tile,
+        "curr_time": agent_msg.timestamp,
+        "curr_tile": perception["curr_tile"]  # Changed from current_tile to curr_tile to match perception data
     })
     agent.update_agent_data(agent_data)
 
