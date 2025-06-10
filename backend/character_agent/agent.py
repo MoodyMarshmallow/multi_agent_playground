@@ -99,8 +99,8 @@ class Agent:
         """
         if "position" in data:
             self.curr_tile = data["position"]
-        if "curr_time" in data:
-            self.timestamp = data["curr_time"]
+        if "timestamp" in data:
+            self.curr_time = data["timestamp"]
         if "currently" in data:
             self.currently = data["currently"]
 

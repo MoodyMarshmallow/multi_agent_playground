@@ -22,5 +22,29 @@
     "location": "downtown studio:main:kitchen",
     "event": "makes lunch",
     "salience": 3
+  },
+  {
+    "timestamp": "2025-06-10T13:05:28",
+    "location": "unknown location",
+    "event": "I was walk",
+    "salience": 1
+  },
+  {
+    "timestamp": "2025-06-10T13:06:14",
+    "location": "living_room",
+    "event": "I was walk. I could see: couch in living_room",
+    "salience": 1
+  },
+  {
+    "timestamp": "2025-06-10T13:06:23",
+    "location": "entryway",
+    "event": "I was walk. I could see: left in entryway",
+    "salience": 1
+  },
+  {
+    "timestamp": "2025-06-10T13:06:30",
+    "location": "entryway and dining_area",
+    "event": "I was idle. I could see: dining_chairs in dining_area, dining_table in dining_area, door in entryway, left in entryway, right in entryway",
+    "salience": 1
   }
 ]
