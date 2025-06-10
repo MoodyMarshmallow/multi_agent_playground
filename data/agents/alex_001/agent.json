@@ -4,8 +4,8 @@
   "retention": 5,
   "curr_time": "2025-06-09T12:30:00Z",
   "curr_tile": [
-    15,
-    5
+    5,
+    6
   ],
   "daily_plan_req": "Finish painting, make lunch, call gallery",
   "name": "Alex",
@@ -23,7 +23,7 @@
       "French"
     ]
   },
-  "currently": "I was walk. I could see: kitchen_set in kitchen, toilet in bathroom",
+  "currently": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
   "lifestyle": "artist",
   "living_area": "downtown studio",
   "daily_req": [
