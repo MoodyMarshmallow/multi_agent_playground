@@ -35,7 +35,8 @@ func request_next_action() -> void:
 		"self_state": _get_current_state(),
 		"visible_objects": _get_visible_objects(),
 		"visible_agents": _get_visible_agents(),
-		"timestamp": Time.get_datetime_string_from_system()
+		"timestamp": Time.get_datetime_string_from_system(),
+		"current_tile": _get_current_tile()
 	}
 	print("perception data: ", perception_data)
 	# Make the planning request
@@ -78,8 +79,9 @@ func _confirm_action(action_type: String, content: Dictionary) -> void:
 			"self_state": _get_current_state(),
 			"visible_objects": _get_visible_objects(),
 			"visible_agents": _get_visible_agents(),
-			"current_time": Time.get_datetime_string_from_system()
-		}
+			"current_time": Time.get_datetime_string_from_system(),
+			"current_tile": _get_current_tile()
+		},
 	}
 	print("confirmation data: ", confirmation_data)
 	
@@ -177,6 +179,12 @@ func _get_visible_agents() -> Array:
 	if parent and parent.has_method("get_visible_agents"):
 		return parent.get_visible_agents()
 	return []
+	
+func _get_current_tile() -> Array:
+	var parent = get_parent()
+	if parent and parent.has_method("get_visible_agents"):
+		return [parent.get_current_tile().x, parent.get_current_tile().y]
+	return [0, 0]
 
 func _action_completed() -> void:
 	notify_action_completed()
