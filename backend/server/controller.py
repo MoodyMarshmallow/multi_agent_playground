@@ -35,8 +35,8 @@ def plan_next_action(agent_id: str, perception: AgentPerception) -> AgentActionO
         action_type=next_action["action_type"],
         content=next_action["content"],
         emoji=next_action["emoji"],
-        current_tile=None,
-        current_location=None,
+        current_tile=next_action["current_tile"],
+        current_location=next_action["current_location"],
     )
 
 
