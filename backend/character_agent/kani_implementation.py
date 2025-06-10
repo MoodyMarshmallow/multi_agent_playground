@@ -255,8 +255,11 @@ Respond naturally as {self.agent.first_name} would, and use the available action
                 state: str = obj_info.get("state", "unknown")
                 location: str = obj_info.get("location", "unknown")
                 message_parts.append(f"- {obj_name}: {state} (at {location})")
+            message_parts.append(
+            "\nConsider moving toward or interacting with one of these objects, especially if it helps you achieve your daily requirements or current goals."
+            )
         else:
-            message_parts.append("\nNo objects are currently visible.")
+            message_parts.append("\nNo objects are currently visible.Consider moving to a new area to explore your environment mostly in the house if you are in the house.")
         
         # Add visible agents information
         visible_agents: List[str] = perception_data.get("visible_agents", [])
@@ -273,7 +276,9 @@ Respond naturally as {self.agent.first_name} would, and use the available action
             for memory in recent_memories:
                 message_parts.append(f"- {memory['timestamp']}: {memory['event']} (at {memory['location']})")
         
-        message_parts.append("\nWhat would you like to do next? Please use one of your available actions (move, interact, or perceive).")
+        message_parts.append(
+        "\nWhat would you like to do next? Most of the time, you should choose to move or interact with objects or agents unless you have a specific reason to perceive again. Only perceive again if you have new information to check."
+        )
         
         return "\n".join(message_parts)
 
