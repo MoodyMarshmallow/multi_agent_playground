@@ -188,21 +188,37 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         action_result: Optional[Dict[str, Any]] = None
         message: ChatMessage
         async for message in self.full_round(context_message):
+            print("received message: ", message)
             # Check if this is a function result message
             if message.role.value == 'function' and message.content:
-                # Try to parse the function result as Dict.
+                print("In If statement")
+                # Try to parse the function result as Python dict string or Dict.
                 try:
-                    parsed_result: Dict[str, Any] = eval(message.content)
+                    import ast
+                    print("imported ast and json")
+                    
+                    # First try to parse as Python dict using ast.literal_eval
+                    try:
+                        parsed_result = ast.literal_eval(message.content)
+                        print("parsed_result using ast.literal_eval: ", parsed_result)
+                    except (ValueError, SyntaxError):
+                        # If that fails, try JSON parsing
+                        parsed_result: Dict[str, Any] = eval(message.content)
+                        print("parsed_result using json.loads: ", parsed_result)
+                    
                     # Check if this looks like one of our action results
                     if isinstance(parsed_result, dict) and 'action_type' in parsed_result:
+                        print("setting action_result")
                         action_result = parsed_result
                         break
-                except (json.JSONDecodeError, TypeError):
+                except (json.JSONDecodeError, TypeError, ValueError, SyntaxError) as e:
                     # If parsing fails, continue looking for other messages
+                    print(f"Parsing failed with error: {e}")
                     continue
         
         # If no action was determined, default to perceive
         if not action_result:
+            print("warning: fallback to default action")
             action_result: Dict[str, Any] = {
                 "agent_id": self.agent_id,
                 "action_type": "perceive",

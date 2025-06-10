@@ -1,4 +1,4 @@
-#!/Users/ichisei/Desktop/multi_agent_playground/.env/bin/python3
+#!/Users/mhedlund/multi_agent_playground/venv/bin/python3.12
 # -*- coding: utf-8 -*-
 import re
 import sys
