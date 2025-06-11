@@ -23,7 +23,9 @@ class AgentPerception(BaseModel):
     self_state: Optional[str] = None                        # Description of agent's current state
     visible_objects: Optional[Dict[str, Dict[str, Any]]] = None  # Objects visible and their states
     visible_agents: Optional[List[str]] = None              # Other agents currently visible
-    current_time: Optional[str] = None                      # Perceived world time (ISO format)
+    timestamp: Optional[str] = None                      # Perceived world time (ISO format)
+    current_tile: Optional[List[int]]   # (Optional) Updated [x, y] tile position
+
 
 # -----------------------------------------------------------------------------
 # AgentActionInput (Frontend → Backend)
@@ -49,4 +51,11 @@ class AgentActionOutput(BaseModel):
     emoji: str                          # Visual representation (e.g., '🚶', '💡', '👀')
     current_tile: Optional[List[int]] = None     # (Optional) Updated [x, y] tile position
     current_location: Optional[str] = None       # (Optional) Updated semantic location (e.g., 'kitchen')
+    
+    
+# -----------------------------------------------------------------------------
+# simple response message
+# -----------------------------------------------------------------------------
+class StatusMsg(BaseModel):
+    status: str
 

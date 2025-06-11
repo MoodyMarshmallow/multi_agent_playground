@@ -13,12 +13,13 @@ The server follows a two-step action protocol:
 1. /agent_act/plan - Get next action plan from agent
 2. /agent_act/confirm - Confirm execution and update agent memory
 """
-
+from dotenv import load_dotenv
+load_dotenv()
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from config.schema import AgentActionInput, AgentActionOutput, AgentPerception
-from server.controller import plan_next_action, confirm_action_and_update
+from backend.config.schema import AgentActionInput, AgentActionOutput, AgentPerception, StatusMsg
+from backend.server.controller import plan_next_action, confirm_action_and_update
 
 
 app = FastAPI()
@@ -37,32 +38,35 @@ def post_plan_action(agent_id: str, perception: AgentPerception):
     Step 1: Receives current agent perception from frontend,
     asks the LLM/planner for the next action, and returns that action to the frontend.
     (Does NOT update agent state or memory!)
+    for frontend, we now have agent_id in query_param and + perception in json body; may need to update to make it consistent
     """
     return plan_next_action(agent_id, perception)
 
-@app.post("/agent_act/confirm", response_model=AgentActionOutput)
+
+@app.post("/agent_act/confirm", response_model=StatusMsg)
 def post_confirm_action(agent_msg: AgentActionInput):
     """
     Step 2: Receives the agent's executed action and the resulting world state from frontend.
     Now commits updates to agent state/memory and returns the (new) state to frontend.
+    for this func, it has all data in the json body.
     """
     confirm_action_and_update(agent_msg)
-    return JSONResponse(content={"status": "ok"})
+    return StatusMsg(status="ok")
 
-
-@app.get("/agent_state/", response_model=AgentActionOutput)
-def get_agent_state(agent_id: str):
-    from character_agent.agent import Agent
-    agent = Agent(agent_id)
-    # Provide current state (may expand as needed)
-    return AgentActionOutput(
-        agent_id=agent.agent_id,
-        action_type="perceive",
-        content={},
-        emoji="👀",
-        current_tile=agent.curr_tile,
-        current_location=getattr(agent, "current_location", None)
-    )
+# I dont think we need this function rn
+# @app.get("/agent_state/", response_model=AgentActionOutput)
+# def get_agent_state(agent_id: str):
+#     from character_agent.agent import Agent
+#     agent = Agent(agent_id)
+#     # Provide current state (may expand as needed)
+#     return AgentActionOutput(
+#         agent_id=agent.agent_id,
+#         action_type="perceive",
+#         content={},
+#         emoji="👀",
+#         current_tile=agent.curr_tile,
+#         current_location=getattr(agent, "current_location", None)
+#     )
 
 # For first time run:
 """

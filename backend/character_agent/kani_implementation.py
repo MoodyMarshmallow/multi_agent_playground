@@ -17,8 +17,8 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 from kani import Kani
 from kani.engines.openai import OpenAIEngine
-from actions import ActionsMixin
-from agent import Agent
+from backend.character_agent.actions import ActionsMixin
+from backend.character_agent.agent import Agent
 
 # Add the backend directory to Python path for imports
 backend_dir = Path(__file__).parent.parent
@@ -172,22 +172,38 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         # Get LLM response with function calling - iterate through the async generator
         action_result = None
         async for message in self.full_round(context_message):
+            print("received message: ", message)
             # Check if this is a function result message
             if message.role.value == 'function' and message.content:
-                # Try to parse the function result as JSON
+                print("In If statement")
+                # Try to parse the function result as Python dict string or JSON
                 try:
+                    import ast
                     import json
-                    parsed_result = json.loads(message.content)
+                    print("imported ast and json")
+                    
+                    # First try to parse as Python dict using ast.literal_eval
+                    try:
+                        parsed_result = ast.literal_eval(message.content)
+                        print("parsed_result using ast.literal_eval: ", parsed_result)
+                    except (ValueError, SyntaxError):
+                        # If that fails, try JSON parsing
+                        parsed_result = json.loads(message.content)
+                        print("parsed_result using json.loads: ", parsed_result)
+                    
                     # Check if this looks like one of our action results
                     if isinstance(parsed_result, dict) and 'action_type' in parsed_result:
+                        print("setting action_result")
                         action_result = parsed_result
                         break
-                except (json.JSONDecodeError, TypeError):
+                except (json.JSONDecodeError, TypeError, ValueError, SyntaxError) as e:
                     # If parsing fails, continue looking for other messages
+                    print(f"Parsing failed with error: {e}")
                     continue
         
         # If no action was determined, default to perceive
         if not action_result:
+            print("warning: fallback to default action")
             action_result = {
                 "agent_id": self.agent_id,
                 "action_type": "perceive",
@@ -221,8 +237,11 @@ Respond naturally as {self.agent.first_name} would, and use the available action
                 state = obj_info.get("state", "unknown")
                 location = obj_info.get("location", "unknown")
                 message_parts.append(f"- {obj_name}: {state} (at {location})")
+            message_parts.append(
+            "\nConsider moving toward or interacting with one of these objects, especially if it helps you achieve your daily requirements or current goals."
+            )
         else:
-            message_parts.append("\nNo objects are currently visible.")
+            message_parts.append("\nNo objects are currently visible.Consider moving to a new area to explore your environment mostly in the house if you are in the house.")
         
         # Add visible agents information
         visible_agents = perception_data.get("visible_agents", [])
@@ -238,7 +257,9 @@ Respond naturally as {self.agent.first_name} would, and use the available action
             for memory in recent_memories:
                 message_parts.append(f"- {memory['timestamp']}: {memory['event']} (at {memory['location']})")
         
-        message_parts.append("\nWhat would you like to do next? Please use one of your available actions (move, interact, or perceive).")
+        message_parts.append(
+        "\nWhat would you like to do next? Most of the time, you should choose to move or interact with objects or agents unless you have a specific reason to perceive again. Only perceive again if you have new information to check."
+        )
         
         return "\n".join(message_parts)
 
