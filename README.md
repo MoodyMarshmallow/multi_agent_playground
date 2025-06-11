@@ -51,7 +51,7 @@ frontend/Godot-Multi-Agent-Playground/project.godot
 Navigate to the following scene file:
 frontend/Godot-Multi-Agent-Playground/scenes/characters/navigation_player/navigation_player.gd
 
-Click the ▶️ "Run Current Scene" or (ctrl/command + R)button in the top-right corner.
+Click the ▶️ "Run Current Scene" button in the top-right corner or ctrl/command + R.
 
 Arrow keys – Move the agent
 
