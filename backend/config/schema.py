@@ -14,7 +14,7 @@ class AgentActionContent(BaseModel):
     object: Optional[str] = None                         # For interact actions
     new_state: Optional[str] = None                      # For interact actions
 
-#Examples for different actions types Frontend -> Backend:
+# Examples for different actions types Frontend -> Backend:
 # perceive
 # contained in visible_objects, visible_agents, chatable_agents
 
@@ -24,7 +24,21 @@ class AgentActionContent(BaseModel):
 
 # chat
 # "chatting_with": "alex_001",
-# "chatting_history": []
+# "chatting_history":               All the messages sent so far in the frontend
+# [
+#     {
+#       "sender": "alex_001",
+#       "message": "Hey, how's it going?",
+#     },
+#     {
+#       "sender": "alan_002", 
+#       "message": "Good! Just finished cooking dinner.",
+#     },
+#     {
+#       "sender": "alex_001",
+#       "message": "That sounds delicious! What did you make?",
+#     }
+#   ]
 
 # interact
 # contained in visible_objects
@@ -38,7 +52,25 @@ class AgentActionContent(BaseModel):
 
 # chat
 # "chatting_with": "alex_001",
-# "full_chat": []
+# "full_chat":                      The fully planned out chat discussion
+# [
+#     {
+#       "sender": "alex_001",
+#       "message": "Hey, how's it going?",
+#     },
+#     {
+#       "sender": "alan_002", 
+#       "message": "Good! Just finished cooking dinner.",
+#     },
+#     {
+#       "sender": "alex_001",
+#       "message": "That sounds delicious! What did you make?",
+#     },
+#     {
+#       "sender": "alan_002", 
+#       "message": "I made a salad.",
+#     },
+#   ]
 
 # interact
 # "object": "bed",
@@ -56,9 +88,13 @@ class AgentPerception(BaseModel):
     current_tile: Optional[List[int]]   # (Optional) Updated [x, y] tile position
     visible_objects: Optional[Dict[str, Dict[str, Any]]] = None  # Objects visible and their states
     visible_agents: Optional[List[str]] = None              # Other agents currently visible formatted as a list of agent_ids
-    chatable_agents: Optional[List[str]] = None             # Other agents currently in cahtting range formatted as a list of agent_ids
+    chatable_agents: Optional[List[str]] = None             # Other agents currently in chatting range formatted as a list of agent_ids
 
 #examples:
+#timestamp: "01T04:35:20"
+
+#current_tile: [20, 8]
+
 # visible objects:
 # {
 #     "bed": {
@@ -105,7 +141,7 @@ class AgentActionInput(BaseModel):
 class AgentActionOutput(BaseModel):
     agent_id: str                       # Which agent to update
     action_type: str                    # The action being performed
-    emoji: str                          # Visual representation (e.g., '🚶', '💡', '👀')
+    emoji: str                          # Visual representation (e.g., '🚶', '💡', '👀') sends Unicode encoding
 
     content: Dict[str, Any]             # Action-specific details (see AgentActionContent)
     
