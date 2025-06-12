@@ -11,7 +11,7 @@ with an added **Godot frontend** for real-time simulation and interaction.
 - \`docs/\`: Notes, schemas, and protocol definitions
 - \`tests/\`: Python unit tests
 
-Work in progress.
+🛠️ Note: This project is currently under active development.
 
 ---
 
@@ -29,12 +29,33 @@ uvicorn – A lightweight ASGI server that runs your FastAPI app.
 ```bash
 git clone link
 cd multi-agent-playground
+```
 
-
+### ✅ 2. Set up the virtual environment and activate
+```bash
 python3 -m venv venv
 source venv/bin/activate
-
 pip install -r requirements.txt
-
+```
+### ✅ 3. # Start the FastAPI server at the backend
+```bash
 python -m uvicorn backend.main:app --reload
+```
+
+### ✅ 4. Set up the frontend and commands to run the frontend
+Install Godot (version 3.5 or later recommended).
+
+In Godot, open the project file located at:
+frontend/Godot-Multi-Agent-Playground/project.godot
+
+Navigate to the following scene file:
+frontend/Godot-Multi-Agent-Playground/scenes/characters/navigation_player/navigation_player.gd
+
+Click the ▶️ "Run Current Scene" button in the top-right corner or ctrl/command + R.
+
+Arrow keys – Move the agent
+
+Right-click – Move agent to selected position
+
+R key – Request the next planned action from the backend
 
