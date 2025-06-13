@@ -303,6 +303,82 @@ class ActionsMixin:
         print(f"Perceive action: {json.dumps(action_json, indent=2)}")
         
         return action_json
+    
+    @ai_function()
+    def evaluate_event_salience(self,
+                               event_description: Annotated[str, "The event that occurred"],
+                               salience_score: Annotated[int, "Importance score from 1-10 (1=trivial, 5=notable, 10=life-changing)"]
+                               ) -> Dict[str, Any]:
+        """
+        Evaluate the emotional and personal significance of an event for memory storage.
+        
+        SALIENCE SCORING GUIDELINES:
+        Rate events on a scale from 1-10 based on their importance to your character:
+        
+        TRIVIAL EVENTS (1-2):
+        - Routine observations with no personal significance
+        - Seeing common objects in expected places
+        - Regular daily activities that happen frequently
+        - Minor environmental changes that don't affect you
+        
+        LOW IMPORTANCE (3-4):
+        - Interactions with familiar objects for routine purposes
+        - Brief, casual conversations about mundane topics
+        - Minor changes in your environment
+        - Completing simple, everyday tasks
+        
+        MODERATE IMPORTANCE (5-6):
+        - Meaningful conversations with other agents
+        - Discovering new objects or areas
+        - Completing important daily requirements
+        - Social interactions that reveal personality or relationships
+        - Learning something new about your environment
+        
+        HIGH IMPORTANCE (7-8):
+        - Significant social conflicts or emotional moments
+        - Major discoveries or revelations
+        - Events that change your understanding of the world
+        - Interactions that significantly impact relationships
+        - Achieving important personal goals
+        
+        LIFE-CHANGING EVENTS (9-10):
+        - Traumatic or extremely joyful experiences
+        - Major life decisions or turning points
+        - Events that fundamentally change your character
+        - Profound emotional experiences
+        - Life-threatening or life-saving situations
+        
+        FACTORS TO CONSIDER:
+        - Personal relevance: How much does this affect YOU specifically?
+        - Emotional impact: How strongly did this make you feel?
+        - Uniqueness: How rare or unusual is this event?
+        - Consequences: Will this event influence your future actions?
+        - Relationships: Does this significantly affect your connections with others?
+        - Goal relevance: Does this help or hinder your personal objectives?
+        
+        EXAMPLES:
+        - "I saw a bed in the bedroom" (routine observation) = 1-2
+        - "I talked with John about the weather" (casual chat) = 3-4
+        - "I discovered a hidden room I've never seen before" (new discovery) = 6-7
+        - "Sarah told me she's moving away forever" (relationship impact) = 8-9
+        - "I barely escaped a dangerous situation" (life-threatening) = 9-10
+        
+        Remember: Score based on YOUR character's perspective and personality.
+        What's important to one character might be trivial to another.
+        
+        Returns the salience evaluation for the memory system.
+        """
+        evaluation = {
+            "agent_id": getattr(self, 'agent_id', 'unknown_agent'),
+            "function_type": "salience_evaluation",
+            "event_description": event_description,
+            "salience_score": max(1, min(10, salience_score))  # Ensure score is between 1-10
+        }
+        
+        # Print for debugging/logging
+        print(f"Salience evaluation: {json.dumps(evaluation, indent=2)}")
+        
+        return evaluation
         
         
         

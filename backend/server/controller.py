@@ -12,17 +12,26 @@ and the agent system, handling the flow of perception data, action
 planning, and state updates for all agents in the simulation.
 """
 
-from backend.character_agent.agent import Agent
-from backend.character_agent.actions import ActionsMixin
-from backend.character_agent.kani_implementation import call_llm_agent
-from backend.config.schema import AgentActionInput, AgentActionOutput, AgentPerception, BackendAction, MoveBackendAction, ChatBackendAction, InteractBackendAction, PerceiveBackendAction, Message
+import asyncio
+import sys
+from pathlib import Path
+
+# Add the backend directory to Python path for imports
+backend_dir = Path(__file__).parent.parent
+if str(backend_dir) not in sys.path:
+    sys.path.insert(0, str(backend_dir))
+
+from character_agent.agent import Agent
+from character_agent.actions import ActionsMixin
+from character_agent.kani_implementation import call_llm_agent, LLMAgent
+from config.schema import AgentActionInput, AgentActionOutput, AgentPerception, BackendAction, MoveBackendAction, ChatBackendAction, InteractBackendAction, PerceiveBackendAction, Message
 
 def plan_next_action(agent_id: str, perception: AgentPerception) -> AgentActionOutput:
     """
     Step 1: Decide the next action (LLM/planner), given current perception.
     Do NOT update agent data yet.
     """
-    agent_dir = f"data/agents/{agent_id}"
+    agent_dir = f"../data/agents/{agent_id}"
     agent = Agent(agent_dir)
     agent.update_perception(perception.model_dump())
     agent_state = agent.to_state_dict()
@@ -90,7 +99,7 @@ def confirm_action_and_update(agent_msg: AgentActionInput) -> None:
     Backend updates state/memory using the reported result.
     """
     print(agent_msg)
-    agent_dir = f"data/agents/{agent_msg.agent_id}"
+    agent_dir = f"../data/agents/{agent_msg.agent_id}"
     agent = Agent(agent_dir)
     perception = agent_msg.perception.model_dump()
     agent.update_perception(perception)
@@ -155,14 +164,44 @@ def confirm_action_and_update(agent_msg: AgentActionInput) -> None:
     # Update agent's currently field with the event
     agent.update_agent_data({"currently": event})
     
-    # Add memory event with default salience
+    # Evaluate event salience using LLM agent
+    salience = evaluate_event_salience(agent, event)
+    
+    # Add memory event with LLM-determined salience
     agent.add_memory_event(
         timestamp=agent_msg.perception.timestamp,
         location=location,
         event=event,
-        salience=1  # Default salience for basic perceptions
+        salience=salience
     )
     
     agent.save()
     agent.save_memory()
+
+
+def evaluate_event_salience(agent: Agent, event_description: str) -> int:
+    """
+    Evaluate the salience of an event using the LLM agent.
+    
+    Args:
+        agent (Agent): The agent instance
+        event_description (str): Description of the event
+        
+    Returns:
+        int: Salience score from 1-10
+    """
+    try:
+        # Create LLM agent instance
+        llm_agent = LLMAgent(agent)
+        
+        # Evaluate salience asynchronously
+        salience = asyncio.run(llm_agent.evaluate_event_salience(event_description))
+        
+        print(f"Event salience evaluation: '{event_description}' = {salience}")
+        return salience
+        
+    except Exception as e:
+        print(f"Error evaluating salience: {e}")
+        # Default to moderate importance if evaluation fails
+        return 5
 
