@@ -33,14 +33,13 @@ app.add_middleware(
 )
 
 @app.post("/agent_act/plan", response_model=AgentActionOutput)
-def post_plan_action(agent_id: str, perception: AgentPerception):
+def post_plan_action(agent_action_input: AgentActionInput):
     """
     Step 1: Receives current agent perception from frontend,
     asks the LLM/planner for the next action, and returns that action to the frontend.
     (Does NOT update agent state or memory!)
-    for frontend, we now have agent_id in query_param and + perception in json body; may need to update to make it consistent
     """
-    return plan_next_action(agent_id, perception)
+    return plan_next_action(agent_action_input.agent_id, agent_action_input.perception)
 
 
 @app.post("/agent_act/confirm", response_model=StatusMsg)
@@ -48,7 +47,6 @@ def post_confirm_action(agent_msg: AgentActionInput):
     """
     Step 2: Receives the agent's executed action and the resulting world state from frontend.
     Now commits updates to agent state/memory and returns the (new) state to frontend.
-    for this func, it has all data in the json body.
     """
     confirm_action_and_update(agent_msg)
     return StatusMsg(status="ok")
@@ -70,7 +68,7 @@ def post_confirm_action(agent_msg: AgentActionInput):
 
 # For first time run:
 """
-On simulation start, the frontend POSTs to /agent_act/ with:
+On simulation start, the frontend POSTs to /agent_act/plan with:
 
 The initial world perception (could be "empty" or the initial environment)
 

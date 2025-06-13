@@ -25,7 +25,7 @@ backend_dir = Path(__file__).parent.parent
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
-from config.llm_config import LLMConfig
+from backend.config.llm_config import LLMConfig
 
 
 class LLMAgent(Kani, ActionsMixin):
