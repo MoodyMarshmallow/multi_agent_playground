@@ -17,8 +17,8 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 from kani import Kani
 from kani.engines.openai import OpenAIEngine
-from backend.character_agent.actions import ActionsMixin
-from backend.character_agent.agent import Agent
+from .actions import ActionsMixin
+from .agent import Agent
 
 # Add the backend directory to Python path for imports
 backend_dir = Path(__file__).parent.parent
@@ -130,10 +130,12 @@ CURRENT CONTEXT:
 - Current activity: {self.agent.act_description}
 
 CAPABILITIES:
-You have three main actions available:
+You have five main actions available:
 1. move(destination_coordinates, action_emoji) - Move to specific coordinates
-2. interact(object, new_state, action_emoji) - Interact with objects to change their state
-3. perceive(action_emoji) - Perceive objects and agents in your visible area
+2. chat(receiver, message, action_emoji) - Send messages to other agents
+3. interact(object, new_state, action_emoji) - Interact with objects to change their state
+4. perceive(action_emoji) - Perceive objects and agents in your visible area
+5. evaluate_event_salience(event_description, salience_score) - Rate the importance of events for memory storage
 
 BEHAVIOR GUIDELINES:
 - Always stay in character based on your personality traits
@@ -142,6 +144,12 @@ BEHAVIOR GUIDELINES:
 - Use appropriate emojis to represent your actions
 - Make decisions based on your current state and visible environment
 - Keep actions realistic and contextually appropriate
+
+MEMORY AND SALIENCE:
+- Your experiences are stored in memory with different levels of importance (salience)
+- When evaluating events, consider your personal perspective and emotional response
+- Rate routine activities lower (1-3), meaningful interactions higher (4-7), and life-changing events highest (8-10)
+- Your personality traits affect what you find important or trivial
 
 When deciding on actions:
 1. Consider your current needs and daily requirements
@@ -262,6 +270,59 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         )
         
         return "\n".join(message_parts)
+    
+    async def evaluate_event_salience(self, event_description: str) -> int:
+        """
+        Evaluate the salience (importance) of an event for memory storage.
+        
+        Args:
+            event_description (str): Description of the event that occurred
+            
+        Returns:
+            int: Salience score from 1-10
+        """
+        try:
+            # Use a simple text-based approach instead of function calling
+            # This is more reliable for salience evaluation
+            prompt = f"""Based on your personality and what matters to you, rate how important this event is from 1-10:
+
+Event: "{event_description}"
+
+Your personality:
+- Innate traits: {self.agent.innate}
+- Learned behaviors: {self.agent.learned}
+- Lifestyle: {self.agent.lifestyle}
+
+Rating scale:
+1-2: Trivial routine things (seeing common objects, normal movements)
+3-4: Minor daily activities (eating, basic interactions)
+5-6: Meaningful interactions or discoveries (interesting conversations, new places)
+7-8: Important emotional or social events (conflicts, achievements, relationships)
+9-10: Life-changing experiences (major decisions, trauma, profound moments)
+
+Respond with ONLY a number from 1-10, nothing else."""
+
+            # Get response without function calling
+            response = await self.chat_round(prompt)
+            
+            # Extract the number from the response
+            response_text = response.text.strip()
+            
+            # Try to extract a number from the response
+            import re
+            numbers = re.findall(r'\b([1-9]|10)\b', response_text)
+            
+            if numbers:
+                salience_score = int(numbers[0])
+                print(f"Salience evaluation: '{event_description}' = {salience_score}")
+                return max(1, min(10, salience_score))
+            else:
+                print(f"Could not parse salience from response: '{response_text}', defaulting to 5")
+                return 5
+                
+        except Exception as e:
+            print(f"Error in salience evaluation: {e}")
+            return 5  # Default fallback
 
 
 async def call_llm_for_action(agent_state: Dict[str, Any], perception_data: Dict[str, Any]) -> Dict[str, Any]:

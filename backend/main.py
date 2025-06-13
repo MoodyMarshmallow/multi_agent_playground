@@ -68,7 +68,7 @@ def post_confirm_action_batch(agent_msgs: List[AgentActionInput]):
 
 # For first time run:
 """
-On simulation start, the frontend POSTs to /agent_act/ with:
+On simulation start, the frontend POSTs to /agent_act/plan with:
 
 The initial world perception (could be "empty" or the initial environment)
 

@@ -318,9 +318,15 @@
     "salience": 1
   },
   {
-    "timestamp": "2025-06-11T16:27:57",
-    "location": "dining_area and entryway",
-    "event": "I was idle. I could see: dining_chairs in dining_area, dining_table in dining_area, door in entryway, left in entryway, right in entryway",
-    "salience": 1
+    "timestamp": "01T10:30:00",
+    "location": "kitchen",
+    "event": "I moved to position (11, 10). I could see: coffee_mug in kitchen",
+    "salience": 5
+  },
+  {
+    "timestamp": "01T10:30:00",
+    "location": "kitchen",
+    "event": "I moved to position (11, 10). I could see: coffee_mug in kitchen",
+    "salience": 2
   }
 ]
