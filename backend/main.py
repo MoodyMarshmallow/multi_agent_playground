@@ -14,6 +14,7 @@ The server follows a two-step action protocol:
 2. /agent_act/confirm - Confirm execution and update agent memory
 """
 from dotenv import load_dotenv
+from typing import List
 load_dotenv()
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -32,26 +33,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/agent_act/plan", response_model=AgentActionOutput)
-def post_plan_action(agent_id: str, perception: AgentPerception):
+@app.post("/agent_act/plan", response_model=List[AgentActionOutput])
+def post_plan_action_batch(inputs: List[AgentActionInput]):
     """
-    Step 1: Receives current agent perception from frontend,
-    asks the LLM/planner for the next action, and returns that action to the frontend.
-    (Does NOT update agent state or memory!)
-    for frontend, we now have agent_id in query_param and + perception in json body; may need to update to make it consistent
+    Step 1: Batched perception input → plan actions using LLM.
+    (Does NOT update state yet.)
     """
-    return plan_next_action(agent_id, perception)
+    return [plan_next_action(input.agent_id, input.perception) for input in inputs]
 
 
-@app.post("/agent_act/confirm", response_model=StatusMsg)
-def post_confirm_action(agent_msg: AgentActionInput):
+@app.post("/agent_act/confirm", response_model=List[StatusMsg])
+def post_confirm_action_batch(agent_msgs: List[AgentActionInput]):
     """
-    Step 2: Receives the agent's executed action and the resulting world state from frontend.
-    Now commits updates to agent state/memory and returns the (new) state to frontend.
-    for this func, it has all data in the json body.
+    Step 2: Batched post-confirmation input → update state and memory.
     """
-    confirm_action_and_update(agent_msg)
-    return StatusMsg(status="ok")
+    for msg in agent_msgs:
+        confirm_action_and_update(msg)
+    return [StatusMsg(status="ok") for _ in agent_msgs]
 
 # I dont think we need this function rn
 # @app.get("/agent_state/", response_model=AgentActionOutput)

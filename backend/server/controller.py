@@ -15,7 +15,10 @@ planning, and state updates for all agents in the simulation.
 from backend.character_agent.agent import Agent
 from backend.character_agent.actions import ActionsMixin
 from backend.character_agent.kani_implementation import call_llm_agent
-from config.schema import AgentActionInput, AgentActionOutput, AgentPerception
+from config.schema import (
+    AgentActionInput, AgentActionOutput, AgentPerception, BackendAction,
+    MoveBackendAction, ChatBackendAction, InteractBackendAction, PerceiveBackendAction, Message
+)
 
 def plan_next_action(agent_id: str, perception: AgentPerception) -> AgentActionOutput:
     """
@@ -29,7 +32,9 @@ def plan_next_action(agent_id: str, perception: AgentPerception) -> AgentActionO
 
     # LLM/planner call (replace with real LLM logic to generate a json file that will be sent from backend to frontend!)
     next_action = call_llm_agent(agent_state, perception.model_dump())
-
+    action_type = next_action["action_type"]
+    emoji = next_action.get("emoji", "🤖")
+    timestamp = perception.timestamp
     # Extract current tile and location from agent state
     current_tile = agent.curr_tile if hasattr(agent, 'curr_tile') else None
     current_location = None
@@ -42,15 +47,31 @@ def plan_next_action(agent_id: str, perception: AgentPerception) -> AgentActionO
         if len(address_parts) >= 3:
             current_location = address_parts[2]  # bedroom
     
-    # For move actions, update current_tile if destination_coordinates are provided
-    if next_action["action_type"] == "move" and "destination_coordinates" in next_action["content"]:
-        dest_coords = next_action["content"]["destination_coordinates"]
-        if dest_coords and len(dest_coords) >= 2:
-            # Store coordinates as [x, y] list to match spatial memory format
-            current_tile = [int(dest_coords[0]), int(dest_coords[1])]
-            # Update agent's curr_tile
-            agent.curr_tile = current_tile
-            agent.save()
+    # Build the correct BackendAction depending on type
+    if action_type == "move":
+        # next_action["destination_tile"] expected
+        action = MoveBackendAction(
+            action_type="move",
+            destination_tile=tuple(next_action["destination_tile"])
+        )
+    elif action_type == "chat":
+        # next_action["message"] expected to be dict with sender, receiver, message, timestamp
+        action = ChatBackendAction(
+            action_type="chat",
+            message=Message(**next_action["message"])
+        )
+    elif action_type == "interact":
+        # next_action["object"], ["current_state"], ["new_state"] expected
+        action = InteractBackendAction(
+            action_type="interact",
+            object=next_action["object"],
+            current_state=next_action["current_state"],
+            new_state=next_action["new_state"]
+        )
+    elif action_type == "perceive":
+        action = PerceiveBackendAction(action_type="perceive")
+    else:
+        raise ValueError(f"Unknown action_type: {action_type}")
 
     return AgentActionOutput(
         agent_id=next_action["agent_id"],
