@@ -178,5 +178,35 @@
     "location": "bedroom",
     "event": "I moved to position (20, 8). I could see: bed in bedroom. I saw these people: alan_002. I heard alan_002 say to alex_001: 'Hello!'",
     "salience": 3
+  },
+  {
+    "timestamp": "01T04:35:20",
+    "location": "unknown location",
+    "event": "I saw these people: alan_002",
+    "salience": 3
+  },
+  {
+    "timestamp": "01T04:35:20",
+    "location": "unknown location",
+    "event": "I chatted with alan_002: 'Good morning, Alan! How are you doing today?'. I saw these people: alan_002",
+    "salience": 5
+  },
+  {
+    "timestamp": "01T04:35:20",
+    "location": [
+      20,
+      8
+    ],
+    "event": "Sent message to alan_002: 'Good morning, Alan! How are you doing today?'",
+    "salience": 3
+  },
+  {
+    "timestamp": "01T04:35:21",
+    "location": [
+      21,
+      9
+    ],
+    "event": "Received message from alan_002: 'Good morning, Alex! I'm doing well, just getting started with my day. How about you?'",
+    "salience": 5
   }
 ]

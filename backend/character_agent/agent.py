@@ -96,6 +96,11 @@ class Agent:
         self.visible_agents = perception.get("visible_agents", [])
         self.chatable_agents = perception.get("chatable_agents", [])
         self.heard_messages = perception.get("heard_messages", [])
+        # Move chat messages to heard_messages
+        if hasattr(self, "chat") and self.chat:
+            self.heard_messages.extend(self.chat)
+            self.chat = []
+            self.save()
 
     def update_agent_data(self, data: Dict[str, Any]):
         """

@@ -2,7 +2,7 @@
   "agent_id": "alan_002",
   "vision_r": 4,
   "retention": 5,
-  "curr_time": "01T04:35:21",
+  "curr_time": "01T04:35:22",
   "curr_tile": [
     21,
     9
@@ -20,7 +20,7 @@
     "cooking",
     "gardening"
   ],
-  "currently": "I moved to position (21, 9). I could see: wardrobe in bedroom. I saw these people: alex_001. I heard alex_001 say to alan_002: 'Hi Alan!'",
+  "currently": "I could see: living_room in living_room. I saw these people: alex_001. I heard alex_001 say to alan_002: 'I'm doing great, just getting started as well. Going to work on some paintings today. What are your plans?'",
   "lifestyle": "active",
   "living_area": "apartment",
   "daily_req": [
