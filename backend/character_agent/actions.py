@@ -21,18 +21,16 @@ class ActionsMixin:
              destination_coordinates: Annotated[List[int], "The coordinates to move to as [x, y]"],
              action_emoji: Annotated[str, "The emoji representing the action"]
              ) -> Dict[str, Any]:
-        """
-        MOVEMENT ACTION SYSTEM PROMPT:
-        
-        You are using a movement function that allows your character agent to navigate in a 2D coordinate space.
+        """        
+        This function allows your character agent to navigate in a 2D coordinate space.
         Follow these guidelines for optimal movement behavior:
         
         COORDINATE SYSTEM:
-        - Use integer coordinates only: (x, y) format
+        - Use integer coordinates only: [x, y] format
         - X-axis: horizontal movement (positive = right, negative = left)
         - Y-axis: vertical movement (positive = up, negative = down)
-        - Origin (0, 0) is typically at the bottom-left or center of the grid
-        - Always provide coordinates as a tuple of two integers: (x, y)
+        - Origin [0, 0] is typically at the bottom-left or center of the grid
+        - Always provide coordinates as a list of two integers: [x, y]
         
         MOVEMENT STRATEGY:
         Focus on HOW you move rather than just WHERE you move. The manner of movement is everything - 
@@ -89,13 +87,13 @@ class ActionsMixin:
         - 🎉 Celebratory dance-walk - can't contain joy, rhythm in every step
         
         USAGE EXAMPLES:
-        - move((5, 3), "😰") - Nervously shuffle to (5, 3), hesitant and looking around
-        - move((10, 8), "🎯") - March with focused determination toward (10, 8), unwavering
-        - move((0, 0), "😴") - Trudge wearily home to origin, shoulders slumped, exhausted
-        - move((7, 2), "🕵️") - Creep methodically to (7, 2) to investigate, checking corners
-        - move((3, 7), "💃") - Strut confidently to (3, 7), wanting everyone to notice
-        - move((12, 4), "🐱") - Prowl silently to (12, 4) with predatory grace
-        - move((1, 9), "🎉") - Dance-walk joyfully to (1, 9), rhythm in every step
+        - move([5, 3], "😰") - Nervously shuffle to (5, 3), hesitant and looking around
+        - move([10, 8], "🎯") - March with focused determination toward (10, 8), unwavering
+        - move([0, 0], "😴") - Trudge wearily home to origin, shoulders slumped, exhausted
+        - move([7, 2], "🕵️") - Creep methodically to (7, 2) to investigate, checking corners
+        - move([3, 7], "💃") - Strut confidently to (3, 7), wanting everyone to notice
+        - move([12, 4], "🐱") - Prowl silently to (12, 4) with predatory grace
+        - move([1, 9], "🎉") - Dance-walk joyfully to (1, 9), rhythm in every step
         
         BEST PRACTICES:
         - Think like an actor: HOW would your character move in this emotional state?
@@ -129,9 +127,7 @@ class ActionsMixin:
                  action_emoji: Annotated[str, "The emoji representing the action"]
                  ) -> Dict[str, Any]:
         """
-        INTERACTION ACTION SYSTEM PROMPT:
-        
-        You are using an interaction function that allows your character to engage with objects in the environment.
+        This function allows your character to engage with objects in the environment.
         Focus on HOW you interact rather than just WHAT you interact with. The manner of interaction is everything - 
         it reveals your character's relationship with objects, emotional state, skill level, and intentions.
         
@@ -202,18 +198,18 @@ class ActionsMixin:
         - interact("stuck door", "opened", "💪") - Force open door with determined strength
         - interact("delicate mechanism", "activated", "🔧") - Skillfully activate complex device
         - interact("mysterious orb", "glowing", "😰") - Nervously touch orb, hands shaking
-        - interact("friendly robot", "awakened", "🤗") - Warmly embrace robot to bring it to life
-        - interact("locked chest", "opened", "🕵️") - Investigate lock mechanism like detective
-        - interact("broken window", "shattered", "💥") - Explosively break window completely
+        - interact("musical instrument", "playing", "🎨") - Artistically play beautiful melody
+        - interact("broken fence", "repaired", "🔨") - Hammer fence back into working order
+        - interact("secret panel", "opened", "🕵️") - Investigate and discover hidden mechanism
         
         BEST PRACTICES:
-        - Think like an actor: HOW would your character approach this object?
-        - Consider your character's relationship with technology, nature, magic, etc.
-        - Match interaction style to your character's current emotional state
-        - Let your interaction method reveal character traits and backstory
-        - Consider the object's apparent fragility, complexity, or danger
-        - Use interaction as a form of problem-solving expression
-        - Show respect, fear, curiosity, or other emotions through your touch
+        - Think about your character's skill level with this type of object
+        - Consider the emotional weight of the interaction
+        - Match the emoji to both the action and your character's feelings about it
+        - Remember that how you interact reveals personality traits
+        - Some objects may require multiple interaction attempts
+        - Consider the consequences of your interaction method
+        - Use interactions to show character growth and learning
         
         Returns JSON action for frontend communication.
         """
@@ -231,18 +227,60 @@ class ActionsMixin:
         print(f"Interact action: {json.dumps(action_json, indent=2)}")
         
         return action_json
-
+    
+    @ai_function()
+    def chat(self,
+             receiver: Annotated[str, "The agent ID of who you want to chat with"],
+             message: Annotated[str, "The message you want to send"],
+             action_emoji: Annotated[str, "The emoji representing the action"]
+             ) -> Dict[str, Any]:
+        """
+        This function allows your character to send messages to other agents.
+        
+        CHAT GUIDELINES:
+        - receiver: Use the exact agent_id of who you want to talk to
+        - message: Keep messages natural and in-character
+        - action_emoji: Choose an emoji that represents your communication style
+        
+        COMMUNICATION EMOJIS:
+        - 💬 Normal conversation - casual, friendly chat
+        - 😊 Happy chat - cheerful, positive interaction
+        - 🤔 Thoughtful discussion - serious, contemplative
+        - 😰 Nervous communication - hesitant, worried
+        - 😤 Frustrated talking - annoyed, impatient
+        - 🗣️ Loud announcement - calling out, making sure to be heard
+        - 🤫 Whispered secret - quiet, confidential communication
+        - 📢 Public declaration - speaking to multiple people
+        
+        Returns JSON action for frontend communication.
+        """
+        action_json = {
+            "agent_id": getattr(self, 'agent_id', 'unknown_agent'),
+            "action_type": "chat",
+            "content": {
+                "receiver": receiver,
+                "message": message
+            },
+            "emoji": action_emoji
+        }
+        
+        # Print JSON for debugging/logging
+        print(f"Chat action: {json.dumps(action_json, indent=2)}")
+        
+        return action_json
+    
     @ai_function()
     def perceive(self,
                  content: Annotated[str, "What you observe, notice, or want to communicate about your environment and surroundings"],
                  action_emoji: Annotated[str, "The emoji representing the action"]
                  ) -> Dict[str, Any]:
         """
-        PERCEPTION ACTION SYSTEM PROMPT:
+        This function allows your character to observe the environment and gather information.
         
-        You are using a perception function that allows your character to observe and gather information about the environment.
-        Focus on HOW you perceive rather than just WHAT you perceive. The manner of perception is everything - 
-        it reveals your character's awareness style, attention patterns, emotional state, and cognitive approach.
+        PERCEPTION GUIDELINES:
+        - Use this to actively look around and understand your surroundings
+        - Good for getting updated information about objects and other agents
+        - Useful when you need to reassess the situation
         
         Use the content field to describe what you observe, notice, or want to communicate about your surroundings.
         This enables discourse functionality - you can share your observations, thoughts, or reactions to the environment.
@@ -338,14 +376,21 @@ class ActionsMixin:
         - Use perception as character development and world-building
         - Show your character's relationship with their environment
         - Use content to share observations that others can read and respond to
+        PERCEPTION EMOJIS:
+        - 👀 General observation - looking around, taking in the scene
+        - 🔍 Detailed investigation - searching for specific things
+        - 🦉 Wise observation - thoughtful, careful examination
+        - 😕 Confused looking - trying to understand what's happening
+        - 🤔 Contemplative observation - thinking while observing
+        - 👁️ Focused attention - concentrating on something specific
+        - 🕵️ Detective work - investigating, looking for clues
         
         Returns JSON action for frontend communication.
         """
-        
         action_json = {
             "agent_id": getattr(self, 'agent_id', 'unknown_agent'),
             "action_type": "perceive",
-            "content": content,
+            "content": {content},
             "emoji": action_emoji
         }
         
@@ -353,6 +398,82 @@ class ActionsMixin:
         print(f"Perceive action: {json.dumps(action_json, indent=2)}")
         
         return action_json
+    
+    @ai_function()
+    def evaluate_event_salience(self,
+                               event_description: Annotated[str, "The event that occurred"],
+                               salience_score: Annotated[int, "Importance score from 1-10 (1=trivial, 5=notable, 10=life-changing)"]
+                               ) -> Dict[str, Any]:
+        """
+        Evaluate the emotional and personal significance of an event for memory storage.
+        
+        SALIENCE SCORING GUIDELINES:
+        Rate events on a scale from 1-10 based on their importance to your character:
+        
+        TRIVIAL EVENTS (1-2):
+        - Routine observations with no personal significance
+        - Seeing common objects in expected places
+        - Regular daily activities that happen frequently
+        - Minor environmental changes that don't affect you
+        
+        LOW IMPORTANCE (3-4):
+        - Interactions with familiar objects for routine purposes
+        - Brief, casual conversations about mundane topics
+        - Minor changes in your environment
+        - Completing simple, everyday tasks
+        
+        MODERATE IMPORTANCE (5-6):
+        - Meaningful conversations with other agents
+        - Discovering new objects or areas
+        - Completing important daily requirements
+        - Social interactions that reveal personality or relationships
+        - Learning something new about your environment
+        
+        HIGH IMPORTANCE (7-8):
+        - Significant social conflicts or emotional moments
+        - Major discoveries or revelations
+        - Events that change your understanding of the world
+        - Interactions that significantly impact relationships
+        - Achieving important personal goals
+        
+        LIFE-CHANGING EVENTS (9-10):
+        - Traumatic or extremely joyful experiences
+        - Major life decisions or turning points
+        - Events that fundamentally change your character
+        - Profound emotional experiences
+        - Life-threatening or life-saving situations
+        
+        FACTORS TO CONSIDER:
+        - Personal relevance: How much does this affect YOU specifically?
+        - Emotional impact: How strongly did this make you feel?
+        - Uniqueness: How rare or unusual is this event?
+        - Consequences: Will this event influence your future actions?
+        - Relationships: Does this significantly affect your connections with others?
+        - Goal relevance: Does this help or hinder your personal objectives?
+        
+        EXAMPLES:
+        - "I saw a bed in the bedroom" (routine observation) = 1-2
+        - "I talked with John about the weather" (casual chat) = 3-4
+        - "I discovered a hidden room I've never seen before" (new discovery) = 6-7
+        - "Sarah told me she's moving away forever" (relationship impact) = 8-9
+        - "I barely escaped a dangerous situation" (life-threatening) = 9-10
+        
+        Remember: Score based on YOUR character's perspective and personality.
+        What's important to one character might be trivial to another.
+        
+        Returns the salience evaluation for the memory system.
+        """
+        evaluation = {
+            "agent_id": getattr(self, 'agent_id', 'unknown_agent'),
+            "function_type": "salience_evaluation",
+            "event_description": event_description,
+            "salience_score": max(1, min(10, salience_score))  # Ensure score is between 1-10
+        }
+        
+        # Print for debugging/logging
+        print(f"Salience evaluation: {json.dumps(evaluation, indent=2)}")
+        
+        return evaluation
         
         
         

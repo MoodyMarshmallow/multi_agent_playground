@@ -83,6 +83,8 @@ class Agent:
         # Runtime-only (not persisted, updated per perception)
         self.visible_objects = {}
         self.visible_agents = []
+        self.chatable_agents = []
+        self.heard_messages = []
 
     def update_perception(self, perception: Dict[str, Any]):
         """
@@ -92,6 +94,8 @@ class Agent:
         """
         self.visible_objects = perception.get("visible_objects", {})
         self.visible_agents = perception.get("visible_agents", [])
+        self.chatable_agents = perception.get("chatable_agents", [])
+        self.heard_messages = perception.get("heard_messages", [])
 
     def update_agent_data(self, data: Dict[str, Any]):
         """
@@ -131,6 +135,8 @@ class Agent:
         data.pop("agent_dir", None)      # Do not persist the path itself
         data.pop("visible_objects", None)
         data.pop("visible_agents", None)
+        data.pop("chatable_agents", None)
+        data.pop("heard_messages", None)
         with open(self.agent_dir / "agent.json", "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, default=str)
 
@@ -153,6 +159,8 @@ class Agent:
             "memory": self.memory,
             "visible_objects": self.visible_objects,
             "visible_agents": self.visible_agents,
+            "chatable_agents": self.chatable_agents,
+            "heard_messages": self.heard_messages,
             "currently": self.currently,
             # Add more fields as needed
         }

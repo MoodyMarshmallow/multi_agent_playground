@@ -164,10 +164,12 @@ CURRENT CONTEXT:
 - Current activity: {self.agent.act_description}
 
 CAPABILITIES:
-You have three main actions available:
+You have five main actions available:
 1. move(destination_coordinates, action_emoji) - Move to specific coordinates
-2. interact(object, new_state, action_emoji) - Interact with objects to change their state
-3. perceive(content, action_emoji) - Perceive objects and agents in your visible area
+2. chat(receiver, message, action_emoji) - Send messages to other agents
+3. interact(object, new_state, action_emoji) - Interact with objects to change their state
+4. perceive(action_emoji) - Perceive objects and agents in your visible area
+5. evaluate_event_salience(event_description, salience_score) - Rate the importance of events for memory storage
 
 BEHAVIOR GUIDELINES:
 - Always stay in character based on your personality traits
@@ -177,8 +179,11 @@ BEHAVIOR GUIDELINES:
 - Make decisions based on your current state and visible environment
 - Keep actions realistic and contextually appropriate
 
-JSON FORMATTING GUIDELINES:
-- Always use double quotes (\\") to label strings in the files.
+MEMORY AND SALIENCE:
+- Your experiences are stored in memory with different levels of importance (salience)
+- When evaluating events, consider your personal perspective and emotional response
+- Rate routine activities lower (1-3), meaningful interactions higher (4-7), and life-changing events highest (8-10)
+- Your personality traits affect what you find important or trivial
 
 When deciding on actions:
 1. Consider your current needs and daily requirements
@@ -356,29 +361,28 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         return "\n".join(message_parts)
 
 
-    @staticmethod
-    async def call_llm_for_action(agent_state: Dict[str, Any], perception_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Replacement function for call_llm_agent that uses the Kani-based LLM agent.
+async def call_llm_for_action(agent_state: Dict[str, Any], perception_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Replacement function for call_llm_agent that uses the Kani-based LLM agent.
+    
+    Args:
+        agent_state (dict): Current agent state
+        perception_data (dict): Current perception data
         
-        Args:
-            agent_state (dict): Current agent state
-            perception_data (dict): Current perception data
-            
-        Returns:
-            dict: Action JSON in the format expected by the frontend
-        """
-        # Create Agent instance from state
-        agent_dir: str = f"data/agents/{agent_state['agent_id']}"
-        agent: Agent = Agent(agent_dir)
-        
-        # Create LLM agent
-        llm_agent: LLMAgent = LLMAgent(agent)
-        
-        # Plan next action
-        action_result: Dict[str, Any] = await llm_agent.plan_next_action(perception_data)
-        
-        return action_result
+    Returns:
+        dict: Action JSON in the format expected by the frontend
+    """
+    # Create Agent instance from state
+    agent_dir = f"data/agents/{agent_state['agent_id']}"
+    agent = Agent(agent_dir)
+    
+    # Create LLM agent
+    llm_agent = LLMAgent(agent)
+    
+    # Plan next action
+    action_result = await llm_agent.plan_next_action(perception_data)
+    
+    return action_result
 
 
     # Synchronous wrapper for compatibility with existing code
