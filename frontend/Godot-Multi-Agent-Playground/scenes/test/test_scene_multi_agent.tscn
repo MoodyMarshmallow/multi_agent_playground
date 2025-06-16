@@ -38,7 +38,12 @@ script = ExtResource("3_t1854")
 script = ExtResource("4_kl5l3")
 
 [node name="Agent1" parent="HttpManager/AgentManager" instance=ExtResource("4_txsbw")]
-visible_agents = ["alan_002"]
+position = Vector2(356, 130)
+visible_agents = Array[String](["alan_002"])
+chatable_agents = Array[String](["alan_002"])
 
 [node name="Agent2" parent="HttpManager/AgentManager" instance=ExtResource("6_wivxd")]
+position = Vector2(512, 192)
 agent_id = "alan_002"
+visible_agents = Array[String](["alex_002"])
+chatable_agents = Array[String](["alex_002"])

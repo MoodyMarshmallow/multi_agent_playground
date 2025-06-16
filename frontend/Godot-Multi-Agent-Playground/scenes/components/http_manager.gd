@@ -2,7 +2,7 @@ extends Node
 
 # Configuration
 const BACKEND_URL = "http://localhost:8000"
-const POLL_INTERVAL = 10.0  # seconds
+const POLL_INTERVAL = 5.0
 
 # State tracking
 var _poll_timer: Timer
@@ -24,7 +24,6 @@ func _ready():
 	_poll_timer.timeout.connect(_on_poll_timer_timeout)
 	add_child(_poll_timer)
 	_poll_timer.start()
-	_request_next_actions()
 
 func _on_poll_timer_timeout():
 	if not _is_processing_actions:

@@ -4,7 +4,6 @@ extends CharacterBody2D
 
 signal chat_message_sent(receiver_id: String, message: Dictionary)
 
-@onready var navigation_agent_2d: NavigationAgent2D = $NavigationAgent2D
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 
 # Variables we will need to send to http manager:
@@ -12,15 +11,47 @@ signal chat_message_sent(receiver_id: String, message: Dictionary)
 var current_tile: Vector2i = Vector2i(0, 0)
 var visible_objects: Dictionary = {}
 @export var visible_agents: Array[String] = []
-var chatable_agents: Array = []
+@export var HouseUpperLeftTile : Vector2i = Vector2i(16, 3)
+@export var chatable_agents: Array[String] = []
 var heard_messages: Array = []
 var timestamp: String = ""
 var forwarded: bool = true
 var in_progress: bool = false
 var destination_tile: Vector2i = Vector2i(0, 0)
 
+# --- Navigation Variables ---
+@onready var navigation_agent_2d: NavigationAgent2D = $NavigationAgent2D
+
+# --- State Machine ---
+@onready var state_machine: Node = $StateMachine
+@onready var idle: Node = $StateMachine/Idle
+@onready var walk: Node = $StateMachine/Walk
+
+
 func _ready() -> void:
-	pass
+	# Enable debug visualization
+	navigation_agent_2d.debug_enabled = true
+	navigation_agent_2d.debug_use_custom = true
+	navigation_agent_2d.debug_path_custom_color = Color.RED
+	navigation_agent_2d.debug_path_custom_point_size = 8.0
+	navigation_agent_2d.debug_path_custom_line_width = 3.0
+
+	# Make the agent follow the path more precisely
+	navigation_agent_2d.path_desired_distance = 10.0  # Default is usually 20.0
+	navigation_agent_2d.target_desired_distance = 10.0  # Default is usually 10.0
+	navigation_agent_2d.path_max_distance = 15.0
+	navigation_agent_2d.simplify_path = false
+	
+	current_tile = position_to_tile(position)
+	destination_tile = current_tile
+
+# --- FSM Functions ---
+
+func position_to_tile(pos: Vector2) -> Vector2i:
+	# Assumes pos is in pixels
+	var tile_x = int(floor(pos.x / 16))
+	var tile_y = int(floor(pos.y / 16))
+	return Vector2i(tile_x, tile_y)
 
 # --- Functions signalled from HTTP manager ---
 func on_move_action_received(agent_id: String, destination_tile: Vector2i) -> void:
