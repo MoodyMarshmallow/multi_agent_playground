@@ -21,11 +21,12 @@ var destination_tile: Vector2i = Vector2i(0, 0)
 
 # --- Navigation Variables ---
 @onready var navigation_agent_2d: NavigationAgent2D = $NavigationAgent2D
+var speed = 50.0
 
 # --- State Machine ---
-@onready var state_machine: Node = $StateMachine
-@onready var idle: Node = $StateMachine/Idle
-@onready var walk: Node = $StateMachine/Walk
+@onready var state_machine: StateMachine = $StateMachine
+@onready var idle: State = $StateMachine/Idle
+@onready var walk: State = $StateMachine/Walk
 
 
 func _ready() -> void:
@@ -53,22 +54,35 @@ func position_to_tile(pos: Vector2) -> Vector2i:
 	var tile_y = int(floor(pos.y / 16))
 	return Vector2i(tile_x, tile_y)
 
+func tile_to_position(tile: Vector2i) -> Vector2:
+	# Assumes pos is in pixels
+	var pos_x = int((tile.x + 0.5) * 16)
+	var pos_y = int((tile.y + 0.5) * 16)
+	return Vector2(pos_x, pos_y)
+
 # --- Functions signalled from HTTP manager ---
 func on_move_action_received(agent_id: String, destination_tile: Vector2i) -> void:
 	if agent_id != self.agent_id:
 		return
 	print("Moving to tile: ", destination_tile)
 	in_progress = true
+	#TODO Fix offset complications
+	destination_tile = destination_tile + HouseUpperLeftTile
+	var destination_pos = Vector2(destination_tile.x * 16 + 8, destination_tile.y * 16 + 8)
+	
+	navigation_agent_2d.set_target_position(destination_pos)
+	state_machine.on_child_transition(state_machine.current_state, "Walk")
+	
 	current_tile = destination_tile
-	destination_tile = destination_tile
-	in_progress = false
 
 # Called when a chat action is received
 func on_chat_action_received(agent_id: String, message: Dictionary) -> void:
 	if agent_id != self.agent_id:
 		return
+	navigation_agent_2d.set_target_position(position)
 	print("Sent chat message: ", message)
 	in_progress = true
+	state_machine.on_child_transition(state_machine.current_state, "Idle")
 	chat_message_sent.emit(message.receiver, message)
 	forwarded = true
 	in_progress = false
@@ -80,16 +94,20 @@ func on_receive_chat_message(message: Dictionary) -> void:
 func on_interact_action_received(agent_id: String, object: String, current_state: String, new_state: String) -> void:
 	if agent_id != self.agent_id:
 		return
+	navigation_agent_2d.set_target_position(position)
 	print("Interacting with object: %s, from %s to %s" % [object, current_state, new_state])
 	in_progress = true
+	state_machine.on_child_transition(state_machine.current_state, "Idle")
 	in_progress = false
 
 # Called when a perceive action is received
 func on_perceive_action_received(agent_id: String) -> void:
 	if agent_id != self.agent_id:
 		return
+	navigation_agent_2d.set_target_position(position)
 	print("Perceive action triggered")
 	in_progress = true
+	state_machine.on_child_transition(state_machine.current_state, "Idle")
 	in_progress = false
 
 
@@ -99,6 +117,7 @@ func get_agent_id() -> String:
 	return agent_id
 
 func get_current_tile() -> Array:
+	current_tile = tile_to_position(position)
 	return [current_tile.x, current_tile.y]
 
 func get_destination_tile() -> Array:
@@ -138,3 +157,21 @@ func get_perception() -> Dictionary:
 		"chatable_agents": chatable_agents,
 		"heard_messages": old_heard_messages
 	}
+
+func _physics_process(delta: float) -> void:
+	var navigation_agent_2d = $NavigationAgent2D
+	if navigation_agent_2d.is_navigation_finished():
+		in_progress = false
+		state_machine.on_child_transition(state_machine.current_state, "Idle")
+		return
+	# Get the next point to move toward
+	var next_point = navigation_agent_2d.get_next_path_position()
+	var direction = (next_point - position).normalized()
+	# Move the agent
+	position += direction * speed * delta
+	current_tile = position_to_tile(position)
+	pass
+
+# updates the agent's perception variable such as visible_objects, visible_agents, chatable_agents, and current_tile
+func _update_perception() -> void:
+	pass
