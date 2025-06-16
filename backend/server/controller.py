@@ -195,20 +195,22 @@ def confirm_action_and_update(agent_msg: AgentActionInput) -> None:
     agent.save()
     agent.save_memory()
 
-    # Chat handling: extract message from heard_messages in perception
+    # Chat handling: process messages in heard_messages
     action = getattr(agent_msg, "action", None)
     if action and getattr(action, "action_type", None) == "chat":
         heard_messages = getattr(agent_msg.perception, "heard_messages", [])
-        # Find the message sent by this agent in heard_messages
-        msg_dict = next(
-            (m for m in heard_messages if m.sender == agent_msg.agent_id),
-            None
-        )
-        if msg_dict:
-            msg = Message(**msg_dict)
-            location = getattr(agent, "curr_tile", None)
+        location = getattr(agent, "curr_tile", None)
+        
+        for msg in heard_messages:
+            # Save message to queue
             append_message_to_queue(msg, location)
-            event_str = f"Sent message to {msg.receiver}: '{msg.message}'"
+            
+            # Record event based on whether agent is sender or receiver
+            if msg.sender == agent_msg.agent_id:
+                event_str = f"Sent message to {msg.receiver}: '{msg.message}'"
+            else:
+                event_str = f"Received message from {msg.sender}: '{msg.message}'"
+            
             salience = evaluate_event_salience(agent, event_str)
             agent.add_memory_event(
                 timestamp=msg.timestamp,
@@ -216,7 +218,7 @@ def confirm_action_and_update(agent_msg: AgentActionInput) -> None:
                 event=event_str,
                 salience=salience
             )
-            agent.save_memory()
+        agent.save_memory()
 
 def evaluate_event_salience(agent: Agent, event_description: str) -> int:
     try:

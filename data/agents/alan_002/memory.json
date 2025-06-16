@@ -40,5 +40,38 @@
     "location": "living_room",
     "event": "I could see: living_room in living_room. I saw these people: alex_001. I heard alex_001 say to alan_002: 'I'm doing great, just getting started as well. Going to work on some paintings today. What are your plans?'",
     "salience": 5
+  },
+  {
+    "timestamp": "01T04:35:24",
+    "location": [
+      20,
+      8
+    ],
+    "event": "Received message from alex_001: 'I'm doing great, thanks! I'm planning to start working on my paintings soon. What do you have planned for today? \ud83d\ude0a'",
+    "salience": 5
+  },
+  {
+    "timestamp": "01T04:35:25",
+    "location": "living_room",
+    "event": "I could see: living_room in living_room. I saw these people: alex_001. I heard alex_001 say to alan_002: 'I'm doing great, thanks! I'm planning to start working on my paintings soon. What do you have planned for today? \ud83d\ude0a'. I heard alan_002 say to alex_001: 'Hey Alex, I'm planning to do some cooking today, maybe try out a new recipe. What kind of paintings are you working on? \ud83d\ude0a'",
+    "salience": 5
+  },
+  {
+    "timestamp": "01T04:35:24",
+    "location": [
+      21,
+      9
+    ],
+    "event": "Received message from alex_001: 'I'm doing great, thanks! I'm planning to start working on my paintings soon. What do you have planned for today? \ud83d\ude0a'",
+    "salience": 5
+  },
+  {
+    "timestamp": "01T04:35:25",
+    "location": [
+      21,
+      9
+    ],
+    "event": "Sent message to alex_001: 'Hey Alex, I'm planning to do some cooking today, maybe try out a new recipe. What kind of paintings are you working on? \ud83d\ude0a'",
+    "salience": 5
   }
 ]

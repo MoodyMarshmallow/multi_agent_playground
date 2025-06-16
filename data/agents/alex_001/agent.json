@@ -2,7 +2,7 @@
   "agent_id": "alex_001",
   "vision_r": 4,
   "retention": 5,
-  "curr_time": "01T04:35:20",
+  "curr_time": "01T04:35:24",
   "curr_tile": [
     20,
     8
@@ -23,7 +23,7 @@
       "French"
     ]
   },
-  "currently": "I chatted with alan_002: 'Good morning, Alan! How are you doing today?'. I saw these people: alan_002",
+  "currently": "I could see: living_room in living_room. I saw these people: alan_002. I heard alex_001 say to alan_002: 'I'm doing great, thanks! I'm planning to start working on my paintings soon. What do you have planned for today? \ud83d\ude0a'",
   "lifestyle": "artist",
   "living_area": "downtown studio",
   "daily_req": [
