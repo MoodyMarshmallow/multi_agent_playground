@@ -1,0 +1,32 @@
+[gd_scene load_steps=7 format=3 uid="uid://dleatrinsn5so"]
+
+[ext_resource type="PackedScene" uid="uid://0vuviv68yjtr" path="res://scenes/components/player_animated_sprite.tscn" id="1_8ljyr"]
+[ext_resource type="Script" path="res://scenes/characters/agents/agent.gd" id="1_lucgp"]
+[ext_resource type="Script" path="res://scenes/characters/agents/agent_state_machine.gd" id="3_vhqan"]
+[ext_resource type="Script" path="res://scenes/characters/agents/agent_idle.gd" id="4_6b4s1"]
+[ext_resource type="Script" path="res://scenes/characters/agents/agent_walk.gd" id="5_bb8p1"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_8bwlk"]
+radius = 4.0
+
+[node name="Agent" type="CharacterBody2D"]
+position = Vector2(179, 275)
+script = ExtResource("1_lucgp")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+
+[node name="AnimatedSprite2D" parent="." instance=ExtResource("1_8ljyr")]
+animation = &"idle_front"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -7)
+shape = SubResource("CircleShape2D_8bwlk")
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("3_vhqan")
+
+[node name="Idle" type="Node" parent="StateMachine"]
+script = ExtResource("4_6b4s1")
+
+[node name="Walk" type="Node" parent="StateMachine"]
+script = ExtResource("5_bb8p1")
