@@ -7,6 +7,7 @@ func _ready():
 		if agent.has_signal("chat_message_sent"):
 			agent.connect("chat_message_sent", self._on_agent_chat_message_sent)
 			
+
 func _on_agent_chat_message_sent(receiver_id: String, message: Dictionary) -> void:
 	var receiver_agent = _find_agent_by_id(receiver_id)
 	if receiver_agent and receiver_agent.has_method("on_receive_chat_message"):

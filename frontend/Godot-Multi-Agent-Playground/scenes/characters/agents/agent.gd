@@ -11,7 +11,7 @@ signal chat_message_sent(receiver_id: String, message: Dictionary)
 var current_tile: Vector2i = Vector2i(0, 0)
 var visible_objects: Dictionary = {}
 @export var visible_agents: Array[String] = []
-@export var HouseUpperLeftTile : Vector2i = Vector2i(16, 3)
+@export var HouseUpperLeftTile : Vector2i = Vector2i(0, 0)
 @export var chatable_agents: Array[String] = []
 var heard_messages: Array = []
 var timestamp: String = ""
@@ -64,23 +64,26 @@ func tile_to_position(tile: Vector2i) -> Vector2:
 func on_move_action_received(agent_id: String, destination_tile: Vector2i) -> void:
 	if agent_id != self.agent_id:
 		return
-	print("Moving to tile: ", destination_tile)
 	in_progress = true
-	#TODO Fix offset complications
 	destination_tile = destination_tile + HouseUpperLeftTile
 	var destination_pos = Vector2(destination_tile.x * 16 + 8, destination_tile.y * 16 + 8)
+
+	# Snap to navigation region
+	var safe_destination = NavigationServer2D.map_get_closest_point(navigation_agent_2d.get_navigation_map(), destination_pos)
+	var safe_destination_tile = position_to_tile(safe_destination)
+	navigation_agent_2d.set_target_position(safe_destination)
+	state_machine.on_child_transition(state_machine.current_state, "Walk")
+	current_tile = destination_tile
 	
 	navigation_agent_2d.set_target_position(destination_pos)
 	state_machine.on_child_transition(state_machine.current_state, "Walk")
-	
-	current_tile = destination_tile
+	in_progress = false
 
 # Called when a chat action is received
 func on_chat_action_received(agent_id: String, message: Dictionary) -> void:
 	if agent_id != self.agent_id:
 		return
 	navigation_agent_2d.set_target_position(position)
-	print("Sent chat message: ", message)
 	in_progress = true
 	state_machine.on_child_transition(state_machine.current_state, "Idle")
 	chat_message_sent.emit(message.receiver, message)

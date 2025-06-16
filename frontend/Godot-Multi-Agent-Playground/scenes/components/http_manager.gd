@@ -24,6 +24,8 @@ func _ready():
 	_poll_timer.timeout.connect(_on_poll_timer_timeout)
 	add_child(_poll_timer)
 	_poll_timer.start()
+	_is_processing_actions = true
+	_request_next_actions()
 
 func _on_poll_timer_timeout():
 	if not _is_processing_actions:
@@ -124,7 +126,7 @@ func _send_pending_confirmations():
 		confirm_bodies.append({
 			"agent_id": action.agent_id,
 			"action": agent_manager.get_agent_frontend_action(action.agent_id, action.action.action_type),
-			"in_progress": agent_manager.get_agent_in_progress(action.agent_id), # TODO: Get actual progress status
+			"in_progress": agent_manager.get_agent_in_progress(action.agent_id),
 			"perception": agent_manager.get_agent_perception(action.agent_id)
 		})
 	
