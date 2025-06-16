@@ -19,8 +19,8 @@ backend_dir = Path(__file__).parent.parent
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
-from kani_implementation import LLMAgent
-from config.llm_config import LLMConfig
+from backend.character_agent.kani_implementation import LLMAgent
+from backend.config.llm_config import LLMConfig
 
 
 def check_prerequisites():
@@ -36,7 +36,7 @@ def check_prerequisites():
         return False
     
     # Check agent data
-    agent_dir = Path(__file__).parent.parent.parent / "data" / "agents" / "alex"
+    agent_dir = Path(__file__).parent.parent / "data" / "agents" / "alex_001"
     if agent_dir.exists():
         print(f"✅ Agent data directory found: {agent_dir}")
         agent_json = agent_dir / "agent.json"

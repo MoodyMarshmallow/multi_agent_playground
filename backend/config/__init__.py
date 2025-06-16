@@ -25,7 +25,6 @@ from .schema import (
     AgentActionOutput,
     AgentPerception,
     StatusMsg,
-    AgentActionContent
 )
 
 __version__ = "1.0.0"

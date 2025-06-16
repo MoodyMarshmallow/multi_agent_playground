@@ -361,28 +361,28 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         return "\n".join(message_parts)
 
 
-async def call_llm_for_action(agent_state: Dict[str, Any], perception_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Replacement function for call_llm_agent that uses the Kani-based LLM agent.
-    
-    Args:
-        agent_state (dict): Current agent state
-        perception_data (dict): Current perception data
+    async def call_llm_for_action(agent_state: Dict[str, Any], perception_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Replacement function for call_llm_agent that uses the Kani-based LLM agent.
         
-    Returns:
-        dict: Action JSON in the format expected by the frontend
-    """
-    # Create Agent instance from state
-    agent_dir = f"data/agents/{agent_state['agent_id']}"
-    agent = Agent(agent_dir)
-    
-    # Create LLM agent
-    llm_agent = LLMAgent(agent)
-    
-    # Plan next action
-    action_result = await llm_agent.plan_next_action(perception_data)
-    
-    return action_result
+        Args:
+            agent_state (dict): Current agent state
+            perception_data (dict): Current perception data
+            
+        Returns:
+            dict: Action JSON in the format expected by the frontend
+        """
+        # Create Agent instance from state
+        agent_dir = f"data/agents/{agent_state['agent_id']}"
+        agent = Agent(agent_dir)
+        
+        # Create LLM agent
+        llm_agent = LLMAgent(agent)
+        
+        # Plan next action
+        action_result = await llm_agent.plan_next_action(perception_data)
+        
+        return action_result
 
 
     # Synchronous wrapper for compatibility with existing code
