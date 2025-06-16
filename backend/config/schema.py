@@ -9,6 +9,7 @@ class Message(BaseModel):
     receiver: str
     message: str
     timestamp: Optional[str] = None
+    conversation_id: Optional[str] = None  # Added for conversation tracking
 # Example
 #     {
 #       "sender": "alex_001",

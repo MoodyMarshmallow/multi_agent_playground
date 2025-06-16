@@ -15,6 +15,7 @@ planning, and state updates for all agents in the simulation.
 import asyncio
 import sys
 from pathlib import Path
+import uuid
 
 # Add the backend directory to Python path for imports
 backend_dir = Path(__file__).parent.parent
@@ -60,11 +61,16 @@ def plan_next_action(agent_id: str, perception: AgentPerception) -> AgentActionO
         # Extract message info from content
         message_content = next_action["content"].get("message", "")
         receiver = next_action["content"].get("receiver", "")
+        conversation_id = next_action["content"].get("conversation_id")
+        # assign a conversation_id if not provided
+        if not conversation_id:
+            conversation_id = str(uuid.uuid4())
         message = Message(
             sender=agent_id,
             receiver=receiver,
             message=message_content,
-            timestamp=perception.timestamp
+            timestamp=perception.timestamp,
+            conversation_id=conversation_id
         )
         backend_action = ChatBackendAction(
             action_type="chat",
