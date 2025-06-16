@@ -128,8 +128,24 @@ class LLMAgent(Kani, ActionsMixin):
         Returns:
             str: The system prompt for the LLM
         """
+        # Load environment data from memory/data/environment.json
+        environment_data = {}
+        try:
+            environment_path = Path(__file__).parent.parent / "memory" / "data" / "environment.json"
+            with open(environment_path, 'r', encoding='utf-8') as f:
+                environment_data = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"Warning: Could not load environment.json: {e}")
+            environment_data = {"house": {"first_floor": {}}}
+        
+        # Build spatial memory from environment data
+        spatial_memory = self._format_spatial_memory(environment_data)
+        
         agent_info: str = f"""
 You are {self.agent.name}, a character in a multi-agent simulation.
+
+SPATIAL MEMORY:
+{spatial_memory}
 
 PERSONALITY & BACKGROUND:
 - Age: {self.agent.age}
@@ -173,6 +189,56 @@ When deciding on actions:
 Respond naturally as {self.agent.first_name} would, and use the available action functions to interact with the world.
 """
         return agent_info
+    
+    def _format_spatial_memory(self, environment_data: Dict[str, Any]) -> str:
+        """
+        Format environment data into a readable spatial memory for the agent.
+        
+        Args:
+            environment_data (dict): The environment data loaded from environment.json
+            
+        Returns:
+            str: Formatted spatial memory description
+        """
+        if not environment_data or "house" not in environment_data:
+            return "No spatial memory available."
+        
+        house_data = environment_data["house"]
+        memory_parts = []
+        
+        # Process first floor layout
+        if "first_floor" in house_data:
+            memory_parts.append("HOUSE LAYOUT (First Floor):")
+            first_floor = house_data["first_floor"]
+            
+            for room_name, room_data in first_floor.items():
+                memory_parts.append(f"\n{room_name.upper().replace('_', ' ')}:")
+                
+                for object_name, object_info in room_data.items():
+                    if isinstance(object_info, dict):
+                        # Handle nested objects (like bookshelves with left/right)
+                        if any(isinstance(v, dict) and "shape" in v for v in object_info.values()):
+                            memory_parts.append(f"  - {object_name.replace('_', ' ')}:")
+                            for sub_name, sub_info in object_info.items():
+                                if isinstance(sub_info, dict) and "shape" in sub_info:
+                                    shape_coords = sub_info["shape"]
+                                    interact_coords = sub_info.get("interact", [])
+                                    memory_parts.append(f"    • {sub_name.replace('_', ' ')}: coordinates {shape_coords}")
+                                    if interact_coords:
+                                        memory_parts.append(f"      (interact at: {interact_coords})")
+                        elif "shape" in object_info:
+                            # Regular object with shape
+                            shape_coords = object_info["shape"]
+                            interact_coords = object_info.get("interact", [])
+                            description = object_info.get("description", "")
+                            
+                            memory_parts.append(f"  - {object_name.replace('_', ' ')}: coordinates {shape_coords}")
+                            if interact_coords:
+                                memory_parts.append(f"    (interact at: {interact_coords})")
+                            if description:
+                                memory_parts.append(f"    ({description})")
+        
+        return "\n".join(memory_parts) if memory_parts else "No spatial memory available."
     
     
     async def plan_next_action(self, perception_data: Dict[str, Any]) -> Dict[str, Any]:
