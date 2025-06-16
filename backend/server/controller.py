@@ -26,12 +26,14 @@ from character_agent.actions import ActionsMixin
 from character_agent.kani_implementation import call_llm_agent, LLMAgent
 from config.schema import AgentActionInput, AgentActionOutput, AgentPerception, BackendAction, MoveBackendAction, ChatBackendAction, InteractBackendAction, PerceiveBackendAction, Message
 
+PROJECT_ROOT = Path(__file__).parent.parent.parent.resolve()
+
 def plan_next_action(agent_id: str, perception: AgentPerception) -> AgentActionOutput:
     """
     Step 1: Decide the next action (LLM/planner), given current perception.
     Do NOT update agent data yet.
     """
-    agent_dir = f"../data/agents/{agent_id}"
+    agent_dir = PROJECT_ROOT / "data" / "agents" / agent_id
     agent = Agent(agent_dir)
     agent.update_perception(perception.model_dump())
     agent_state = agent.to_state_dict()
@@ -99,7 +101,7 @@ def confirm_action_and_update(agent_msg: AgentActionInput) -> None:
     Backend updates state/memory using the reported result.
     """
     print(agent_msg)
-    agent_dir = f"../data/agents/{agent_msg.agent_id}"
+    agent_dir = PROJECT_ROOT / "data" / "agents" / agent_msg.agent_id
     agent = Agent(agent_dir)
     perception = agent_msg.perception.model_dump()
     agent.update_perception(perception)

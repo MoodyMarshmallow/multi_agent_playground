@@ -315,3 +315,12 @@ class AgentActionOutput(BaseModel):
 class StatusMsg(BaseModel):
     status: str
 
+# -----------------------------------------------------------------------------
+# AgentPlanRequest (Frontend → Backend) for batch processing
+# -----------------------------------------------------------------------------
+class AgentPlanRequest(BaseModel):
+    agent_id: str
+    perception: AgentPerception
+
+# Full Example:
+

@@ -19,7 +19,7 @@ load_dotenv()
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from backend.config.schema import AgentActionInput, AgentActionOutput, AgentPerception, StatusMsg
+from backend.config.schema import AgentActionInput, AgentActionOutput, AgentPerception, StatusMsg, AgentPlanRequest
 from backend.server.controller import plan_next_action, confirm_action_and_update
 
 
@@ -34,7 +34,7 @@ app.add_middleware(
 )
 
 @app.post("/agent_act/plan", response_model=List[AgentActionOutput])
-def post_plan_action_batch(inputs: List[AgentActionInput]):
+def post_plan_action_batch(inputs: List[AgentPlanRequest]):
     """
     Step 1: Batched perception input → plan actions using LLM.
     (Does NOT update state yet.)

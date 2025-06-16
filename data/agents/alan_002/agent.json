@@ -1,37 +1,32 @@
 {
-  "agent_id": "alex_001",
+  "agent_id": "alan_002",
   "vision_r": 4,
   "retention": 5,
-  "curr_time": "01T04:35:20",
+  "curr_time": "01T04:35:21",
   "curr_tile": [
-    20,
-    8
+    21,
+    9
   ],
   "daily_plan_req": "Finish painting, make lunch, call gallery",
-  "name": "Alex",
-  "first_name": "Alex",
+  "name": "Alan",
+  "first_name": "Alan",
   "last_name": "Smith",
-  "age": 29,
-  "innate": {
-    "openness": 7,
-    "conscientiousness": 6,
-    "extraversion": 5
-  },
-  "learned": {
-    "languages": [
-      "English",
-      "French"
-    ]
-  },
-  "currently": "I moved to position (20, 8). I could see: bed in bedroom. I saw these people: alan_002. I heard alan_002 say to alex_001: 'Hello!'",
-  "lifestyle": "artist",
-  "living_area": "downtown studio",
+  "age": 28,
+  "innate": [
+    "curious",
+    "friendly"
+  ],
+  "learned": [
+    "cooking",
+    "gardening"
+  ],
+  "currently": "I moved to position (21, 9). I could see: wardrobe in bedroom. I saw these people: alex_001. I heard alex_001 say to alan_002: 'Hi Alan!'",
+  "lifestyle": "active",
+  "living_area": "apartment",
   "daily_req": [
-    "Work on her paintings for her upcoming show",
-    "Take a break to watch some TV",
-    "Make lunch for herself",
-    "Work on her paintings some more",
-    "Go to bed early"
+    "exercise",
+    "read",
+    "cook"
   ],
   "f_daily_schedule": [
     [
@@ -80,7 +75,7 @@
   "act_address": "downtown studio:main:bedroom:bed",
   "act_start_time": "2023-10-01T08:00:00Z",
   "act_duration": 30,
-  "act_description": "waking up and stretching",
+  "act_description": "Alan is planning his next activity.",
   "act_pronunciation": "\ud83c\udf05\ud83e\udd38\u200d\u2640\ufe0f",
   "act_event": [
     "Alex",

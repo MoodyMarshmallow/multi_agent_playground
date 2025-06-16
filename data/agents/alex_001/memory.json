@@ -328,5 +328,11 @@
     "location": "kitchen",
     "event": "I moved to position (11, 10). I could see: coffee_mug in kitchen",
     "salience": 2
+  },
+  {
+    "timestamp": "01T04:35:20",
+    "location": "bedroom",
+    "event": "I moved to position (20, 8). I could see: bed in bedroom. I saw these people: alan_002. I heard alan_002 say to alex_001: 'Hello!'",
+    "salience": 3
   }
 ]
