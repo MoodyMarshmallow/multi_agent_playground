@@ -45,7 +45,7 @@
       21,
       9
     ],
-    "delivered": false
+    "delivered": true
   },
   {
     "sender": "alan_002",
@@ -56,6 +56,18 @@
     "location": [
       21,
       9
+    ],
+    "delivered": true
+  },
+  {
+    "sender": "alex_001",
+    "receiver": "alan_002",
+    "message": "That sounds exciting! I'm working on some abstract pieces, experimenting with colors and textures. Can't wait to see how they turn out! \ud83d\ude0a",
+    "timestamp": "2024-06-13T10:00:00",
+    "conversation_id": "bbbd6e69-7673-41d0-8ba2-2f084c1035ae",
+    "location": [
+      0,
+      0
     ],
     "delivered": true
   }

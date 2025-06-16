@@ -4,6 +4,7 @@ from pathlib import Path
 import uuid
 import json
 import os
+from datetime import datetime, timedelta
 
 backend_dir = Path(__file__).parent.parent
 if str(backend_dir) not in sys.path:
@@ -20,6 +21,9 @@ from config.schema import (
 PROJECT_ROOT = Path(__file__).parent.parent.parent.resolve()
 MESSAGES_PATH = PROJECT_ROOT / "data" / "world" / "messages.json"
 
+# TODO: adjust/ what is a good timeout?
+CONVERSATION_TIMEOUT_MINUTES = 5
+
 # --- Utility functions ---
 
 def load_json(path, default):
@@ -34,14 +38,43 @@ def save_json(path, data):
 
 # --- Message handling ---
 
+def get_or_create_conversation_id(sender: str, receiver: str, queue: list) -> str:
+    """
+    Find existing conversation between these agents or create a new one.
+    A conversation is considered active if:
+    1. It's between the same agents
+    2. The last message was within CONVERSATION_TIMEOUT_MINUTES
+    """
+    # Sort messages by timestamp in reverse order
+    sorted_messages = sorted(queue, key=lambda x: x.get("timestamp", ""), reverse=True)
+    
+    # Look for recent messages between these agents
+    for msg in sorted_messages:
+        if (msg["sender"] in [sender, receiver] and 
+            msg["receiver"] in [sender, receiver]):
+            
+            # Check if conversation is still active based on time
+            msg_time = datetime.strptime(msg["timestamp"], "%dT%H:%M:%S")
+            current_time = datetime.strptime(datetime.now().strftime("%dT%H:%M:%S"), "%dT%H:%M:%S")
+            
+            if current_time - msg_time < timedelta(minutes=CONVERSATION_TIMEOUT_MINUTES):
+                return msg["conversation_id"]
+    
+    # If no active conversation found, create new one
+    return str(uuid.uuid4())
+
 def append_message_to_queue(msg, location):
     queue = load_json(MESSAGES_PATH, [])
+    
+    # Get or create conversation ID
+    conversation_id = get_or_create_conversation_id(msg.sender, msg.receiver, queue)
+    
     queue.append({
         "sender": msg.sender,
         "receiver": msg.receiver,
         "message": msg.message,
         "timestamp": msg.timestamp,
-        "conversation_id": msg.conversation_id,
+        "conversation_id": conversation_id,
         "location": location,
         "delivered": False
     })

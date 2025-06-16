@@ -73,5 +73,23 @@
     ],
     "event": "Sent message to alex_001: 'Hey Alex, I'm planning to do some cooking today, maybe try out a new recipe. What kind of paintings are you working on? \ud83d\ude0a'",
     "salience": 5
+  },
+  {
+    "timestamp": "01T04:35:24",
+    "location": [
+      21,
+      9
+    ],
+    "event": "Received message from alex_001: 'I'm doing great, thanks! I'm planning to start working on my paintings soon. What do you have planned for today? \ud83d\ude0a'",
+    "salience": 5
+  },
+  {
+    "timestamp": "2024-06-13T10:00:00",
+    "location": [
+      0,
+      0
+    ],
+    "event": "Received message from alex_001: 'That sounds exciting! I'm working on some abstract pieces, experimenting with colors and textures. Can't wait to see how they turn out! \ud83d\ude0a'",
+    "salience": 5
   }
 ]
