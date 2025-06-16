@@ -303,7 +303,7 @@ Rating scale:
 Respond with ONLY a number from 1-10, nothing else."""
 
             # Get response without function calling
-            response = await self.chat_round(prompt)
+            response = await self.chat_round(prompt, include_functions=False)
             
             # Extract the number from the response
             response_text = response.text.strip()

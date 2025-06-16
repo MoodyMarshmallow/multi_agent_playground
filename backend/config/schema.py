@@ -28,7 +28,7 @@ class MoveFrontendAction(BaseModel):
 
 class ChatFrontendAction(BaseModel):
     action_type: Literal["chat"]
-    forwarded: bool # a boolean to indicate the message was properly forwarded to the receiver. If true, the receiver will "hear" the message through their perception feild "heard_messages"
+    forwarded: bool # a boolean to indicate the message was properly forwarded to the receiver. If true, the receiver will "hear" the message through their perception field "heard_messages"
 
 class InteractFrontendAction(BaseModel):
     action_type: Literal["interact"]
