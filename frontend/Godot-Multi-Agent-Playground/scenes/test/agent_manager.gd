@@ -2,15 +2,20 @@ class_name AgentManager
 
 extends Node
 
+# --- Constants ---
 var TILE_SIZE : float = 16
 var CHATTABLE_RADIUS : float = 4
 var INTERACTABLE_RADIUS : float = 4
+
+# - Variables ---
 var current_agent_id : String
 var agent_dictionary : Dictionary
+var agent_ids : Array
 
 func _ready():
 	for agent in get_children():
 		agent_dictionary[agent.agent_id] = agent
+		agent_ids.append(agent.agent_id)
 		if agent.has_signal("chat_message_sent"):
 			agent.connect("chat_message_sent", self._on_agent_chat_message_sent)
 	if agent_dictionary:
