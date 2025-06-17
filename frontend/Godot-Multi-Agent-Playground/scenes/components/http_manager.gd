@@ -45,7 +45,8 @@ func _input(event):
 func print_debug_instructions() -> void:
 	print("Current debug options:
 	e: pause and resume polling
-	r: forcibly request the next actions from backend\n")
+	r: forcibly request the next actions from backend
+	f: toggle emoji label visibility\n")
 
 func pause_poll_timer() -> void:
 	if _poll_timer and _poll_timer.is_stopped() == false:
@@ -124,6 +125,7 @@ func _process_all_actions():
 	_send_pending_confirmations()
 
 func _process_single_action(action: Dictionary):
+	agent_manager.change_emoji(action.agent_id, action.emoji)
 	match action.action.action_type:
 		"move":
 			var dest_tile = Vector2i(action.action.destination_tile[0], action.action.destination_tile[1])

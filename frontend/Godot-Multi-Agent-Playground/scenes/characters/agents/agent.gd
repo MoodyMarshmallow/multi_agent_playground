@@ -62,6 +62,9 @@ func tile_to_position(tile: Vector2i) -> Vector2:
 	return Vector2(pos_x, pos_y)
 
 # --- Functions signalled from HTTP manager ---
+func on_emoji_received(agent_id: String, emoji: String):
+	$"EmojiLabel".set_emoji_from_backend(emoji)
+
 func on_move_action_received(agent_id: String, destination_tile: Vector2i) -> void:
 	if agent_id != self.agent_id:
 		return
