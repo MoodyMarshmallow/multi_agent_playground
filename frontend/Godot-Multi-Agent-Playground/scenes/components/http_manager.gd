@@ -18,6 +18,7 @@ var is_polling: bool = true
 var agent_ids := ["alex_001", "alan_002"]
 
 func _ready():
+	print("Press 'd' for additional agent and debugging controls")
 	# Create and setup timer
 	_poll_timer = Timer.new()
 	_poll_timer.wait_time = POLL_INTERVAL
@@ -91,7 +92,7 @@ func _request_next_actions():
 			"agent_id": agent_id,
 			"perception": agent_manager.get_agent_perception(agent_id)
 		})
-	print("\nList[AgentPlanRequest] = ", request_body)
+	print("\nList[AgentPlanRequest] (Frontend -> Backend) = ", request_body)
 	var headers = ["Content-Type: application/json"]
 	var error = http_request.request(
 		BACKEND_URL + "/agent_act/plan",
@@ -117,7 +118,7 @@ func _on_plan_request_completed(result, response_code, headers, body):
 	_current_actions = []
 	for item in response:
 		_current_actions.append(item as Dictionary)
-	print("\nList[AgentActionOutput] = ", _current_actions)
+	print("\nList[AgentActionOutput] (Backend -> Frontend) = ", _current_actions)
 
 	_process_all_actions()
 
@@ -179,7 +180,7 @@ func _send_pending_confirmations():
 		})
 	
 	var headers = ["Content-Type: application/json"]
-	print("\nList[AgentActionInput] = ", confirm_bodies)
+	print("\nList[AgentActionInput] (Frontend -> Backend) = ", confirm_bodies)
 	var error = http_request.request(
 		BACKEND_URL + "/agent_act/confirm",
 		headers,
