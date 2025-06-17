@@ -1,7 +1,9 @@
 extends State
 
 var destination_tile : Vector2i
-
+func _ready():
+	string_name = "walk"
+	
 func enter():
 	pass
 
