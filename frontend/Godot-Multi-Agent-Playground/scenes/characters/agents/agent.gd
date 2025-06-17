@@ -165,7 +165,7 @@ func get_perception() -> Dictionary:
 	# update chattable agents
 	set_chattable_agents()
 	return {
-		"timestamp": timestamp,
+		"timestamp": TimeManager.get_formatted_time(),
 		"current_tile": [current_tile.x, current_tile.y],
 		"visible_objects": visible_objects,
 		"visible_agents": visible_agents,
