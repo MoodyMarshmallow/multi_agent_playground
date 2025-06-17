@@ -112,7 +112,6 @@ func get_agent_frontend_action(agent_id: String, action_type: String) -> Diction
 		return {}
 
 func set_chattable_agents_for(requesting_agent: Agent):
-	print("setting chattable")
 	var nearby_agents : Array[String] = []
 	for child in get_children():
 		if child == requesting_agent or child is not Agent:
@@ -120,6 +119,4 @@ func set_chattable_agents_for(requesting_agent: Agent):
 		var agent = child as Agent
 		if agent.global_position.distance_to(requesting_agent.global_position) < TILE_SIZE * CHATTABLE_RADIUS:
 			nearby_agents.append(agent.agent_id)
-		else:
-			print("Agent too far away: ", agent.agent_id)
 	requesting_agent.chattable_agents = nearby_agents
