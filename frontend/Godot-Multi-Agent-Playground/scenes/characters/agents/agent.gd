@@ -5,6 +5,7 @@ extends CharacterBody2D
 signal chat_message_sent(receiver_id: String, message: Dictionary)
 
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
+@onready var agent_manager: AgentManager = get_parent()
 
 # Variables we will need to send to http manager:
 @export var agent_id: String = "alex_001"
@@ -12,7 +13,7 @@ var current_tile: Vector2i = Vector2i(0, 0)
 var visible_objects: Dictionary = {}
 @export var visible_agents: Array[String] = []
 @export var HouseUpperLeftTile : Vector2i = Vector2i(0, 0)
-@export var chatable_agents: Array[String] = []
+@export var chattable_agents: Array[String] = []
 var heard_messages: Array = []
 var timestamp: String = ""
 var forwarded: bool = true
@@ -113,6 +114,14 @@ func on_perceive_action_received(agent_id: String) -> void:
 	state_machine.on_child_transition(state_machine.current_state, "Idle")
 	in_progress = false
 
+# --- Update functions for tracked variables ---
+
+func set_chattable_agents():
+	agent_manager.set_chattable_agents_for(self)
+
+
+func set_interactable_objects() -> void:
+	pass
 
 # --- Getter functions for HTTP manager ---
 
@@ -132,8 +141,9 @@ func get_visible_objects() -> Dictionary:
 func get_visible_agents() -> Array:
 	return visible_agents
 
-func get_chatable_agents() -> Array:
-	return chatable_agents
+func get_chattable_agents() -> Array:
+	set_chattable_agents()
+	return chattable_agents
 
 func get_heard_messages() -> Array:
 	return heard_messages
@@ -152,12 +162,14 @@ func get_perception() -> Dictionary:
 	# clear heard_messages
 	var old_heard_messages = heard_messages
 	heard_messages = []
+	# update chattable agents
+	set_chattable_agents()
 	return {
 		"timestamp": timestamp,
 		"current_tile": [current_tile.x, current_tile.y],
 		"visible_objects": visible_objects,
 		"visible_agents": visible_agents,
-		"chatable_agents": chatable_agents,
+		"chattable_agents": chattable_agents,
 		"heard_messages": old_heard_messages
 	}
 
@@ -175,6 +187,6 @@ func _physics_process(delta: float) -> void:
 	current_tile = position_to_tile(position)
 	pass
 
-# updates the agent's perception variable such as visible_objects, visible_agents, chatable_agents, and current_tile
+# updates the agent's perception variable such as visible_objects, visible_agents, chattable_agents, and current_tile
 func _update_perception() -> void:
 	pass

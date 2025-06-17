@@ -2,6 +2,10 @@ class_name AgentManager
 
 extends Node
 
+var TILE_SIZE : float = 16
+var CHATTABLE_RADIUS : float = 4
+var INTERACTABLE_RADIUS : float = 4
+
 func _ready():
 	for agent in get_children():
 		if agent.has_signal("chat_message_sent"):
@@ -72,8 +76,8 @@ func get_agent_visible_objects(agent_id: String) -> Dictionary:
 func get_agent_visible_agents(agent_id: String) -> Array:
 	return get_agent_property(agent_id, "get_visible_agents")
 
-func get_agent_chatable_agents(agent_id: String) -> Array:
-	return get_agent_property(agent_id, "get_chatable_agents")
+func get_agent_chattable_agents(agent_id: String) -> Array:
+	return get_agent_property(agent_id, "get_chattable_agents")
 
 func get_agent_heard_messages(agent_id: String) -> Array:
 	return get_agent_property(agent_id, "get_heard_messages")
@@ -106,3 +110,16 @@ func get_agent_frontend_action(agent_id: String, action_type: String) -> Diction
 	else:
 		push_error("Agent with id '%s' not found or missing get_last_frontend_action." % agent_id)
 		return {}
+
+func set_chattable_agents_for(requesting_agent: Agent):
+	print("setting chattable")
+	var nearby_agents : Array[String] = []
+	for child in get_children():
+		if child == requesting_agent or child is not Agent:
+			continue
+		var agent = child as Agent
+		if agent.global_position.distance_to(requesting_agent.global_position) < TILE_SIZE * CHATTABLE_RADIUS:
+			nearby_agents.append(agent.agent_id)
+		else:
+			print("Agent too far away: ", agent.agent_id)
+	requesting_agent.chattable_agents = nearby_agents
