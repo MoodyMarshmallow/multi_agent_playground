@@ -1,8 +1,8 @@
 [gd_scene load_steps=11 format=3 uid="uid://bp2pmr12iwavx"]
 
 [ext_resource type="PackedScene" uid="uid://c2w2uh4fkyjpq" path="res://scenes/components/interactable_component.tscn" id="1_5ph3y"]
-[ext_resource type="Shader" uid="uid://b1qddxfngb13b" path="res://scenes/characters/guide/replace_color.gdshader" id="1_eblfn"]
-[ext_resource type="Script" uid="uid://8kcmfbh05l7y" path="res://scenes/characters/guide/guide.gd" id="1_obvo6"]
+[ext_resource type="Shader" uid="uid://c5nex1te6ktgv" path="res://scenes/characters/guide/replace_color.gdshader" id="1_eblfn"]
+[ext_resource type="Script" uid="uid://cbbnri448d4t0" path="res://scenes/characters/guide/guide.gd" id="1_obvo6"]
 [ext_resource type="Texture2D" uid="uid://c87y01j7xmy3i" path="res://assets/game/characters/basic_character_sprites.png" id="2_nfsfl"]
 [ext_resource type="PackedScene" uid="uid://b3t7okvnvvq8k" path="res://scenes/components/interactable_label_component.tscn" id="5_8lxm1"]
 

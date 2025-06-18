@@ -1,0 +1,74 @@
+[
+  {
+    "sender": "alan_002",
+    "receiver": "alex_001",
+    "message": "Hey Alex! Let's head to the kitchen and start gathering those ingredients. I'm excited to cook some ratatouille! \ud83d\ude0a",
+    "timestamp": "01T00:05:00",
+    "conversation_id": "140e0e1f-c417-2aaa-20b2-323fd5edecc6",
+    "location": [
+      22,
+      8
+    ],
+    "delivered": false
+  },
+  {
+    "sender": "alex_001",
+    "receiver": "alan_002",
+    "message": "Hey Alan! Ratatouille sounds like a fantastic idea. Let's definitely experiment with those flavors together. Maybe we can plan a time to cook it soon! \ud83d\ude0a",
+    "timestamp": "01T00:05:00",
+    "conversation_id": "140e0e1f-c417-2aaa-20b2-323fd5edecc6",
+    "location": [
+      32,
+      12
+    ],
+    "delivered": false
+  },
+  {
+    "sender": "alex_001",
+    "receiver": "alan_002",
+    "message": "Hey Alan! Cooking ratatouille sounds like a great idea. Let's set a time that works for both of us. \ud83d\ude0a",
+    "timestamp": "01T00:45:00",
+    "conversation_id": "140e0e1f-c417-2aaa-20b2-323fd5edecc6",
+    "location": [
+      31,
+      12
+    ],
+    "delivered": false
+  },
+  {
+    "sender": "alan_002",
+    "receiver": "alan_002",
+    "message": "Hey! That cooking session sounds like a great idea. Looking forward to it this weekend! \ud83d\ude0a",
+    "timestamp": "01T00:45:00",
+    "conversation_id": "1e2f310c-6719-724e-6db2-a5ce491a1492",
+    "location": [
+      31,
+      12
+    ],
+    "delivered": false
+  },
+  {
+    "sender": "alan_002",
+    "receiver": "alex_001",
+    "message": "Hey Alex! Let's plan our cooking session. How about this weekend? \ud83d\ude0a",
+    "timestamp": "01T01:00:00",
+    "conversation_id": "f737f02f-f94b-a2af-1034-86ad52138305",
+    "location": [
+      30,
+      12
+    ],
+    "delivered": false
+  },
+  {
+    "sender": "alex_001",
+    "receiver": "alan_002",
+    "message": "Good morning, Alan! Hope you slept well. \ud83d\ude0a",
+    "timestamp": "01T01:00:00",
+    "conversation_id": "f737f02f-f94b-a2af-1034-86ad52138305",
+    "location": [
+      31,
+      12
+    ],
+    "delivered": false
+  }
+]

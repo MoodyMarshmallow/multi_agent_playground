@@ -9,6 +9,7 @@ var _poll_timer: Timer
 var _current_actions = []
 var _is_processing_actions: bool = false
 var _pending_confirmations = []
+var is_polling: bool = true
 
 # References to children
 @onready var agent_manager: AgentManager = $AgentManager
@@ -24,13 +25,47 @@ func _ready():
 	_poll_timer.timeout.connect(_on_poll_timer_timeout)
 	add_child(_poll_timer)
 	_poll_timer.start()
-	_is_processing_actions = true
-	_request_next_actions()
 
 func _on_poll_timer_timeout():
 	if not _is_processing_actions:
 		_is_processing_actions = true
 		_request_next_actions()
+
+func _input(event):
+	if event.is_action_pressed("pause_polling"):
+		if is_polling:
+			pause_poll_timer()
+		else:
+			resume_poll_timer()
+	if event.is_action_pressed("request_next_action"):
+		forcibly_request_next_actions()
+	if event.is_action_pressed("debug"):
+		print_debug_instructions()
+
+func print_debug_instructions() -> void:
+	print("Current debug options:
+	e: pause and resume polling
+	r: forcibly request the next actions from backend
+	f: toggle emoji label visibility\n")
+
+func pause_poll_timer() -> void:
+	if _poll_timer and _poll_timer.is_stopped() == false:
+		is_polling = false
+		_poll_timer.stop()
+		print("POLL TIMER PAUSED")
+		push_error("POLL TIMER PAUSED")
+
+func resume_poll_timer() -> void:
+	if _poll_timer and _poll_timer.is_stopped():
+		is_polling = true
+		_poll_timer.start()
+		print("POLL TIMER RESUMED")
+		push_error("POLL TIMER RESUMED")
+
+func forcibly_request_next_actions():
+	print("FORCIBILY REQUESTED NEXT ACTIONS")
+	push_error("FORCIBILY REQUESTED NEXT ACTIONS")
+	_request_next_actions()
 
 func _request_next_actions():
 	var http_request = HTTPRequest.new()
@@ -90,6 +125,7 @@ func _process_all_actions():
 	_send_pending_confirmations()
 
 func _process_single_action(action: Dictionary):
+	agent_manager.change_emoji(action.agent_id, action.emoji)
 	match action.action.action_type:
 		"move":
 			var dest_tile = Vector2i(action.action.destination_tile[0], action.action.destination_tile[1])
