@@ -359,30 +359,83 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         )
         
         return "\n".join(message_parts)
-
-
-    async def call_llm_for_action(agent_state: Dict[str, Any], perception_data: Dict[str, Any]) -> Dict[str, Any]:
+    
+    async def evaluate_event_salience(self, event_description: str) -> int:
         """
-        Replacement function for call_llm_agent that uses the Kani-based LLM agent.
+        Evaluate the salience (importance) of an event for memory storage.
         
         Args:
-            agent_state (dict): Current agent state
-            perception_data (dict): Current perception data
+            event_description (str): Description of the event that occurred
             
         Returns:
-            dict: Action JSON in the format expected by the frontend
+            int: Salience score from 1-10
         """
-        # Create Agent instance from state
-        agent_dir = f"data/agents/{agent_state['agent_id']}"
-        agent = Agent(agent_dir)
+        try:
+            # Use a simple text-based approach instead of function calling
+            # This is more reliable for salience evaluation
+            prompt = f"""Based on your personality and what matters to you, rate how important this event is from 1-10:
+
+Event: "{event_description}"
+
+Your personality:
+- Innate traits: {self.agent.innate}
+- Learned behaviors: {self.agent.learned}
+- Lifestyle: {self.agent.lifestyle}
+
+Rating scale:
+1-2: Trivial routine things (seeing common objects, normal movements)
+3-4: Minor daily activities (eating, basic interactions)
+5-6: Meaningful interactions or discoveries (interesting conversations, new places)
+7-8: Important emotional or social events (conflicts, achievements, relationships)
+9-10: Life-changing experiences (major decisions, trauma, profound moments)
+
+Respond with ONLY a number from 1-10, nothing else."""
+
+            # Get response without function calling
+            response = await self.chat_round(prompt, include_functions=False)
+            
+            # Extract the number from the response
+            response_text = response.text.strip()
+            
+            # Try to extract a number from the response
+            import re
+            numbers = re.findall(r'\b([1-9]|10)\b', response_text)
+            
+            if numbers:
+                salience_score = int(numbers[0])
+                print(f"Salience evaluation: '{event_description}' = {salience_score}")
+                return max(1, min(10, salience_score))
+            else:
+                print(f"Could not parse salience from response: '{response_text}', defaulting to 5")
+                return 5
+                
+        except Exception as e:
+            print(f"Error in salience evaluation: {e}")
+            return 5  # Default fallback
+
+
+async def call_llm_for_action(agent_state: Dict[str, Any], perception_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Replacement function for call_llm_agent that uses the Kani-based LLM agent.
+    
+    Args:
+        agent_state (dict): Current agent state
+        perception_data (dict): Current perception data
         
-        # Create LLM agent
-        llm_agent = LLMAgent(agent)
-        
-        # Plan next action
-        action_result = await llm_agent.plan_next_action(perception_data)
-        
-        return action_result
+    Returns:
+        dict: Action JSON in the format expected by the frontend
+    """
+    # Create Agent instance from state
+    agent_dir = f"data/agents/{agent_state['agent_id']}"
+    agent = Agent(agent_dir)
+    
+    # Create LLM agent
+    llm_agent = LLMAgent(agent)
+    
+    # Plan next action
+    action_result = await llm_agent.plan_next_action(perception_data)
+    
+    return action_result
 
 
     # Synchronous wrapper for compatibility with existing code
