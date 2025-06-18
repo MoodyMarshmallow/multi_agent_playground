@@ -11,7 +11,7 @@ if str(backend_dir) not in sys.path:
 
 from character_agent.agent import Agent
 from character_agent.actions import ActionsMixin
-from character_agent.kani_implementation import call_llm_agent, LLMAgent
+from character_agent.kani_implementation import LLMAgent
 from config.schema import (
     AgentActionInput, AgentActionOutput, AgentPerception, BackendAction, 
     MoveBackendAction, ChatBackendAction, InteractBackendAction, PerceiveBackendAction, Message
