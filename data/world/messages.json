@@ -1,74 +1,74 @@
 [
   {
-    "sender": "alex_001",
-    "receiver": "alan_002",
-    "message": "Good morning, Alan! How are you doing today?",
-    "timestamp": "01T04:35:20",
-    "conversation_id": "72e3d148-9735-422d-a09b-252911f07ae3",
+    "sender": "alan_002",
+    "receiver": "alex_001",
+    "message": "Hey Alex! Let's head to the kitchen and start gathering those ingredients. I'm excited to cook some ratatouille! \ud83d\ude0a",
+    "timestamp": "01T00:05:00",
+    "conversation_id": "140e0e1f-c417-2aaa-20b2-323fd5edecc6",
     "location": [
-      20,
+      22,
       8
     ],
-    "delivered": true
+    "delivered": false
+  },
+  {
+    "sender": "alex_001",
+    "receiver": "alan_002",
+    "message": "Hey Alan! Ratatouille sounds like a fantastic idea. Let's definitely experiment with those flavors together. Maybe we can plan a time to cook it soon! \ud83d\ude0a",
+    "timestamp": "01T00:05:00",
+    "conversation_id": "140e0e1f-c417-2aaa-20b2-323fd5edecc6",
+    "location": [
+      32,
+      12
+    ],
+    "delivered": false
+  },
+  {
+    "sender": "alex_001",
+    "receiver": "alan_002",
+    "message": "Hey Alan! Cooking ratatouille sounds like a great idea. Let's set a time that works for both of us. \ud83d\ude0a",
+    "timestamp": "01T00:45:00",
+    "conversation_id": "140e0e1f-c417-2aaa-20b2-323fd5edecc6",
+    "location": [
+      31,
+      12
+    ],
+    "delivered": false
+  },
+  {
+    "sender": "alan_002",
+    "receiver": "alan_002",
+    "message": "Hey! That cooking session sounds like a great idea. Looking forward to it this weekend! \ud83d\ude0a",
+    "timestamp": "01T00:45:00",
+    "conversation_id": "1e2f310c-6719-724e-6db2-a5ce491a1492",
+    "location": [
+      31,
+      12
+    ],
+    "delivered": false
   },
   {
     "sender": "alan_002",
     "receiver": "alex_001",
-    "message": "Good morning, Alex! I'm doing well, just getting started with my day. How about you?",
-    "timestamp": "01T04:35:21",
-    "conversation_id": "95678493-e607-487a-b1d4-a95c1ecd0ea0",
+    "message": "Hey Alex! Let's plan our cooking session. How about this weekend? \ud83d\ude0a",
+    "timestamp": "01T01:00:00",
+    "conversation_id": "f737f02f-f94b-a2af-1034-86ad52138305",
     "location": [
-      21,
-      9
+      30,
+      12
     ],
-    "delivered": true
+    "delivered": false
   },
   {
     "sender": "alex_001",
     "receiver": "alan_002",
-    "message": "I'm doing great, thanks! I'm planning to start working on my paintings soon. What do you have planned for today? \ud83d\ude0a",
-    "timestamp": "01T04:35:24",
-    "conversation_id": "",
+    "message": "Good morning, Alan! Hope you slept well. \ud83d\ude0a",
+    "timestamp": "01T01:00:00",
+    "conversation_id": "f737f02f-f94b-a2af-1034-86ad52138305",
     "location": [
-      20,
-      8
+      31,
+      12
     ],
-    "delivered": true
-  },
-  {
-    "sender": "alex_001",
-    "receiver": "alan_002",
-    "message": "I'm doing great, thanks! I'm planning to start working on my paintings soon. What do you have planned for today? \ud83d\ude0a",
-    "timestamp": "01T04:35:24",
-    "conversation_id": "",
-    "location": [
-      21,
-      9
-    ],
-    "delivered": true
-  },
-  {
-    "sender": "alan_002",
-    "receiver": "alex_001",
-    "message": "Hey Alex, I'm planning to do some cooking today, maybe try out a new recipe. What kind of paintings are you working on? \ud83d\ude0a",
-    "timestamp": "01T04:35:25",
-    "conversation_id": "",
-    "location": [
-      21,
-      9
-    ],
-    "delivered": true
-  },
-  {
-    "sender": "alex_001",
-    "receiver": "alan_002",
-    "message": "That sounds exciting! I'm working on some abstract pieces, experimenting with colors and textures. Can't wait to see how they turn out! \ud83d\ude0a",
-    "timestamp": "2024-06-13T10:00:00",
-    "conversation_id": "bbbd6e69-7673-41d0-8ba2-2f084c1035ae",
-    "location": [
-      0,
-      0
-    ],
-    "delivered": true
+    "delivered": false
   }
 ]
