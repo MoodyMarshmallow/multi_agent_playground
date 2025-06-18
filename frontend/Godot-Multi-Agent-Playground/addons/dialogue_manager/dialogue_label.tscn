@@ -1,7 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ckvgyvclnwggo"]
 
-[sub_resource type="Resource" id="Resource_sjn1j"]
-metadata/__load_path__ = "res://addons/dialogue_manager/dialogue_label.gd"
+[ext_resource type="Script" uid="uid://ct1r3ah37hakv" path="res://addons/dialogue_manager/dialogue_label.gd" id="1_cital"]
 
 [node name="DialogueLabel" type="RichTextLabel"]
 anchors_preset = 10

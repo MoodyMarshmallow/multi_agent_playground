@@ -2,10 +2,10 @@
   "agent_id": "alan_002",
   "vision_r": 4,
   "retention": 5,
-  "curr_time": "01T04:35:25",
+  "curr_time": "01T01:18:03",
   "curr_tile": [
-    21,
-    9
+    31,
+    12
   ],
   "daily_plan_req": "Finish painting, make lunch, call gallery",
   "name": "Alan",
@@ -20,7 +20,7 @@
     "cooking",
     "gardening"
   ],
-  "currently": "I could see: living_room in living_room. I saw these people: alex_001. I heard alex_001 say to alan_002: 'I'm doing great, thanks! I'm planning to start working on my paintings soon. What do you have planned for today? \ud83d\ude0a'. I heard alan_002 say to alex_001: 'Hey Alex, I'm planning to do some cooking today, maybe try out a new recipe. What kind of paintings are you working on? \ud83d\ude0a'",
+  "currently": "I saw these people: alex_001",
   "lifestyle": "active",
   "living_area": "apartment",
   "daily_req": [

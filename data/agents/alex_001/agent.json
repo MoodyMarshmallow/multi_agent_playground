@@ -2,10 +2,10 @@
   "agent_id": "alex_001",
   "vision_r": 4,
   "retention": 5,
-  "curr_time": "2024-06-13T10:00:00",
+  "curr_time": "01T01:18:03",
   "curr_tile": [
-    0,
-    0
+    31,
+    12
   ],
   "daily_plan_req": "Finish painting, make lunch, call gallery",
   "name": "Alex",
@@ -23,7 +23,7 @@
       "French"
     ]
   },
-  "currently": "I saw these people: alan_002. I heard alex_001 say to alan_002: 'That sounds exciting! I'm working on some abstract pieces, experimenting with colors and textures. Can't wait to see how they turn out! \ud83d\ude0a'",
+  "currently": "I moved to position (22, 8). I saw these people: alan_002. I heard alan_002 say to alex_001: 'I'm excited to try that new recipe with you, Alex! Do you have everything we need, or should I grab some ingredients? \ud83d\ude0a'",
   "lifestyle": "artist",
   "living_area": "downtown studio",
   "daily_req": [

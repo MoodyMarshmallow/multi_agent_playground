@@ -1,7 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://c48emvdmm2a47"]
 
-[sub_resource type="Resource" id="Resource_woqpc"]
-metadata/__load_path__ = "res://addons/dialogue_manager/test_scene.gd"
+[ext_resource type="Script" uid="uid://deiybmau0stmm" path="res://addons/dialogue_manager/test_scene.gd" id="1_yupoh"]
 
 [node name="TestScene" type="Node2D"]
 script = SubResource("Resource_woqpc")

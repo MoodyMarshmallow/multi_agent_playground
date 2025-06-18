@@ -75,8 +75,16 @@ class Agent:
         # Load memory from memory.json
         mem_path = self.agent_dir / "memory.json"
         if mem_path.exists():
-            with open(mem_path, "r", encoding="utf-8") as f:
-                self.memory = json.load(f)
+            try:
+                with open(mem_path, "r", encoding="utf-8") as f:
+                    content = f.read().strip()
+                    if content:  # Check if file is not empty
+                        self.memory = json.loads(content)
+                    else:
+                        self.memory = []
+            except (json.JSONDecodeError, FileNotFoundError):
+                # If JSON is corrupted or file can't be read, start with empty memory
+                self.memory = []
         else:
             self.memory = []
 
@@ -114,6 +122,8 @@ class Agent:
             self.curr_time = data["curr_time"]
         if "currently" in data:
             self.currently = data["currently"]
+        if "pending_chat_message" in data:
+            self.pending_chat_message = data["pending_chat_message"]
 
     def add_memory_event(self, timestamp: str, location: str, event: str, salience: int):
         """
