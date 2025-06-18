@@ -106,7 +106,7 @@ def confirm_action_and_update(agent_msg: AgentActionInput) -> None:
     Step 2: After frontend executes the action, it POSTs new perception/result.
     Backend updates state/memory using the reported result.
     """
-    print(agent_msg)
+    print("agent update from POST:", agent_msg)
     agent_dir = PROJECT_ROOT / "data" / "agents" / agent_msg.agent_id
     agent = Agent(agent_dir)
     perception = agent_msg.perception.model_dump()
@@ -167,7 +167,7 @@ def confirm_action_and_update(agent_msg: AgentActionInput) -> None:
         for message in agent_msg.perception.heard_messages:
             event_parts.append(f"I heard {message.sender} say to {message.receiver}: '{message.message}'")
     
-    event = ". ".join(event_parts) if event_parts else "Nothing notable happened"
+    event = ". ".join(event_parts) if event_parts else "Nothing notable happened."
     
     # Update agent's currently field with the event
     agent.update_agent_data({"currently": event})

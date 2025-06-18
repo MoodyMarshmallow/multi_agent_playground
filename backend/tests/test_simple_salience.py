@@ -30,7 +30,7 @@ def test_simple_salience():
             "I discovered something surprising",
         ]
         
-        print(f"\nTesting with agent: {agent.name}")
+        print(f"\nTesting with agent: {agent.first_name} {agent.last_name}")
         print("=" * 50)
         
         for event in test_events:

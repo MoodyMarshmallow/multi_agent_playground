@@ -111,12 +111,13 @@ class LLMAgent(Kani, ActionsMixin):
             str: The system prompt for the LLM
         """
         agent_info = f"""
-You are {self.agent.name}, a character in a multi-agent simulation.
+You are {self.agent.first_name} {self.agent.last_name}, a character in a multi-agent simulation.
 
 PERSONALITY & BACKGROUND:
 - Age: {self.agent.age}
-- Innate traits: {self.agent.innate}
-- Learned behaviors: {self.agent.learned}
+- Backstory: {self.agent.backstory}
+- Personality: {self.agent.personality}
+- Occupation: {self.agent.occupation}
 - Current status: {self.agent.currently}
 - Lifestyle: {self.agent.lifestyle}
 - Living area: {self.agent.living_area}
@@ -127,7 +128,6 @@ DAILY REQUIREMENTS:
 CURRENT CONTEXT:
 - Current time: {self.agent.curr_time}
 - Current location: {self.agent.curr_tile}
-- Current activity: {self.agent.act_description}
 
 CAPABILITIES:
 You have five main actions available:
@@ -183,12 +183,12 @@ Respond naturally as {self.agent.first_name} would, and use the available action
             print("received message: ", message)
             # Check if this is a function result message
             if message.role.value == 'function' and message.content:
-                print("In If statement")
+                # print("In If statement")
                 # Try to parse the function result as Python dict string or JSON
                 try:
                     import ast
                     import json
-                    print("imported ast and json")
+                    # print("imported ast and json")
                     
                     # First try to parse as Python dict using ast.literal_eval
                     try:
@@ -201,7 +201,7 @@ Respond naturally as {self.agent.first_name} would, and use the available action
                     
                     # Check if this looks like one of our action results
                     if isinstance(parsed_result, dict) and 'action_type' in parsed_result:
-                        print("setting action_result")
+                        # print("setting action_result")
                         action_result = parsed_result
                         break
                 except (json.JSONDecodeError, TypeError, ValueError, SyntaxError) as e:
@@ -289,8 +289,9 @@ Respond naturally as {self.agent.first_name} would, and use the available action
 Event: "{event_description}"
 
 Your personality:
-- Innate traits: {self.agent.innate}
-- Learned behaviors: {self.agent.learned}
+- Backstory: {self.agent.backstory}
+- Personality: {self.agent.personality}
+- Occupation: {self.agent.occupation}
 - Lifestyle: {self.agent.lifestyle}
 
 Rating scale:

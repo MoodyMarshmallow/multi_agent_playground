@@ -24,8 +24,8 @@ async def test_direct_salience():
         agent_dir = "../../data/agents/alex_001"
         agent = Agent(agent_dir)
         
-        print(f"Testing with agent: {agent.name}")
-        print(f"Agent personality: {agent.innate}")
+        print(f"Testing with agent: {agent.first_name} {agent.last_name}")
+        print(f"Agent personality: {agent.personality}")
         print("=" * 50)
         
         # Create LLM agent

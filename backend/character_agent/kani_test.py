@@ -59,7 +59,8 @@ async def demo_llm_agent():
     # Example agent state (this would normally come from the agent files)
     agent_state = {
         "agent_id": "alex",
-        "name": "Alex",
+        "first_name": "Alex",
+        "last_name": "Smith",
         "curr_tile": [5, 5],
         "daily_req": ["work on computer", "eat lunch", "socialize"],
         "memory": [],
@@ -114,7 +115,8 @@ def demo_sync_wrapper():
     # Same test data as above
     agent_state = {
         "agent_id": "alex",
-        "name": "Alex",
+        "first_name": "Alex",
+        "last_name": "Smith",
         "curr_tile": [5, 5],
         "daily_req": ["work on computer", "eat lunch", "socialize"],
         "memory": [],
