@@ -19,8 +19,8 @@ load_dotenv()
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from backend.config.schema import AgentActionInput, AgentActionOutput, AgentPerception, StatusMsg, AgentPlanRequest
-from backend.server.controller import plan_next_action, confirm_action_and_update
+from config.schema import AgentActionInput, AgentActionOutput, AgentPerception, StatusMsg, AgentPlanRequest
+from server.controller import plan_next_action, confirm_action_and_update
 
 
 app = FastAPI()
