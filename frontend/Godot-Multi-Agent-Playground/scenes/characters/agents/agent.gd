@@ -106,9 +106,16 @@ func on_chat_action_received(agent_id: String, message: Dictionary) -> void:
 	in_progress = true
 	state_machine.on_child_transition(state_machine.current_state, "Idle")
 	chat_message_sent.emit(message.receiver, message)
+	
+	# proximity overhearing:
+	for other_agent in chattable_agents:
+		if other_agent != message.receiver:
+			chat_message_sent.emit(other_agent, message)
+	
 	forwarded = true
 	in_progress = false
 
+# Function to 'hear' a chat message
 func on_receive_chat_message(message: Dictionary) -> void:
 	heard_messages.append(message)
 
@@ -127,7 +134,6 @@ func on_perceive_action_received(agent_id: String) -> void:
 	if agent_id != self.agent_id:
 		return
 	navigation_agent_2d.set_target_position(position)
-	print("Perceive action triggered")
 	in_progress = true
 	state_machine.on_child_transition(state_machine.current_state, "Idle")
 	in_progress = false

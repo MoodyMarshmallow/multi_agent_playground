@@ -54,7 +54,8 @@ func print_debug_instructions() -> void:
 	r: forcibly request the next actions from backend
 	f: toggle emoji label visibility
 	n: toggle navigation path visibility
-	a: iterate through selected agent (currently no further functionality)\n")
+	a: iterate through selected agent (currently no further functionality)
+	arrow keys / ijkl: move camera\n")
 
 func pause_poll_timer() -> void:
 	if _poll_timer and _poll_timer.is_stopped() == false:
