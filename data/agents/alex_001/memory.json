@@ -210,9 +210,42 @@
     "salience": 5
   },
   {
-    "timestamp": "01T10:30:00",
-    "location": "kitchen",
-    "event": "I moved to position (11, 10). I could see: coffee_mug in kitchen",
+    "timestamp": "01T04:35:24",
+    "location": "living_room",
+    "event": "I could see: living_room in living_room. I saw these people: alan_002. I heard alex_001 say to alan_002: 'I'm doing great, thanks! I'm planning to start working on my paintings soon. What do you have planned for today? \ud83d\ude0a'",
+    "salience": 4
+  },
+  {
+    "timestamp": "01T04:35:24",
+    "location": [
+      20,
+      8
+    ],
+    "event": "Sent message to alan_002: 'I'm doing great, thanks! I'm planning to start working on my paintings soon. What do you have planned for today? \ud83d\ude0a'",
     "salience": 5
+  },
+  {
+    "timestamp": "01T04:35:25",
+    "location": [
+      21,
+      9
+    ],
+    "event": "Received message from alan_002: 'Hey Alex, I'm planning to do some cooking today, maybe try out a new recipe. What kind of paintings are you working on? \ud83d\ude0a'",
+    "salience": 5
+  },
+  {
+    "timestamp": "2024-06-13T10:00:00",
+    "location": "unknown location",
+    "event": "I saw these people: alan_002. I heard alex_001 say to alan_002: 'That sounds exciting! I'm working on some abstract pieces, experimenting with colors and textures. Can't wait to see how they turn out! \ud83d\ude0a'",
+    "salience": 5
+  },
+  {
+    "timestamp": "2024-06-13T10:00:00",
+    "location": [
+      0,
+      0
+    ],
+    "event": "Sent message to alan_002: 'That sounds exciting! I'm working on some abstract pieces, experimenting with colors and textures. Can't wait to see how they turn out! \ud83d\ude0a'",
+    "salience": 6
   }
 ]

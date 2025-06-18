@@ -2,11 +2,38 @@ class_name AgentManager
 
 extends Node
 
+# --- Constants ---
+var TILE_SIZE : float = 16
+var CHATTABLE_RADIUS : float = 4
+var INTERACTABLE_RADIUS : float = 4
+
+# - Variables ---
+var current_agent_id : String
+var agent_dictionary : Dictionary
+var agent_ids : Array
+
 func _ready():
 	for agent in get_children():
+		agent_dictionary[agent.agent_id] = agent
+		agent_ids.append(agent.agent_id)
 		if agent.has_signal("chat_message_sent"):
 			agent.connect("chat_message_sent", self._on_agent_chat_message_sent)
-			
+	if agent_dictionary:
+		current_agent_id = agent_dictionary.keys()[0]
+
+func iterate_selected_agent():
+	var ids = agent_dictionary.keys()
+	var current_index = ids.find(current_agent_id)
+	var next_index = (current_index + 1) % ids.size()
+	current_agent_id = ids[next_index]
+	print("CURRENTLY SELECTED AGENT: ", current_agent_id)
+
+func toggle_navigation_paths():
+	for child in get_children():
+		if child is Agent:
+			var agent = child as Agent
+			agent.navigation_agent_2d.debug_enabled = not agent.navigation_agent_2d.debug_enabled
+
 func _on_agent_chat_message_sent(receiver_id: String, message: Dictionary) -> void:
 	var receiver_agent = _find_agent_by_id(receiver_id)
 	if receiver_agent and receiver_agent.has_method("on_receive_chat_message"):
@@ -21,6 +48,13 @@ func _find_agent_by_id(agent_id: String) -> Node:
 			return child
 	return null
 
+func change_emoji(agent_id: String, emoji: String) -> void:
+	var agent = _find_agent_by_id(agent_id)
+	if agent:
+		agent.on_emoji_received(agent_id, emoji)
+	else:
+		push_error("Agent with id '%s' not found for move action." % agent_id)
+	
 # Action handlers
 func handle_move_action(agent_id: String, destination_tile: Vector2i) -> void:
 	var agent = _find_agent_by_id(agent_id)
@@ -71,8 +105,8 @@ func get_agent_visible_objects(agent_id: String) -> Dictionary:
 func get_agent_visible_agents(agent_id: String) -> Array:
 	return get_agent_property(agent_id, "get_visible_agents")
 
-func get_agent_chatable_agents(agent_id: String) -> Array:
-	return get_agent_property(agent_id, "get_chatable_agents")
+func get_agent_chattable_agents(agent_id: String) -> Array:
+	return get_agent_property(agent_id, "get_chattable_agents")
 
 func get_agent_heard_messages(agent_id: String) -> Array:
 	return get_agent_property(agent_id, "get_heard_messages")
@@ -105,3 +139,13 @@ func get_agent_frontend_action(agent_id: String, action_type: String) -> Diction
 	else:
 		push_error("Agent with id '%s' not found or missing get_last_frontend_action." % agent_id)
 		return {}
+
+func set_chattable_agents_for(requesting_agent: Agent):
+	var nearby_agents : Array[String] = []
+	for child in get_children():
+		if child == requesting_agent or child is not Agent:
+			continue
+		var agent = child as Agent
+		if agent.global_position.distance_to(requesting_agent.global_position) < TILE_SIZE * CHATTABLE_RADIUS:
+			nearby_agents.append(agent.agent_id)
+	requesting_agent.chattable_agents = nearby_agents

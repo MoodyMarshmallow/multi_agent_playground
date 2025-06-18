@@ -9,6 +9,7 @@ var _poll_timer: Timer
 var _current_actions = []
 var _is_processing_actions: bool = false
 var _pending_confirmations = []
+var is_polling: bool = true
 
 # References to children
 @onready var agent_manager: AgentManager = $AgentManager
@@ -17,6 +18,7 @@ var _pending_confirmations = []
 var agent_ids := ["alex_001", "alan_002"]
 
 func _ready():
+	print("Press 'd' for additional agent and debugging controls")
 	# Create and setup timer
 	_poll_timer = Timer.new()
 	_poll_timer.wait_time = POLL_INTERVAL
@@ -30,6 +32,54 @@ func _on_poll_timer_timeout():
 		_is_processing_actions = true
 		_request_next_actions()
 
+# --- Dubugging functions ---
+func _input(event):
+	if event.is_action_pressed("pause_polling"):
+		if is_polling:
+			pause_poll_timer()
+		else:
+			resume_poll_timer()
+	if event.is_action_pressed("request_next_action"):
+		forcibly_request_next_actions()
+	if event.is_action_pressed("debug"):
+		print_debug_instructions()
+	if event.is_action_pressed("toggle_navigation_paths"):
+		toggle_navigation_paths()
+	if event.is_action_pressed("iterate_selected_agent"):
+		iterate_selected_agent()
+
+func print_debug_instructions() -> void:
+	print("Current debug options:
+	e: pause and resume polling
+	r: forcibly request the next actions from backend
+	f: toggle emoji label visibility
+	n: toggle navigation path visibility
+	a: iterate through selected agent (currently no further functionality)\n")
+
+func pause_poll_timer() -> void:
+	if _poll_timer and _poll_timer.is_stopped() == false:
+		is_polling = false
+		_poll_timer.stop()
+		print("POLL TIMER PAUSED")
+
+func resume_poll_timer() -> void:
+	if _poll_timer and _poll_timer.is_stopped():
+		is_polling = true
+		_poll_timer.start()
+		print("POLL TIMER RESUMED")
+
+func forcibly_request_next_actions():
+	print("FORCIBILY REQUESTED NEXT ACTIONS")
+	_request_next_actions()
+
+func toggle_navigation_paths() -> void:
+	print("TOGGLE NAVIGATION PATHS")
+	agent_manager.toggle_navigation_paths()
+
+func iterate_selected_agent() -> void:
+	agent_manager.iterate_selected_agent()
+	
+# --- Main functions ---
 func _request_next_actions():
 	var http_request = HTTPRequest.new()
 	add_child(http_request)
@@ -42,7 +92,7 @@ func _request_next_actions():
 			"agent_id": agent_id,
 			"perception": agent_manager.get_agent_perception(agent_id)
 		})
-	print("\nList[AgentPlanRequest] = ", request_body)
+	print("\nList[AgentPlanRequest] (Frontend -> Backend) = ", request_body)
 	var headers = ["Content-Type: application/json"]
 	var error = http_request.request(
 		BACKEND_URL + "/agent_act/plan",
@@ -68,7 +118,7 @@ func _on_plan_request_completed(result, response_code, headers, body):
 	_current_actions = []
 	for item in response:
 		_current_actions.append(item as Dictionary)
-	print("\nList[AgentActionOutput] = ", _current_actions)
+	print("\nList[AgentActionOutput] (Backend -> Frontend) = ", _current_actions)
 
 	_process_all_actions()
 
@@ -88,6 +138,7 @@ func _process_all_actions():
 	_send_pending_confirmations()
 
 func _process_single_action(action: Dictionary):
+	agent_manager.change_emoji(action.agent_id, action.emoji)
 	match action.action.action_type:
 		"move":
 			var dest_tile = Vector2i(action.action.destination_tile[0], action.action.destination_tile[1])
@@ -124,12 +175,12 @@ func _send_pending_confirmations():
 		confirm_bodies.append({
 			"agent_id": action.agent_id,
 			"action": agent_manager.get_agent_frontend_action(action.agent_id, action.action.action_type),
-			"in_progress": agent_manager.get_agent_in_progress(action.agent_id), # TODO: Get actual progress status
+			"in_progress": agent_manager.get_agent_in_progress(action.agent_id),
 			"perception": agent_manager.get_agent_perception(action.agent_id)
 		})
 	
 	var headers = ["Content-Type: application/json"]
-	print("\nList[AgentActionInput] = ", confirm_bodies)
+	print("\nList[AgentActionInput] (Frontend -> Backend) = ", confirm_bodies)
 	var error = http_request.request(
 		BACKEND_URL + "/agent_act/confirm",
 		headers,

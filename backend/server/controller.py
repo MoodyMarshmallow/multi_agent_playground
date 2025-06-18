@@ -4,6 +4,7 @@ from pathlib import Path
 import uuid
 import json
 import os
+from datetime import datetime, timedelta
 
 backend_dir = Path(__file__).parent.parent
 if str(backend_dir) not in sys.path:
@@ -20,6 +21,9 @@ from config.schema import (
 PROJECT_ROOT = Path(__file__).parent.parent.parent.resolve()
 MESSAGES_PATH = PROJECT_ROOT / "data" / "world" / "messages.json"
 
+# TODO: adjust/ what is a good timeout?
+CONVERSATION_TIMEOUT_MINUTES = 5
+
 # --- Utility functions ---
 
 def load_json(path, default):
@@ -34,14 +38,43 @@ def save_json(path, data):
 
 # --- Message handling ---
 
+def get_or_create_conversation_id(sender: str, receiver: str, queue: list) -> str:
+    """
+    Find existing conversation between these agents or create a new one.
+    A conversation is considered active if:
+    1. It's between the same agents
+    2. The last message was within CONVERSATION_TIMEOUT_MINUTES
+    """
+    # Sort messages by timestamp in reverse order
+    sorted_messages = sorted(queue, key=lambda x: x.get("timestamp", ""), reverse=True)
+    
+    # Look for recent messages between these agents
+    for msg in sorted_messages:
+        if (msg["sender"] in [sender, receiver] and 
+            msg["receiver"] in [sender, receiver]):
+            
+            # Check if conversation is still active based on time
+            msg_time = datetime.strptime(msg["timestamp"], "%dT%H:%M:%S")
+            current_time = datetime.strptime(datetime.now().strftime("%dT%H:%M:%S"), "%dT%H:%M:%S")
+            
+            if current_time - msg_time < timedelta(minutes=CONVERSATION_TIMEOUT_MINUTES):
+                return msg["conversation_id"]
+    
+    # If no active conversation found, create new one
+    return str(uuid.uuid4())
+
 def append_message_to_queue(msg, location):
     queue = load_json(MESSAGES_PATH, [])
+    
+    # Get or create conversation ID
+    conversation_id = get_or_create_conversation_id(msg.sender, msg.receiver, queue)
+    
     queue.append({
         "sender": msg.sender,
         "receiver": msg.receiver,
         "message": msg.message,
         "timestamp": msg.timestamp,
-        "conversation_id": msg.conversation_id,
+        "conversation_id": conversation_id,
         "location": location,
         "delivered": False
     })
@@ -195,20 +228,22 @@ def confirm_action_and_update(agent_msg: AgentActionInput) -> None:
     agent.save()
     agent.save_memory()
 
-    # Chat handling: extract message from heard_messages in perception
+    # Chat handling: process messages in heard_messages
     action = getattr(agent_msg, "action", None)
     if action and getattr(action, "action_type", None) == "chat":
         heard_messages = getattr(agent_msg.perception, "heard_messages", [])
-        # Find the message sent by this agent in heard_messages
-        msg_dict = next(
-            (m for m in heard_messages if m.sender == agent_msg.agent_id),
-            None
-        )
-        if msg_dict:
-            msg = Message(**msg_dict)
-            location = getattr(agent, "curr_tile", None)
+        location = getattr(agent, "curr_tile", None)
+        
+        for msg in heard_messages:
+            # Save message to queue
             append_message_to_queue(msg, location)
-            event_str = f"Sent message to {msg.receiver}: '{msg.message}'"
+            
+            # Record event based on whether agent is sender or receiver
+            if msg.sender == agent_msg.agent_id:
+                event_str = f"Sent message to {msg.receiver}: '{msg.message}'"
+            else:
+                event_str = f"Received message from {msg.sender}: '{msg.message}'"
+            
             salience = evaluate_event_salience(agent, event_str)
             agent.add_memory_event(
                 timestamp=msg.timestamp,
@@ -216,7 +251,7 @@ def confirm_action_and_update(agent_msg: AgentActionInput) -> None:
                 event=event_str,
                 salience=salience
             )
-            agent.save_memory()
+        agent.save_memory()
 
 def evaluate_event_salience(agent: Agent, event_description: str) -> int:
     try:

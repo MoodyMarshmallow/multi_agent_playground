@@ -16,7 +16,6 @@ func load_house_data() -> void:
 		var result = JSON.parse_string(json_text)
 		if result != null:
 			house_data = result
-			print("Parsed house layout successfully.")
 		else:
 			push_error("Failed to parse house layout JSON with parse_string.")
 	else:

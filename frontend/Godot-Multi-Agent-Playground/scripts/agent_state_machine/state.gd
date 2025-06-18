@@ -3,6 +3,7 @@ class_name State
 extends Node
 
 signal transitioned
+var string_name : String
 
 func enter():
 	pass

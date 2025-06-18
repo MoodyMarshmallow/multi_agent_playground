@@ -5,14 +5,15 @@ extends CharacterBody2D
 signal chat_message_sent(receiver_id: String, message: Dictionary)
 
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
+@onready var agent_manager: AgentManager = get_parent()
 
 # Variables we will need to send to http manager:
 @export var agent_id: String = "alex_001"
 var current_tile: Vector2i = Vector2i(0, 0)
 var visible_objects: Dictionary = {}
 @export var visible_agents: Array[String] = []
-@export var HouseUpperLeftTile : Vector2i = Vector2i(16, 3)
-@export var chatable_agents: Array[String] = []
+@export var HouseUpperLeftTile : Vector2i = Vector2i(0, 0)
+@export var chattable_agents: Array[String] = []
 var heard_messages: Array = []
 var timestamp: String = ""
 var forwarded: bool = true
@@ -23,6 +24,9 @@ var destination_tile: Vector2i = Vector2i(0, 0)
 @onready var navigation_agent_2d: NavigationAgent2D = $NavigationAgent2D
 var speed = 50.0
 
+# --- Animation Variables ---
+var last_direction := "down"
+
 # --- State Machine ---
 @onready var state_machine: StateMachine = $StateMachine
 @onready var idle: State = $StateMachine/Idle
@@ -30,6 +34,9 @@ var speed = 50.0
 
 
 func _ready() -> void:
+	# set animated sprite frames
+	_set_up_sprite_frames()
+	
 	# Enable debug visualization
 	navigation_agent_2d.debug_enabled = true
 	navigation_agent_2d.debug_use_custom = true
@@ -45,9 +52,18 @@ func _ready() -> void:
 	
 	current_tile = position_to_tile(position)
 	destination_tile = current_tile
+	
+# --- Animation ---
+func _set_up_sprite_frames():
+	var path = "res://assets/game/characters/agents/sprite_frames/%s_sprite_frames.tres" % agent_id
+	var frames = load(path)
+	
+	if frames and frames is SpriteFrames:
+		animated_sprite_2d.frames = frames
+	else:
+		push_error("Failed to load SpriteFrames at: " + path)
 
 # --- FSM Functions ---
-
 func position_to_tile(pos: Vector2) -> Vector2i:
 	# Assumes pos is in pixels
 	var tile_x = int(floor(pos.x / 16))
@@ -61,26 +77,32 @@ func tile_to_position(tile: Vector2i) -> Vector2:
 	return Vector2(pos_x, pos_y)
 
 # --- Functions signalled from HTTP manager ---
+func on_emoji_received(agent_id: String, emoji: String):
+	$"EmojiLabel".set_emoji_from_backend(emoji)
+
 func on_move_action_received(agent_id: String, destination_tile: Vector2i) -> void:
 	if agent_id != self.agent_id:
 		return
-	print("Moving to tile: ", destination_tile)
 	in_progress = true
-	#TODO Fix offset complications
 	destination_tile = destination_tile + HouseUpperLeftTile
 	var destination_pos = Vector2(destination_tile.x * 16 + 8, destination_tile.y * 16 + 8)
+
+	# Snap to navigation region
+	var safe_destination = NavigationServer2D.map_get_closest_point(navigation_agent_2d.get_navigation_map(), destination_pos)
+	var safe_destination_tile = position_to_tile(safe_destination)
+	navigation_agent_2d.set_target_position(safe_destination)
+	state_machine.on_child_transition(state_machine.current_state, "Walk")
+	current_tile = destination_tile
 	
 	navigation_agent_2d.set_target_position(destination_pos)
 	state_machine.on_child_transition(state_machine.current_state, "Walk")
-	
-	current_tile = destination_tile
+	in_progress = false
 
 # Called when a chat action is received
 func on_chat_action_received(agent_id: String, message: Dictionary) -> void:
 	if agent_id != self.agent_id:
 		return
 	navigation_agent_2d.set_target_position(position)
-	print("Sent chat message: ", message)
 	in_progress = true
 	state_machine.on_child_transition(state_machine.current_state, "Idle")
 	chat_message_sent.emit(message.receiver, message)
@@ -110,6 +132,13 @@ func on_perceive_action_received(agent_id: String) -> void:
 	state_machine.on_child_transition(state_machine.current_state, "Idle")
 	in_progress = false
 
+# --- Update functions for tracked variables ---
+
+func set_chattable_agents():
+	agent_manager.set_chattable_agents_for(self)
+
+func set_interactable_objects() -> void:
+	pass
 
 # --- Getter functions for HTTP manager ---
 
@@ -129,8 +158,9 @@ func get_visible_objects() -> Dictionary:
 func get_visible_agents() -> Array:
 	return visible_agents
 
-func get_chatable_agents() -> Array:
-	return chatable_agents
+func get_chattable_agents() -> Array:
+	set_chattable_agents()
+	return chattable_agents
 
 func get_heard_messages() -> Array:
 	return heard_messages
@@ -149,17 +179,23 @@ func get_perception() -> Dictionary:
 	# clear heard_messages
 	var old_heard_messages = heard_messages
 	heard_messages = []
+	# update chattable agents
+	set_chattable_agents()
 	return {
-		"timestamp": timestamp,
+		"timestamp": TimeManager.get_formatted_time(),
 		"current_tile": [current_tile.x, current_tile.y],
 		"visible_objects": visible_objects,
 		"visible_agents": visible_agents,
-		"chatable_agents": chatable_agents,
+		"chattable_agents": chattable_agents,
 		"heard_messages": old_heard_messages
 	}
 
 func _physics_process(delta: float) -> void:
-	var navigation_agent_2d = $NavigationAgent2D
+	_physics_navigation(delta)
+	_physics_animation(delta)
+	_update_perception(delta)
+
+func _physics_navigation(delta: float) -> void:
 	if navigation_agent_2d.is_navigation_finished():
 		in_progress = false
 		state_machine.on_child_transition(state_machine.current_state, "Idle")
@@ -168,10 +204,23 @@ func _physics_process(delta: float) -> void:
 	var next_point = navigation_agent_2d.get_next_path_position()
 	var direction = (next_point - position).normalized()
 	# Move the agent
-	position += direction * speed * delta
+	velocity = direction * speed
+	move_and_slide()
 	current_tile = position_to_tile(position)
-	pass
 
-# updates the agent's perception variable such as visible_objects, visible_agents, chatable_agents, and current_tile
-func _update_perception() -> void:
+func _physics_animation(delta: float) -> void:
+	if state_machine.current_state.string_name == "walk":
+		if velocity.length() > 0:
+			var direction = ""
+			if abs(velocity.x) > abs(velocity.y):
+				direction = "right" if velocity.x > 0 else "left"
+			else:
+				direction = "down" if velocity.y > 0 else "up"
+			last_direction = direction
+			animated_sprite_2d.play("walk_" + direction)
+	elif state_machine.current_state.string_name == "idle":
+		animated_sprite_2d.play("idle_" + last_direction)
+
+# updates the agent's perception variable such as visible_objects, visible_agents, chattable_agents, and current_tile
+func _update_perception(delta: float) -> void:
 	pass
