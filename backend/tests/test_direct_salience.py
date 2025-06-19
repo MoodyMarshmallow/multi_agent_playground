@@ -13,7 +13,7 @@ if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
 from character_agent.agent import Agent
-from character_agent.kani_implementation import LLMAgent
+from character_agent.agent_manager import create_llm_agent
 
 async def test_direct_salience():
     """Test the salience evaluation function directly"""
@@ -28,8 +28,8 @@ async def test_direct_salience():
         print(f"Agent personality: {agent.personality}")
         print("=" * 50)
         
-        # Create LLM agent
-        llm_agent = LLMAgent(agent)
+        # Create LLM agent using the manager
+        llm_agent = create_llm_agent(agent.agent_id)
         
         # Test a simple event
         event = "I saw a coffee mug on the kitchen counter"
