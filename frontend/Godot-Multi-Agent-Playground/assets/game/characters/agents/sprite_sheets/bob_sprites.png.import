@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b8bfruljvo3xt"
-path="res://.godot/imported/sprout_lands_defautlt_palette.png-ead77e037ae6e12f08afd3b8ca7b3502.ctex"
+uid="uid://dg3lexdpbobix"
+path="res://.godot/imported/bob_sprites.png-e9b42fc59484a79be9f70b92c15bd7d3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/sprout_lands_color_pallet/sprout_lands_defautlt_palette.png"
-dest_files=["res://.godot/imported/sprout_lands_defautlt_palette.png-ead77e037ae6e12f08afd3b8ca7b3502.ctex"]
+source_file="res://assets/game/characters/agents/sprite_sheets/bob_sprites.png"
+dest_files=["res://.godot/imported/bob_sprites.png-e9b42fc59484a79be9f70b92c15bd7d3.ctex"]
 
 [params]
 

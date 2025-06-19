@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dylsarm37j0p5"
-path="res://.godot/imported/sprout_lands_defautlt_palette_snip.PNG-f2a86d7e5bbbdd478feac3e5b01cd9a5.ctex"
+uid="uid://s3p0vy7iy6fp"
+path="res://.godot/imported/adam_sprites.png-14585c6e231ace9036910c857f32ee56.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/game/sprout_lands_color_pallet/sprout_lands_defautlt_palette_snip.PNG"
-dest_files=["res://.godot/imported/sprout_lands_defautlt_palette_snip.PNG-f2a86d7e5bbbdd478feac3e5b01cd9a5.ctex"]
+source_file="res://assets/game/characters/agents/sprite_sheets/adam_sprites.png"
+dest_files=["res://.godot/imported/adam_sprites.png-14585c6e231ace9036910c857f32ee56.ctex"]
 
 [params]
 

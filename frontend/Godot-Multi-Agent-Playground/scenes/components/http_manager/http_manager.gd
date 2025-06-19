@@ -18,6 +18,7 @@ var is_polling: bool = true
 var agent_ids := ["alex_001", "alan_002"]
 
 func _ready():
+	print("Press 'd' for additional agent and debugging controls")
 	# Create and setup timer
 	_poll_timer = Timer.new()
 	_poll_timer.wait_time = POLL_INTERVAL
@@ -31,6 +32,7 @@ func _on_poll_timer_timeout():
 		_is_processing_actions = true
 		_request_next_actions()
 
+# --- Dubugging functions ---
 func _input(event):
 	if event.is_action_pressed("pause_polling"):
 		if is_polling:
@@ -41,32 +43,44 @@ func _input(event):
 		forcibly_request_next_actions()
 	if event.is_action_pressed("debug"):
 		print_debug_instructions()
+	if event.is_action_pressed("toggle_navigation_paths"):
+		toggle_navigation_paths()
+	if event.is_action_pressed("iterate_selected_agent"):
+		iterate_selected_agent()
 
 func print_debug_instructions() -> void:
 	print("Current debug options:
 	e: pause and resume polling
 	r: forcibly request the next actions from backend
-	f: toggle emoji label visibility\n")
+	f: toggle emoji label visibility
+	n: toggle navigation path visibility
+	a: iterate through selected agent (currently no further functionality)
+	arrow keys / ijkl: move camera\n")
 
 func pause_poll_timer() -> void:
 	if _poll_timer and _poll_timer.is_stopped() == false:
 		is_polling = false
 		_poll_timer.stop()
 		print("POLL TIMER PAUSED")
-		push_error("POLL TIMER PAUSED")
 
 func resume_poll_timer() -> void:
 	if _poll_timer and _poll_timer.is_stopped():
 		is_polling = true
 		_poll_timer.start()
 		print("POLL TIMER RESUMED")
-		push_error("POLL TIMER RESUMED")
 
 func forcibly_request_next_actions():
 	print("FORCIBILY REQUESTED NEXT ACTIONS")
-	push_error("FORCIBILY REQUESTED NEXT ACTIONS")
 	_request_next_actions()
 
+func toggle_navigation_paths() -> void:
+	print("TOGGLE NAVIGATION PATHS")
+	agent_manager.toggle_navigation_paths()
+
+func iterate_selected_agent() -> void:
+	agent_manager.iterate_selected_agent()
+	
+# --- Main functions ---
 func _request_next_actions():
 	var http_request = HTTPRequest.new()
 	add_child(http_request)
@@ -79,7 +93,7 @@ func _request_next_actions():
 			"agent_id": agent_id,
 			"perception": agent_manager.get_agent_perception(agent_id)
 		})
-	print("\nList[AgentPlanRequest] = ", request_body)
+	print("\nList[AgentPlanRequest] (Frontend -> Backend) = ", request_body)
 	var headers = ["Content-Type: application/json"]
 	var error = http_request.request(
 		BACKEND_URL + "/agent_act/plan",
@@ -105,7 +119,7 @@ func _on_plan_request_completed(result, response_code, headers, body):
 	_current_actions = []
 	for item in response:
 		_current_actions.append(item as Dictionary)
-	print("\nList[AgentActionOutput] = ", _current_actions)
+	print("\nList[AgentActionOutput] (Backend -> Frontend) = ", _current_actions)
 
 	_process_all_actions()
 
@@ -167,7 +181,7 @@ func _send_pending_confirmations():
 		})
 	
 	var headers = ["Content-Type: application/json"]
-	print("\nList[AgentActionInput] = ", confirm_bodies)
+	print("\nList[AgentActionInput] (Frontend -> Backend) = ", confirm_bodies)
 	var error = http_request.request(
 		BACKEND_URL + "/agent_act/confirm",
 		headers,

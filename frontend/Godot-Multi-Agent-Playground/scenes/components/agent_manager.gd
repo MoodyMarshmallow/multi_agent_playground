@@ -2,15 +2,20 @@ class_name AgentManager
 
 extends Node
 
+# --- Constants ---
 var TILE_SIZE : float = 16
 var CHATTABLE_RADIUS : float = 4
 var INTERACTABLE_RADIUS : float = 4
+
+# - Variables ---
 var current_agent_id : String
 var agent_dictionary : Dictionary
+var agent_ids : Array
 
 func _ready():
 	for agent in get_children():
 		agent_dictionary[agent.agent_id] = agent
+		agent_ids.append(agent.agent_id)
 		if agent.has_signal("chat_message_sent"):
 			agent.connect("chat_message_sent", self._on_agent_chat_message_sent)
 	if agent_dictionary:
@@ -20,8 +25,14 @@ func iterate_selected_agent():
 	var ids = agent_dictionary.keys()
 	var current_index = ids.find(current_agent_id)
 	var next_index = (current_index + 1) % ids.size()
-	var current_agent_id = agent_dictionary[ids[next_index]]
+	current_agent_id = ids[next_index]
+	print("CURRENTLY SELECTED AGENT: ", current_agent_id)
 
+func toggle_navigation_paths():
+	for child in get_children():
+		if child is Agent:
+			var agent = child as Agent
+			agent.navigation_agent_2d.debug_enabled = not agent.navigation_agent_2d.debug_enabled
 
 func _on_agent_chat_message_sent(receiver_id: String, message: Dictionary) -> void:
 	var receiver_agent = _find_agent_by_id(receiver_id)

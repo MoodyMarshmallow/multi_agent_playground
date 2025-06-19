@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://bjrmexmshxdrp"]
+
+[ext_resource type="Script" path="res://scenes/components/agent_manager.gd" id="1_5ub2u"]
+[ext_resource type="PackedScene" uid="uid://dleatrinsn5so" path="res://scenes/characters/agents/agent.tscn" id="2_0jrcd"]
+
+[node name="AgentManager" type="Node"]
+script = ExtResource("1_5ub2u")
+
+[node name="Agent1" parent="." instance=ExtResource("2_0jrcd")]
+position = Vector2(360, 133)
+visible_agents = Array[String](["alan_002"])
+
+[node name="Agent2" parent="." instance=ExtResource("2_0jrcd")]
+position = Vector2(512, 192)
+agent_id = "alan_002"
+visible_agents = Array[String](["alex_001"])

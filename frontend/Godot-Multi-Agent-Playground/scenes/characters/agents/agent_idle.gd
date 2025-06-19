@@ -1,5 +1,8 @@
 extends State
 
+func _ready():
+	string_name = "idle"
+	
 func enter():
 	pass
 
