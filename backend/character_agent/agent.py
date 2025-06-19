@@ -51,6 +51,7 @@ class Agent:
         self.occupation = data.get("occupation")
         self.currently = data.get("currently")
         self.lifestyle = data.get("lifestyle")
+        self.daily_req = data.get("daily_req")
         self.living_area = data.get("living_area")
         
         # Planning system
@@ -153,7 +154,8 @@ class Agent:
         """
         return {
             "agent_id": self.agent_id,
-            "name": self.name,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
             "curr_tile": self.curr_tile,
             "daily_req": self.daily_req,
             "memory": self.memory,

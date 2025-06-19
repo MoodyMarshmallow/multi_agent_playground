@@ -1,6 +1,6 @@
 """
-Multi-Agent Playground - LLM Agent Implementation
-=================================================
+Multi-Agent Playground - Kani Agent Implementation
+==================================================
 LLM-powered agent implementation using the Kani library with OpenAI's GPT-4o.
 
 This module implements the LLMAgent class which combines:
@@ -53,7 +53,7 @@ class LLMAgent(Kani, ActionsMixin):
         # Handle SSL issues in Windows conda environments 
 
         # ==================== WARNING ==========================
-        # (TODO: THIS IS A WORKAROUND AND MAY CAUSE SECURITY ISSUES)
+        # (NOTE: THIS IS A WORKAROUND AND MAY CAUSE SECURITY ISSUES)
         # =======================================================
         try:
             engine = OpenAIEngine(
@@ -130,12 +130,11 @@ CURRENT CONTEXT:
 - Current location: {self.agent.curr_tile}
 
 CAPABILITIES:
-You have five main actions available:
+You have four main actions available:
 1. move(destination_coordinates, action_emoji) - Move to specific coordinates
 2. chat(receiver, message, action_emoji) - Send messages to other agents
 3. interact(object, new_state, action_emoji) - Interact with objects to change their state
 4. perceive(action_emoji) - Perceive objects and agents in your visible area
-5. evaluate_event_salience(event_description, salience_score) - Rate the importance of events for memory storage
 
 BEHAVIOR GUIDELINES:
 - Always stay in character based on your personality traits
@@ -219,6 +218,10 @@ Respond naturally as {self.agent.first_name} would, and use the available action
                 "emoji": "👀"
             }
         
+        # Save agent state after action planning
+        self.agent.save()
+        self.agent.save_memory()
+        
         return action_result
     
     def _build_context_message(self, perception_data: Dict[str, Any]) -> str:
@@ -288,18 +291,65 @@ Respond naturally as {self.agent.first_name} would, and use the available action
 
 Event: "{event_description}"
 
-Your personality:
+YOUR CHARACTERISTICS:
 - Backstory: {self.agent.backstory}
 - Personality: {self.agent.personality}
 - Occupation: {self.agent.occupation}
 - Lifestyle: {self.agent.lifestyle}
 
-Rating scale:
-1-2: Trivial routine things (seeing common objects, normal movements)
-3-4: Minor daily activities (eating, basic interactions)
-5-6: Meaningful interactions or discoveries (interesting conversations, new places)
-7-8: Important emotional or social events (conflicts, achievements, relationships)
-9-10: Life-changing experiences (major decisions, trauma, profound moments)
+SALIENCE SCORING GUIDELINES:
+Rate events on a scale from 1-10 based on their importance to your character:
+
+TRIVIAL EVENTS (1-2):
+- Routine observations with no personal significance
+- Seeing common objects in expected places
+- Regular daily activities that happen frequently
+- Minor environmental changes that don't affect you
+
+LOW IMPORTANCE (3-4):
+- Interactions with familiar objects for routine purposes
+- Brief, casual conversations about mundane topics
+- Minor changes in your environment
+- Completing simple, everyday tasks
+
+MODERATE IMPORTANCE (5-6):
+- Meaningful conversations with other agents
+- Discovering new objects or areas
+- Completing important daily requirements
+- Social interactions that reveal personality or relationships
+- Learning something new about your environment
+
+HIGH IMPORTANCE (7-8):
+- Significant social conflicts or emotional moments
+- Major discoveries or revelations
+- Events that change your understanding of the world
+- Interactions that significantly impact relationships
+- Achieving important personal goals
+
+LIFE-CHANGING EVENTS (9-10):
+- Traumatic or extremely joyful experiences
+- Major life decisions or turning points
+- Events that fundamentally change your character
+- Profound emotional experiences
+- Life-threatening or life-saving situations
+
+FACTORS TO CONSIDER:
+- Personal relevance: How much does this affect YOU specifically?
+- Emotional impact: How strongly did this make you feel?
+- Uniqueness: How rare or unusual is this event?
+- Consequences: Will this event influence your future actions?
+- Relationships: Does this significantly affect your connections with others?
+- Goal relevance: Does this help or hinder your personal objectives?
+
+EXAMPLES:
+- "I saw a bed in the bedroom" (routine observation) = 1-2
+- "I talked with John about the weather" (casual chat) = 3-4
+- "I discovered a hidden room I've never seen before" (new discovery) = 6-7
+- "Sarah told me she's moving away forever" (relationship impact) = 8-9
+- "I barely escaped a dangerous situation" (life-threatening) = 9-10
+
+Remember: Score based on YOUR character's perspective and personality.
+What's important to one character might be trivial to another.
 
 Respond with ONLY a number from 1-10, nothing else."""
 
@@ -323,44 +373,4 @@ Respond with ONLY a number from 1-10, nothing else."""
                 
         except Exception as e:
             print(f"Error in salience evaluation: {e}")
-            return 5  # Default fallback
-
-
-async def call_llm_for_action(agent_state: Dict[str, Any], perception_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Replacement function for call_llm_agent that uses the Kani-based LLM agent.
-    
-    Args:
-        agent_state (dict): Current agent state
-        perception_data (dict): Current perception data
-        
-    Returns:
-        dict: Action JSON in the format expected by the frontend
-    """
-    # Create Agent instance from state
-    agent_dir = f"data/agents/{agent_state['agent_id']}"
-    agent = Agent(agent_dir)
-    
-    # Create LLM agent
-    llm_agent = LLMAgent(agent)
-    
-    # Plan next action
-    action_result = await llm_agent.plan_next_action(perception_data)
-    
-    return action_result
-
-
-# Synchronous wrapper for compatibility with existing code
-def call_llm_agent(agent_state: Dict[str, Any], perception_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Synchronous wrapper for the LLM action planning function.
-    This replaces the original call_llm_agent function.
-    
-    Args:
-        agent_state (dict): Current agent state
-        perception_data (dict): Current perception data
-        
-    Returns:
-        dict: Action JSON in the format expected by the frontend
-    """
-    return asyncio.run(call_llm_for_action(agent_state, perception_data)) 
+            return 5  # Default fallback 

@@ -13,12 +13,12 @@
   "occupation": "Environmental consultant working with urban sustainability projects",
   "currently": "I saw these people: alex_001. I heard alex_001 say to alan_002: 'Hey Alan! I'd love to join you for some gardening. It sounds like a nice break from painting.'",
   "lifestyle": "active",
-  "living_area": "apartment",
   "daily_req": [
     "exercise",
     "read",
     "cook"
   ],
+  "living_area": "apartment",
   "f_daily_schedule": [
     [
       "sleeping",

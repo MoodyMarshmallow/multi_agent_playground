@@ -6,6 +6,7 @@ import json
 import os
 from datetime import datetime, timedelta
 import hashlib
+from typing import Dict, Any, Optional
 
 backend_dir = Path(__file__).parent.parent
 if str(backend_dir) not in sys.path:
@@ -13,7 +14,11 @@ if str(backend_dir) not in sys.path:
 
 from character_agent.agent import Agent
 from character_agent.actions import ActionsMixin
-from character_agent.kani_implementation import call_llm_agent, LLMAgent
+from character_agent.kani_agent import LLMAgent
+from character_agent.agent_manager import (
+    call_llm_agent, create_llm_agent, get_llm_agent, 
+    remove_llm_agent, clear_all_llm_agents, get_active_agent_count
+)
 from config.schema import (
     AgentActionInput, AgentActionOutput, AgentPerception, BackendAction, 
     MoveBackendAction, ChatBackendAction, InteractBackendAction, PerceiveBackendAction, Message
@@ -320,9 +325,72 @@ def confirm_action_and_update(agent_msg: AgentActionInput) -> None:
     agent.save()
     agent.save_memory()
 
+def initialize_llm_agent(agent_id: str, api_key: Optional[str] = None) -> LLMAgent:
+    """
+    Initialize an LLMAgent for the given agent_id.
+    
+    Args:
+        agent_id (str): The agent ID
+        api_key (str, optional): OpenAI API key
+        
+    Returns:
+        LLMAgent: The initialized LLMAgent instance
+    """
+    return create_llm_agent(agent_id, api_key)
+
+
+def get_or_create_llm_agent(agent_id: str, api_key: Optional[str] = None) -> LLMAgent:
+    """
+    Get an existing LLMAgent or create a new one if it doesn't exist.
+    
+    Args:
+        agent_id (str): The agent ID
+        api_key (str, optional): OpenAI API key
+        
+    Returns:
+        LLMAgent: The LLMAgent instance
+    """
+    llm_agent = get_llm_agent(agent_id)
+    if llm_agent is None:
+        llm_agent = create_llm_agent(agent_id, api_key)
+    return llm_agent
+
+
+def cleanup_llm_agent(agent_id: str):
+    """
+    Remove an LLMAgent from memory to free resources.
+    
+    Args:
+        agent_id (str): The agent ID to cleanup
+    """
+    remove_llm_agent(agent_id)
+
+
+def cleanup_all_llm_agents():
+    """
+    Remove all LLMAgents from memory to free resources.
+    """
+    clear_all_llm_agents()
+
+
+def get_llm_agent_status() -> Dict[str, Any]:
+    """
+    Get status information about currently active LLMAgents.
+    
+    Returns:
+        dict: Status information including active agent count
+    """
+    return {
+        "active_agent_count": get_active_agent_count(),
+        "message": f"Currently managing {get_active_agent_count()} LLM agents"
+    }
+
+
 def evaluate_event_salience(agent: Agent, event_description: str) -> int:
     try:
-        llm_agent = LLMAgent(agent)
+        # Use the managed LLMAgent instead of creating a new one
+        llm_agent = get_or_create_llm_agent(agent.agent_id)
+        
         salience = asyncio.run(llm_agent.evaluate_event_salience(event_description))
         print(f"Event salience evaluation: '{event_description}' = {salience}")
         return salience
