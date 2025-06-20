@@ -11,6 +11,7 @@ __pycache__/
 frontend/godot/export/
 
 # IDEs
+.cursor/
 .vscode/
 .idea/
 
@@ -20,3 +21,6 @@ Thumbs.db
 
 # Project Testing
 frontend/frontend_server/
+
+# Resources
+resources/
