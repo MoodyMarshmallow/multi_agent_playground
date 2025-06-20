@@ -20,7 +20,7 @@ frontend/godot/export/
 Thumbs.db
 
 # Project Testing
-frontend/frontend_server/
+simulacra_visualization/
 
 # Resources
 resources/
