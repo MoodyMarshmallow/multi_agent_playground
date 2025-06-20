@@ -1,5 +1,32 @@
 extends Node
 
+# Things I want this to let me do:
+# Detect all objects within a certain radius of a point, return json structure similar to following:
+# visible objects:
+# {
+#     "bed": {
+#         "room": "bedroom",
+#         "position": [21, 9],
+#         "state": "made"    # These should be one word descriptions of the state of the object that are predefined and match the objects appearance in the frontend. Ex in this case could be made or messy
+#     },
+#     "wardrobe": {
+#         "room": "bedroom",
+#         "position": [20, 7],
+#         "state": "open"
+#     },
+#     "left_bookshelf": {
+#         "room": "kitchen",
+#         "position": [23, 7],
+#         "state": ""
+#     }
+# }
+# need someway to keep track of underlying world state
+# when agents interact with an object there should be some global function they can call to toggle it's state
+# maybe get the state individually from each object? but could be expensive
+# Environment Manager: Building Manager: Object itself?
+# Input obj_name, state, new state. Change in underlying dictionary structure?
+
+# Area : Room : Object : Position, State
 var house_data: Dictionary = {}
 var _object_locations: Dictionary = {}  # Cache for quick lookups
 
