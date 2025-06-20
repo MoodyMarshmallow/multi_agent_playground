@@ -1,15 +1,22 @@
-[gd_resource type="TileSet" load_steps=21 format=3 uid="uid://dfl6kn3bmjfc2"]
+[gd_resource type="TileSet" load_steps=35 format=3 uid="uid://dfl6kn3bmjfc2"]
 
 [ext_resource type="Texture2D" uid="uid://brgyh3ph5je4c" path="res://modern_assets/borders.png" id="1_jdxs7"]
 [ext_resource type="Texture2D" uid="uid://76i0te6lvfny" path="res://modern_assets/basement.png" id="1_ldqsm"]
 [ext_resource type="Texture2D" uid="uid://cae0c10smnbia" path="res://modern_assets/floors.png" id="2_8ohmv"]
 [ext_resource type="Texture2D" uid="uid://j1d7n7hk21mn" path="res://modern_assets/walls.png" id="2_68d3b"]
+[ext_resource type="PackedScene" uid="uid://door48gqcuan5" path="res://scenes/houses/interactable_objects/interactable_bathroom/cabinet.tscn" id="3_poi5h"]
+[ext_resource type="PackedScene" uid="uid://c5vfag0qfldly" path="res://scenes/houses/interactable_objects/interactable_bathroom/sink.tscn" id="4_tenl6"]
+[ext_resource type="PackedScene" uid="uid://c6go2i4ku4nxa" path="res://scenes/houses/interactable_objects/interactable_bathroom/bathtub.tscn" id="5_3x0ar"]
 [ext_resource type="Texture2D" uid="uid://cmojxpge0eyqw" path="res://modern_assets/bedroom.png" id="5_8ohmv"]
 [ext_resource type="Texture2D" uid="uid://enmyg61e2tas" path="res://modern_assets/furniture.png" id="6_l7i0c"]
+[ext_resource type="PackedScene" uid="uid://dl0vnrqaxgvli" path="res://scenes/houses/interactable_objects/interactable_kitchen/coffee.tscn" id="6_tenl6"]
+[ext_resource type="PackedScene" uid="uid://cuquxyn65y6ii" path="res://scenes/houses/interactable_objects/interactable_kitchen/fridge.tscn" id="7_3x0ar"]
 [ext_resource type="Texture2D" uid="uid://dbkh8gpdeehfd" path="res://modern_assets/living_room.png" id="7_ldqsm"]
 [ext_resource type="Texture2D" uid="uid://cmr6euh4xnewa" path="res://modern_assets/kitchen.png" id="8_a42qh"]
+[ext_resource type="PackedScene" uid="uid://u7b4ml6h7vxa" path="res://scenes/houses/interactable_objects/interactable_kitchen/oven.tscn" id="8_psa53"]
 [ext_resource type="Texture2D" uid="uid://xodojgfypofi" path="res://modern_assets/bathroom.png" id="9_a42qh"]
-[ext_resource type="PackedScene" uid="uid://c4k6t6rbqteau" path="res://scenes/houses/interactable_objects/modern_door.tscn" id="10_hj8ad"]
+[ext_resource type="PackedScene" uid="uid://bgiu6l1keygyc" path="res://scenes/houses/interactable_objects/interactable_random/toybox.tscn" id="9_pft8k"]
+[ext_resource type="PackedScene" uid="uid://c4k6t6rbqteau" path="res://scenes/houses/interactable_objects/interactable_bathroom/modern_door.tscn" id="13_psa53"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nqut1"]
 texture = ExtResource("1_ldqsm")
@@ -101,6 +108,34 @@ texture = ExtResource("2_8ohmv")
 10:31/0 = 0
 10:30/0 = 0
 9:30/0 = 0
+
+[sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_nqut1"]
+resource_name = "cabinet"
+scenes/1/scene = ExtResource("3_poi5h")
+
+[sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_poi5h"]
+resource_name = "sink"
+scenes/1/scene = ExtResource("4_tenl6")
+
+[sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_pft8k"]
+resource_name = "bathtub"
+scenes/1/scene = ExtResource("5_3x0ar")
+
+[sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_3x0ar"]
+resource_name = "coffee"
+scenes/1/scene = ExtResource("6_tenl6")
+
+[sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_psa53"]
+resource_name = "fridge"
+scenes/1/scene = ExtResource("7_3x0ar")
+
+[sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_06xka"]
+resource_name = "oven"
+scenes/1/scene = ExtResource("8_psa53")
+
+[sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_6v6pb"]
+resource_name = "toybox"
+scenes/1/scene = ExtResource("9_pft8k")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_4uxih"]
 texture = ExtResource("1_jdxs7")
@@ -501,7 +536,8 @@ texture = ExtResource("9_a42qh")
 9:32/0/physics_layer_0/polygon_0/points = PackedVector2Array(-7, 2, -6.5, 8, 6.5, 8, 6.5, 2)
 
 [sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_g5f7x"]
-scenes/1/scene = ExtResource("10_hj8ad")
+resource_name = "door"
+scenes/1/scene = ExtResource("13_psa53")
 
 [resource]
 physics_layer_0/collision_layer = 1
@@ -515,3 +551,10 @@ sources/7 = SubResource("TileSetAtlasSource_g5f7x")
 sources/0 = SubResource("TileSetAtlasSource_nqut1")
 sources/8 = SubResource("TileSetAtlasSource_poi5h")
 sources/9 = SubResource("TileSetScenesCollectionSource_g5f7x")
+sources/10 = SubResource("TileSetScenesCollectionSource_nqut1")
+sources/11 = SubResource("TileSetScenesCollectionSource_poi5h")
+sources/12 = SubResource("TileSetScenesCollectionSource_pft8k")
+sources/13 = SubResource("TileSetScenesCollectionSource_3x0ar")
+sources/14 = SubResource("TileSetScenesCollectionSource_psa53")
+sources/15 = SubResource("TileSetScenesCollectionSource_06xka")
+sources/17 = SubResource("TileSetScenesCollectionSource_6v6pb")
