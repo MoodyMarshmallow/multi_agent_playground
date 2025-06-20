@@ -1,10 +1,10 @@
-[gd_scene load_steps=8 format=4 uid="uid://bf531cxhlqal6"]
+[gd_scene load_steps=8 format=4 uid="uid://doevo3e5wrbll"]
 
 [ext_resource type="TileSet" uid="uid://clqkkmcjq30g" path="res://Tilesets/game_tile_set.tres" id="1_47tlb"]
 [ext_resource type="PackedScene" uid="uid://dsv32w5f65vpb" path="res://scenes/components/http_manager/http_manager.tscn" id="2_gog2h"]
 [ext_resource type="Script" path="res://scenes/components/http_manager/http_manager.gd" id="3_aax25"]
 [ext_resource type="Script" path="res://scenes/components/agent_manager.gd" id="4_0e7sk"]
-[ext_resource type="PackedScene" uid="uid://dleatrinsn5so" path="res://scenes/characters/agents/agent.tscn" id="5_dabbl"]
+[ext_resource type="PackedScene" uid="uid://dleatrinsn5so" path="res://scenes/characters/Agents/agent.tscn" id="5_dabbl"]
 [ext_resource type="Script" path="res://scripts/camera/camera_2d.gd" id="6_gd8gh"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_1ojii"]

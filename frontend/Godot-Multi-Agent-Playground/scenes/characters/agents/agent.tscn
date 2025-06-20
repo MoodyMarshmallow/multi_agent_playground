@@ -7,7 +7,7 @@
 [ext_resource type="Script" path="res://scenes/characters/agents/agent_idle.gd" id="4_6b4s1"]
 [ext_resource type="Script" path="res://scenes/characters/agents/agent_walk.gd" id="5_bb8p1"]
 [ext_resource type="FontFile" uid="uid://46afpnw3fj03" path="res://assets/ui/fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf" id="6_jtutc"]
-[ext_resource type="Script" uid="uid://b64ugwkflcchs" path="res://scenes/characters/agents/emoji_label.gd" id="7_88ey6"]
+[ext_resource type="Script" path="res://scenes/characters/agents/emoji_label.gd" id="7_88ey6"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_8bwlk"]
 radius = 4.0
