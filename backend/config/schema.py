@@ -9,6 +9,7 @@ class AgentSummary(BaseModel):
     agent_id: str
     # first_name: str
     # last_name: str
+    curr_tile: Optional[List[int]]
     curr_room: Optional[str]
     # age: Optional[int]
     # occupation: Optional[str]
@@ -36,7 +37,8 @@ class Message(BaseModel):
 
 class MoveFrontendAction(BaseModel):
     action_type: Literal["move"]
-    destination_room: str
+    destination_tile: Tuple[int, int]
+    destination_room: Optional[str]
     # use current room from AgentPerception to determine progress
 
 class ChatFrontendAction(BaseModel):
@@ -93,7 +95,8 @@ FrontendAction = Annotated[
 
 class MoveBackendAction(BaseModel):
     action_type: Literal["move"]
-    destination_room: str
+    destination_tile: Tuple[int, int]
+    destination_room: Optional[str]
 
 class ChatBackendAction(BaseModel):
     action_type: Literal["chat"]
@@ -124,7 +127,7 @@ BackendAction = Annotated[
 # move
 # {
 #   "action_type": "move",
-#   "destination_room": "bedroom"
+#   "destination_tile": [21, 9]
 # }
 
 # chat

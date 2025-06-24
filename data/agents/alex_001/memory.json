@@ -115,5 +115,17 @@
     "location": "unknown location",
     "event": "I moved to position [17, 14]",
     "salience": 1
+  },
+  {
+    "timestamp": "24T15:23:23",
+    "location": "unknown location",
+    "event": "I looked around and observed my surroundings",
+    "salience": 1
+  },
+  {
+    "timestamp": "24T15:25:11",
+    "location": "unknown location",
+    "event": "I moved to position [20, 8]",
+    "salience": 2
   }
 ]

@@ -205,7 +205,8 @@ def build_event_description(next_action, perception):
 def get_updated_perception_for_agent(agent_id: str) -> AgentPerception:
     # 1. Load the agent instance from the LLMAgentManager
     agent = agent_manager.get_agent(agent_id).agent 
-    current_room = get_room_from_tile(agent.curr_tile)
+    # Use agent's stored room if available, otherwise calculate from tile
+    current_room = getattr(agent, 'curr_room', None) or get_room_from_tile(agent.curr_tile)
     timestamp = datetime.now().strftime("%dT%H:%M:%S")
     
     # 2. Find visible objects (same room as the agent)
@@ -222,7 +223,7 @@ def get_updated_perception_for_agent(agent_id: str) -> AgentPerception:
         if other_id == agent_id:
             continue
         other_agent = llm_agent.agent
-        other_room = get_room_from_tile(getattr(other_agent, 'curr_tile', None))
+        other_room = getattr(other_agent, 'curr_room', None) or get_room_from_tile(getattr(other_agent, 'curr_tile', None))
         if other_room == current_room:
             visible_agents.append(other_id)
             chatable_agents.append(other_id)
@@ -284,9 +285,10 @@ def plan_next_action(agent_id: str) -> PlanActionResponse:
     if action_type == "move":
         destination = next_action["content"].get("destination_coordinates", [0, 0])
         destination_room = get_room_from_tile(destination)
-        backend_action = MoveBackendAction(action_type="move", destination_room=destination_room)
+        backend_action = MoveBackendAction(action_type="move", destination_room=destination_room, destination_tile=destination)
         current_room = destination_room
-        # Optionally update the agent's location here
+        
+        agent.update_agent_data({"curr_tile": destination})
         agent.update_agent_data({"current_room": current_room})
     elif action_type == "chat":
         content = next_action["content"]

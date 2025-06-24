@@ -124,5 +124,17 @@
     "location": "unknown location",
     "event": "I moved to position [17, 9]. I saw these people: alex_001",
     "salience": 4
+  },
+  {
+    "timestamp": "24T15:23:29",
+    "location": "unknown location",
+    "event": "I moved to position [17, 12]. I saw these people: alex_001",
+    "salience": 3
+  },
+  {
+    "timestamp": "24T15:25:13",
+    "location": "unknown location",
+    "event": "I moved to position [7, 10]. I saw these people: alex_001",
+    "salience": 5
   }
 ]

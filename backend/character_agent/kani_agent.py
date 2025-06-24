@@ -163,11 +163,11 @@ DAILY REQUIREMENTS:
 
 CURRENT CONTEXT:
 - Current time: {self.agent.curr_time}
-- Current room: {self.agent.curr_room}
+- Current location: {self.agent.curr_tile}
 
 CAPABILITIES:
 You have four main actions available:
-1. move(destination_room, action_emoji) - Move to a specific room
+1. move(destination_coordinates, action_emoji) - Move to specific coordinates
 2. chat(receiver, message, action_emoji) - Send messages to other agents
 3. interact(object, new_state, action_emoji) - Interact with objects to change their state
 4. perceive(action_emoji) - Perceive objects and agents in your visible area
@@ -325,7 +325,7 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         """
         message_parts: List[str] = [
             f"Current time: {self.agent.curr_time}",
-            f"Your current room: {self.agent.curr_room}",
+            f"Your current location: {self.agent.curr_tile}",
             f"You are currently: {self.agent.currently}",
         ]
         
