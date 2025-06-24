@@ -38,7 +38,7 @@ class Agent:
         # Core state fields
         self.agent_id = data.get("agent_id")
         self.curr_time = data.get("curr_time")
-        self.curr_tile = data.get("curr_tile")
+        self.curr_room = data.get("curr_room")
         
         # Core Identity
         self.first_name = data.get("first_name")
@@ -102,8 +102,8 @@ class Agent:
         Args:
             data (dict): New values for agent state.
         """
-        if "current_tile" in data:
-            self.curr_tile = data["current_tile"]
+        if "current_room" in data:
+            self.curr_room = data["current_room"]
         if "timestamp" in data:
             self.curr_time = data["timestamp"]
         if "currently" in data:
@@ -156,7 +156,7 @@ class Agent:
             "agent_id": self.agent_id,
             "first_name": self.first_name,
             "last_name": self.last_name,
-            "curr_tile": self.curr_tile,
+            "curr_room": self.curr_room,
             "daily_req": self.daily_req,
             "memory": self.memory,
             "visible_objects": self.visible_objects,
@@ -174,7 +174,7 @@ class Agent:
             "agent_id": self.agent_id,
             "first_name": self.first_name,
             "last_name": self.last_name,
-            "curr_tile": self.curr_tile,
+            "curr_room": self.curr_room,
             "age": getattr(self, "age", None),
             "occupation": getattr(self, "occupation", None),
             "currently": getattr(self, "currently", ""),

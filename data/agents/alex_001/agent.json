@@ -1,10 +1,7 @@
 {
   "agent_id": "alex_001",
   "curr_time": "",
-  "curr_tile": [
-    22,
-    11
-  ],
+  "curr_room": "bedroom",
   "first_name": "Alex",
   "last_name": "Smith",
   "age": 29,

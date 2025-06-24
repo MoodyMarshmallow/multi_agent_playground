@@ -26,14 +26,22 @@ from config.schema import (
     PlanActionResponse
 )
 from backend.objects.object_registry import object_registry
+from utils.room_mapping import build_tile_to_room_map
+
+with open("backend/memory/data/environment.json", "r", encoding="utf-8") as f:
+    env_map = json.load(f)
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.resolve()
 MESSAGES_PATH = PROJECT_ROOT / "data" / "world" / "messages.json"
 
 # TODO: adjust/ what is a good timeout?
 CONVERSATION_TIMEOUT_MINUTES = 30
+tile_to_room = build_tile_to_room_map(env_map)
 
 # --- Utility functions ---
+def get_room_from_tile(tile):
+    """Returns the room name for a tile tuple (x, y) using the mapping."""
+    return tile_to_room.get(tuple(tile), None) if tile is not None else None
 
 def load_json(path, default):
     if path.exists():
@@ -138,41 +146,6 @@ def append_message_to_queue(msg, location):
     })
     save_json(MESSAGES_PATH, queue)
     print(f"DEBUG: append_message_to_queue - Queue now has {len(queue)} messages after adding")
-    
-# this if for the agent to see the messages that it has not seen yet
-# for example, in 1st round agent a sent a message to agent b, but agent b did not see it yet, then it can extract the message from the queue if it is not delivered yet
-# but currently we do not save the message into the queue when agent a sent a message to agent b
-# def inject_messages_for_agent(agent_id, agent, perception):
-#     if not MESSAGES_PATH.exists():
-#         return
-#     queue = load_json(MESSAGES_PATH, [])
-#     heard = []
-#     updated = False
-#     for msg in queue:
-#         if msg["receiver"] == agent_id and not msg["delivered"]:
-#             heard.append({
-#                 "sender": msg["sender"],
-#                 "receiver": msg["receiver"],
-#                 "message": msg["message"],
-#                 "timestamp": msg["timestamp"],
-#                 "conversation_id": msg.get("conversation_id")
-#             })
-#             msg["delivered"] = True
-#             event_str = f"Received message from {msg['sender']}: '{msg['message']}'"
-#             salience = evaluate_event_salience(agent, event_str)
-#             agent.add_memory_event(
-#                 timestamp=msg["timestamp"],
-#                 location=msg.get("location"),
-#                 event=event_str,
-#                 salience=salience
-#             )
-#             updated = True
-#     if heard:
-#         perception["heard_messages"] = perception.get("heard_messages", []) + heard
-#     if updated:
-#         save_json(MESSAGES_PATH, queue)
-#         # Save memory after processing all messages
-#         agent.save_memory()
 
 # --- Event and location helpers ---
 # TODO: neeed to replace this with the actual location of the agent from spatial memory
@@ -232,19 +205,15 @@ def build_event_description(next_action, perception):
 def get_updated_perception_for_agent(agent_id: str) -> AgentPerception:
     # 1. Load the agent instance from the LLMAgentManager
     agent = agent_manager.get_agent(agent_id).agent 
-    current_tile = agent.curr_tile
+    current_room = get_room_from_tile(agent.curr_tile)
     timestamp = datetime.now().strftime("%dT%H:%M:%S")
     
-    # 2. Find visible objects (same tile or room as the agent)
+    # 2. Find visible objects (same room as the agent)
     visible_objects = {}
     for obj_name, obj in object_registry.items():
-        # Check for visibility logic (here: tile-based, you could use room instead)
-        if getattr(obj, 'position', None) == current_tile:
-            visible_objects[obj_name] = {
-                "room": getattr(obj, "room", "unknown"),
-                "position": getattr(obj, "position", None),
-                "state": getattr(obj, "state", None)
-            }
+        obj_room = getattr(obj, 'location', None)
+        if obj_room == current_room:
+            visible_objects[obj_name] = obj.to_dict()
     
     # 3. Find visible agents (excluding self) - loop through all LLMAgents in manager
     visible_agents = []
@@ -252,10 +221,11 @@ def get_updated_perception_for_agent(agent_id: str) -> AgentPerception:
     for other_id, llm_agent in agent_manager._agents.items():
         if other_id == agent_id:
             continue
-        other_agent = llm_agent.agent  # Each LLMAgent stores a .agent (real Agent object)
-        if getattr(other_agent, 'curr_tile', None) == current_tile:
+        other_agent = llm_agent.agent
+        other_room = get_room_from_tile(getattr(other_agent, 'curr_tile', None))
+        if other_room == current_room:
             visible_agents.append(other_id)
-            chatable_agents.append(other_id)  # If you want more complex logic, change here
+            chatable_agents.append(other_id)
     
     # 4. Collect undelivered messages for this agent
     heard_messages = []
@@ -278,7 +248,7 @@ def get_updated_perception_for_agent(agent_id: str) -> AgentPerception:
     # 5. Return up-to-date perception
     return AgentPerception(
         timestamp=timestamp,
-        current_tile=current_tile,
+        current_room=current_room,
         visible_objects=visible_objects,
         visible_agents=visible_agents,
         chatable_agents=chatable_agents,
@@ -300,7 +270,7 @@ def plan_next_action(agent_id: str) -> PlanActionResponse:
 
     # 1. Decide next action using LLM
     next_action = call_llm_agent(agent_state, perception_dict)
-    current_tile = perception.current_tile or agent.curr_tile
+    current_room = perception.current_room or get_room_from_tile(agent.curr_tile)
 
     action_type = next_action.get("action_type")
     backend_action = None
@@ -308,10 +278,11 @@ def plan_next_action(agent_id: str) -> PlanActionResponse:
     # 2. Immediately apply the action and update agent/object state
     if action_type == "move":
         destination = next_action["content"].get("destination_coordinates", [0, 0])
-        backend_action = MoveBackendAction(action_type="move", destination_tile=tuple(destination))
-        current_tile = tuple(destination)
+        destination_room = get_room_from_tile(destination)
+        backend_action = MoveBackendAction(action_type="move", destination_room=destination_room)
+        current_room = destination_room
         # Optionally update the agent's location here
-        agent.update_agent_data({"current_tile": current_tile})
+        agent.update_agent_data({"current_room": current_room})
     elif action_type == "chat":
         content = next_action["content"]
         msg = Message(
@@ -321,20 +292,21 @@ def plan_next_action(agent_id: str) -> PlanActionResponse:
             timestamp=perception.timestamp,
             conversation_id=content.get("conversation_id", "")
         )
-        append_message_to_queue(msg, current_tile)
+        append_message_to_queue(msg, current_room)
         backend_action = ChatBackendAction(action_type="chat", message=msg)
-        # Optionally record chat history
     elif action_type == "interact":
         content = next_action["content"]
-        # TODO: Here, actually update the object state in backend
+        obj_name = content.get("object", "")
+        new_state = content.get("new_state", "")
         backend_action = InteractBackendAction(
             action_type="interact",
-            object=content.get("object", ""),
+            object=obj_name,
             current_state=content.get("current_state", ""),
-            new_state=content.get("new_state", "")
+            new_state=new_state
         )
-        # Here you would also update your object_registry, for example:
-        # object_registry[content["object"]].transition(content["new_state"])
+        obj = object_registry.get(obj_name)
+        if obj and obj.can_transition(new_state):
+            obj.transition(new_state)
     else:
         backend_action = PerceiveBackendAction(action_type="perceive")
 
@@ -360,71 +332,10 @@ def plan_next_action(agent_id: str) -> PlanActionResponse:
             action=backend_action,
             emoji=next_action.get("emoji", "👀"),
             timestamp=perception.timestamp,
-            current_tile=current_tile
+            current_room=current_room
         ),
         perception=latest_perception
     )
-
-# def confirm_action_and_update(agent_msg: AgentActionInput) -> None:
-#     agent_dir = PROJECT_ROOT / "data" / "agents" / agent_msg.agent_id
-#     agent = Agent(agent_dir)
-#     perception = agent_msg.perception.model_dump()
-#     agent.update_perception(perception)
-#     agent_data = {
-#         "timestamp": agent_msg.perception.timestamp,
-#         "current_tile": agent_msg.perception.current_tile,
-#     }
-#     agent.update_agent_data(agent_data)
-#     location = extract_location(perception)
-#     event = build_event_description(agent_msg)
-#     agent.update_agent_data({"currently": event})
-#     salience = evaluate_event_salience(agent, event)
-#     agent.add_memory_event(
-#         timestamp=agent_msg.perception.timestamp,
-#         location=location,
-#         event=event,
-#         salience=salience
-#     )
-
-#     # Chat handling: process messages in heard_messages
-#     action = getattr(agent_msg, "action", None)
-#     if action and getattr(action, "action_type", None) == "chat":
-#         # For chat actions, store the heard_messages (messages sent TO this agent FROM other agents)
-#         heard_messages = getattr(agent_msg.perception, "heard_messages", [])
-#         location = getattr(agent, "curr_tile", None)
-        
-#         # Process each message in heard_messages
-#         for msg in heard_messages:
-#             # Save the message to the queue
-#             append_message_to_queue(msg, location)
-            
-#             # Update receiver's memory (this agent)
-#             receiver_event_str = f"Received message from {msg.sender}: '{msg.message}'"
-#             receiver_salience = evaluate_event_salience(agent, receiver_event_str)
-#             agent.add_memory_event(
-#                 timestamp=msg.timestamp,
-#                 location=location,
-#                 event=receiver_event_str,
-#                 salience=receiver_salience
-#             )
-            
-#             # Update sender's memory (other agent)
-#             sender_agent_dir = PROJECT_ROOT / "data" / "agents" / msg.sender
-#             if sender_agent_dir.exists():
-#                 sender_agent = Agent(sender_agent_dir)
-#                 sender_event_str = f"Sent message to {msg.receiver}: '{msg.message}'"
-#                 sender_salience = evaluate_event_salience(sender_agent, sender_event_str)
-#                 sender_agent.add_memory_event(
-#                     timestamp=msg.timestamp,
-#                     location=location,
-#                     event=sender_event_str,
-#                     salience=sender_salience
-#                 )
-#                 sender_agent.save_memory()
-    
-#     # Save both agent state and memory at the end
-#     agent.save()
-#     agent.save_memory()
 
 def initialize_llm_agent(agent_id: str, api_key: Optional[str] = None) -> LLMAgent:
     """
