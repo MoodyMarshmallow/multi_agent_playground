@@ -5,8 +5,6 @@ Character JSON Data Structure Documentation
 This file documents the JSON data structures and communication protocols
 used by characters in the multi-agent playground system.
 
-**NOTE:** This is a simplified version of the JSON data structure which we should use for now.
-
 Table of Contents:
 1. Character Core Structure
 2. Memory System
@@ -74,21 +72,24 @@ class Character:
         # age: int | None - Age in years
         self.age = None
         
-        # Personality Layers
-        # ------------------
-        # innate: str | None - L0: Permanent core traits
-        self.innate = None
+        # Personality
+        # -----------
+        # backstory: str | None - A paragraph describing the character's personal history i.e. childhood, family, education, etc.
+        self.backstory = None
         
-        # learned: str | None - L1: Stable learned traits
-        self.learned = None
-        
-        # currently: str | None - L2: Current state/activity
+        # personality: str | None - A paragraph describing the character's personality i.e. introverted, kind, etc. along with reasons why.
+        self.personality = None
+
+        # lifestyle: str | None - A paragraph describing the character's general lifestyle habits.
+        self.lifestyle = None
+
+        # currently: str | None - The character's current state/activity.
         self.currently = None
         
-        # lifestyle: str | None - General lifestyle description
-        self.lifestyle = None
+        # occupation: str | None - The character's current occupation.
+        self.occupation = None
         
-        # living_area: str | None - Where the character lives
+        # living_area: str | None - The character's current living area.
         self.living_area = None
 
         # =====================================================================

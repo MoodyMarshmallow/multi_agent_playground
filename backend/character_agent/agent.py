@@ -4,7 +4,7 @@ Multi-Agent Playground - Core Agent Implementation
 Core Agent class representing individual agents in the multi-agent simulation.
 
 This module implements the Agent class which encapsulates:
-- Agent identity and personality traits (innate, learned, current state)
+- Agent identity and personality traits (backstory, personality, occupation, current state)
 - Planning system (daily schedules, requirements, current actions)
 - Memory system (event storage with timestamp, location, salience)
 - Perception handling (visible objects and agents)
@@ -37,50 +37,48 @@ class Agent:
 
         # Core state fields
         self.agent_id = data.get("agent_id")
-        self.vision_r = data.get("vision_r", 4)
-        self.retention = data.get("retention", 5)
         self.curr_time = data.get("curr_time")
         self.curr_tile = data.get("curr_tile")
-        self.daily_plan_req = data.get("daily_plan_req")
-        self.name = data.get("name")
+        
+        # Core Identity
         self.first_name = data.get("first_name")
         self.last_name = data.get("last_name")
         self.age = data.get("age")
-        self.innate = data.get("innate")
-        self.learned = data.get("learned")
+        
+        # Personality and Background
+        self.backstory = data.get("backstory")
+        self.personality = data.get("personality")
+        self.occupation = data.get("occupation")
         self.currently = data.get("currently")
         self.lifestyle = data.get("lifestyle")
+        self.daily_req = data.get("daily_req")
         self.living_area = data.get("living_area")
-        self.daily_req = data.get("daily_req", [])
+        
+        # Planning system
         self.f_daily_schedule = data.get("f_daily_schedule", [])
-        self.f_daily_schedule_hourly_org = data.get("f_daily_schedule_hourly_org", [])
-        self.act_address = data.get("act_address")
-        self.act_start_time = data.get("act_start_time")
-        self.act_duration = data.get("act_duration")
-        self.act_description = data.get("act_description")
-        self.act_pronunciation = data.get("act_pronunciation")
-        self.act_event = data.get("act_event")
-        self.act_obj_description = data.get("act_obj_description")
-        self.act_obj_pronunciation = data.get("act_obj_pronunciation")
-        self.act_obj_event = data.get("act_obj_event")
-        self.chatting_with = data.get("chatting_with")
-        self.chat = data.get("chat", [])
-        self.chatting_with_buffer = data.get("chatting_with_buffer", {})
-        self.chatting_end_time = data.get("chatting_end_time")
-        self.act_path_set = data.get("act_path_set", False)
-        self.planned_path = data.get("planned_path", [])
+        
 
         # Memory
         mem_path = self.agent_dir / "memory.json"
         if mem_path.exists():
-            with open(mem_path, "r", encoding="utf-8") as f:
-                self.memory = json.load(f)
+            try:
+                with open(mem_path, "r", encoding="utf-8") as f:
+                    content = f.read().strip()
+                    if content:  # Check if file is not empty
+                        self.memory = json.loads(content)
+                    else:
+                        self.memory = []
+            except (json.JSONDecodeError, FileNotFoundError):
+                # If JSON is corrupted or file can't be read, start with empty memory
+                self.memory = []
         else:
             self.memory = []
 
         # Runtime-only (not persisted, updated per perception)
         self.visible_objects = {}
         self.visible_agents = []
+        self.chatable_agents = []
+        self.heard_messages = []
 
     def update_perception(self, perception: Dict[str, Any]):
         """
@@ -90,6 +88,13 @@ class Agent:
         """
         self.visible_objects = perception.get("visible_objects", {})
         self.visible_agents = perception.get("visible_agents", [])
+        self.chatable_agents = perception.get("chatable_agents", [])
+        self.heard_messages = perception.get("heard_messages", [])
+        # Move chat messages to heard_messages
+        if hasattr(self, "chat") and self.chat:
+            self.heard_messages.extend(self.chat)
+            self.chat = []
+            self.save()
 
     def update_agent_data(self, data: Dict[str, Any]):
         """
@@ -103,6 +108,8 @@ class Agent:
             self.curr_time = data["timestamp"]
         if "currently" in data:
             self.currently = data["currently"]
+        if "pending_chat_message" in data:
+            self.pending_chat_message = data["pending_chat_message"]
 
     def add_memory_event(self, timestamp: str, location: str, event: str, salience: int):
         """
@@ -129,6 +136,8 @@ class Agent:
         data.pop("agent_dir", None)      # Do not persist the path itself
         data.pop("visible_objects", None)
         data.pop("visible_agents", None)
+        data.pop("chatable_agents", None)
+        data.pop("heard_messages", None)
         with open(self.agent_dir / "agent.json", "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, default=str)
 
@@ -145,12 +154,18 @@ class Agent:
         """
         return {
             "agent_id": self.agent_id,
-            "name": self.name,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
             "curr_tile": self.curr_tile,
             "daily_req": self.daily_req,
             "memory": self.memory,
             "visible_objects": self.visible_objects,
             "visible_agents": self.visible_agents,
+            "chatable_agents": self.chatable_agents,
+            "heard_messages": self.heard_messages,
             "currently": self.currently,
+            "backstory": self.backstory,
+            "personality": self.personality,
+            "occupation": self.occupation,
             # Add more fields as needed
         }

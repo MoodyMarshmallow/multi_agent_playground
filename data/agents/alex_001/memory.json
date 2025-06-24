@@ -1,320 +1,101 @@
 [
   {
-    "timestamp": "2023-10-01T08:00:00Z",
-    "location": "downtown studio:main:bedroom",
-    "event": "wakes up and stretches",
+    "timestamp": "01T00:10:18",
+    "location": "unknown location",
+    "event": "I saw these people: alan_002. I heard alan_002 say to alex_001: 'Hey Alex! Let's head to the kitchen and start gathering those ingredients. I'm excited to cook some ratatouille! \ud83d\ude0a'",
+    "salience": 5
+  },
+  {
+    "timestamp": "01T00:05:00",
+    "location": [
+      22,
+      8
+    ],
+    "event": "Received message from alan_002: 'Hey Alex! Let's head to the kitchen and start gathering those ingredients. I'm excited to cook some ratatouille! \ud83d\ude0a'",
     "salience": 6
   },
   {
-    "timestamp": "2023-10-01T08:15:00Z",
-    "location": "downtown studio:main:kitchen",
-    "event": "has breakfast",
-    "salience": 4
+    "timestamp": "01T00:05:00",
+    "location": [
+      32,
+      12
+    ],
+    "event": "Sent message to alan_002: 'Hey Alan! Ratatouille sounds like a fantastic idea. Let's definitely experiment with those flavors together. Maybe we can plan a time to cook it soon! \ud83d\ude0a'",
+    "salience": 5
   },
   {
-    "timestamp": "2023-10-01T09:00:00Z",
-    "location": "downtown studio:main:artroom",
-    "event": "working on her painting",
-    "salience": 8
-  },
-  {
-    "timestamp": "2023-10-01T12:30:00Z",
-    "location": "downtown studio:main:kitchen",
-    "event": "makes lunch",
+    "timestamp": "01T00:20:23",
+    "location": "unknown location",
+    "event": "I moved to position (22, 8). I saw these people: alan_002",
     "salience": 3
   },
   {
-    "timestamp": "2025-06-10T13:45:48",
-    "location": "bedroom",
-    "event": "I was walk. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
+    "timestamp": "01T00:32:57",
+    "location": "unknown location",
+    "event": "I moved to position (22, 8). I saw these people: alan_002. I heard alan_002 say to alex_001: 'Hey Alex! I was thinking about our ratatouille plan. How about we set a time to cook together? \ud83d\ude0a'",
+    "salience": 6
   },
   {
-    "timestamp": "2025-06-10T13:46:01",
-    "location": "bedroom",
-    "event": "I was walk. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
+    "timestamp": "01T00:40:18",
+    "location": "unknown location",
+    "event": "I saw these people: alan_002",
+    "salience": 3
   },
   {
-    "timestamp": "2025-06-10T13:47:55",
-    "location": "bedroom",
-    "event": "I was walk. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
+    "timestamp": "01T00:48:44",
+    "location": "unknown location",
+    "event": "I saw these people: alan_002",
+    "salience": 5
   },
   {
-    "timestamp": "2025-06-10T13:48:26",
-    "location": "bedroom",
-    "event": "I was walk. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
+    "timestamp": "01T00:45:00",
+    "location": [
+      31,
+      12
+    ],
+    "event": "Sent message to alan_002: 'Hey Alan! Cooking ratatouille sounds like a great idea. Let's set a time that works for both of us. \ud83d\ude0a'",
+    "salience": 5
   },
   {
-    "timestamp": "2025-06-10T13:48:39",
-    "location": "bedroom",
-    "event": "I was walk. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
+    "timestamp": "01T00:57:08",
+    "location": "unknown location",
+    "event": "I moved to position (22, 8). I saw these people: alan_002",
+    "salience": 3
   },
   {
-    "timestamp": "2025-06-10T14:09:18",
-    "location": "bedroom",
-    "event": "I was walk. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
+    "timestamp": "01T01:05:05",
+    "location": "unknown location",
+    "event": "I saw these people: alan_002. I heard alan_002 say to alex_001: 'Hey Alex! Let's plan our cooking session. How about this weekend? \ud83d\ude0a'",
+    "salience": 6
   },
   {
-    "timestamp": "2025-06-10T14:09:31",
-    "location": "bedroom",
-    "event": "I was walk. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
+    "timestamp": "01T01:00:00",
+    "location": [
+      30,
+      12
+    ],
+    "event": "Received message from alan_002: 'Hey Alex! Let's plan our cooking session. How about this weekend? \ud83d\ude0a'",
+    "salience": 6
   },
   {
-    "timestamp": "2025-06-10T14:09:34",
-    "location": "bedroom",
-    "event": "I was walk. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
+    "timestamp": "01T01:00:00",
+    "location": [
+      31,
+      12
+    ],
+    "event": "Sent message to alan_002: 'Good morning, Alan! Hope you slept well. \ud83d\ude0a'",
+    "salience": 3
   },
   {
-    "timestamp": "2025-06-10T14:21:41",
-    "location": "bedroom",
-    "event": "I was walk. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
+    "timestamp": "01T01:13:52",
+    "location": "unknown location",
+    "event": "I saw these people: alan_002",
+    "salience": 5
   },
   {
-    "timestamp": "2025-06-10T14:33:14",
-    "location": "bedroom",
-    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:33:41",
-    "location": "bedroom",
-    "event": "I was idle. I could see: books_on_floor in bedroom, globe in bedroom, right_bookshelf in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:34:00",
-    "location": "bedroom",
-    "event": "I was idle. I could see: books_on_floor in bedroom, globe in bedroom, right_bookshelf in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:34:44",
-    "location": "bedroom",
-    "event": "I was idle. I could see: books_on_floor in bedroom, globe in bedroom, right_bookshelf in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:35:18",
-    "location": "bedroom",
-    "event": "I was idle. I could see: books_on_floor in bedroom, left_bookshelf in bedroom, right_bookshelf in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:35:38",
-    "location": "bedroom",
-    "event": "I was idle. I could see: books_on_floor in bedroom, left_bookshelf in bedroom, right_bookshelf in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:35:46",
-    "location": "bedroom",
-    "event": "I was idle. I could see: books_on_floor in bedroom, left_bookshelf in bedroom, right_bookshelf in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:35:58",
-    "location": "bedroom",
-    "event": "I was idle. I could see: books_on_floor in bedroom, left_bookshelf in bedroom, right_bookshelf in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:36:10",
-    "location": "bedroom",
-    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:37:30",
-    "location": "kitchen and living_room and entryway and dining_area",
-    "event": "I was walk. I could see: bookshelf_living in living_room, dining_chairs in dining_area, dining_table in dining_area, kitchen_set in kitchen, left in entryway",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:37:38",
-    "location": "kitchen and living_room and entryway and dining_area",
-    "event": "I was idle. I could see: bookshelf_living in living_room, dining_chairs in dining_area, dining_table in dining_area, kitchen_set in kitchen, left in entryway",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:37:48",
-    "location": "kitchen and living_room and entryway and dining_area",
-    "event": "I was idle. I could see: bookshelf_living in living_room, dining_chairs in dining_area, dining_table in dining_area, kitchen_set in kitchen, left in entryway",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:37:59",
-    "location": "kitchen and living_room and entryway and dining_area",
-    "event": "I was idle. I could see: bookshelf_living in living_room, dining_chairs in dining_area, dining_table in dining_area, kitchen_set in kitchen, left in entryway",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:38:13",
-    "location": "bathroom and kitchen",
-    "event": "I was walk. I could see: kitchen_set in kitchen, toilet in bathroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:41:41",
-    "location": "bedroom and living_room",
-    "event": "I was walk. I could see: bookshelf_living in living_room, living_room_entryway in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:41:53",
-    "location": "bedroom",
-    "event": "I was walk. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:41:57",
-    "location": "bedroom",
-    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:42:29",
-    "location": "bedroom",
-    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:44:12",
-    "location": "bedroom",
-    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:44:46",
-    "location": "bedroom",
-    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:44:49",
-    "location": "bedroom",
-    "event": "I was walk. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:44:55",
-    "location": "bedroom",
-    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:45:05",
-    "location": "bedroom",
-    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:45:11",
-    "location": "bedroom",
-    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:45:17",
-    "location": "bedroom",
-    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:45:20",
-    "location": "bedroom",
-    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:52:21",
-    "location": "bedroom",
-    "event": "I was walk. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:52:35",
-    "location": "bedroom",
-    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:52:57",
-    "location": "bedroom",
-    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:53:19",
-    "location": "bedroom",
-    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:53:24",
-    "location": "bedroom",
-    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:53:30",
-    "location": "bedroom",
-    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:53:34",
-    "location": "bedroom",
-    "event": "I was idle. I could see: bed in bedroom, left_bookshelf in bedroom, wardrobe in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:53:50",
-    "location": "bedroom",
-    "event": "I was walk. I could see: books_on_floor in bedroom, globe in bedroom, left_bookshelf in bedroom, right_bookshelf in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:53:54",
-    "location": "bedroom",
-    "event": "I was idle. I could see: books_on_floor in bedroom, globe in bedroom, left_bookshelf in bedroom, right_bookshelf in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:54:01",
-    "location": "bedroom",
-    "event": "I was idle. I could see: books_on_floor in bedroom, globe in bedroom, left_bookshelf in bedroom, right_bookshelf in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:54:10",
-    "location": "bedroom",
-    "event": "I was idle. I could see: books_on_floor in bedroom, globe in bedroom, left_bookshelf in bedroom, right_bookshelf in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:54:18",
-    "location": "bedroom",
-    "event": "I was idle. I could see: books_on_floor in bedroom, globe in bedroom, left_bookshelf in bedroom, right_bookshelf in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:54:23",
-    "location": "bedroom",
-    "event": "I was idle. I could see: books_on_floor in bedroom, globe in bedroom, left_bookshelf in bedroom, right_bookshelf in bedroom",
-    "salience": 1
-  },
-  {
-    "timestamp": "2025-06-10T14:54:31",
-    "location": "bedroom",
-    "event": "I was idle. I could see: books_on_floor in bedroom, globe in bedroom, left_bookshelf in bedroom, right_bookshelf in bedroom",
-    "salience": 1
+    "timestamp": "01T01:18:03",
+    "location": "unknown location",
+    "event": "I moved to position (22, 8). I saw these people: alan_002. I heard alan_002 say to alex_001: 'I'm excited to try that new recipe with you, Alex! Do you have everything we need, or should I grab some ingredients? \ud83d\ude0a'",
+    "salience": 5
   }
 ]
