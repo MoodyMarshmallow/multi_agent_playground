@@ -13,7 +13,7 @@ import asyncio
 from typing import Dict, Any, Optional
 from .agent import Agent
 from .kani_agent import LLMAgent
-
+import os
 
 class LLMAgentManager:
     """
@@ -78,6 +78,22 @@ class LLMAgentManager:
             int: Number of active agents
         """
         return len(self._agents)
+    
+    def get_all_agent_summaries(self):
+        """
+        Return a list of summary dicts for all currently managed agents.
+        """
+        return [llm_agent.agent.to_summary_dict() for llm_agent in self._agents.values()]
+    
+    
+    def preload_all_agents(self, agents_folder="data/agents"):
+        """
+        Loads all agent folders in the given directory into memory (if not already loaded).
+        """
+        for agent_id in os.listdir(agents_folder):
+            agent_path = os.path.join(agents_folder, agent_id)
+            if os.path.isdir(agent_path):
+                self.get_agent(agent_id)
 
 
 # Global instance of the agent manager
@@ -173,3 +189,4 @@ def call_llm_agent(agent_state: Dict[str, Any], perception_data: Dict[str, Any])
         dict: Action JSON in the format expected by the frontend
     """
     return asyncio.run(call_llm_for_action(agent_state, perception_data)) 
+

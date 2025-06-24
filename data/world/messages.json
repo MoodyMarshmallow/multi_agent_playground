@@ -9,7 +9,7 @@
       22,
       8
     ],
-    "delivered": false
+    "delivered": true
   },
   {
     "sender": "alex_001",
@@ -21,7 +21,7 @@
       32,
       12
     ],
-    "delivered": false
+    "delivered": true
   },
   {
     "sender": "alex_001",
@@ -33,7 +33,7 @@
       31,
       12
     ],
-    "delivered": false
+    "delivered": true
   },
   {
     "sender": "alan_002",
@@ -45,7 +45,7 @@
       31,
       12
     ],
-    "delivered": false
+    "delivered": true
   },
   {
     "sender": "alan_002",
@@ -57,7 +57,7 @@
       30,
       12
     ],
-    "delivered": false
+    "delivered": true
   },
   {
     "sender": "alex_001",
@@ -69,6 +69,42 @@
       31,
       12
     ],
-    "delivered": false
+    "delivered": true
+  },
+  {
+    "sender": "alan_002",
+    "receiver": "alex_001",
+    "message": "Hey Alex! Gardening sounds like a great idea. It's always nice to have some company while tending to the plants. \ud83d\ude0a",
+    "timestamp": "01T00:05:00",
+    "conversation_id": "4bf32b30-d274-a786-ca51-39dd1abf0439",
+    "location": [
+      22,
+      8
+    ],
+    "delivered": true
+  },
+  {
+    "sender": "alex_001",
+    "receiver": "alan_002",
+    "message": "Hey Alan! I'll meet you outside in a moment. \ud83d\ude0a",
+    "timestamp": "01T00:05:00",
+    "conversation_id": "4bf32b30-d274-a786-ca51-39dd1abf0439",
+    "location": [
+      32,
+      12
+    ],
+    "delivered": true
+  },
+  {
+    "sender": "alan_002",
+    "receiver": "alex_001",
+    "message": "Hey Alex! Glad to hear you'd like to join in for some gardening. It'll be a fun break for both of us! \ud83d\ude0a",
+    "timestamp": "23T20:34:23",
+    "conversation_id": "4c847c3e-cc66-a80f-e1bc-8596c8b0cf34",
+    "location": [
+      32,
+      12
+    ],
+    "delivered": true
   }
 ]

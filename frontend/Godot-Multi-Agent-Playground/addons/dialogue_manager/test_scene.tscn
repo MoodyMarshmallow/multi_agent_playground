@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://c48emvdmm2a47"]
 
-[ext_resource type="Script" uid="uid://deiybmau0stmm" path="res://addons/dialogue_manager/test_scene.gd" id="1_yupoh"]
+[ext_resource type="Script" uid="uid://cuhoug0bmg45" path="res://addons/dialogue_manager/test_scene.gd" id="1_yupoh"]
 
 [node name="TestScene" type="Node2D"]
 script = SubResource("Resource_woqpc")
