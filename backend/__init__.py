@@ -21,12 +21,12 @@ Version: 1.0.0
 """
 
 # Server components
-from .server.controller import plan_next_action, confirm_action_and_update
+from .server.controller import plan_next_action
 
 # Character agent system
 from .character_agent.agent import Agent
 from .character_agent.actions import ActionsMixin
-from .character_agent.kani_implementation import LLMAgent
+from .character_agent.kani_agent import LLMAgent
 
 # Configuration
 from .config.llm_config import LLMConfig
@@ -45,7 +45,6 @@ __version__ = "1.0.0"
 __all__ = [
     # Server functions
     "plan_next_action",
-    "confirm_action_and_update",
     
     # Agent classes
     "Agent", 

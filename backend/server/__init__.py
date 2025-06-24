@@ -15,11 +15,10 @@ Author: Multi-Agent Playground Team
 Version: 1.0.0
 """
 
-from .controller import plan_next_action, confirm_action_and_update
+from .controller import plan_next_action
 
 __version__ = "1.0.0"
 
 __all__ = [
     "plan_next_action",
-    "confirm_action_and_update",
 ]

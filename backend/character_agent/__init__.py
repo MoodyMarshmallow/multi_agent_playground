@@ -23,7 +23,7 @@ Version: 1.0.0
 
 from .agent import Agent
 from .actions import ActionsMixin
-from .kani_implementation import LLMAgent
+from .kani_agent import LLMAgent
 
 __version__ = "1.0.0"
 
