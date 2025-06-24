@@ -118,5 +118,11 @@
     "location": "unknown location",
     "event": "I moved to position [30, 10]",
     "salience": 1
+  },
+  {
+    "timestamp": "24T15:04:18",
+    "location": "unknown location",
+    "event": "I moved to position [17, 9]. I saw these people: alex_001",
+    "salience": 4
   }
 ]

@@ -133,6 +133,16 @@ class LLMAgent(Kani, ActionsMixin):
         Returns:
             str: The system prompt for the LLM
         """
+        # Load environment.json for spatial memory
+        import json
+        from pathlib import Path
+        env_path = Path(__file__).parent.parent / "memory" / "data" / "environment.json"
+        try:
+            with open(env_path, "r", encoding="utf-8") as f:
+                environment_data = json.load(f)
+        except Exception:
+            environment_data = {}
+        spatial_memory = self._format_spatial_memory(environment_data)
         agent_info = f"""
 You are {self.agent.first_name} {self.agent.last_name}, a character in a multi-agent simulation.
 

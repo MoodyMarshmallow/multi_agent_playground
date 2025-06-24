@@ -38,6 +38,7 @@ class Agent:
         # Core state fields
         self.agent_id = data.get("agent_id")
         self.curr_time = data.get("curr_time")
+        self.curr_tile = data.get("curr_tile")
         self.curr_room = data.get("curr_room")
         
         # Core Identity
@@ -102,6 +103,8 @@ class Agent:
         Args:
             data (dict): New values for agent state.
         """
+        if "current_tile" in data:
+            self.curr_tile = data["current_tile"]
         if "current_room" in data:
             self.curr_room = data["current_room"]
         if "timestamp" in data:

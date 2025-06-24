@@ -258,6 +258,11 @@ def get_updated_perception_for_agent(agent_id: str) -> AgentPerception:
 # --- Core controller functions ---
 
 def plan_next_action(agent_id: str) -> PlanActionResponse:
+    # Validate agent_id before proceeding
+    agent_dir = PROJECT_ROOT / "data" / "agents" / agent_id
+    agent_json = agent_dir / "agent.json"
+    if not agent_json.exists():
+        raise FileNotFoundError(f"Agent with id '{agent_id}' does not exist: {agent_json}")
     # 1. Get latest perception for this agent from the world state (not from passed-in parameter)
     perception = get_updated_perception_for_agent(agent_id)
     perception_dict = perception.model_dump()
