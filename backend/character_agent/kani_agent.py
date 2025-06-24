@@ -179,7 +179,7 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         # Get LLM response with function calling - iterate through the async generator
         action_result = None
         async for message in self.full_round(context_message):
-            print("received message: ", message)
+            print(f"{self.agent_id} received message: ", message, "\n")
             # Check if this is a function result message
             if message.role.value == 'function' and message.content:
                 # print("In If statement")

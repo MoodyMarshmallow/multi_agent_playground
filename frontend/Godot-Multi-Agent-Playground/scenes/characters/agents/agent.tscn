@@ -1,13 +1,13 @@
 [gd_scene load_steps=10 format=3 uid="uid://dleatrinsn5so"]
 
 [ext_resource type="PackedScene" uid="uid://0vuviv68yjtr" path="res://scenes/components/player_animated_sprite.tscn" id="1_8ljyr"]
-[ext_resource type="Script" path="res://scenes/characters/agents/agent.gd" id="1_lucgp"]
+[ext_resource type="Script" uid="uid://c41uaism7g2o3" path="res://scenes/characters/agents/agent.gd" id="1_lucgp"]
 [ext_resource type="SpriteFrames" uid="uid://bg2y2kukotskp" path="res://assets/game/characters/agents/sprite_frames/alan_002_sprite_frames.tres" id="3_56v4n"]
-[ext_resource type="Script" path="res://scenes/characters/agents/agent_state_machine.gd" id="3_vhqan"]
-[ext_resource type="Script" path="res://scenes/characters/agents/agent_idle.gd" id="4_6b4s1"]
-[ext_resource type="Script" path="res://scenes/characters/agents/agent_walk.gd" id="5_bb8p1"]
+[ext_resource type="Script" uid="uid://dfmkfrauoeajl" path="res://scenes/characters/agents/agent_state_machine.gd" id="3_vhqan"]
+[ext_resource type="Script" uid="uid://bxb7wqc7m0ke5" path="res://scenes/characters/agents/agent_idle.gd" id="4_6b4s1"]
+[ext_resource type="Script" uid="uid://ci4agy6nc3bf8" path="res://scenes/characters/agents/agent_walk.gd" id="5_bb8p1"]
 [ext_resource type="FontFile" uid="uid://46afpnw3fj03" path="res://assets/ui/fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf" id="6_jtutc"]
-[ext_resource type="Script" path="res://scenes/characters/agents/emoji_label.gd" id="7_88ey6"]
+[ext_resource type="Script" uid="uid://b64ugwkflcchs" path="res://scenes/characters/agents/emoji_label.gd" id="7_88ey6"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_8bwlk"]
 radius = 4.0

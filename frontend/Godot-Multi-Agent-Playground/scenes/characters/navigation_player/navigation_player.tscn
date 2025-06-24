@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" uid="uid://dcsi8h6ny2wk5" path="res://scenes/characters/navigation_player/navigation_player.gd" id="1_7oq7b"]
 [ext_resource type="PackedScene" uid="uid://0vuviv68yjtr" path="res://scenes/components/player_animated_sprite.tscn" id="2_m4ucg"]
-[ext_resource type="Script" uid="uid://co618thcifdl3" path="res://scenes/characters/navigation_player/navigation_state_machine.gd" id="4_m2p2k"]
-[ext_resource type="Script" uid="uid://bdvrbkpaonei3" path="res://scenes/characters/navigation_player/navigation_idle.gd" id="5_7a1uy"]
-[ext_resource type="Script" uid="uid://dr1oxauiigxgy" path="res://scenes/characters/navigation_player/navigation_walk.gd" id="6_dngm0"]
+[ext_resource type="Script" uid="uid://c2yq7ma2ijg7e" path="res://scenes/characters/navigation_player/navigation_state_machine.gd" id="4_m2p2k"]
+[ext_resource type="Script" uid="uid://20l8k0jct5nc" path="res://scenes/characters/navigation_player/navigation_idle.gd" id="5_7a1uy"]
+[ext_resource type="Script" uid="uid://tk8hdr1rqv1i" path="res://scenes/characters/navigation_player/navigation_walk.gd" id="6_dngm0"]
 [ext_resource type="Script" uid="uid://dhacy4rvxfvfx" path="res://scenes/characters/navigation_player/http_controller.gd" id="7_gk2d1"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_5wu6k"]

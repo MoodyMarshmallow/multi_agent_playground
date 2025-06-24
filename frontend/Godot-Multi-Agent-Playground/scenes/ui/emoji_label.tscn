@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://6yw2g741wg7m"]
 
-[ext_resource type="Script" uid="uid://cf5j0jje35xl5" path="res://scenes/ui/emoji_label.gd" id="1_uk85j"]
+[ext_resource type="Script" uid="uid://b0rbpjh788tgv" path="res://scenes/ui/emoji_label.gd" id="1_uk85j"]
 
 [node name="EmojiLabel" type="Node2D"]
 script = ExtResource("1_uk85j")
