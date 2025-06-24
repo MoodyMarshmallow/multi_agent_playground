@@ -19,8 +19,9 @@ load_dotenv()
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from backend.config.schema import AgentActionInput, AgentActionOutput, AgentPerception, StatusMsg, AgentPlanRequest
-from backend.server.controller import plan_next_action, confirm_action_and_update
+from backend.config.schema import AgentActionInput, AgentActionOutput, AgentPerception, StatusMsg, AgentPlanRequest, PlanActionResponse, AgentSummary
+from backend.server.controller import plan_next_action
+from backend.character_agent.agent_manager import agent_manager
 
 
 app = FastAPI()
@@ -33,21 +34,33 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/agent_act/plan", response_model=List[AgentActionOutput])
-def post_plan_action_batch(inputs: List[AgentPlanRequest]):
+@app.post("/agent_act/plan", response_model=List[PlanActionResponse])
+def post_plan_action_batch(agent_ids: List[str]):
     """
     Step 1: Batched perception input → plan actions using LLM.
     (Does NOT update state yet.)
     """
-    return [plan_next_action(input.agent_id, input.perception) for input in inputs]
+    return [plan_next_action(agent_id) for agent_id in agent_ids]
 
-
-@app.post("/agent_act/confirm", response_model=List[StatusMsg])
-def post_confirm_action_batch(agent_msgs: List[AgentActionInput]):
+@app.get("/agents/init", response_model=List[AgentSummary])
+def get_all_agents_init():
     """
-    Step 2: Batched post-confirmation input → update state and memory.
+    Return summary information for all agents (for frontend init).
     """
-    for msg in agent_msgs:
-        confirm_action_and_update(msg)
-    return [StatusMsg(status="ok") for _ in agent_msgs]
+    agent_manager.preload_all_agents()
+    return agent_manager.get_all_agent_summaries()
 
+
+# @app.post("/agent_act/confirm", response_model=List[StatusMsg])
+# def post_confirm_action_batch(agent_msgs: List[AgentActionInput]):
+#     """
+#     Step 2: Batched post-confirmation input → update state and memory.
+#     """
+#     for msg in agent_msgs:
+#         confirm_action_and_update(msg)
+#     return [StatusMsg(status="ok") for _ in agent_msgs]
+
+# # Get the list of all interactive objects and their states
+# @app.get("/objects")
+# def get_objects():
+#     return [obj.to_dict() for obj in object_registry.values()]

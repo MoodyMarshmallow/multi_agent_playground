@@ -17,12 +17,15 @@ from character_agent.actions import ActionsMixin
 from character_agent.kani_agent import LLMAgent
 from character_agent.agent_manager import (
     call_llm_agent, create_llm_agent, get_llm_agent, 
-    remove_llm_agent, clear_all_llm_agents, get_active_agent_count
+    remove_llm_agent, clear_all_llm_agents, get_active_agent_count,
 )
+from character_agent.agent_manager import agent_manager
 from config.schema import (
     AgentActionInput, AgentActionOutput, AgentPerception, BackendAction, 
-    MoveBackendAction, ChatBackendAction, InteractBackendAction, PerceiveBackendAction, Message
+    MoveBackendAction, ChatBackendAction, InteractBackendAction, PerceiveBackendAction, Message,
+    PlanActionResponse
 )
+from backend.objects.object_registry import object_registry
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.resolve()
 MESSAGES_PATH = PROJECT_ROOT / "data" / "world" / "messages.json"
@@ -172,35 +175,45 @@ def append_message_to_queue(msg, location):
 #         agent.save_memory()
 
 # --- Event and location helpers ---
-
+# TODO: neeed to replace this with the actual location of the agent from spatial memory
 def extract_location(perception):
-    if perception.get("visible_objects"):
+    # For Pydantic BaseModel, just use dot notation
+    visible_objects = perception.visible_objects
+    if visible_objects:
         rooms = {
             obj_data.get("room", "unknown location")
-            for obj_data in perception["visible_objects"].values() if isinstance(obj_data, dict)
+            for obj_data in visible_objects.values() if isinstance(obj_data, dict)
         }
         return " and ".join(rooms) if rooms else "unknown location"
     return "unknown location"
 
-def build_event_description(agent_msg):
-    # Build an event string summarizing the action and perception
-    action = getattr(agent_msg, "action", None)
-    perception = getattr(agent_msg, "perception", None)
+def build_event_description(next_action, perception):
+    """
+    Build an event string summarizing the action and perception.
+    """
     parts = []
-    if action and hasattr(action, 'action_type'):
-        t = action.action_type
-        if t == "move" and hasattr(action, 'destination_tile'):
-            parts.append(f"I moved to position {action.destination_tile}")
-        elif t == "chat" and hasattr(action, 'message'):
-            msg = action.message
-            parts.append(f"I chatted with {msg.receiver}: '{msg.message}'")
-        elif t == "interact" and hasattr(action, 'object') and hasattr(action, 'new_state'):
-            parts.append(f"I interacted with {action.object}, changing it to {action.new_state}")
+    # Action details
+    if next_action:
+        t = next_action.get("action_type")
+        if t == "move":
+            destination = next_action.get("content", {}).get("destination_coordinates")
+            if destination is not None:
+                parts.append(f"I moved to position {destination}")
+        elif t == "chat":
+            content = next_action.get("content", {})
+            receiver = content.get("receiver", "")
+            msg = content.get("message", "")
+            parts.append(f"I chatted with {receiver}: '{msg}'")
+        elif t == "interact":
+            content = next_action.get("content", {})
+            obj = content.get("object", "")
+            new_state = content.get("new_state", "")
+            parts.append(f"I interacted with {obj}, changing it to {new_state}")
         elif t == "perceive":
             parts.append("I looked around and observed my surroundings")
     # Perception details
     if perception:
-        if perception.visible_objects:
+        if hasattr(perception, "visible_objects") and perception.visible_objects:
             visible_items = [
                 f"{obj_name} in {obj_data.get('room', 'unknown room')}"
                 for obj_name, obj_data in perception.visible_objects.items()
@@ -208,33 +221,97 @@ def build_event_description(agent_msg):
             ]
             if visible_items:
                 parts.append(f"I could see: {', '.join(visible_items)}")
-        if perception.visible_agents:
+        if hasattr(perception, "visible_agents") and perception.visible_agents:
             parts.append(f"I saw these people: {', '.join(perception.visible_agents)}")
-        if perception.heard_messages:
+        if hasattr(perception, "heard_messages") and perception.heard_messages:
             for message in perception.heard_messages:
                 parts.append(f"I heard {message.sender} say to {message.receiver}: '{message.message}'")
     return ". ".join(parts) if parts else "Nothing notable happened"
 
+
+def get_updated_perception_for_agent(agent_id: str) -> AgentPerception:
+    # 1. Load the agent instance from the LLMAgentManager
+    agent = agent_manager.get_agent(agent_id).agent 
+    current_tile = agent.curr_tile
+    timestamp = datetime.now().strftime("%dT%H:%M:%S")
+    
+    # 2. Find visible objects (same tile or room as the agent)
+    visible_objects = {}
+    for obj_name, obj in object_registry.items():
+        # Check for visibility logic (here: tile-based, you could use room instead)
+        if getattr(obj, 'position', None) == current_tile:
+            visible_objects[obj_name] = {
+                "room": getattr(obj, "room", "unknown"),
+                "position": getattr(obj, "position", None),
+                "state": getattr(obj, "state", None)
+            }
+    
+    # 3. Find visible agents (excluding self) - loop through all LLMAgents in manager
+    visible_agents = []
+    chatable_agents = []
+    for other_id, llm_agent in agent_manager._agents.items():
+        if other_id == agent_id:
+            continue
+        other_agent = llm_agent.agent  # Each LLMAgent stores a .agent (real Agent object)
+        if getattr(other_agent, 'curr_tile', None) == current_tile:
+            visible_agents.append(other_id)
+            chatable_agents.append(other_id)  # If you want more complex logic, change here
+    
+    # 4. Collect undelivered messages for this agent
+    heard_messages = []
+    queue = load_json(MESSAGES_PATH, [])
+    updated = False
+    for msg in queue:
+        if msg["receiver"] == agent_id and not msg.get("delivered", False):
+            heard_messages.append(Message(
+                sender=msg["sender"],
+                receiver=msg["receiver"],
+                message=msg["message"],
+                timestamp=msg.get("timestamp"),
+                conversation_id=msg.get("conversation_id"),
+            ))
+            msg["delivered"] = True
+            updated = True
+    if updated:
+        save_json(MESSAGES_PATH, queue)  # Only if any delivery status was changed
+    
+    # 5. Return up-to-date perception
+    return AgentPerception(
+        timestamp=timestamp,
+        current_tile=current_tile,
+        visible_objects=visible_objects,
+        visible_agents=visible_agents,
+        chatable_agents=chatable_agents,
+        heard_messages=heard_messages
+    )
+
 # --- Core controller functions ---
 
-def plan_next_action(agent_id: str, perception: AgentPerception) -> AgentActionOutput:
+def plan_next_action(agent_id: str) -> PlanActionResponse:
+    # 1. Get latest perception for this agent from the world state (not from passed-in parameter)
+    perception = get_updated_perception_for_agent(agent_id)
+    perception_dict = perception.model_dump()
+    
     agent_dir = PROJECT_ROOT / "data" / "agents" / agent_id
     agent = Agent(agent_dir)
     agent.update_perception(perception.model_dump())
-    perception_dict = perception.model_dump()
-    # inject_messages_for_agent(agent_id, agent, perception_dict)
     agent.heard_messages = perception_dict.get("heard_messages", [])
     agent_state = agent.to_state_dict()
+
+    # 1. Decide next action using LLM
     next_action = call_llm_agent(agent_state, perception_dict)
     current_tile = perception.current_tile or agent.curr_tile
 
     action_type = next_action.get("action_type")
     backend_action = None
 
+    # 2. Immediately apply the action and update agent/object state
     if action_type == "move":
         destination = next_action["content"].get("destination_coordinates", [0, 0])
         backend_action = MoveBackendAction(action_type="move", destination_tile=tuple(destination))
         current_tile = tuple(destination)
+        # Optionally update the agent's location here
+        agent.update_agent_data({"current_tile": current_tile})
     elif action_type == "chat":
         content = next_action["content"]
         msg = Message(
@@ -244,86 +321,110 @@ def plan_next_action(agent_id: str, perception: AgentPerception) -> AgentActionO
             timestamp=perception.timestamp,
             conversation_id=content.get("conversation_id", "")
         )
+        append_message_to_queue(msg, current_tile)
         backend_action = ChatBackendAction(action_type="chat", message=msg)
+        # Optionally record chat history
     elif action_type == "interact":
         content = next_action["content"]
+        # TODO: Here, actually update the object state in backend
         backend_action = InteractBackendAction(
             action_type="interact",
             object=content.get("object", ""),
             current_state=content.get("current_state", ""),
             new_state=content.get("new_state", "")
         )
+        # Here you would also update your object_registry, for example:
+        # object_registry[content["object"]].transition(content["new_state"])
     else:
         backend_action = PerceiveBackendAction(action_type="perceive")
 
-    return AgentActionOutput(
-        agent_id=agent_id,
-        action=backend_action,
-        emoji=next_action.get("emoji", "👀"),
-        timestamp=perception.timestamp,
-        current_tile=current_tile
-    )
-
-def confirm_action_and_update(agent_msg: AgentActionInput) -> None:
-    agent_dir = PROJECT_ROOT / "data" / "agents" / agent_msg.agent_id
-    agent = Agent(agent_dir)
-    perception = agent_msg.perception.model_dump()
-    agent.update_perception(perception)
-    agent_data = {
-        "timestamp": agent_msg.perception.timestamp,
-        "current_tile": agent_msg.perception.current_tile,
-    }
-    agent.update_agent_data(agent_data)
+    # Record event/memory as before
+    event = build_event_description(next_action, perception)
     location = extract_location(perception)
-    event = build_event_description(agent_msg)
-    agent.update_agent_data({"currently": event})
     salience = evaluate_event_salience(agent, event)
+    agent.update_agent_data({"currently": event})
     agent.add_memory_event(
-        timestamp=agent_msg.perception.timestamp,
+        timestamp=perception.timestamp,
         location=location,
         event=event,
         salience=salience
     )
-
-    # Chat handling: process messages in heard_messages
-    action = getattr(agent_msg, "action", None)
-    if action and getattr(action, "action_type", None) == "chat":
-        # For chat actions, store the heard_messages (messages sent TO this agent FROM other agents)
-        heard_messages = getattr(agent_msg.perception, "heard_messages", [])
-        location = getattr(agent, "curr_tile", None)
-        
-        # Process each message in heard_messages
-        for msg in heard_messages:
-            # Save the message to the queue
-            append_message_to_queue(msg, location)
-            
-            # Update receiver's memory (this agent)
-            receiver_event_str = f"Received message from {msg.sender}: '{msg.message}'"
-            receiver_salience = evaluate_event_salience(agent, receiver_event_str)
-            agent.add_memory_event(
-                timestamp=msg.timestamp,
-                location=location,
-                event=receiver_event_str,
-                salience=receiver_salience
-            )
-            
-            # Update sender's memory (other agent)
-            sender_agent_dir = PROJECT_ROOT / "data" / "agents" / msg.sender
-            if sender_agent_dir.exists():
-                sender_agent = Agent(sender_agent_dir)
-                sender_event_str = f"Sent message to {msg.receiver}: '{msg.message}'"
-                sender_salience = evaluate_event_salience(sender_agent, sender_event_str)
-                sender_agent.add_memory_event(
-                    timestamp=msg.timestamp,
-                    location=location,
-                    event=sender_event_str,
-                    salience=sender_salience
-                )
-                sender_agent.save_memory()
-    
-    # Save both agent state and memory at the end
     agent.save()
     agent.save_memory()
+
+    latest_perception = get_updated_perception_for_agent(agent_id)
+
+    return PlanActionResponse(
+        action=AgentActionOutput(
+            agent_id=agent_id,
+            action=backend_action,
+            emoji=next_action.get("emoji", "👀"),
+            timestamp=perception.timestamp,
+            current_tile=current_tile
+        ),
+        perception=latest_perception
+    )
+
+# def confirm_action_and_update(agent_msg: AgentActionInput) -> None:
+#     agent_dir = PROJECT_ROOT / "data" / "agents" / agent_msg.agent_id
+#     agent = Agent(agent_dir)
+#     perception = agent_msg.perception.model_dump()
+#     agent.update_perception(perception)
+#     agent_data = {
+#         "timestamp": agent_msg.perception.timestamp,
+#         "current_tile": agent_msg.perception.current_tile,
+#     }
+#     agent.update_agent_data(agent_data)
+#     location = extract_location(perception)
+#     event = build_event_description(agent_msg)
+#     agent.update_agent_data({"currently": event})
+#     salience = evaluate_event_salience(agent, event)
+#     agent.add_memory_event(
+#         timestamp=agent_msg.perception.timestamp,
+#         location=location,
+#         event=event,
+#         salience=salience
+#     )
+
+#     # Chat handling: process messages in heard_messages
+#     action = getattr(agent_msg, "action", None)
+#     if action and getattr(action, "action_type", None) == "chat":
+#         # For chat actions, store the heard_messages (messages sent TO this agent FROM other agents)
+#         heard_messages = getattr(agent_msg.perception, "heard_messages", [])
+#         location = getattr(agent, "curr_tile", None)
+        
+#         # Process each message in heard_messages
+#         for msg in heard_messages:
+#             # Save the message to the queue
+#             append_message_to_queue(msg, location)
+            
+#             # Update receiver's memory (this agent)
+#             receiver_event_str = f"Received message from {msg.sender}: '{msg.message}'"
+#             receiver_salience = evaluate_event_salience(agent, receiver_event_str)
+#             agent.add_memory_event(
+#                 timestamp=msg.timestamp,
+#                 location=location,
+#                 event=receiver_event_str,
+#                 salience=receiver_salience
+#             )
+            
+#             # Update sender's memory (other agent)
+#             sender_agent_dir = PROJECT_ROOT / "data" / "agents" / msg.sender
+#             if sender_agent_dir.exists():
+#                 sender_agent = Agent(sender_agent_dir)
+#                 sender_event_str = f"Sent message to {msg.receiver}: '{msg.message}'"
+#                 sender_salience = evaluate_event_salience(sender_agent, sender_event_str)
+#                 sender_agent.add_memory_event(
+#                     timestamp=msg.timestamp,
+#                     location=location,
+#                     event=sender_event_str,
+#                     salience=sender_salience
+#                 )
+#                 sender_agent.save_memory()
+    
+#     # Save both agent state and memory at the end
+#     agent.save()
+#     agent.save_memory()
 
 def initialize_llm_agent(agent_id: str, api_key: Optional[str] = None) -> LLMAgent:
     """

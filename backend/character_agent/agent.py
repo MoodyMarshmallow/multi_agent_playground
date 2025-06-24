@@ -169,3 +169,13 @@ class Agent:
             "occupation": self.occupation,
             # Add more fields as needed
         }
+    def to_summary_dict(self):
+        return {
+            "agent_id": self.agent_id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "curr_tile": self.curr_tile,
+            "age": getattr(self, "age", None),
+            "occupation": getattr(self, "occupation", None),
+            "currently": getattr(self, "currently", ""),
+        }

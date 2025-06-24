@@ -9,7 +9,7 @@
       25,
       13
     ],
-    "delivered": false
+    "delivered": true
   },
   {
     "sender": "alex_001",
@@ -21,7 +21,7 @@
       33,
       12
     ],
-    "delivered": false
+    "delivered": true
   },
   {
     "sender": "alan_002",
@@ -33,7 +33,7 @@
       26,
       13
     ],
-    "delivered": false
+    "delivered": true
   },
   {
     "sender": "alex_001",

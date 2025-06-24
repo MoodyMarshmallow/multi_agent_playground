@@ -2,6 +2,19 @@ from pydantic import BaseModel, Field
 from typing import Dict, Any, List, Optional, Union, Literal, Annotated, Tuple
 
 # -----------------------------------------------------------------------------
+# Agent Summary Model
+# This is a summary of the agent's information that is sent to the frontend for initialization. 
+# -----------------------------------------------------------------------------
+class AgentSummary(BaseModel):
+    agent_id: str
+    # first_name: str
+    # last_name: str
+    curr_tile: Optional[List[int]]
+    # age: Optional[int]
+    # occupation: Optional[str]
+    # currently: Optional[str]
+
+# -----------------------------------------------------------------------------
 # Message Model
 # -----------------------------------------------------------------------------
 class Message(BaseModel):
@@ -286,6 +299,7 @@ class AgentActionInput(BaseModel):
 # -----------------------------------------------------------------------------
 # This is the standard backend response to the frontend,
 # describing the action to visualize or update, and any related info.
+
 class AgentActionOutput(BaseModel):
     agent_id: str                       # Which agent to update
     action: BackendAction               # The action to be performed    
@@ -309,6 +323,10 @@ class AgentActionOutput(BaseModel):
 #   "timestamp": "01T04:35:20",
 #   "current_tile": [20, 8]
 # }
+
+class PlanActionResponse(BaseModel):
+    action: AgentActionOutput
+    perception: AgentPerception
 
 # -----------------------------------------------------------------------------
 # simple response message
