@@ -7,12 +7,12 @@ from typing import Dict, Any, List, Optional, Union, Literal, Annotated, Tuple
 # -----------------------------------------------------------------------------
 class AgentSummary(BaseModel):
     agent_id: str
-    first_name: str
-    last_name: str
+    # first_name: str
+    # last_name: str
     curr_tile: Optional[List[int]]
-    age: Optional[int]
-    occupation: Optional[str]
-    currently: Optional[str]
+    # age: Optional[int]
+    # occupation: Optional[str]
+    # currently: Optional[str]
 
 # -----------------------------------------------------------------------------
 # Message Model

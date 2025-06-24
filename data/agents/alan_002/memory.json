@@ -118,5 +118,59 @@
     "location": "unknown location",
     "event": "I moved to position [30, 10]",
     "salience": 1
+  },
+  {
+    "timestamp": "24T12:06:56",
+    "location": "unknown location",
+    "event": "I looked around and observed my surroundings",
+    "salience": 1
+  },
+  {
+    "timestamp": "24T13:19:14",
+    "location": "unknown location",
+    "event": "I moved to position [30, 15]",
+    "salience": 2
+  },
+  {
+    "timestamp": "24T13:19:49",
+    "location": "unknown location",
+    "event": "I moved to position [35, 10]",
+    "salience": 2
+  },
+  {
+    "timestamp": "24T13:21:36",
+    "location": "unknown location",
+    "event": "I moved to position [40, 10]",
+    "salience": 2
+  },
+  {
+    "timestamp": "24T13:26:04",
+    "location": "unknown location",
+    "event": "I moved to position [45, 10]",
+    "salience": 2
+  },
+  {
+    "timestamp": "24T13:27:25",
+    "location": "unknown location",
+    "event": "I moved to position [50, 10]",
+    "salience": 2
+  },
+  {
+    "timestamp": "24T13:27:43",
+    "location": "unknown location",
+    "event": "I moved to position [55, 10]",
+    "salience": 2
+  },
+  {
+    "timestamp": "24T13:28:01",
+    "location": "unknown location",
+    "event": "I moved to position [60, 10]",
+    "salience": 2
+  },
+  {
+    "timestamp": "24T13:28:15",
+    "location": "unknown location",
+    "event": "I moved to position [65, 10]",
+    "salience": 2
   }
 ]

@@ -61,7 +61,9 @@ func _set_up_sprite_frames():
 	if frames and frames is SpriteFrames:
 		animated_sprite_2d.frames = frames
 	else:
-		push_error("Failed to load SpriteFrames at: " + path)
+		path = "res://assets/game/characters/agents/sprite_frames/alex_001_sprite_frames.tres"
+		frames = load(path)
+		print("Using default sprite frames")
 
 # --- FSM Functions ---
 func position_to_tile(pos: Vector2) -> Vector2i:

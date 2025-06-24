@@ -2,7 +2,7 @@
   "agent_id": "alan_002",
   "curr_time": "",
   "curr_tile": [
-    30,
+    65,
     10
   ],
   "first_name": "Alan",
@@ -11,7 +11,7 @@
   "backstory": "Alan was raised in a suburban family where outdoor activities and community involvement were highly valued. He developed a love for gardening from his father and learned cooking from his mother. After finishing college with a degree in environmental science, he moved to the city but maintains his active lifestyle and community-focused values.",
   "personality": "Alan is naturally curious and outgoing, always eager to learn new things and meet new people. He's optimistic and enjoys helping others, often organizing community events or sharing his cooking and gardening skills with friends. He's reliable and conscientious, but sometimes takes on too many commitments.",
   "occupation": "Environmental consultant working with urban sustainability projects",
-  "currently": "I saw these people: alex_001. I heard alex_001 say to alan_002: 'Hey Alan! I'd love to join you for some gardening. It sounds like a nice break from painting.'",
+  "currently": "I moved to position [65, 10]",
   "lifestyle": "active",
   "daily_req": [
     "exercise",
