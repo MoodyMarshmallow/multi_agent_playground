@@ -286,6 +286,7 @@ class AgentActionInput(BaseModel):
 # -----------------------------------------------------------------------------
 # This is the standard backend response to the frontend,
 # describing the action to visualize or update, and any related info.
+
 class AgentActionOutput(BaseModel):
     agent_id: str                       # Which agent to update
     action: BackendAction               # The action to be performed    
@@ -309,6 +310,10 @@ class AgentActionOutput(BaseModel):
 #   "timestamp": "01T04:35:20",
 #   "current_tile": [20, 8]
 # }
+
+class PlanActionResponse(BaseModel):
+    action: AgentActionOutput
+    perception: AgentPerception
 
 # -----------------------------------------------------------------------------
 # simple response message

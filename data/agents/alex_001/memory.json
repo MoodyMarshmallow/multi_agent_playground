@@ -97,5 +97,11 @@
     "location": "unknown location",
     "event": "I moved to position (22, 8). I saw these people: alan_002. I heard alan_002 say to alex_001: 'I'm excited to try that new recipe with you, Alex! Do you have everything we need, or should I grab some ingredients? \ud83d\ude0a'",
     "salience": 5
+  },
+  {
+    "timestamp": "23T20:33:51",
+    "location": "unknown location",
+    "event": "I moved to position [22, 10]",
+    "salience": 1
   }
 ]
