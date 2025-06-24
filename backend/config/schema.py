@@ -2,6 +2,18 @@ from pydantic import BaseModel, Field
 from typing import Dict, Any, List, Optional, Union, Literal, Annotated, Tuple
 
 # -----------------------------------------------------------------------------
+# Agent Summary Model
+# This is a summary of the agent's information that is sent to the frontend for initialization. 
+# -----------------------------------------------------------------------------
+class AgentSummary(BaseModel):
+    agent_id: str
+    first_name: str
+    last_name: str
+    curr_tile: Optional[List[int]]
+    age: Optional[int]
+    occupation: Optional[str]
+
+# -----------------------------------------------------------------------------
 # Message Model
 # -----------------------------------------------------------------------------
 class Message(BaseModel):
