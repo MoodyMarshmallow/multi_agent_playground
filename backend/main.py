@@ -22,7 +22,7 @@ from fastapi.responses import JSONResponse
 from backend.config.schema import AgentActionInput, AgentActionOutput, AgentPerception, StatusMsg, AgentPlanRequest, PlanActionResponse, AgentSummary
 from backend.server.controller import plan_next_action
 from backend.character_agent.agent_manager import agent_manager
-
+from backend.objects.object_registry import object_registry, initialize_objects
 
 app = FastAPI()
 
@@ -42,6 +42,7 @@ def post_plan_action_batch(agent_ids: List[str]):
     """
     return [plan_next_action(agent_id) for agent_id in agent_ids]
 
+# Get the list of all agents and their summaries
 @app.get("/agents/init", response_model=List[AgentSummary])
 def get_all_agents_init():
     """
@@ -50,17 +51,14 @@ def get_all_agents_init():
     agent_manager.preload_all_agents()
     return agent_manager.get_all_agent_summaries()
 
+# Get the list of all interactive objects and their states
+@app.get("/objects")
+def get_objects():
+    return [obj.to_dict() for obj in object_registry.values()]
 
-# @app.post("/agent_act/confirm", response_model=List[StatusMsg])
-# def post_confirm_action_batch(agent_msgs: List[AgentActionInput]):
-#     """
-#     Step 2: Batched post-confirmation input → update state and memory.
-#     """
-#     for msg in agent_msgs:
-#         confirm_action_and_update(msg)
-#     return [StatusMsg(status="ok") for _ in agent_msgs]
+# Optional: if you want to reset the objects to their initial state
+@app.post("/objects/reset")
+def reset_objects():
+    initialize_objects()
+    return {"status": "ok"}
 
-# # Get the list of all interactive objects and their states
-# @app.get("/objects")
-# def get_objects():
-#     return [obj.to_dict() for obj in object_registry.values()]

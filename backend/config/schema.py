@@ -10,6 +10,10 @@ class AgentSummary(BaseModel):
     # first_name: str
     # last_name: str
     curr_tile: Optional[List[int]]
+<<<<<<< HEAD
+=======
+    curr_room: Optional[str]
+>>>>>>> iris-06/24
     # age: Optional[int]
     # occupation: Optional[str]
     # currently: Optional[str]
@@ -37,7 +41,8 @@ class Message(BaseModel):
 class MoveFrontendAction(BaseModel):
     action_type: Literal["move"]
     destination_tile: Tuple[int, int]
-    # use current tile from AgentPerception to determine progress
+    destination_room: Optional[str]
+    # use current room from AgentPerception to determine progress
 
 class ChatFrontendAction(BaseModel):
     action_type: Literal["chat"]
@@ -66,8 +71,8 @@ FrontendAction = Annotated[
 # move
 # {
 #   "action_type": "move",
-#   "destination_tile": [21, 9],
-#   "current_tile": [20, 8] // contained in AgentPerception
+#   "destination_room": "bedroom",
+#   "current_room": "kitchen" // contained in AgentPerception
 # }
 
 # chat
@@ -94,6 +99,7 @@ FrontendAction = Annotated[
 class MoveBackendAction(BaseModel):
     action_type: Literal["move"]
     destination_tile: Tuple[int, int]
+    destination_room: Optional[str]
 
 class ChatBackendAction(BaseModel):
     action_type: Literal["chat"]
@@ -160,7 +166,7 @@ BackendAction = Annotated[
 class AgentPerception(BaseModel):
     timestamp: Optional[str] = None           # Perceived world time format: 01T04:35:20
                                               # 01 is day after T is time so 04 is hour (military time), 35 is minutes, 20 is seconds                                          
-    current_tile: Optional[Tuple[int, int]] = None   # (Optional) Updated [x, y] tile position
+    current_room: Optional[str] = None   # (Optional) Updated room name
     visible_objects: Optional[Dict[str, Dict[str, Any]]] = None  # Objects visible and their states
     visible_agents: Optional[List[str]] = None              # Other agents currently visible formatted as a list of agent_ids
     chatable_agents: Optional[List[str]] = None             # Other agents currently in chatting range formatted as a list of agent_ids
@@ -169,7 +175,7 @@ class AgentPerception(BaseModel):
 #examples:
 #timestamp: "01T04:35:20"
 
-#current_tile: [20, 8]
+#current_room: "kitchen"
 
 # visible objects:
 # {
@@ -214,7 +220,7 @@ class AgentPerception(BaseModel):
 # Full Example:
 # {
 #   "timestamp": "01T04:35:20",
-#   "current_tile": [20, 8],
+#   "current_room": "kitchen",
 #   "visible_objects": {
 #     "bed": {
 #       "room": "bedroom",
@@ -269,7 +275,7 @@ class AgentActionInput(BaseModel):
 #   "in_progress": true,
 #   "perception": {
 #     "timestamp": "01T04:35:20",
-#     "current_tile": [20, 8],
+#     "current_room": "kitchen",
 #     "visible_objects": {
 #       "bed": {
 #         "room": "bedroom",
@@ -305,7 +311,7 @@ class AgentActionOutput(BaseModel):
     action: BackendAction               # The action to be performed    
     emoji: str                          # Visual representation (e.g., '🚶', '💡', '👀') sends Unicode encoding
     timestamp: Optional[str] = None     # Timestamp to order actions                      
-    current_tile: Optional[Tuple[int, int]]   # [x, y] tile position
+    current_room: Optional[str]   # Room name
 
 # Full Example:
 # {
@@ -321,7 +327,7 @@ class AgentActionOutput(BaseModel):
 #   },
 #   "emoji": "💬",
 #   "timestamp": "01T04:35:20",
-#   "current_tile": [20, 8]
+#   "current_room": "kitchen"
 # }
 
 class PlanActionResponse(BaseModel):

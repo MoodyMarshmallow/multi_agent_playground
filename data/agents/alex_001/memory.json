@@ -111,57 +111,21 @@
     "salience": 6
   },
   {
-    "timestamp": "24T12:07:00",
+    "timestamp": "24T15:04:15",
+    "location": "unknown location",
+    "event": "I moved to position [17, 14]",
+    "salience": 1
+  },
+  {
+    "timestamp": "24T15:23:23",
     "location": "unknown location",
     "event": "I looked around and observed my surroundings",
     "salience": 1
   },
   {
-    "timestamp": "24T13:19:16",
+    "timestamp": "24T15:25:11",
     "location": "unknown location",
-    "event": "I moved to position [23, 11]",
-    "salience": 2
-  },
-  {
-    "timestamp": "24T13:19:52",
-    "location": "unknown location",
-    "event": "I moved to position [22, 12]",
-    "salience": 2
-  },
-  {
-    "timestamp": "24T13:21:39",
-    "location": "unknown location",
-    "event": "I moved to position [23, 12]",
-    "salience": 2
-  },
-  {
-    "timestamp": "24T13:26:06",
-    "location": "unknown location",
-    "event": "I moved to position [24, 12]",
-    "salience": 2
-  },
-  {
-    "timestamp": "24T13:27:27",
-    "location": "unknown location",
-    "event": "I moved to position [24, 13]",
-    "salience": 2
-  },
-  {
-    "timestamp": "24T13:27:46",
-    "location": "unknown location",
-    "event": "I moved to position [24, 14]",
-    "salience": 2
-  },
-  {
-    "timestamp": "24T13:28:03",
-    "location": "unknown location",
-    "event": "I moved to position [25, 14]",
-    "salience": 2
-  },
-  {
-    "timestamp": "24T13:28:16",
-    "location": "unknown location",
-    "event": "I moved to position [25, 13]",
+    "event": "I moved to position [20, 8]",
     "salience": 2
   }
 ]
