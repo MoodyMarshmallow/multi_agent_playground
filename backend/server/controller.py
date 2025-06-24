@@ -1,3 +1,21 @@
+"""
+Multi-Agent Playground - Main Controller
+========================================
+Core controller module that handles agent action planning, perception updates, and world state management.
+
+This module implements the main control flow for multi-agent interactions including:
+- Agent action planning and execution (move, chat, interact, perceive)
+- World state perception generation and updates
+- Message queue management for inter-agent communication
+- Memory and event handling with salience evaluation
+- LLM agent lifecycle management (creation, cleanup, status)
+- Object and location tracking through spatial awareness
+- JSON-based persistence for agent state and global messages
+
+The controller serves as the bridge between the frontend (Godot) and backend systems,
+orchestrating agent behaviors and maintaining consistent world state across all agents.
+"""
+
 import asyncio
 import sys
 from pathlib import Path
@@ -15,11 +33,7 @@ if str(backend_dir) not in sys.path:
 from character_agent.agent import Agent
 from character_agent.actions import ActionsMixin
 from character_agent.kani_agent import LLMAgent
-from character_agent.agent_manager import (
-    call_llm_agent, create_llm_agent, get_llm_agent, 
-    remove_llm_agent, clear_all_llm_agents, get_active_agent_count,
-)
-from character_agent.agent_manager import agent_manager
+from character_agent.agent_manager import call_llm_agent, agent_manager
 from config.schema import (
     AgentActionInput, AgentActionOutput, AgentPerception, BackendAction, 
     MoveBackendAction, ChatBackendAction, InteractBackendAction, PerceiveBackendAction, Message,
@@ -36,17 +50,45 @@ CONVERSATION_TIMEOUT_MINUTES = 30
 # --- Utility functions ---
 
 def load_json(path, default):
+    """
+    Load JSON data from a file, returning a default value if the file doesn't exist.
+    
+    Args:
+        path: File path to the JSON file
+        default: Default value to return if file doesn't exist or can't be read
+        
+    Returns:
+        The loaded JSON data as a Python object, or the default value if loading fails
+    """
     if path.exists():
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     return default
 
 def save_json(path, data):
+    """
+    Save Python data as JSON to a file with pretty formatting.
+    
+    Args:
+        path: File path where the JSON should be saved
+        data: Python object to serialize and save as JSON
+        
+    Returns:
+        None
+    """
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
 def parse_timestamp(timestamp_str):
-    """Parse timestamp string that could be in either short format (01T04:35:20) or full ISO format (2024-06-13T10:00:00)"""
+    """
+    Parse timestamp string that could be in either short format (01T04:35:20) or full ISO format (2024-06-13T10:00:00).
+    
+    Args:
+        timestamp_str (str): Timestamp string in either full ISO format or short day+time format
+        
+    Returns:
+        datetime: Parsed datetime object, or current time if parsing fails
+    """
     try:
         # Try the full ISO format first
         return datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%S")
@@ -64,10 +106,19 @@ def parse_timestamp(timestamp_str):
 
 def get_or_create_conversation_id(sender: str, receiver: str, queue: list) -> str:
     """
-    Find existing conversation between these agents or create a new one.
+    Find existing conversation between two agents or create a new one.
+    
     A conversation is considered active if:
     1. It's between the same agents (in either direction)
     2. The last message was within CONVERSATION_TIMEOUT_MINUTES
+    
+    Args:
+        sender (str): ID of the agent sending the message
+        receiver (str): ID of the agent receiving the message  
+        queue (list): List of existing message dictionaries
+        
+    Returns:
+        str: UUID string for the conversation ID (existing or newly generated)
     """
     print(f"DEBUG: get_or_create_conversation_id - {sender} -> {receiver}")
     print(f"DEBUG: Queue has {len(queue)} messages")
@@ -120,6 +171,16 @@ def get_or_create_conversation_id(sender: str, receiver: str, queue: list) -> st
     return uuid_str
 
 def append_message_to_queue(msg, location):
+    """
+    Add a message to the global message queue and save it to disk.
+    
+    Args:
+        msg: Message object with sender, receiver, message, timestamp attributes
+        location: Current location/tile where the message was sent
+        
+    Returns:
+        None
+    """
     queue = load_json(MESSAGES_PATH, [])
     print(f"DEBUG: append_message_to_queue - Queue has {len(queue)} messages before adding")
     
@@ -177,6 +238,15 @@ def append_message_to_queue(msg, location):
 # --- Event and location helpers ---
 # TODO: neeed to replace this with the actual location of the agent from spatial memory
 def extract_location(perception):
+    """
+    Extract location information from agent perception data.
+    
+    Args:
+        perception: AgentPerception object or dict containing visible_objects
+        
+    Returns:
+        str: Human-readable location description based on visible objects' rooms
+    """
     # For Pydantic BaseModel, just use dot notation
     visible_objects = perception.visible_objects
     if visible_objects:
@@ -189,7 +259,14 @@ def extract_location(perception):
 
 def build_event_description(next_action, perception):
     """
-    Build an event string summarizing the action and perception.
+    Build a descriptive event string summarizing the action taken and perception received.
+    
+    Args:
+        next_action (dict): Dictionary containing action_type and content details
+        perception: AgentPerception object with visible_objects, visible_agents, heard_messages
+        
+    Returns:
+        str: Human-readable description of what happened during this action/perception cycle
     """
     parts = []
     # Action details
@@ -230,6 +307,19 @@ def build_event_description(next_action, perception):
 
 
 def get_updated_perception_for_agent(agent_id: str) -> AgentPerception:
+    """
+    Generate current perception data for an agent based on world state.
+    
+    Collects information about visible objects, visible agents, and undelivered messages
+    from the current world state and returns it as a structured perception object.
+    
+    Args:
+        agent_id (str): The ID of the agent to generate perception for
+        
+    Returns:
+        AgentPerception: Object containing timestamp, current_tile, visible_objects,
+                        visible_agents, chatable_agents, and heard_messages
+    """
     # 1. Load the agent instance from the LLMAgentManager
     agent = agent_manager.get_agent(agent_id).agent 
     current_tile = agent.curr_tile
@@ -288,6 +378,22 @@ def get_updated_perception_for_agent(agent_id: str) -> AgentPerception:
 # --- Core controller functions ---
 
 def plan_next_action(agent_id: str) -> PlanActionResponse:
+    """
+    Plan and execute the next action for an agent based on current world state.
+    
+    This is the main controller function that:
+    1. Gets updated perception for the agent
+    2. Uses the LLM to decide on the next action
+    3. Immediately applies the action to update world state
+    4. Records the event in agent memory
+    5. Returns the action and updated perception
+    
+    Args:
+        agent_id (str): The ID of the agent to plan an action for
+        
+    Returns:
+        PlanActionResponse: Object containing the planned action and updated perception
+    """
     # 1. Get latest perception for this agent from the world state (not from passed-in parameter)
     perception = get_updated_perception_for_agent(agent_id)
     perception_dict = perception.model_dump()
@@ -426,71 +532,26 @@ def plan_next_action(agent_id: str) -> PlanActionResponse:
 #     agent.save()
 #     agent.save_memory()
 
-def initialize_llm_agent(agent_id: str, api_key: Optional[str] = None) -> LLMAgent:
-    """
-    Initialize an LLMAgent for the given agent_id.
-    
-    Args:
-        agent_id (str): The agent ID
-        api_key (str, optional): OpenAI API key
-        
-    Returns:
-        LLMAgent: The initialized LLMAgent instance
-    """
-    return create_llm_agent(agent_id, api_key)
 
-
-def get_or_create_llm_agent(agent_id: str, api_key: Optional[str] = None) -> LLMAgent:
-    """
-    Get an existing LLMAgent or create a new one if it doesn't exist.
-    
-    Args:
-        agent_id (str): The agent ID
-        api_key (str, optional): OpenAI API key
-        
-    Returns:
-        LLMAgent: The LLMAgent instance
-    """
-    llm_agent = get_llm_agent(agent_id)
-    if llm_agent is None:
-        llm_agent = create_llm_agent(agent_id, api_key)
-    return llm_agent
-
-
-def cleanup_llm_agent(agent_id: str):
-    """
-    Remove an LLMAgent from memory to free resources.
-    
-    Args:
-        agent_id (str): The agent ID to cleanup
-    """
-    remove_llm_agent(agent_id)
-
-
-def cleanup_all_llm_agents():
-    """
-    Remove all LLMAgents from memory to free resources.
-    """
-    clear_all_llm_agents()
-
-
-def get_llm_agent_status() -> Dict[str, Any]:
-    """
-    Get status information about currently active LLMAgents.
-    
-    Returns:
-        dict: Status information including active agent count
-    """
-    return {
-        "active_agent_count": get_active_agent_count(),
-        "message": f"Currently managing {get_active_agent_count()} LLM agents"
-    }
 
 
 def evaluate_event_salience(agent: Agent, event_description: str) -> int:
+    """
+    Evaluate how important/salient an event is for a given agent using LLM.
+    
+    Uses the agent's LLM to determine the importance of an event on a scale,
+    which helps prioritize which memories to retain and retrieve.
+    
+    Args:
+        agent (Agent): The agent for whom to evaluate the event
+        event_description (str): Description of the event to evaluate
+        
+    Returns:
+        int: Salience score (typically 1-10), with 5 as default fallback on error
+    """
     try:
-        # Use the managed LLMAgent instead of creating a new one
-        llm_agent = get_or_create_llm_agent(agent.agent_id)
+        # Use the managed LLMAgent directly from agent_manager
+        llm_agent = agent_manager.get_agent(agent.agent_id)
         
         salience = asyncio.run(llm_agent.evaluate_event_salience(event_description))
         print(f"Event salience evaluation: '{event_description}' = {salience}")

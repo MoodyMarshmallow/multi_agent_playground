@@ -13,7 +13,7 @@ if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
 from character_agent.agent import Agent
-from character_agent.agent_manager import create_llm_agent
+from character_agent.agent_manager import agent_manager
 from config.schema import AgentPerception
 
 async def test_salience_evaluation():
@@ -25,8 +25,8 @@ async def test_salience_evaluation():
         agent_dir = "../../data/agents/alex_001"
         agent = Agent(agent_dir)
         
-        # Create LLM agent using the manager
-        llm_agent = create_llm_agent(agent.agent_id)
+        # Get LLM agent using the manager
+        llm_agent = agent_manager.get_agent(agent.agent_id)
         
         # Test different types of events
         test_events = [
