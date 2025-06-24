@@ -10,10 +10,7 @@ class AgentSummary(BaseModel):
     # first_name: str
     # last_name: str
     curr_tile: Optional[List[int]]
-<<<<<<< HEAD
-=======
     curr_room: Optional[str]
->>>>>>> iris-06/24
     # age: Optional[int]
     # occupation: Optional[str]
     # currently: Optional[str]
