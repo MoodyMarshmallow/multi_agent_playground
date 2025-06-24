@@ -342,6 +342,7 @@ def plan_next_action(agent_id: str) -> PlanActionResponse:
     event = build_event_description(next_action, perception)
     location = extract_location(perception)
     salience = evaluate_event_salience(agent, event)
+    agent.update_agent_data({"currently": event})
     agent.add_memory_event(
         timestamp=perception.timestamp,
         location=location,
