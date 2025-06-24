@@ -22,5 +22,47 @@
     ],
     "event": "Received message from alex_001: 'Hey Alan, I'm curious if you have any art exhibitions coming up or ideas you'd like to exchange. Let's chat about it!'",
     "salience": 5
+  },
+  {
+    "timestamp": "01T01:13:52",
+    "location": "unknown location",
+    "event": "I looked around and observed my surroundings. I saw these people: alex_001. I heard alex_001 say to alan_002: 'That sounds great, Alan! I can\u2019t wait to cook together. Maybe we can try that new recipe I found. \ud83d\ude0a'",
+    "salience": 6
+  },
+  {
+    "timestamp": "01T01:18:03",
+    "location": "unknown location",
+    "event": "I saw these people: alex_001",
+    "salience": 3
+  },
+  {
+    "timestamp": "23T20:34:23",
+    "location": "unknown location",
+    "event": "I chatted with alex_001: 'Hey Alex! Glad to hear you'd like to join in for some gardening. It'll be a fun break for both of us! \ud83d\ude0a'. I heard alex_001 say to alan_002: 'Hey Alan! Ratatouille sounds like a fantastic idea. Let's definitely experiment with those flavors together. Maybe we can plan a time to cook it soon! \ud83d\ude0a'. I heard alex_001 say to alan_002: 'Hey Alan! Cooking ratatouille sounds like a great idea. Let's set a time that works for both of us. \ud83d\ude0a'. I heard alan_002 say to alan_002: 'Hey! That cooking session sounds like a great idea. Looking forward to it this weekend! \ud83d\ude0a'. I heard alex_001 say to alan_002: 'Good morning, Alan! Hope you slept well. \ud83d\ude0a'. I heard alex_001 say to alan_002: 'Hey Alan! I'll meet you outside in a moment. \ud83d\ude0a'",
+    "salience": 6
+  },
+  {
+    "timestamp": "23T20:42:39",
+    "location": "unknown location",
+    "event": "I moved to position [30, 10]",
+    "salience": 1
+  },
+  {
+    "timestamp": "24T15:04:18",
+    "location": "unknown location",
+    "event": "I moved to position [17, 9]. I saw these people: alex_001",
+    "salience": 4
+  },
+  {
+    "timestamp": "24T15:23:29",
+    "location": "unknown location",
+    "event": "I moved to position [17, 12]. I saw these people: alex_001",
+    "salience": 3
+  },
+  {
+    "timestamp": "24T15:25:13",
+    "location": "unknown location",
+    "event": "I moved to position [7, 10]. I saw these people: alex_001",
+    "salience": 5
   }
 ]
