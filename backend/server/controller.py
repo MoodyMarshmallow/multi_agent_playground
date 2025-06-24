@@ -7,6 +7,8 @@ import os
 from datetime import datetime, timedelta
 import hashlib
 from typing import Dict, Any, Optional
+import logging
+logger = logging.getLogger(__name__)
 
 backend_dir = Path(__file__).parent.parent
 if str(backend_dir) not in sys.path:
@@ -23,6 +25,7 @@ from config.schema import (
     AgentActionInput, AgentActionOutput, AgentPerception, BackendAction, 
     MoveBackendAction, ChatBackendAction, InteractBackendAction, PerceiveBackendAction, Message
 )
+from backend.logging import log_perception, log_agent_action, log_conversation_flow, log_queue_status, log_full_debug, log_salience_evaluation
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.resolve()
 MESSAGES_PATH = PROJECT_ROOT / "data" / "world" / "messages.json"
@@ -66,20 +69,19 @@ def get_or_create_conversation_id(sender: str, receiver: str, queue: list) -> st
     1. It's between the same agents (in either direction)
     2. The last message was within CONVERSATION_TIMEOUT_MINUTES
     """
-    print(f"DEBUG: get_or_create_conversation_id - {sender} -> {receiver}")
-    print(f"DEBUG: Queue has {len(queue)} messages")
+    logger.debug(f"get_or_create_conversation_id - {sender} -> {receiver}")
+    log_queue_status(len(queue), "Checking conversation")
     
     # Sort messages by timestamp to find the most recent conversation
     sorted_messages = sorted(queue, key=lambda x: x.get("timestamp", ""), reverse=True)
     
     # Look for recent messages between these agents (in either direction)
     for msg in sorted_messages:
-        print(f"DEBUG: Checking message: {msg['sender']} -> {msg['receiver']} at {msg['timestamp']}")
         # Check if this message is between the same two agents (either direction)
         if ((msg["sender"] == sender and msg["receiver"] == receiver) or 
             (msg["sender"] == receiver and msg["receiver"] == sender)):
             
-            print(f"DEBUG: Found matching conversation: {msg['conversation_id']}")
+            logger.debug(f"Found matching conversation: {msg['conversation_id']}")
             # Check if conversation is still active based on time
             try:
                 msg_time = parse_timestamp(msg["timestamp"])
@@ -87,15 +89,15 @@ def get_or_create_conversation_id(sender: str, receiver: str, queue: list) -> st
                 
                 # If the message is recent enough, use its conversation_id
                 if current_time - msg_time < timedelta(minutes=CONVERSATION_TIMEOUT_MINUTES):
-                    print(f"DEBUG: Using existing conversation_id: {msg['conversation_id']}")
+                    logger.debug(f"Using existing conversation_id: {msg['conversation_id']}")
                     return msg["conversation_id"]
                 else:
-                    print(f"DEBUG: Message too old, creating new conversation")
+                    logger.debug(f"Error parsing timestamp {msg['timestamp']}: {e}")
             except Exception as e:
-                print(f"Error parsing timestamp {msg['timestamp']}: {e}")
+                logger.debug(f"Error parsing timestamp {msg['timestamp']}: {e}")
                 # If timestamp parsing fails, still use the conversation_id if it exists
                 if msg.get("conversation_id"):
-                    print(f"DEBUG: Using conversation_id despite timestamp error: {msg['conversation_id']}")
+                    logger.debug(f"Using conversation_id despite timestamp error: {msg['conversation_id']}")
                     return msg["conversation_id"]
     
     # If no active conversation found, create a deterministic conversation ID
@@ -105,7 +107,7 @@ def get_or_create_conversation_id(sender: str, receiver: str, queue: list) -> st
     agent_pair = sorted([sender, receiver])  # Sort to ensure consistent ordering
     conversation_key = f"{agent_pair[0]}_{agent_pair[1]}_{time_key}"
     
-    print(f"DEBUG: Creating deterministic conversation_id for key: {conversation_key}")
+    logger.debug(f"Creating deterministic conversation_id for key: {conversation_key}")
     
     # Create a deterministic UUID based on the conversation key
     hash_object = hashlib.md5(conversation_key.encode())
@@ -113,16 +115,16 @@ def get_or_create_conversation_id(sender: str, receiver: str, queue: list) -> st
     
     # Convert to UUID format
     uuid_str = f"{hash_hex[:8]}-{hash_hex[8:12]}-{hash_hex[12:16]}-{hash_hex[16:20]}-{hash_hex[20:32]}"
-    print(f"DEBUG: Generated conversation_id: {uuid_str}")
+    logger.debug(f"Generated conversation_id: {uuid_str}")
     return uuid_str
 
 def append_message_to_queue(msg, location):
     queue = load_json(MESSAGES_PATH, [])
-    print(f"DEBUG: append_message_to_queue - Queue has {len(queue)} messages before adding")
+    log_queue_status(len(queue), "Before adding message")
     
     # Get or create conversation ID
     conversation_id = get_or_create_conversation_id(msg.sender, msg.receiver, queue)
-    print(f"DEBUG: append_message_to_queue - Using conversation_id: {conversation_id}")
+    logger.debug(f"append_message_to_queue - Using conversation_id: {conversation_id}")
     
     queue.append({
         "sender": msg.sender,
@@ -134,7 +136,10 @@ def append_message_to_queue(msg, location):
         "delivered": False
     })
     save_json(MESSAGES_PATH, queue)
-    print(f"DEBUG: append_message_to_queue - Queue now has {len(queue)} messages after adding")
+    log_queue_status(len(queue), "After adding message")
+    
+    # Log the conversation flow
+    log_conversation_flow(msg.sender, msg.receiver, msg.message, conversation_id)
     
 # this if for the agent to see the messages that it has not seen yet
 # for example, in 1st round agent a sent a message to agent b, but agent b did not see it yet, then it can extract the message from the queue if it is not delivered yet
@@ -218,6 +223,9 @@ def build_event_description(agent_msg):
 # --- Core controller functions ---
 
 def plan_next_action(agent_id: str, perception: AgentPerception) -> AgentActionOutput:
+    logger.info(f"Planning next action for agent {agent_id}")
+    log_perception(agent_id, perception.model_dump())
+    
     agent_dir = PROJECT_ROOT / "data" / "agents" / agent_id
     agent = Agent(agent_dir)
     agent.update_perception(perception.model_dump())
@@ -226,9 +234,32 @@ def plan_next_action(agent_id: str, perception: AgentPerception) -> AgentActionO
     agent.heard_messages = perception_dict.get("heard_messages", [])
     agent_state = agent.to_state_dict()
     next_action = call_llm_agent(agent_state, perception_dict)
+    
+    # Log the action details
+    action_type = next_action.get("action_type", "unknown")
+    action_details = next_action.get("content", {})
+    
+    if action_type == "chat":
+        log_agent_action(agent_id, "chat", {
+            'receiver': action_details.get("receiver", ""),
+            'message': action_details.get("message", "")
+        })
+    elif action_type == "move":
+        log_agent_action(agent_id, "move", {
+            'from_tile': perception.current_tile or agent.curr_tile,
+            'to_tile': action_details.get("destination_coordinates", [0, 0])
+        })
+    elif action_type == "interact":
+        log_agent_action(agent_id, "interact", {
+            'object': action_details.get("object", ""),
+            'current_state': action_details.get("current_state", ""),
+            'new_state': action_details.get("new_state", "")
+        })
+    else:
+        log_agent_action(agent_id, "perceive", {})
+    
     current_tile = perception.current_tile or agent.curr_tile
 
-    action_type = next_action.get("action_type")
     backend_action = None
 
     if action_type == "move":
@@ -320,7 +351,7 @@ def confirm_action_and_update(agent_msg: AgentActionInput) -> None:
                     salience=sender_salience
                 )
                 sender_agent.save_memory()
-    
+    logger.info(f"Finished confirming action for agent {agent_msg.agent_id}")
     # Save both agent state and memory at the end
     agent.save()
     agent.save_memory()
@@ -392,8 +423,8 @@ def evaluate_event_salience(agent: Agent, event_description: str) -> int:
         llm_agent = get_or_create_llm_agent(agent.agent_id)
         
         salience = asyncio.run(llm_agent.evaluate_event_salience(event_description))
-        print(f"Event salience evaluation: '{event_description}' = {salience}")
+        log_salience_evaluation(agent.agent_id, event_description, salience)
         return salience
     except Exception as e:
-        print(f"Error evaluating salience: {e}")
+        logger.debug(f"Error evaluating salience: {e}")
         return 5  # Default fallback

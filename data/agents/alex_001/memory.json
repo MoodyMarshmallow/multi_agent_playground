@@ -97,5 +97,29 @@
     "location": "unknown location",
     "event": "I moved to position (22, 8). I saw these people: alan_002. I heard alan_002 say to alex_001: 'I'm excited to try that new recipe with you, Alex! Do you have everything we need, or should I grab some ingredients? \ud83d\ude0a'",
     "salience": 5
+  },
+  {
+    "timestamp": "01T00:42:53",
+    "location": "unknown location",
+    "event": "I saw these people: alan_002. I heard alan_002 say to alex_001: 'Hey Alex, let's head outside and do some gardening together. It's a beautiful day for it! \ud83d\ude0a'",
+    "salience": 5
+  },
+  {
+    "timestamp": "01T00:40:00",
+    "location": [
+      22,
+      9
+    ],
+    "event": "Received message from alan_002: 'Hey Alex, let's head outside and do some gardening together. It's a beautiful day for it! \ud83d\ude0a'",
+    "salience": 5
+  },
+  {
+    "timestamp": "01T00:40:00",
+    "location": [
+      32,
+      12
+    ],
+    "event": "Sent message to alan_002: 'I'm here, Alan! Ready to catch up outside. \ud83d\ude0a'",
+    "salience": 3
   }
 ]
