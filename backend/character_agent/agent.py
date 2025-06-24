@@ -177,4 +177,5 @@ class Agent:
             "curr_tile": self.curr_tile,
             "age": getattr(self, "age", None),
             "occupation": getattr(self, "occupation", None),
+            "currently": getattr(self, "currently", ""),
         }

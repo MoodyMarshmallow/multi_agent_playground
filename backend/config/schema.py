@@ -12,6 +12,7 @@ class AgentSummary(BaseModel):
     curr_tile: Optional[List[int]]
     age: Optional[int]
     occupation: Optional[str]
+    currently: Optional[str]
 
 # -----------------------------------------------------------------------------
 # Message Model
