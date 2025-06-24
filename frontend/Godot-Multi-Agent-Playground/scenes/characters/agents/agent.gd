@@ -5,7 +5,7 @@ extends CharacterBody2D
 signal chat_message_sent(receiver_id: String, message: Dictionary)
 
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
-@onready var agent_manager: AgentManager = get_parent()
+@onready var agent_manager: AgentManager = get_parent() as AgentManager
 
 # Variables we will need to send to http manager:
 @export var agent_id: String = "alex_001"
@@ -80,23 +80,17 @@ func tile_to_position(tile: Vector2i) -> Vector2:
 func on_emoji_received(agent_id: String, emoji: String):
 	$"EmojiLabel".set_emoji_from_backend(emoji)
 
-func on_move_action_received(agent_id: String, destination_tile: Vector2i) -> void:
+func on_move_action_received(agent_id: String, target_tile: Vector2i) -> void:
 	if agent_id != self.agent_id:
 		return
 	in_progress = true
-	destination_tile = destination_tile + HouseUpperLeftTile
-	var destination_pos = Vector2(destination_tile.x * 16 + 8, destination_tile.y * 16 + 8)
+	self.destination_tile = target_tile + HouseUpperLeftTile
+	var destination_pos = Vector2(self.destination_tile.x * 16 + 8, self.destination_tile.y * 16 + 8)
 
 	# Snap to navigation region
 	var safe_destination = NavigationServer2D.map_get_closest_point(navigation_agent_2d.get_navigation_map(), destination_pos)
-	var safe_destination_tile = position_to_tile(safe_destination)
 	navigation_agent_2d.set_target_position(safe_destination)
 	state_machine.on_child_transition(state_machine.current_state, "Walk")
-	current_tile = destination_tile
-	
-	navigation_agent_2d.set_target_position(destination_pos)
-	state_machine.on_child_transition(state_machine.current_state, "Walk")
-	in_progress = false
 
 # Called when a chat action is received
 func on_chat_action_received(agent_id: String, message: Dictionary) -> void:
@@ -152,7 +146,7 @@ func get_agent_id() -> String:
 	return agent_id
 
 func get_current_tile() -> Array:
-	current_tile = tile_to_position(position)
+	current_tile = position_to_tile(position)
 	return [current_tile.x, current_tile.y]
 
 func get_destination_tile() -> Array:

@@ -1,33 +1,24 @@
 {
   "agent_id": "alan_002",
-  "vision_r": 4,
-  "retention": 5,
-  "curr_time": "01T01:18:03",
+  "curr_time": "",
   "curr_tile": [
-    31,
+    32,
     12
   ],
-  "daily_plan_req": "Finish painting, make lunch, call gallery",
-  "name": "Alan",
   "first_name": "Alan",
   "last_name": "Smith",
   "age": 28,
-  "innate": [
-    "curious",
-    "friendly"
-  ],
-  "learned": [
-    "cooking",
-    "gardening"
-  ],
-  "currently": "I saw these people: alex_001",
+  "backstory": "Alan was raised in a suburban family where outdoor activities and community involvement were highly valued. He developed a love for gardening from his father and learned cooking from his mother. After finishing college with a degree in environmental science, he moved to the city but maintains his active lifestyle and community-focused values.",
+  "personality": "Alan is naturally curious and outgoing, always eager to learn new things and meet new people. He's optimistic and enjoys helping others, often organizing community events or sharing his cooking and gardening skills with friends. He's reliable and conscientious, but sometimes takes on too many commitments.",
+  "occupation": "Environmental consultant working with urban sustainability projects",
+  "currently": "I saw these people: alex_001. I heard alex_001 say to alan_002: 'Hey Alan! I'd love to join you for some gardening. It sounds like a nice break from painting.'",
   "lifestyle": "active",
-  "living_area": "apartment",
   "daily_req": [
     "exercise",
     "read",
     "cook"
   ],
+  "living_area": "apartment",
   "f_daily_schedule": [
     [
       "sleeping",
@@ -52,60 +43,6 @@
     [
       "lunch break",
       60
-    ]
-  ],
-  "f_daily_schedule_hourly_org": [
-    [
-      "sleeping",
-      360
-    ],
-    [
-      "morning routine",
-      20
-    ],
-    [
-      "painting",
-      240
-    ],
-    [
-      "lunch",
-      60
-    ]
-  ],
-  "act_address": "downtown studio:main:bedroom:bed",
-  "act_start_time": "2023-10-01T08:00:00Z",
-  "act_duration": 30,
-  "act_description": "Alan is planning his next activity.",
-  "act_pronunciation": "\ud83c\udf05\ud83e\udd38\u200d\u2640\ufe0f",
-  "act_event": [
-    "Alex",
-    "wake up",
-    "bedroom"
-  ],
-  "act_obj_description": "bed",
-  "act_obj_pronunciation": "\ud83d\udecf\ufe0f",
-  "act_obj_event": [
-    "Alex",
-    "uses",
-    "bed"
-  ],
-  "chatting_with": null,
-  "chat": [],
-  "chatting_with_buffer": {},
-  "chatting_end_time": null,
-  "act_path_set": false,
-  "planned_path": [
-    [
-      12,
-      8
-    ],
-    [
-      12,
-      9
-    ],
-    [
-      13,
-      9
     ]
   ]
 }

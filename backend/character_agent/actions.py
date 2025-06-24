@@ -39,61 +39,20 @@ class ActionsMixin:
         EMOJI SELECTION FOR MOVEMENT MANNER:
         The emoji is the soul of your movement. Choose it to paint a vivid picture of HOW your character is moving:
         
-        PACE AND ENERGY LEVELS:
-        - 🚶 Casual stroll - relaxed, unhurried, observing surroundings
-        - 🚶‍♂️ Determined walk - purposeful stride, focused forward movement
-        - 🏃 Urgent run - time-sensitive, slightly out of breath, quick steps
-        - 🏃‍♀️ Athletic sprint - powerful, coordinated, maximum speed
-        - 🐌 Slow creep - cautious, deliberate, trying not to be noticed
-        - ⚡ Lightning dash - sudden burst, explosive movement, startling speed
-        - 🦶 Tiptoeing - silent, careful, avoiding detection or disturbance
-        - 🕺 Bouncy step - energetic, rhythmic, possibly dancing while moving
-        
-        EMOTIONAL MOVEMENT EXPRESSIONS:
-        - 😊 Cheerful skip - light-hearted, optimistic, spring in step
-        - 😰 Nervous shuffle - hesitant, looking around, uncertain footing
-        - 😤 Angry stomp - heavy footfalls, forceful, possibly clenched fists
-        - 🤔 Thoughtful pace - measured steps, pausing occasionally, contemplative
-        - 😴 Weary trudge - dragging feet, shoulders slumped, low energy
-        - 😍 Eager rush - excited, can barely contain enthusiasm, quick but clumsy
-        - 😎 Cool swagger - confident, smooth, owns the space
-        - 🥺 Reluctant drift - doesn't really want to go, slow, looking back
-        - 😏 Sneaky slink - mischievous, keeping to shadows, up to something
-        
-        SITUATIONAL MOVEMENT STYLES:
-        - 🔍 Investigative prowl - alert, scanning, ready to stop and examine
-        - 🎯 Focused beeline - direct, unwavering, tunnel vision toward goal
-        - 🌊 Fluid glide - smooth, graceful, like water flowing
-        - 🏠 Homeward shuffle - familiar territory, relaxed, muscle memory
-        - 🚪 Exit seeking - purposeful but not panicked, looking for way out
-        - 🛡️ Defensive retreat - cautious, watching for threats, ready to dodge
-        - 🎪 Playful bound - joyful, unpredictable, maybe hopping or skipping
-        - 🤝 Social approach - friendly, open body language, inviting
-        - 💼 Professional stride - business-like, efficient, time-conscious
-        - 🎭 Dramatic flourish - theatrical, exaggerated, making a statement
-        
-        STEALTH AND CAUTION MODES:
-        - 👻 Ghost walk - nearly invisible, avoiding all contact
-        - 🕵️ Spy creep - methodical, checking corners, gathering intel
-        - 🦝 Mischief sneak - playful stealth, up to harmless trouble
-        - 🐱 Cat prowl - graceful, silent, predatory awareness
-        - 🦉 Wise observation - moving to better vantage points, studying
-        
-        SOCIAL MOVEMENT EXPRESSIONS:
-        - 💃 Attention-seeking strut - wants to be noticed, confident display
-        - 🙈 Embarrassed scurry - trying to avoid attention, head down
-        - 🤗 Welcoming approach - arms slightly open, warm invitation
-        - 💔 Heartbroken wander - aimless, heavy, emotionally lost
-        - 🎉 Celebratory dance-walk - can't contain joy, rhythm in every step
+        OPTIONS:
+        - 🚶‍♂️ Walk - Slow to moderate pace, casual, relaxed
+        - 🏃 Run - Fast, purposeful, slightly out of breath
+        - 🐌 Crawl - Very slow, cautious, deliberate
+        - 🕺 Dance - Fast, energetic, rhythmic
         
         USAGE EXAMPLES:
-        - move([5, 3], "😰") - Nervously shuffle to (5, 3), hesitant and looking around
-        - move([10, 8], "🎯") - March with focused determination toward (10, 8), unwavering
-        - move([0, 0], "😴") - Trudge wearily home to origin, shoulders slumped, exhausted
-        - move([7, 2], "🕵️") - Creep methodically to (7, 2) to investigate, checking corners
-        - move([3, 7], "💃") - Strut confidently to (3, 7), wanting everyone to notice
-        - move([12, 4], "🐱") - Prowl silently to (12, 4) with predatory grace
-        - move([1, 9], "🎉") - Dance-walk joyfully to (1, 9), rhythm in every step
+        - move([5, 3], "🚶‍♂️") - Walk casually to (5, 3), taking in the surroundings
+        - move([10, 8], "🏃") - Run purposefully toward (10, 8), focused on destination
+        - move([0, 0], "🐌") - Crawl slowly to origin, being extra cautious
+        - move([7, 2], "🚶‍♂️") - Walk deliberately to (7, 2), observing carefully
+        - move([3, 7], "🕺") - Dance energetically to (3, 7), full of rhythm
+        - move([12, 4], "🚶‍♂️") - Walk stealthily to (12, 4), trying to be quiet
+        - move([1, 9], "🕺") - Dance joyfully to (1, 9), expressing happiness
         
         BEST PRACTICES:
         - Think like an actor: HOW would your character move in this emotional state?
@@ -139,77 +98,36 @@ class ActionsMixin:
         EMOJI SELECTION FOR INTERACTION MANNER:
         The emoji is the soul of your interaction. Choose it to paint a vivid picture of HOW your character approaches and handles objects:
         
-        GENTLE AND CAREFUL INTERACTIONS:
+        INTERACTION OPTIONS:
         - 🤲 Gentle handling - treating object with respect and care
-        - 🕊️ Delicate touch - barely making contact, afraid to damage
-        - 👐 Open approach - welcoming, embracing the object's purpose
-        - 🌸 Tender care - nurturing, protective, loving interaction
-        - 🦋 Feather-light touch - minimal contact, graceful handling
-        - 🙏 Reverent interaction - treating object as sacred or precious
-        - 💝 Cherishing touch - appreciating the object's value
-        
-        FORCEFUL AND AGGRESSIVE INTERACTIONS:
         - 💪 Forceful grip - using strength, determined application
-        - ⚡ Explosive action - sudden, powerful, overwhelming force
         - 🔨 Hammering approach - repetitive, mechanical, tool-like force
-        - 😤 Frustrated handling - impatient, rough, losing composure
         - 🥊 Combative interaction - treating object as opponent
-        - 💥 Destructive force - intentionally breaking or damaging
         - ⚔️ Weapon-like precision - sharp, cutting, focused destruction
-        
-        SKILLED AND TECHNICAL INTERACTIONS:
-        - 🔧 Technical manipulation - skilled, knowing exactly what to do
-        - 🎯 Precise targeting - surgical accuracy, hitting exact spots
         - 🧠 Intellectual approach - thinking through the mechanism
         - 🔬 Scientific method - systematic, experimental, analytical
         - 🎨 Artistic touch - creative, expressive, aesthetically aware
-        - 🏆 Masterful handling - expert-level skill, confident execution
         - ⚙️ Mechanical understanding - seeing how parts work together
-        
-        EMOTIONAL INTERACTION STYLES:
-        - 😊 Joyful engagement - happy to interact, positive energy
-        - 😰 Nervous fumbling - uncertain, shaky hands, hesitant approach
-        - 🤔 Contemplative handling - thoughtful, studying before acting
-        - 😍 Fascinated exploration - captivated, can't help but touch
-        - 😒 Reluctant compliance - doing it but not wanting to
-        - 🥺 Pleading interaction - begging the object to work
-        - 😎 Cool confidence - smooth, assured, no doubt about success
-        - 🤯 Overwhelmed confusion - too complex, mind blown by object
-        
-        SOCIAL AND COMMUNICATIVE INTERACTIONS:
-        - 🤝 Cooperative approach - working with the object as partner
-        - 💬 Communicative touch - trying to "talk" to the object
-        - 🎭 Performative interaction - making a show of the action
-        - 🤗 Friendly embrace - treating object like a friend
-        - 🙋 Attention-seeking - wanting others to notice the interaction
-        - 👥 Group coordination - interacting as part of team effort
-        - 🎪 Playful experimentation - having fun with the interaction
-        
-        STEALTH AND SECRETIVE INTERACTIONS:
-        - 🤫 Silent operation - trying not to make noise
-        - 👻 Invisible touch - hoping no one notices
-        - 🕵️ Investigative probing - searching for hidden mechanisms
-        - 🦝 Sneaky manipulation - mischievous, unauthorized interaction
-        - 🌙 Midnight stealth - operating under cover of darkness
         - 🔍 Detective work - looking for clues in the object
         
         USAGE EXAMPLES:
-        - interact("ancient tome", "opened", "🙏") - Reverently open sacred book with deep respect
+        - interact("ancient tome", "opened", "🤲") - Gently open sacred book with careful reverence
         - interact("stuck door", "opened", "💪") - Force open door with determined strength
-        - interact("delicate mechanism", "activated", "🔧") - Skillfully activate complex device
-        - interact("mysterious orb", "glowing", "😰") - Nervously touch orb, hands shaking
-        - interact("musical instrument", "playing", "🎨") - Artistically play beautiful melody
-        - interact("broken fence", "repaired", "🔨") - Hammer fence back into working order
-        - interact("secret panel", "opened", "🕵️") - Investigate and discover hidden mechanism
+        - interact("delicate mechanism", "activated", "🔧") - Skillfully activate complex device with mechanical precision
+        - interact("musical instrument", "playing", "🎨") - Artistically play beautiful melody with creative expression
+        - interact("broken fence", "repaired", "🔨") - Hammer fence back into working order with repetitive force
+        - interact("secret panel", "opened", "🔍") - Investigate and discover hidden mechanism through detective work
+        - interact("locked chest", "opened", "🧠") - Think through the locking mechanism intellectually
+        - interact("laboratory equipment", "activated", "🔬") - Systematically operate scientific instruments
+        - interact("enemy barrier", "destroyed", "⚔️") - Cut through obstacle with weapon-like precision
+        - interact("stubborn bolt", "loosened", "🥊") - Fight against the resistant mechanical part
         
         BEST PRACTICES:
         - Think about your character's skill level with this type of object
-        - Consider the emotional weight of the interaction
         - Match the emoji to both the action and your character's feelings about it
         - Remember that how you interact reveals personality traits
         - Some objects may require multiple interaction attempts
         - Consider the consequences of your interaction method
-        - Use interactions to show character growth and learning
         
         Returns JSON action for frontend communication.
         """
@@ -242,7 +160,7 @@ class ActionsMixin:
         - message: Keep messages natural and in-character
         - action_emoji: Choose an emoji that represents your communication style
         
-        COMMUNICATION EMOJIS:
+        COMMUNICATION OPTIONS:
         - 💬 Normal conversation - casual, friendly chat
         - 😊 Happy chat - cheerful, positive interaction
         - 🤔 Thoughtful discussion - serious, contemplative
@@ -252,6 +170,28 @@ class ActionsMixin:
         - 🤫 Whispered secret - quiet, confidential communication
         - 📢 Public declaration - speaking to multiple people
         
+        USAGE EXAMPLES:
+        - chat("alex_001", "Hey Alex! How's your painting coming along?", "😊") - Friendly check-in
+        - chat("alan_002", "Would you like to grab lunch together?", "🍽️") - Meal invitation
+        - chat("neighbor_003", "Excuse me, have you seen my cat?", "😰") - Worried inquiry
+        - chat("friend_004", "I just finished my masterpiece!", "🎉") - Excited announcement
+        - chat("coworker_005", "Can we discuss the project deadline?", "🤔") - Professional conversation
+        - chat("stranger_006", "Hello there! Welcome to the neighborhood!", "👋") - Welcoming greeting
+        - chat("roommate_007", "Could you please keep it down? I'm trying to work.", "😤") - Polite complaint
+        - chat("best_friend_008", "I have some amazing news to share with you!", "🤫") - Sharing secrets
+        
+        BEST PRACTICES:
+        - Stay in character - messages should reflect your personality and current mood
+        - Be contextually appropriate - consider your relationship with the receiver
+        - Use natural language - avoid robotic or overly formal speech unless that fits your character
+        - Match your emoji to your message tone and personality
+        - Consider the situation - formal vs casual, public vs private conversations
+        - React to recent events or conversations in your responses
+        - Keep messages concise but meaningful
+        - Use your character's vocabulary and speaking style
+        - Consider your character's emotional state when crafting messages
+        - Remember your daily goals and how conversation might help achieve them
+
         Returns JSON action for frontend communication.
         """
         action_json = {
@@ -379,9 +319,6 @@ class ActionsMixin:
         PERCEPTION EMOJIS:
         - 👀 General observation - looking around, taking in the scene
         - 🔍 Detailed investigation - searching for specific things
-        - 🦉 Wise observation - thoughtful, careful examination
-        - 😕 Confused looking - trying to understand what's happening
-        - 🤔 Contemplative observation - thinking while observing
         - 👁️ Focused attention - concentrating on something specific
         - 🕵️ Detective work - investigating, looking for clues
         
@@ -398,82 +335,6 @@ class ActionsMixin:
         print(f"Perceive action: {json.dumps(action_json, indent=2)}")
         
         return action_json
-    
-    @ai_function()
-    def evaluate_event_salience(self,
-                               event_description: Annotated[str, "The event that occurred"],
-                               salience_score: Annotated[int, "Importance score from 1-10 (1=trivial, 5=notable, 10=life-changing)"]
-                               ) -> Dict[str, Any]:
-        """
-        Evaluate the emotional and personal significance of an event for memory storage.
-        
-        SALIENCE SCORING GUIDELINES:
-        Rate events on a scale from 1-10 based on their importance to your character:
-        
-        TRIVIAL EVENTS (1-2):
-        - Routine observations with no personal significance
-        - Seeing common objects in expected places
-        - Regular daily activities that happen frequently
-        - Minor environmental changes that don't affect you
-        
-        LOW IMPORTANCE (3-4):
-        - Interactions with familiar objects for routine purposes
-        - Brief, casual conversations about mundane topics
-        - Minor changes in your environment
-        - Completing simple, everyday tasks
-        
-        MODERATE IMPORTANCE (5-6):
-        - Meaningful conversations with other agents
-        - Discovering new objects or areas
-        - Completing important daily requirements
-        - Social interactions that reveal personality or relationships
-        - Learning something new about your environment
-        
-        HIGH IMPORTANCE (7-8):
-        - Significant social conflicts or emotional moments
-        - Major discoveries or revelations
-        - Events that change your understanding of the world
-        - Interactions that significantly impact relationships
-        - Achieving important personal goals
-        
-        LIFE-CHANGING EVENTS (9-10):
-        - Traumatic or extremely joyful experiences
-        - Major life decisions or turning points
-        - Events that fundamentally change your character
-        - Profound emotional experiences
-        - Life-threatening or life-saving situations
-        
-        FACTORS TO CONSIDER:
-        - Personal relevance: How much does this affect YOU specifically?
-        - Emotional impact: How strongly did this make you feel?
-        - Uniqueness: How rare or unusual is this event?
-        - Consequences: Will this event influence your future actions?
-        - Relationships: Does this significantly affect your connections with others?
-        - Goal relevance: Does this help or hinder your personal objectives?
-        
-        EXAMPLES:
-        - "I saw a bed in the bedroom" (routine observation) = 1-2
-        - "I talked with John about the weather" (casual chat) = 3-4
-        - "I discovered a hidden room I've never seen before" (new discovery) = 6-7
-        - "Sarah told me she's moving away forever" (relationship impact) = 8-9
-        - "I barely escaped a dangerous situation" (life-threatening) = 9-10
-        
-        Remember: Score based on YOUR character's perspective and personality.
-        What's important to one character might be trivial to another.
-        
-        Returns the salience evaluation for the memory system.
-        """
-        evaluation = {
-            "agent_id": getattr(self, 'agent_id', 'unknown_agent'),
-            "function_type": "salience_evaluation",
-            "event_description": event_description,
-            "salience_score": max(1, min(10, salience_score))  # Ensure score is between 1-10
-        }
-        
-        # Print for debugging/logging
-        print(f"Salience evaluation: {json.dumps(evaluation, indent=2)}")
-        
-        return evaluation
         
         
         
