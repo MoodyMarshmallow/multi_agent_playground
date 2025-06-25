@@ -172,6 +172,14 @@ class Agent:
             # Add more fields as needed
         }
     def to_summary_dict(self):
+        # Ensure currently is always a string for API validation
+        currently_value = getattr(self, "currently", "")
+        if isinstance(currently_value, dict):
+            # Convert dict to string representation
+            currently_value = str(currently_value)
+        elif not isinstance(currently_value, str):
+            currently_value = str(currently_value) if currently_value is not None else ""
+        
         return {
             "agent_id": self.agent_id,
             "first_name": self.first_name,
@@ -179,5 +187,5 @@ class Agent:
             "curr_tile": self.curr_tile,
             "age": getattr(self, "age", None),
             "occupation": getattr(self, "occupation", None),
-            "currently": getattr(self, "currently", ""),
+            "currently": currently_value,
         }

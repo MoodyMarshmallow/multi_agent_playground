@@ -1,25 +1,11 @@
 """
-Integration Package - Controller Compatibility
-==============================================
-Provides drop-in replacements for existing controller functions.
+Arush LLM Integration Module
+===========================
+Provides compatibility adapters for legacy character_agent interfaces.
 """
 
-from .controller import (
-    call_llm_agent,
-    create_llm_agent,
-    get_llm_agent, 
-    remove_llm_agent,
-    clear_all_llm_agents,
-    get_active_agent_count
-)
-from .objects import ObjectManager
+from .character_agent_adapter import CharacterAgentAdapter
 
 __all__ = [
-    "call_llm_agent",
-    "create_llm_agent",
-    "get_llm_agent",
-    "remove_llm_agent", 
-    "clear_all_llm_agents",
-    "get_active_agent_count",
-    "ObjectManager"
+    "CharacterAgentAdapter",
 ] 

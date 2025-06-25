@@ -35,5 +35,4 @@ __all__ = [
     "AgentActionOutput", 
     "AgentPerception",
     "StatusMsg",
-    "AgentActionContent",
 ]
