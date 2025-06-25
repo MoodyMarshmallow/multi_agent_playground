@@ -17,7 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-HouseLayout="*res://autoload/house_layout.gd"
+DraftHouseLayout="*res://autoload/first_house_layout.gd"
 DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 TimeManager="*res://autoload/time_manager.gd"
 

@@ -1,0 +1,139 @@
+[gd_scene load_steps=20 format=3 uid="uid://door48gqcuan5"]
+
+[ext_resource type="Script" uid="uid://im55jhrfn2ao" path="res://scenes/houses/interactable_objects/interactable_bathroom/cabinet.gd" id="1_raxka"]
+[ext_resource type="Texture2D" uid="uid://choookt1o67hu" path="res://modern_assets/animated_assets/animated_bathroom/animated_bathroom_cabinet_white_full.png" id="2_8pin3"]
+[ext_resource type="PackedScene" uid="uid://c2w2uh4fkyjpq" path="res://scenes/components/interactable_component.tscn" id="3_2yhru"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t2xxx"]
+atlas = ExtResource("2_8pin3")
+region = Rect2(80, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i0sme"]
+atlas = ExtResource("2_8pin3")
+region = Rect2(96, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ug62x"]
+atlas = ExtResource("2_8pin3")
+region = Rect2(112, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1oyak"]
+atlas = ExtResource("2_8pin3")
+region = Rect2(128, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6hx5t"]
+atlas = ExtResource("2_8pin3")
+region = Rect2(144, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_raxka"]
+atlas = ExtResource("2_8pin3")
+region = Rect2(0, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rtkfi"]
+atlas = ExtResource("2_8pin3")
+region = Rect2(0, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mulk4"]
+atlas = ExtResource("2_8pin3")
+region = Rect2(0, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r8arm"]
+atlas = ExtResource("2_8pin3")
+region = Rect2(16, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t1m75"]
+atlas = ExtResource("2_8pin3")
+region = Rect2(32, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2dgdg"]
+atlas = ExtResource("2_8pin3")
+region = Rect2(48, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_njvhc"]
+atlas = ExtResource("2_8pin3")
+region = Rect2(64, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_804n3"]
+atlas = ExtResource("2_8pin3")
+region = Rect2(80, 0, 16, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_3olf0"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t2xxx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_i0sme")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ug62x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1oyak")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6hx5t")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_raxka")
+}],
+"loop": false,
+"name": &"close_cabinet",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rtkfi")
+}],
+"loop": false,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mulk4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r8arm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t1m75")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2dgdg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_njvhc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_804n3")
+}],
+"loop": false,
+"name": &"open_cabinet",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_72cyi"]
+size = Vector2(14, 28)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_asfq2"]
+size = Vector2(12, 32)
+
+[node name="Cabinet" type="StaticBody2D"]
+script = ExtResource("1_raxka")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_3olf0")
+animation = &"close_cabinet"
+autoplay = "default"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -2)
+shape = SubResource("RectangleShape2D_72cyi")
+
+[node name="InteractableComponent" parent="." instance=ExtResource("3_2yhru")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractableComponent"]
+position = Vector2(0, 1)
+shape = SubResource("RectangleShape2D_asfq2")
+debug_color = Color(0.870157, 0.237194, 0.648971, 0.42)
