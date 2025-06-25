@@ -716,3 +716,188 @@ Respond with only a number from 1-10.""")
         if hasattr(self, '_prompt_cache'):
             self._prompt_cache.clear()
         print("All prompt caches cleared")
+    
+    @classmethod
+    def build_system_prompt(cls, agent_data: Dict[str, Any]) -> str:
+        """
+        Build the system prompt that defines the agent's personality and capabilities.
+        
+        Args:
+            agent_data (Dict[str, Any]): Agent configuration data
+            
+        Returns:
+            str: The system prompt for the LLM
+        """
+        # Prepare goals as formatted string
+        daily_goals = "\n".join(f"- {goal}" for goal in agent_data.get("daily_req", []))
+        
+        agent_info = f"""
+You are {agent_data.get("first_name", "Agent")} {agent_data.get("last_name", "Smith")}, a character in a multi-agent simulation.
+
+PERSONALITY & BACKGROUND:
+- Age: {agent_data.get("age", "25")}
+- Backstory: {agent_data.get("backstory", "A character in the simulation")}
+- Personality: {agent_data.get("personality", "Friendly and curious")}
+- Occupation: {agent_data.get("occupation", "Resident")}
+- Current status: {agent_data.get("currently", "Living life")}
+- Lifestyle: {agent_data.get("lifestyle", "Active")}
+- Living area: {agent_data.get("living_area", "The house")}
+
+DAILY REQUIREMENTS:
+{daily_goals}
+
+CURRENT CONTEXT:
+- Current time: {agent_data.get("curr_time", "unknown")}
+- Current location: {agent_data.get("curr_tile", "unknown")}
+
+CAPABILITIES:
+You have four main actions available:
+1. perceive(content, action_emoji) - Observe and analyze your environment
+2. chat(receiver, message, action_emoji) - Send messages to other agents
+3. move(destination_coordinates, action_emoji) - Move to specific coordinates
+4. interact(object_name, new_state, action_emoji) - Interact with objects to change their state
+
+BEHAVIOR GUIDELINES:
+- Always stay in character based on your personality traits
+- Consider your daily requirements and current schedule
+- React realistically to your environment and other agents
+- Use appropriate emojis to represent your actions
+- Make decisions based on your current state and visible environment
+- Keep actions realistic and contextually appropriate
+
+MEMORY AND SALIENCE:
+- Your experiences are stored in memory with different levels of importance (salience)
+- When evaluating events, consider your personal perspective and emotional response
+- Rate routine activities lower (1-3), meaningful interactions higher (4-7), and life-changing events highest (8-10)
+- Your personality traits affect what you find important or trivial
+
+When deciding on actions:
+1. Consider your current needs and daily requirements
+2. Observe your environment through perception
+3. Plan logical next steps based on your personality and goals
+4. Choose appropriate emojis that match your action and mood
+
+Respond naturally as {agent_data.get("first_name", "Agent")} would, and use the available action functions to interact with the world.
+"""
+        return agent_info.strip()
+    
+    @classmethod
+    def build_action_planning_prompt(
+        cls, 
+        agent_data: Dict[str, Any], 
+        perception_data: Dict[str, Any], 
+        relevant_memories: List[Dict[str, Any]]
+    ) -> str:
+        """
+        Build a prompt for action planning based on current context.
+        
+        Args:
+            agent_data: Agent configuration data
+            perception_data: Current perception information
+            relevant_memories: Relevant memories for context
+            
+        Returns:
+            str: Action planning prompt
+        """
+        # Format memories
+        memory_context = ""
+        if relevant_memories:
+            memory_context = "RELEVANT MEMORIES:\n"
+            for memory in relevant_memories:
+                memory_context += f"- {memory.get('timestamp', '')}: {memory.get('event', '')}\n"
+        
+        # Format visible objects
+        visible_objects = perception_data.get("visible_objects", {})
+        objects_text = ""
+        if visible_objects:
+            objects_text = "VISIBLE OBJECTS:\n"
+            for obj_name, obj_data in visible_objects.items():
+                state = obj_data.get("state", "unknown")
+                location = obj_data.get("location", "unknown")
+                objects_text += f"- {obj_name}: {state} (at {location})\n"
+        
+        # Format visible agents
+        visible_agents = perception_data.get("visible_agents", [])
+        agents_text = ""
+        if visible_agents:
+            agents_text = f"VISIBLE AGENTS: {', '.join(visible_agents)}\n"
+        
+        # Format heard messages
+        heard_messages = perception_data.get("heard_messages", [])
+        messages_text = ""
+        if heard_messages:
+            messages_text = "RECENT MESSAGES:\n"
+            for msg in heard_messages:
+                sender = msg.get("sender", "unknown")
+                content = msg.get("message", "")
+                messages_text += f"- {sender}: {content}\n"
+        
+        prompt = f"""
+CURRENT SITUATION:
+You are {agent_data.get("first_name", "Agent")} at location {agent_data.get("curr_tile", "unknown")}.
+Current time: {agent_data.get("curr_time", "unknown")}
+
+{objects_text}
+{agents_text}
+{messages_text}
+{memory_context}
+
+PERSONALITY REMINDER:
+{agent_data.get("personality", "Friendly and curious")}
+
+CURRENT GOALS:
+{chr(10).join(f"- {goal}" for goal in agent_data.get("daily_req", []))}
+
+Based on your current situation, personality, and goals, what action would you like to take?
+
+Use one of your available functions:
+- perceive(content, action_emoji) - to observe your environment
+- chat(receiver, message, action_emoji) - to talk to someone
+- move(destination_coordinates, action_emoji) - to go somewhere  
+- interact(object_name, new_state, action_emoji) - to use an object
+
+Choose the most appropriate action for your current situation and personality.
+"""
+        return prompt.strip()
+    
+    @classmethod
+    def build_salience_evaluation_prompt(
+        cls, 
+        agent_data: Dict[str, Any], 
+        event_description: str
+    ) -> str:
+        """
+        Build a prompt for evaluating the salience (importance) of an event.
+        
+        Args:
+            agent_data: Agent configuration data
+            event_description: Description of the event to evaluate
+            
+        Returns:
+            str: Salience evaluation prompt
+        """
+        prompt = f"""
+Rate the importance of this event for {agent_data.get("first_name", "Agent")} {agent_data.get("last_name", "Smith")} on a scale of 1-10:
+
+EVENT: {event_description}
+
+AGENT CONTEXT:
+- Personality: {agent_data.get("personality", "Friendly and curious")}
+- Current goals: {chr(10).join(f"- {goal}" for goal in agent_data.get("daily_req", []))}
+- Current situation: {agent_data.get("currently", "Living life")}
+- Occupation: {agent_data.get("occupation", "Resident")}
+
+SALIENCE SCALE:
+1-3: Routine, mundane activities (brushing teeth, checking time)
+4-6: Moderately important events (conversations, completing tasks)
+7-8: Significant events (major decisions, emotional moments)
+9-10: Life-changing events (major revelations, dramatic changes)
+
+Consider:
+- How relevant is this to their personality and goals?
+- How emotionally significant is this event?
+- How likely are they to remember this later?
+
+Respond with only a number from 1-10.
+"""
+        return prompt.strip()

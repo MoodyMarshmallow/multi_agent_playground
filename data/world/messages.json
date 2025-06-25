@@ -142,5 +142,17 @@
       0
     ],
     "delivered": true
+  },
+  {
+    "sender": "alan_002",
+    "receiver": "alex_001",
+    "message": "Nice day!",
+    "timestamp": "25T15:13:25",
+    "conversation_id": "4c847c3e-cc66-a80f-e1bc-8596c8b0cf34",
+    "location": [
+      0,
+      0
+    ],
+    "delivered": false
   }
 ]
