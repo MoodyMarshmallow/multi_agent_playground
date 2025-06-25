@@ -23,10 +23,10 @@ Version: 1.0.0
 # Server components
 from .server.controller import plan_next_action
 
-# Character agent system
-from .character_agent.agent import Agent
-from .character_agent.actions import ActionsMixin
-from .character_agent.kani_agent import LLMAgent
+# Character agent system - using arush_llm
+from .arush_llm.integration.character_agent_adapter import CharacterAgentAdapter as Agent
+from .character_agent.actions import ActionsMixin  # Keep for action interfaces
+from .character_agent.kani_agent import LLMAgent    # Keep for LLM interfaces
 
 # Configuration
 from .config.llm_config import LLMConfig

@@ -109,9 +109,9 @@ class LRUCache:
         return False
     
     def clear(self) -> None:
-        """Clear all cached items with O(1) time complexity."""
-        self._cache.clear()
+        """Clear all items from the cache."""
         self.cache.clear()
+        self._cache.clear()
     
     def size(self) -> int:
         """Get current cache size with O(1) time complexity."""
@@ -142,6 +142,11 @@ class LRUCache:
             self.cache.pop(key, None)
         
         return len(expired_keys)
+
+    @property
+    def size(self) -> int:
+        """Return current cache size."""
+        return len(self.cache)
 
 
 class AgentDataCache:

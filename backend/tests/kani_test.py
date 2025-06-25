@@ -19,10 +19,10 @@ backend_dir = Path(__file__).parent.parent
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
-from character_agent.kani_agent import LLMAgent
-from backend.character_agent.agent_manager import call_llm_agent, call_llm_for_action, clear_all_llm_agents
-from character_agent.agent import Agent
-from config.llm_config import LLMConfig
+from backend.character_agent.kani_agent import LLMAgent
+from backend.arush_llm.integration.character_agent_adapter import call_llm_agent, clear_all_llm_agents
+from backend.arush_llm.integration.character_agent_adapter import CharacterAgentAdapter as Agent
+from backend.config.llm_config import LLMConfig
 
 
 def check_prerequisites():

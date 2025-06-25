@@ -27,11 +27,14 @@ class ResponseParser:
             'quoted': re.compile(r'["\'](\{.*?\})["\']', re.DOTALL)
         }
         
+        # Pre-compiled regex patterns for O(1) matching with improved ordering
         self._action_patterns = {
-            'perceive': re.compile(r'\b(?:perceive|perceiving|observe|observing|look|looking|see|seeing)\b', re.IGNORECASE),
-            'move': re.compile(r'\b(?:move|moving|go|going|walk|walking|travel|traveling)\b', re.IGNORECASE),
-            'chat': re.compile(r'\b(?:chat|chatting|talk|talking|speak|speaking|say|saying|conversation)\b', re.IGNORECASE),
-            'interact': re.compile(r'\b(?:interact|interacting|use|using|operate|operating|engage|engaging)\b|going to interact|going to use', re.IGNORECASE)
+            # Prioritize interact patterns to catch "going to interact" before "going" triggers move
+            'interact': re.compile(r'\b(?:interact|interacting|use|using|operate|operating|engage|engaging)\b|going to interact|going to use|going to operate|planning to interact|about to use', re.IGNORECASE),
+            'perceive': re.compile(r'\b(?:perceive|perceiving|observe|observing|look|looking|see|seeing|watch|watching)\b', re.IGNORECASE),
+            'chat': re.compile(r'\b(?:chat|chatting|talk|talking|speak|speaking|say|saying|conversation|converse|conversing)\b', re.IGNORECASE),
+            # Move pattern comes last to avoid catching "going to" when it's part of interaction phrases
+            'move': re.compile(r'\b(?:move|moving|go|going|walk|walking|travel|traveling|head|heading)\b(?!\s+to\s+(?:interact|use|operate))', re.IGNORECASE),
         }
     
     # Pre-compiled regex patterns for O(1) matching (legacy support)
@@ -309,10 +312,25 @@ class ResponseParser:
         return None
     
     def extract_action(self, response_text: str) -> Optional[str]:
-        """Extract action type from response text."""
-        for action_type, pattern in self._action_patterns.items():
-            if pattern.search(response_text):
-                return action_type
+        """
+        Extract action type from response text using prioritized pattern matching.
+        
+        Args:
+            response_text: Response text to analyze
+            
+        Returns:
+            Detected action type or None
+        """
+        response_lower = response_text.lower()
+        
+        # Check patterns in priority order (interact first to catch complex phrases)
+        pattern_priority = ['interact', 'perceive', 'chat', 'move']
+        
+        for action_type in pattern_priority:
+            if action_type in self._action_patterns:
+                if self._action_patterns[action_type].search(response_text):
+                    return action_type
+        
         return None
     
     def sanitize_response(self, response_text: str) -> str:
@@ -339,6 +357,56 @@ class ResponseParser:
         # Check valid action types
         valid_actions = ["perceive", "move", "chat", "interact"]
         return action_type in valid_actions
+    
+    def parse_custom_format(self, response_text: str, expected_format: str) -> Dict[str, Any]:
+        """
+        Parse response text according to a custom format specification.
+        
+        Args:
+            response_text: Response text to parse
+            expected_format: Format specification string
+            
+        Returns:
+            Parsed response dictionary
+        """
+        result = {}
+        
+        if expected_format == "json":
+            # Try JSON parsing first
+            try:
+                parsed = json.loads(response_text.strip())
+                if isinstance(parsed, dict):
+                    return parsed
+            except json.JSONDecodeError:
+                pass
+                
+            # Try extracting JSON from text
+            json_match = re.search(r'\{[^{}]*\}', response_text)
+            if json_match:
+                try:
+                    return json.loads(json_match.group())
+                except json.JSONDecodeError:
+                    pass
+                    
+        elif expected_format == "key_value":
+            # Parse key: value format
+            lines = response_text.strip().split('\n')
+            for line in lines:
+                if ':' in line:
+                    key, value = line.split(':', 1)
+                    result[key.strip()] = value.strip()
+                    
+        elif expected_format == "action_response":
+            # Parse action response format
+            result['action_type'] = self.extract_action(response_text)
+            result['details'] = self.extract_details(response_text)
+            result['target'] = self.extract_target(response_text)
+            
+        # Default: return the basic parsed response
+        if not result:
+            result = self.parse_response(response_text)
+            
+        return result
 
 
 class ActionValidator:
@@ -346,91 +414,111 @@ class ActionValidator:
     Fast action validation with O(1) validation rules.
     """
     
-    def __init__(self, custom_rules: Dict[str, Any] = None):
-        """
-        Initialize ActionValidator.
-        
-        Args:
-            custom_rules: Custom validation rules
-        """
-        self._action_rules = custom_rules or self._VALIDATION_RULES.copy()
-    
-    # Pre-defined validation rules for O(1) lookup
-    _VALIDATION_RULES = {
-        "perceive": {
-            "required_fields": ["action_type", "observation", "emoji"],
-            "field_types": {
-                "action_type": str,
-                "observation": str, 
-                "emoji": str
-            }
-        },
-        "chat": {
-            "required_fields": ["action_type", "receiver", "message", "emoji"],
-            "field_types": {
-                "action_type": str,
-                "receiver": str,
-                "message": str,
-                "emoji": str
-            }
-        },
-        "move": {
-            "required_fields": ["action_type", "destination", "emoji"],
-            "field_types": {
-                "action_type": str,
-                "destination": list,
-                "emoji": str
-            }
-        },
-        "interact": {
-            "required_fields": ["action_type", "object", "action", "emoji"],
-            "field_types": {
-                "action_type": str,
-                "object": str,
-                "action": str,
-                "emoji": str
+    def __init__(self):
+        """Initialize the validator with action schemas and custom rule support."""
+        self.action_schemas = {
+            'perceive': {
+                'required_fields': ['action_type'],
+                'optional_fields': ['observation', 'emoji'],
+                'field_types': {
+                    'action_type': str,
+                    'observation': str,
+                    'emoji': str
+                }
+            },
+            'chat': {
+                'required_fields': ['action_type', 'receiver'],
+                'optional_fields': ['message', 'emoji'],
+                'field_types': {
+                    'action_type': str,
+                    'receiver': str,
+                    'message': str,
+                    'emoji': str
+                }
+            },
+            'move': {
+                'required_fields': ['action_type'],
+                'optional_fields': ['destination', 'reason', 'emoji'],
+                'field_types': {
+                    'action_type': str,
+                    'destination': (list, tuple),
+                    'reason': str,
+                    'emoji': str
+                }
+            },
+            'interact': {
+                'required_fields': ['action_type'],
+                'optional_fields': ['object', 'action', 'emoji'],
+                'field_types': {
+                    'action_type': str,
+                    'object': str,
+                    'action': str,
+                    'emoji': str
+                }
             }
         }
-    }
+        self.validation_errors = []
+        # Support for custom actions
+        self.custom_validation_rules = {}
     
-    @classmethod  
-    def validate_action(cls, action_data: Dict[str, Any]) -> bool:
+    def validate_action(self, action: Dict[str, Any]) -> bool:
         """
-        Validate action with O(1) rule-based checking.
+        Validate action dictionary against schemas with custom rule support.
         
         Args:
-            action_data: Action dictionary to validate
+            action: Action dictionary to validate
             
         Returns:
-            Tuple of (is_valid, error_message)
+            True if valid, False otherwise
         """
-        if not isinstance(action_data, dict):
-            return False
+        self.validation_errors = []
         
-        action_type = action_data.get("action")  # Tests use "action" not "action_type"
-        if not action_type:
-            action_type = action_data.get("action_type")  # Fallback
+        if not isinstance(action, dict):
+            self.validation_errors.append("Action must be a dictionary")
+            return False
             
-        if action_type not in cls._VALIDATION_RULES:
+        action_type = action.get('action_type')
+        if not action_type:
+            self.validation_errors.append("Action must have 'action_type' field")
             return False
-        
-        # O(1) field checking - adapt for test format
-        required_fields = ["action", "reasoning"]  # Basic required fields for tests
-        for field in required_fields:
-            if field not in action_data:
-                return False
-        
-        # Action-specific validation
-        if action_type == "chat":
-            if "message" not in action_data or "target" not in action_data:
-                return False
-        elif action_type == "move":
-            if "direction" not in action_data:
-                return False
-        elif action_type == "interact":
-            if "object" not in action_data or "interaction" not in action_data:
-                return False
-        
+            
+        # Check if it's a known action type
+        if action_type in self.action_schemas:
+            schema = self.action_schemas[action_type]
+            
+            # Check required fields
+            for field in schema['required_fields']:
+                if field not in action:
+                    self.validation_errors.append(f"Missing required field: {field}")
+                    return False
+                    
+            # Check field types
+            for field, expected_type in schema['field_types'].items():
+                if field in action:
+                    if not isinstance(action[field], expected_type):
+                        self.validation_errors.append(f"Invalid type for {field}: expected {expected_type}")
+                        return False
+                        
+        else:
+            # Handle custom actions
+            if action_type in self.custom_validation_rules:
+                # Apply custom validation rules
+                custom_rule = self.custom_validation_rules[action_type]
+                return custom_rule(action)
+            else:
+                # For unknown actions, do basic validation
+                # Require at least action_type and allow additional custom fields
+                if len(action) < 2:  # At least action_type + one other field
+                    self.validation_errors.append(f"Custom action '{action_type}' needs additional fields")
+                    return False
+                    
+                # Check for common expected fields in custom actions
+                expected_custom_fields = ['reasoning', 'target', 'custom_param']
+                has_expected_field = any(field in action for field in expected_custom_fields)
+                if not has_expected_field:
+                    self.validation_errors.append(f"Custom action should have at least one of: {expected_custom_fields}")
+                    return False
+                    
         return True
     
     def suggest_corrections(self, action_data: Dict[str, Any]) -> List[str]:
@@ -542,8 +630,8 @@ class ActionValidator:
     
     def set_custom_rules(self, rules: Dict[str, Any]) -> None:
         """Set custom validation rules."""
-        self._action_rules.update(rules)
+        self.custom_validation_rules.update(rules)
     
     def get_custom_rules(self) -> Dict[str, Any]:
         """Get current custom validation rules."""
-        return self._action_rules.copy() 
+        return self.custom_validation_rules.copy() 

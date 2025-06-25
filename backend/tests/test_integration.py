@@ -11,9 +11,9 @@ backend_dir = Path(__file__).parent.parent  # Go up one level from tests/ to bac
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
-from character_agent.agent import Agent
-from config.schema import AgentActionInput, AgentPerception, MoveFrontendAction
-from server.controller import confirm_action_and_update
+from backend.arush_llm.integration.character_agent_adapter import CharacterAgentAdapter as Agent
+from backend.config.schema import AgentActionInput, AgentPerception, MoveFrontendAction
+from backend.server.controller import confirm_action_and_update
 
 def test_integration():
     """Test the salience evaluation integration"""
