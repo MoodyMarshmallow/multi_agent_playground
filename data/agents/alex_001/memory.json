@@ -121,5 +121,89 @@
     ],
     "event": "Sent message to alan_002: 'I'm here, Alan! Ready to catch up outside. \ud83d\ude0a'",
     "salience": 3
+  },
+  {
+    "timestamp": "01T00:28:41",
+    "location": "unknown location",
+    "event": "I saw these people: alan_002",
+    "salience": 3
+  },
+  {
+    "timestamp": "01T00:38:12",
+    "location": "unknown location",
+    "event": "I saw these people: alan_002",
+    "salience": 2
+  },
+  {
+    "timestamp": "01T00:44:32",
+    "location": "unknown location",
+    "event": "I moved to position (32, 12). I saw these people: alan_002",
+    "salience": 3
+  },
+  {
+    "timestamp": "01T00:38:24",
+    "location": "unknown location",
+    "event": "I saw these people: alan_002",
+    "salience": 3
+  },
+  {
+    "timestamp": "01T00:27:31",
+    "location": "unknown location",
+    "event": "I looked around and observed my surroundings. I saw these people: alan_002",
+    "salience": 2
+  },
+  {
+    "timestamp": "01T00:20:50",
+    "location": "unknown location",
+    "event": "I moved to position (24, 15). I saw these people: alan_002. I heard alan_002 say to alex_001: 'Hey Alex! It's great running into you again. I do have some ideas for the garden, maybe we can discuss them over coffee sometime? \ud83c\udf31'",
+    "salience": 5
+  },
+  {
+    "timestamp": "01T00:22:43",
+    "location": "unknown location",
+    "event": "I moved to position (22, 10). I saw these people: alan_002",
+    "salience": 3
+  },
+  {
+    "timestamp": "01T00:11:58",
+    "location": "unknown location",
+    "event": "I saw these people: alan_002. I heard alan_002 say to alex_001: 'Hey Alex! How's everything going here? \ud83d\ude0a'",
+    "salience": 4
+  },
+  {
+    "timestamp": "01T00:05:00",
+    "location": [
+      22,
+      8
+    ],
+    "event": "Received message from alan_002: 'Hey Alex! How's everything going here? \ud83d\ude0a'",
+    "salience": 4
+  },
+  {
+    "timestamp": "01T00:05:00",
+    "location": [
+      32,
+      12
+    ],
+    "event": "Sent message to alan_002: 'Hey Alan! I remember you mentioning some ideas for the garden. I'd love to hear more about them over coffee sometime. \ud83c\udf3f'",
+    "salience": 5
+  },
+  {
+    "timestamp": "01T00:29:44",
+    "location": "unknown location",
+    "event": "I looked around and observed my surroundings. I saw these people: alan_002",
+    "salience": 2
+  },
+  {
+    "timestamp": "01T00:39:34",
+    "location": "unknown location",
+    "event": "I moved to position (32, 12). I saw these people: alan_002",
+    "salience": 4
+  },
+  {
+    "timestamp": "01T00:38:57",
+    "location": "unknown location",
+    "event": "I moved to position (31, 13). I saw these people: alan_002. I heard alan_002 say to alex_001: 'Hey Alex, it's great to see you too! I'd be happy to chat about the garden ideas right now if you're free. \ud83d\ude0a'",
+    "salience": 6
   }
 ]

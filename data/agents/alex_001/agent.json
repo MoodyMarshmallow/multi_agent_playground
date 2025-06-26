@@ -1,9 +1,9 @@
 {
   "agent_id": "alex_001",
-  "curr_time": "01T00:42:53",
+  "curr_time": "01T00:38:57",
   "curr_tile": [
     22,
-    9
+    8
   ],
   "first_name": "Alex",
   "last_name": "Smith",
@@ -11,7 +11,7 @@
   "backstory": "Alex grew up in a small coastal town where her love for art was nurtured by her grandmother, a local painter. She studied fine arts at university and moved to the city to pursue her dream of becoming a professional artist. She has been working toward her first solo gallery show.",
   "personality": "Alex is highly creative and passionate about her work, often losing track of time when painting. She's introverted but warm, preferring deep conversations with close friends over large social gatherings. She can be perfectionistic about her art, which sometimes causes her stress.",
   "occupation": "Professional artist specializing in landscape paintings",
-  "currently": "I saw these people: alan_002. I heard alan_002 say to alex_001: 'Hey Alex, let's head outside and do some gardening together. It's a beautiful day for it! \ud83d\ude0a'",
+  "currently": "I moved to position (31, 13). I saw these people: alan_002. I heard alan_002 say to alex_001: 'Hey Alex, it's great to see you too! I'd be happy to chat about the garden ideas right now if you're free. \ud83d\ude0a'",
   "lifestyle": "artist",
   "daily_req": [
     "Work on her paintings for her upcoming show",

@@ -5,6 +5,10 @@ This file implements action functions for character agents.
 from typing import Annotated, Dict, Any, List
 from kani import ai_function
 import json
+import logging
+
+# Get logger for this module
+logger = logging.getLogger(__name__)
 
 class ActionsMixin:
     """
@@ -74,8 +78,8 @@ class ActionsMixin:
             "emoji": action_emoji
         }
         
-        # Print JSON for debugging/logging
-        print(f"Move action: {json.dumps(action_json, indent=2)}")
+        # Log JSON for debugging/logging
+        logger.debug(f"Move action: {json.dumps(action_json, indent=2)}")
         
         return action_json
     
@@ -141,8 +145,8 @@ class ActionsMixin:
             "emoji": action_emoji
         }
         
-        # Print JSON for debugging/logging
-        print(f"Interact action: {json.dumps(action_json, indent=2)}")
+        # Log JSON for debugging/logging
+        logger.debug(f"Interact action: {json.dumps(action_json, indent=2)}")
         
         return action_json
     
@@ -204,8 +208,8 @@ class ActionsMixin:
             "emoji": action_emoji
         }
         
-        # Print JSON for debugging/logging
-        print(f"Chat action: {json.dumps(action_json, indent=2)}")
+        # Log JSON for debugging/logging
+        logger.debug(f"Chat action: {json.dumps(action_json, indent=2)}")
         
         return action_json
     
@@ -236,8 +240,8 @@ class ActionsMixin:
             "emoji": action_emoji
         }
         
-        # Print JSON for debugging/logging
-        print(f"Perceive action: {json.dumps(action_json, indent=2)}")
+        # Log JSON for debugging/logging
+        logger.debug(f"Perceive action: {json.dumps(action_json, indent=2)}")
         
         return action_json
         

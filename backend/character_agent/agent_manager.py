@@ -10,10 +10,13 @@ This module implements:
 """
 
 import asyncio
+import logging
 from typing import Dict, Any, Optional
 from .agent import Agent
 from .kani_agent import LLMAgent
 
+# Get logger for this module
+logger = logging.getLogger(__name__)
 
 class LLMAgentManager:
     """
@@ -45,10 +48,10 @@ class LLMAgentManager:
             
             # Create and store new LLMAgent
             self._agents[agent_id] = LLMAgent(agent, api_key)
-            print(f"Created new LLMAgent for agent_id: {agent_id}")
+            logger.info(f"Created new LLMAgent for agent_id: {agent_id}")
         else:
             # Reuse existing agent (data is already loaded)
-            print(f"Reusing existing LLMAgent for agent_id: {agent_id}")
+            logger.debug(f"Reusing existing LLMAgent for agent_id: {agent_id}")
             
         return self._agents[agent_id]
     
@@ -61,14 +64,14 @@ class LLMAgentManager:
         """
         if agent_id in self._agents:
             del self._agents[agent_id]
-            print(f"Removed LLMAgent for agent_id: {agent_id}")
+            logger.info(f"Removed LLMAgent for agent_id: {agent_id}")
     
     def clear_all_agents(self):
         """
         Clear all agents from the manager.
         """
         self._agents.clear()
-        print("Cleared all LLMAgents from manager")
+        logger.info("Cleared all LLMAgents from manager")
     
     def get_active_agent_count(self) -> int:
         """

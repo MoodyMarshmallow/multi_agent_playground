@@ -1,9 +1,39 @@
+"""
+Multi-Agent Playground - Logging Configuration
+=============================================
+
+This module provides comprehensive logging setup for the Multi-Agent Playground backend.
+It includes:
+
+1. **Centralized Logging Setup**: Configures root logger with file and console handlers
+2. **Kani Library Integration**: Pretty-prints Kani LLM logs for better readability
+3. **Utility Functions**: Helper functions for logging agent actions, perceptions, etc.
+
+Key Features:
+- Debug logs go to debug.log file with detailed formatting
+- Console shows only INFO and above for clean development experience
+- Kani logs with long content are automatically pretty-printed
+- External library noise is filtered out
+- Comprehensive utility functions for agent-specific logging
+
+Usage:
+    from backend.logging import setup_logging, log_agent_action
+    
+    # Set up logging (call once at startup)
+    setup_logging()
+    
+    # Use utility functions for clean logging
+    log_agent_action("agent_001", "move", {"from": [1,1], "to": [2,2]})
+"""
+
 import logging
 import json
 import pprint
 from typing import Dict, Any, Optional
+import re
 
 def setup_logging():
+    """Set up comprehensive logging for the Multi-Agent Playground backend."""
     # Create formatters with better spacing
     detailed_formatter = logging.Formatter(
         "\n%(asctime)s [%(levelname)s] %(name)s.%(funcName)s:\n%(message)s\n"
@@ -41,8 +71,134 @@ def setup_logging():
     
     # Filter out kani library verbose logs
     logging.getLogger("kani.get_prompt").setLevel(logging.WARNING)
-    logging.getLogger("kani.messages.get_model_completion").setLevel(logging.WARNING)
-    logging.getLogger("kani.do_function_call").setLevel(logging.WARNING)
+    
+    # Set up pretty-printing for Kani logs with long content
+    _setup_kani_pretty_handlers()
+
+def _setup_kani_pretty_handlers():
+    """Set up custom handlers for pretty-printing Kani logs with long content."""
+    
+    # Handler for kani.messages logs (completion responses with long content)
+    class KaniMessagesPrettyHandler(logging.Handler):
+        def emit(self, record):
+            msg = record.getMessage()
+            # Only pretty-print if the message contains content with \n
+            if 'content="' in msg and '\\n' in msg:
+                match = re.search(r'role=(.*?) content="(.*?)"', msg)
+                if match:
+                    role = match.group(1)
+                    content = match.group(2)
+                    indented_content = "\n    ".join(content.split("\\n"))
+                    indented_content = "    " + indented_content
+                    # Create a new record with pretty content
+                    pretty_record = logging.LogRecord(
+                        name="kani.messages.pretty",
+                        level=record.levelno,
+                        pathname=record.pathname,
+                        lineno=record.lineno,
+                        msg=f"[KANI] role: {role}\ncontent:\n{indented_content}",
+                        args=(),
+                        exc_info=None
+                    )
+                    pretty_record.asctime = getattr(record, 'asctime', record.created)
+                    # Let the root logger handle this record
+                    logging.getLogger().handle(pretty_record)
+                    return  # Don't let the original log through
+            # For logs without \n, let them pass through normally
+    
+    # Handler for agent tool call messages (from character_agent loggers)
+    class AgentToolCallPrettyHandler(logging.Handler):
+        def emit(self, record):
+            msg = record.getMessage()
+            # Pretty-print tool call messages from agent code
+            if 'Received message:' in msg and 'tool_calls=[' in msg and 'ToolCall(' in msg:
+                # Extract the tool call information
+                tool_call_match = re.search(r'tool_calls=\[(.*?)\]', msg)
+                if tool_call_match:
+                    tool_call_str = tool_call_match.group(1)
+                    # Parse the tool call details
+                    func_match = re.search(r"FunctionCall\(name='([^']+)', arguments='([^']+)'\)", tool_call_str)
+                    if func_match:
+                        func_name = func_match.group(1)
+                        func_args = func_match.group(2)
+                        try:
+                            # Parse and pretty-print the arguments
+                            args_dict = json.loads(func_args)
+                            pretty_args = json.dumps(args_dict, indent=4, ensure_ascii=False)
+                        except:
+                            pretty_args = func_args
+                        
+                        # Create a new record with pretty content
+                        pretty_record = logging.LogRecord(
+                            name="agent.toolcall.pretty",
+                            level=record.levelno,
+                            pathname=record.pathname,
+                            lineno=record.lineno,
+                            msg=f"[AGENT TOOL CALL]\n  Function: {func_name}\n  Arguments:\n{pretty_args}",
+                            args=(),
+                            exc_info=None
+                        )
+                        pretty_record.asctime = getattr(record, 'asctime', record.created)
+                        # Let the root logger handle this record
+                        logging.getLogger().handle(pretty_record)
+                        return  # Don't let the original log through
+            # For logs without tool calls, let them pass through normally
+    
+    # Handler for kani tool call messages
+    class KaniToolCallPrettyHandler(logging.Handler):
+        def emit(self, record):
+            msg = record.getMessage()
+            # Pretty-print tool call messages
+            if 'tool_calls=[' in msg and 'ToolCall(' in msg:
+                # Extract the tool call information
+                tool_call_match = re.search(r'tool_calls=\[(.*?)\]', msg)
+                if tool_call_match:
+                    tool_call_str = tool_call_match.group(1)
+                    # Parse the tool call details
+                    func_match = re.search(r"FunctionCall\(name='([^']+)', arguments='([^']+)'\)", tool_call_str)
+                    if func_match:
+                        func_name = func_match.group(1)
+                        func_args = func_match.group(2)
+                        try:
+                            # Parse and pretty-print the arguments
+                            args_dict = json.loads(func_args)
+                            pretty_args = json.dumps(args_dict, indent=4, ensure_ascii=False)
+                        except:
+                            pretty_args = func_args
+                        
+                        # Create a new record with pretty content
+                        pretty_record = logging.LogRecord(
+                            name="kani.toolcall.pretty",
+                            level=record.levelno,
+                            pathname=record.pathname,
+                            lineno=record.lineno,
+                            msg=f"[KANI TOOL CALL]\n  Function: {func_name}\n  Arguments:\n{pretty_args}",
+                            args=(),
+                            exc_info=None
+                        )
+                        pretty_record.asctime = getattr(record, 'asctime', record.created)
+                        # Let the root logger handle this record
+                        logging.getLogger().handle(pretty_record)
+                        return  # Don't let the original log through
+            # For logs without tool calls, let them pass through normally
+    
+    # Configure kani.messages logger
+    kani_messages_logger = logging.getLogger("kani.messages")
+    kani_messages_logger.handlers = []
+    kani_messages_logger.addHandler(KaniMessagesPrettyHandler())
+    kani_messages_logger.propagate = False
+    
+    # Configure kani logger for tool calls
+    kani_logger = logging.getLogger("kani")
+    kani_logger.handlers = []
+    kani_logger.addHandler(KaniToolCallPrettyHandler())
+    kani_logger.propagate = False
+    
+    # Configure character_agent loggers for tool calls
+    character_agent_logger = logging.getLogger("character_agent")
+    character_agent_logger.handlers = []
+    character_agent_logger.addHandler(AgentToolCallPrettyHandler())
+    character_agent_logger.propagate = False
 
 def log_agent_action(agent_id: str, action_type: str, details: Dict[str, Any]):
     """Clean, readable logging for agent actions"""
@@ -52,7 +208,7 @@ def log_agent_action(agent_id: str, action_type: str, details: Dict[str, Any]):
     if action_type == "chat":
         message = details.get('message', '')
         receiver = details.get('receiver', 'unknown')
-        logger.info(f"[Agent {agent_id}] Chat Details:\n  To: {receiver}\n  Message: '{message[:50]}{'...' if len(message) > 50 else ''}'")
+        logger.info(f"[Agent {agent_id}] Chat Details:\n  To: {receiver}\n  Message: '{message}'")
     elif action_type == "move":
         from_tile = details.get('from_tile', 'unknown')
         to_tile = details.get('to_tile', 'unknown')
@@ -79,16 +235,6 @@ def log_perception(agent_id: str, perception: Dict[str, Any]):
     if perception.get('heard_messages'):
         logger.debug("  Heard messages:\n%s", json.dumps(perception.get('heard_messages', []), indent=4))
 
-def log_tool_call(agent_id: str, tool_call: Any):
-    """Log tool calls in readable format"""
-    logger = logging.getLogger(__name__)
-    
-    try:
-        args = json.loads(tool_call.function.arguments) if tool_call.function.arguments else {}
-        logger.debug(f"[Agent {agent_id}] Tool Call:\n  Name: {tool_call.function.name}\n  Arguments:\n%s", json.dumps(args, indent=4))
-    except Exception as e:
-        logger.debug(f"[Agent {agent_id}] Tool Call:\n  Name: {tool_call.function.name}\n  Error parsing args: {e}")
-
 def log_full_debug(obj: Any, context: str, agent_id: Optional[str] = None):
     """Full debug dump when needed"""
     logger = logging.getLogger(__name__)
@@ -100,7 +246,7 @@ def log_full_debug(obj: Any, context: str, agent_id: Optional[str] = None):
 def log_conversation_flow(sender: str, receiver: str, message: str, conversation_id: str):
     """Log conversation flow in readable format"""
     logger = logging.getLogger(__name__)
-    logger.info(f"[Chat] Flow Details:\n  From: {sender}\n  To: {receiver}\n  Message: '{message[:50]}{'...' if len(message) > 50 else ''}'\n  Conversation ID: {conversation_id[:8]}")
+    logger.info(f"[Chat] Flow Details:\n  From: {sender}\n  To: {receiver}\n  Message: '{message}'\n  Conversation ID: {conversation_id[:8]}")
 
 def log_queue_status(queue_size: int, operation: str):
     """Log message queue status"""
@@ -110,4 +256,4 @@ def log_queue_status(queue_size: int, operation: str):
 def log_salience_evaluation(agent_id: str, event: str, salience: int):
     """Log salience evaluation results in a clean format"""
     logger = logging.getLogger(__name__)
-    logger.debug(f"[Salience] Evaluation:\n  Agent: {agent_id}\n  Event: '{event[:80]}{'...' if len(event) > 80 else ''}'\n  Score: {salience}/10") 
+    logger.debug(f"[Salience] Evaluation:\n  Agent: {agent_id}\n  Event: '{event}'\n  Score: {salience}/10") 
