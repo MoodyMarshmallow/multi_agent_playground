@@ -1,4 +1,5 @@
 class_name House_Layout
+extends Node
 
 enum Rooms {
 	none,
@@ -24,7 +25,7 @@ var laundry_room: Room = Room.new()
 var game_room: Room = Room.new()
 
 # Initialize the room data
-func _static():
+func _ready():
 	_set_up_rooms()
 
 func _set_up_rooms():
@@ -38,6 +39,7 @@ func _set_up_rooms():
 	_set_up_game_room()
 
 func _set_up_bedroom():
+	bedroom.name = "bedroom"
 	bedroom.corners.ul = Vector2i(0, 0)
 	bedroom.corners.ur = Vector2i(18, 0)
 	bedroom.corners.dl = Vector2i(0, 8)
@@ -80,6 +82,7 @@ func _set_up_bedroom():
 	bedroom.occupied_positions = {}
 
 func _set_up_bathroom():
+	bathroom.name = "bathroom"
 	bathroom.corners.ul = Vector2i(19, 2)
 	bathroom.corners.ur = Vector2i(30, 2)
 	bathroom.corners.dl = Vector2i(19, 5)
@@ -127,6 +130,7 @@ func _set_up_bathroom():
 	bathroom.occupied_positions = {}
 
 func _set_up_kitchen():
+	kitchen.name = "kitchen"
 	kitchen.corners.ul = Vector2i(0, 10)
 	kitchen.corners.ur = Vector2i(11, 10)
 	kitchen.corners.dl = Vector2i(0, 14)
@@ -174,6 +178,7 @@ func _set_up_kitchen():
 	kitchen.occupied_positions = {}
 
 func _set_up_entry_room():
+	entry_room.name = "entry_room"
 	entry_room.corners.ul = Vector2i(3, 19)
 	entry_room.corners.ur = Vector2i(9, 19)
 	entry_room.corners.dl = Vector2i(3, 22)
@@ -189,6 +194,7 @@ func _set_up_entry_room():
 	entry_room.occupied_positions = {}
 
 func _set_up_dining_room():
+	dining_room.name = "dining_room"
 	dining_room.corners.ul = Vector2i(12, 10)
 	dining_room.corners.ur = Vector2i(18, 10)
 	dining_room.corners.dl = Vector2i(12, 19)
@@ -204,6 +210,7 @@ func _set_up_dining_room():
 	dining_room.occupied_positions = {}
 
 func _set_up_living_room():
+	living_room.name = "living_room"
 	living_room.corners.ul = Vector2i(18, 13)
 	living_room.corners.ur = Vector2i(25, 13)
 	living_room.corners.dl = Vector2i(18, 19)
@@ -219,6 +226,7 @@ func _set_up_living_room():
 	living_room.occupied_positions = {}
 
 func _set_up_laundry_room():
+	laundry_room.name = "laundry_room"
 	laundry_room.corners.ul = Vector2i(19, 7)
 	laundry_room.corners.ur = Vector2i(24, 7)
 	laundry_room.corners.dl = Vector2i(19, 11)
@@ -234,6 +242,7 @@ func _set_up_laundry_room():
 	laundry_room.occupied_positions = {}
 
 func _set_up_game_room():
+	game_room.name = "game_room"
 	game_room.corners.ul = Vector2i(25, 7)
 	game_room.corners.ur = Vector2i(30, 7)
 	game_room.corners.dl = Vector2i(25, 19)
@@ -247,3 +256,69 @@ func _set_up_game_room():
 	}
 	game_room.idle_positions = {}
 	game_room.occupied_positions = {}
+
+# Helper: Checks if a tile is free of colliders
+func _is_tile_free(tile: Vector2i) -> bool:
+	var world = get_tree().current_scene.get_world_2d()
+	if not world:
+		return false
+	var space_state = world.direct_space_state
+	var query = PhysicsPointQueryParameters2D.new()
+	query.position = tile * 16 + Vector2i(8, 8) # Center of tile
+	query.collision_mask = 1 # Adjust if needed
+	return space_state.intersect_point(query).is_empty()
+
+# Generic function for any room
+func _get_empty_position_in_room(room: Room) -> Vector2i:
+	var min_x = min(room.corners.ul.x, room.corners.dl.x)
+	var max_x = max(room.corners.ur.x, room.corners.dr.x)
+	var min_y = min(room.corners.ul.y, room.corners.ur.y)
+	var max_y = max(room.corners.dl.y, room.corners.dr.y)
+
+	# Compute center of the room
+	var center_x = int(round((min_x + max_x) / 2.0))
+	var center_y = int(round((min_y + max_y) / 2.0))
+	var center = Vector2i(center_x, center_y)
+
+	# Spiral search
+	var max_radius = floor((max(max_x - min_x, max_y - min_y)) / 2) + 1
+	for r in range(max_radius + 1):
+		for dx in range(-r, r + 1):
+			for dy in [-r, r]:
+				var tile = center + Vector2i(dx, dy)
+				if tile.x >= min_x and tile.x <= max_x and tile.y >= min_y and tile.y <= max_y:
+					if _is_tile_free(tile):
+						return tile
+		for dy in range(-r + 1, r):
+			for dx in [-r, r]:
+				var tile = center + Vector2i(dx, dy)
+				if tile.x >= min_x and tile.x <= max_x and tile.y >= min_y and tile.y <= max_y:
+					if _is_tile_free(tile):
+						return tile
+	print("ERROR: NO EMPTY TILE FOUND")
+	return Vector2i(-1, -1)
+
+# Per-room wrappers
+func get_empty_position_in_bedroom() -> Vector2i:
+	return _get_empty_position_in_room(bedroom)
+
+func get_empty_position_in_bathroom() -> Vector2i:
+	return _get_empty_position_in_room(bathroom)
+
+func get_empty_position_in_kitchen() -> Vector2i:
+	return _get_empty_position_in_room(kitchen)
+
+func get_empty_position_in_entry_room() -> Vector2i:
+	return _get_empty_position_in_room(entry_room)
+
+func get_empty_position_in_dining_room() -> Vector2i:
+	return _get_empty_position_in_room(dining_room)
+
+func get_empty_position_in_living_room() -> Vector2i:
+	return _get_empty_position_in_room(living_room)
+
+func get_empty_position_in_laundry_room() -> Vector2i:
+	return _get_empty_position_in_room(laundry_room)
+
+func get_empty_position_in_game_room() -> Vector2i:
+	return _get_empty_position_in_room(game_room)

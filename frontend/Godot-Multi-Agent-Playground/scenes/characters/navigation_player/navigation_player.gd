@@ -1,4 +1,4 @@
-class_name NavigationPlayer
+class_name DebugPlayer
 extends Player
 
 @onready var navigation_agent_2d: NavigationAgent2D = $NavigationAgent2D

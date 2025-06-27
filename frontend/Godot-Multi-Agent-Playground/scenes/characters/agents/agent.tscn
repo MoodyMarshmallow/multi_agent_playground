@@ -10,10 +10,10 @@
 [ext_resource type="Script" path="res://scenes/characters/agents/emoji_label.gd" id="7_88ey6"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_8bwlk"]
-radius = 3.5
+radius = 1.0
 
 [node name="Agent" type="CharacterBody2D"]
-position = Vector2(179, 275)
+position = Vector2(0, 367)
 script = ExtResource("1_lucgp")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]

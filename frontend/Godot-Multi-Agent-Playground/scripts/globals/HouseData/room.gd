@@ -1,6 +1,7 @@
 class_name Room
 extends Resource
 
+var name: String = ""
 var corners: Corners = Corners.new()
 var adjacent_rooms: Array[String] = []
 var objects: Dictionary = {}
