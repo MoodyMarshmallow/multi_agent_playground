@@ -8,24 +8,25 @@ const POLL_INTERVAL = 5.0
 var _poll_timer: Timer
 var _current_actions = []
 var _is_processing_actions: bool = false
-var _pending_confirmations = []
+#var _pending_confirmations = []
 var is_polling: bool = true
 
 # References to children
 @onready var agent_manager: AgentManager = $AgentManager
 
 # List of agent IDs to poll (could be made dynamic)
-var agent_ids := ["alex_001", "alan_002"]
+var agent_ids := []
 
 func _ready():
 	print("Press 'd' for additional agent and debugging controls")
+	print("Press 'i' to initialize agents, and 'r' to request next plan from the backend")
 	# Create and setup timer
 	_poll_timer = Timer.new()
 	_poll_timer.wait_time = POLL_INTERVAL
 	_poll_timer.one_shot = false
 	_poll_timer.timeout.connect(_on_poll_timer_timeout)
 	add_child(_poll_timer)
-	_poll_timer.start()
+	#_poll_timer.start()
 
 func _on_poll_timer_timeout():
 	if not _is_processing_actions:
@@ -47,7 +48,36 @@ func _input(event):
 		toggle_navigation_paths()
 	if event.is_action_pressed("iterate_selected_agent"):
 		iterate_selected_agent()
+	if event.is_action_pressed("init"):
+		init_agents()
 
+func init_agents():
+	print("Initializing agents from backend...")
+	var http_request = HTTPRequest.new()
+	add_child(http_request)
+	http_request.request_completed.connect(_on_init_request_completed)
+	var error = http_request.request(BACKEND_URL + "/agents/init", [], HTTPClient.METHOD_GET)
+	if error != OK:
+		push_error("An error occurred in the HTTP request for agent initialization.")
+
+func _on_init_request_completed(result, response_code, headers, body):
+	if result != HTTPRequest.RESULT_SUCCESS:
+		push_error("HTTP request failed with code: " + str(response_code))
+		return
+	var json = JSON.new()
+	var error = json.parse(body.get_string_from_utf8())
+	if error != OK:
+		push_error("JSON Parse Error: " + json.get_error_message())
+		return
+	var agent_summaries = json.get_data()
+	print("Received agent summaries: ", agent_summaries)
+	agent_manager.instantiate_agents(agent_summaries)
+	# Update agent_ids for polling
+	agent_ids.clear()
+	for agent in agent_summaries:
+		agent_ids.append(agent.agent_id)
+
+# --- Main polling function ---
 func print_debug_instructions() -> void:
 	print("Current debug options:
 	e: pause and resume polling
@@ -55,7 +85,7 @@ func print_debug_instructions() -> void:
 	f: toggle emoji label visibility
 	n: toggle navigation path visibility
 	a: iterate through selected agent (currently no further functionality)
-	arrow keys / ijkl: move camera\n")
+	arrow keys: move camera\n")
 
 func pause_poll_timer() -> void:
 	if _poll_timer and _poll_timer.is_stopped() == false:
@@ -89,11 +119,8 @@ func _request_next_actions():
 	# Build the request body dynamically for each agent
 	var request_body = []
 	for agent_id in agent_ids:
-		request_body.append({
-			"agent_id": agent_id,
-			"perception": agent_manager.get_agent_perception(agent_id)
-		})
-	print("\nList[AgentPlanRequest] (Frontend -> Backend) = ", request_body)
+		request_body.append(agent_id)
+	print("\nList[str] (Frontend -> Backend) = ", request_body)
 	var headers = ["Content-Type: application/json"]
 	var error = http_request.request(
 		BACKEND_URL + "/agent_act/plan",
@@ -127,18 +154,19 @@ func _process_all_actions():
 	if _current_actions.is_empty():
 		_is_processing_actions = false
 		return
-		
-	_is_processing_actions = true
-	_pending_confirmations.clear()
+	
+	#_pending_confirmations.clear()
 	
 	# Process all actions first
 	for action in _current_actions:
-		_process_single_action(action)
+		_process_single_action(action.action)
 	
+	_is_processing_actions = false
 	# After all actions are processed, send confirmations
-	_send_pending_confirmations()
+	#_send_pending_confirmations()
 
 func _process_single_action(action: Dictionary):
+	print(action)
 	agent_manager.change_emoji(action.agent_id, action.emoji)
 	match action.action.action_type:
 		"move":
@@ -159,44 +187,44 @@ func _process_single_action(action: Dictionary):
 			push_error("Unknown action type: " + action.action.action_type)
 	
 	# Add to pending confirmations
-	_pending_confirmations.append(action)
+	#_pending_confirmations.append(action)
 
-func _send_pending_confirmations():
-	if _pending_confirmations.is_empty():
-		_is_processing_actions = false
-		return
-		
-	var http_request = HTTPRequest.new()
-	add_child(http_request)
-	http_request.request_completed.connect(_on_confirm_request_completed)
-	
-	# Create confirmation bodies for all pending actions
-	var confirm_bodies = []
-	for action in _pending_confirmations:
-		confirm_bodies.append({
-			"agent_id": action.agent_id,
-			"action": agent_manager.get_agent_frontend_action(action.agent_id, action.action.action_type),
-			"in_progress": agent_manager.get_agent_in_progress(action.agent_id),
-			"perception": agent_manager.get_agent_perception(action.agent_id)
-		})
-	
-	var headers = ["Content-Type: application/json"]
-	print("\nList[AgentActionInput] (Frontend -> Backend) = ", confirm_bodies)
-	var error = http_request.request(
-		BACKEND_URL + "/agent_act/confirm",
-		headers,
-		HTTPClient.METHOD_POST,
-		JSON.stringify(confirm_bodies)
-	)
-	
-	if error != OK:
-		push_error("An error occurred in the HTTP request.")
-
-func _on_confirm_request_completed(result, response_code, headers, body):
-	if result != HTTPRequest.RESULT_SUCCESS:
-		push_error("HTTP request failed with code: " + str(response_code))
-		return
-	
-	# Clear pending confirmations and mark processing as complete
-	_pending_confirmations.clear()
-	_is_processing_actions = false
+#func _send_pending_confirmations():
+	#if _pending_confirmations.is_empty():
+		#_is_processing_actions = false
+		#return
+		#
+	#var http_request = HTTPRequest.new()
+	#add_child(http_request)
+	#http_request.request_completed.connect(_on_confirm_request_completed)
+	#
+	## Create confirmation bodies for all pending actions
+	#var confirm_bodies = []
+	#for action in _pending_confirmations:
+		#confirm_bodies.append({
+			#"agent_id": action.agent_id,
+			#"action": agent_manager.get_agent_frontend_action(action.agent_id, action.action.action_type),
+			#"in_progress": agent_manager.get_agent_in_progress(action.agent_id),
+			#"perception": agent_manager.get_agent_perception(action.agent_id)
+		#})
+	#
+	#var headers = ["Content-Type: application/json"]
+	#print("\nList[AgentActionInput] (Frontend -> Backend) = ", confirm_bodies)
+	#var error = http_request.request(
+		#BACKEND_URL + "/agent_act/confirm",
+		#headers,
+		#HTTPClient.METHOD_POST,
+		#JSON.stringify(confirm_bodies)
+	#)
+	#
+	#if error != OK:
+		#push_error("An error occurred in the HTTP request.")
+#
+#func _on_confirm_request_completed(result, response_code, headers, body):
+	#if result != HTTPRequest.RESULT_SUCCESS:
+		#push_error("HTTP request failed with code: " + str(response_code))
+		#return
+	#
+	## Clear pending confirmations and mark processing as complete
+	#_pending_confirmations.clear()
+	#_is_processing_actions = false

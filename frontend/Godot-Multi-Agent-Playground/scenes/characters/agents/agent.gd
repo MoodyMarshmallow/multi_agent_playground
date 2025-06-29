@@ -45,10 +45,10 @@ func _ready() -> void:
 	navigation_agent_2d.debug_path_custom_line_width = 3.0
 
 	# Make the agent follow the path more precisely
-	navigation_agent_2d.path_desired_distance = 10.0  # Default is usually 20.0
-	navigation_agent_2d.target_desired_distance = 10.0  # Default is usually 10.0
-	navigation_agent_2d.path_max_distance = 15.0
-	navigation_agent_2d.simplify_path = false
+	#navigation_agent_2d.path_desired_distance = 10.0  # Default is usually 20.0
+	#navigation_agent_2d.target_desired_distance = 10.0  # Default is usually 10.0
+	#navigation_agent_2d.path_max_distance = 15.0
+	#navigation_agent_2d.simplify_path = false
 	
 	current_tile = position_to_tile(position)
 	destination_tile = current_tile
@@ -61,7 +61,9 @@ func _set_up_sprite_frames():
 	if frames and frames is SpriteFrames:
 		animated_sprite_2d.frames = frames
 	else:
-		push_error("Failed to load SpriteFrames at: " + path)
+		path = "res://assets/game/characters/agents/sprite_frames/alex_001_sprite_frames.tres"
+		frames = load(path)
+		print("Using default sprite frames")
 
 # --- FSM Functions ---
 func position_to_tile(pos: Vector2) -> Vector2i:
