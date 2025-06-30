@@ -12,6 +12,9 @@ var current_agent_id : String
 var agent_dictionary : Dictionary = {}
 var agent_ids : Array = []
 
+# Action Queue
+var action_queue: Array[Action] = []
+
 # Agent Scene
 const agent_scene = preload("res://scenes/characters/agents/agent.tscn")
 

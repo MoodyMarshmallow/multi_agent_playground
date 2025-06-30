@@ -105,7 +105,7 @@ func _set_up_bathroom():
 	
 	var bathtub : InteractableObject = InteractableObject.new()
 	bathtub.name = "bathtub"
-	bathtub.tile = Vector2i(24, 2)
+	bathtub.tile = Vector2i(28, 2)
 	bathtub.states = {
 		"full" : null,
 		"empty" : null
@@ -114,7 +114,7 @@ func _set_up_bathroom():
 	
 	var cabinet : InteractableObject = InteractableObject.new()
 	cabinet.name = "cabinet"
-	cabinet.tile = Vector2i(28, 2)
+	cabinet.tile = Vector2i(24, 2)
 	cabinet.states = {
 		"open" : null,
 		"closed" : null
@@ -144,7 +144,7 @@ func _set_up_kitchen():
 	
 	var fridge : InteractableObject = InteractableObject.new()
 	fridge.name = "fridge"
-	fridge.tile = Vector2i(0, 10)
+	fridge.tile = Vector2i(1, 10)
 	fridge.states = {
 		"open" : null,
 		"closed" : null
@@ -298,27 +298,58 @@ func _get_empty_position_in_room(room: Room) -> Vector2i:
 	print("ERROR: NO EMPTY TILE FOUND")
 	return Vector2i(-1, -1)
 
-# Per-room wrappers
-func get_empty_position_in_bedroom() -> Vector2i:
-	return _get_empty_position_in_room(bedroom)
+func get_empty_position_in_room_by_name(room_name: String) -> Vector2i:
+	var room = null
+	match room_name.to_lower():
+		"bedroom": room = bedroom
+		"bathroom": room = bathroom
+		"kitchen": room = kitchen
+		"entry_room": room = entry_room
+		"dining_room": room = dining_room
+		"living_room": room = living_room
+		"laundry_room": room = laundry_room
+		"game_room": room = game_room
+		_: room = null
+	if room:
+		return _get_empty_position_in_room(room)
+	else:
+		print("Unknown room:", room_name)
+		return Vector2i(-1, -1)
 
-func get_empty_position_in_bathroom() -> Vector2i:
-	return _get_empty_position_in_room(bathroom)
-
-func get_empty_position_in_kitchen() -> Vector2i:
-	return _get_empty_position_in_room(kitchen)
-
-func get_empty_position_in_entry_room() -> Vector2i:
-	return _get_empty_position_in_room(entry_room)
-
-func get_empty_position_in_dining_room() -> Vector2i:
-	return _get_empty_position_in_room(dining_room)
-
-func get_empty_position_in_living_room() -> Vector2i:
-	return _get_empty_position_in_room(living_room)
-
-func get_empty_position_in_laundry_room() -> Vector2i:
-	return _get_empty_position_in_room(laundry_room)
-
-func get_empty_position_in_game_room() -> Vector2i:
-	return _get_empty_position_in_room(game_room)
+func get_empty_position_by_object(object_name: String) -> Vector2i:
+	# Search all rooms for the object
+	var found_room = null
+	var obj_tile = null
+	for room in [bedroom, bathroom, kitchen, entry_room, dining_room, living_room, laundry_room, game_room]:
+		if object_name in room.interactable_objects:
+			var obj = room.interactable_objects[object_name]
+			if obj and obj.tile != null:
+				found_room = room
+				obj_tile = obj.tile
+				return obj_tile
+				break
+	if found_room and obj_tile:
+		# Spiral out from the object's tile
+		var min_x = min(found_room.corners.ul.x, found_room.corners.dl.x)
+		var max_x = max(found_room.corners.ur.x, found_room.corners.dr.x)
+		var min_y = min(found_room.corners.ul.y, found_room.corners.ur.y)
+		var max_y = max(found_room.corners.dl.y, found_room.corners.dr.y)
+		var max_radius = floor((max(max_x - min_x, max_y - min_y)) / 2) + 1
+		for r in range(max_radius + 1):
+			for dx in range(-r, r + 1):
+				for dy in [-r, r]:
+					var tile = obj_tile + Vector2i(dx, dy)
+					if tile.x >= min_x and tile.x <= max_x and tile.y >= min_y and tile.y <= max_y:
+						if _is_tile_free(tile):
+							return tile
+			for dy in range(-r + 1, r):
+				for dx in [-r, r]:
+					var tile = obj_tile + Vector2i(dx, dy)
+					if tile.x >= min_x and tile.x <= max_x and tile.y >= min_y and tile.y <= max_y:
+						if _is_tile_free(tile):
+							return tile
+		print("ERROR: NO EMPTY TILE FOUND NEAR OBJECT")
+		return Vector2i(-1, -1)
+	else:
+		print("Object not found or has no tile:", object_name)
+		return Vector2i(-1, -1)
