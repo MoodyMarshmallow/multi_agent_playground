@@ -152,6 +152,7 @@ func change_emoji(agent_id: String, emoji: String) -> void:
 	
 # Action handlers
 func handle_move_action(agent_id: String, destination_tile: Vector2i) -> void:
+	action_queue.append(MoveAction.new(agent_id, destination_tile))
 	var agent = _find_agent_by_id(agent_id)
 	if agent:
 		agent.on_move_action_received(agent_id, destination_tile)
@@ -159,6 +160,7 @@ func handle_move_action(agent_id: String, destination_tile: Vector2i) -> void:
 		push_error("Agent with id '%s' not found for move action." % agent_id)
 
 func handle_chat_action(agent_id: String, message: Dictionary) -> void:
+	action_queue.append(ChatAction.new(agent_id, message.sender, message.receiver, message.message, message.timestamp))
 	var agent = _find_agent_by_id(agent_id)
 	if agent:
 		agent.on_chat_action_received(agent_id, message)
@@ -166,6 +168,7 @@ func handle_chat_action(agent_id: String, message: Dictionary) -> void:
 		push_error("Agent with id '%s' not found for chat action." % agent_id)
 
 func handle_interact_action(agent_id: String, object: String, current_state: String, new_state: String) -> void:
+	action_queue.append(InteractAction.new(agent_id, object, current_state, new_state))
 	var agent = _find_agent_by_id(agent_id)
 	if agent:
 		agent.on_interact_action_received(agent_id, object, current_state, new_state)
