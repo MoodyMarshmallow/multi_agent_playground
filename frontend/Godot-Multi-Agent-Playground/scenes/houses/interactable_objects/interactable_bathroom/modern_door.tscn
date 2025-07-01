@@ -145,7 +145,7 @@ animations = [{
 size = Vector2(20, 32)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3ja6a"]
-size = Vector2(16, 46)
+size = Vector2(33, 57)
 
 [node name="ModernDoor" type="StaticBody2D"]
 collision_layer = 0
@@ -162,5 +162,6 @@ shape = SubResource("RectangleShape2D_ubm6w")
 [node name="InteractableComponent" parent="." instance=ExtResource("2_5e33k")]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractableComponent"]
+position = Vector2(-0.5, 1.5)
 shape = SubResource("RectangleShape2D_3ja6a")
 debug_color = Color(0.745111, 0.310867, 0.859151, 0.42)

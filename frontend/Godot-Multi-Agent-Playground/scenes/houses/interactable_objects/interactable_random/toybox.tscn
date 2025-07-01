@@ -1,7 +1,7 @@
 [gd_scene load_steps=22 format=3 uid="uid://bgiu6l1keygyc"]
 
 [ext_resource type="Texture2D" uid="uid://7jc6u53cvx7u" path="res://modern_assets/animated_assets/animated_living/animated_toybox_full_2.png" id="1_id75x"]
-[ext_resource type="Script" uid="uid://ced1nbkgj12gt" path="res://scenes/houses/interactable_objects/interactable_random/toybox.gd" id="1_tt5kc"]
+[ext_resource type="Script" path="res://scenes/houses/interactable_objects/interactable_random/toybox.gd" id="1_tt5kc"]
 [ext_resource type="PackedScene" uid="uid://c2w2uh4fkyjpq" path="res://scenes/components/interactable_component.tscn" id="2_tt5kc"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_6koso"]
@@ -131,7 +131,7 @@ animations = [{
 size = Vector2(14, 15)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_34f16"]
-size = Vector2(12, 17)
+size = Vector2(34, 26)
 
 [node name="Toybox" type="StaticBody2D"]
 script = ExtResource("1_tt5kc")
@@ -147,6 +147,6 @@ shape = SubResource("RectangleShape2D_tv0q1")
 [node name="InteractableComponent" parent="." instance=ExtResource("2_tt5kc")]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractableComponent"]
-position = Vector2(0, 2.5)
+position = Vector2(0, 7)
 shape = SubResource("RectangleShape2D_34f16")
 debug_color = Color(0.853814, 0.272051, 0.633779, 0.42)
