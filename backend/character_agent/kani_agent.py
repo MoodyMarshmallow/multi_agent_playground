@@ -13,12 +13,16 @@ import asyncio
 import json
 import os
 import sys
+import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
 from kani import Kani
 from kani.engines.openai import OpenAIEngine
 from .actions import ActionsMixin
 from .agent import Agent
+
+# Get logger for this module
+logger = logging.getLogger(__name__)
 
 # Add the backend directory to Python path for imports
 backend_dir = Path(__file__).parent.parent
@@ -92,7 +96,7 @@ class LLMAgent(Kani, ActionsMixin):
                     max_tokens=LLMConfig.OPENAI_MAX_TOKENS,
                     client=openai_client
                 )
-                print("Warning: SSL verification disabled for testing purposes")
+                logger.warning("Warning: SSL verification disabled for testing purposes")
             else:
                 raise
         
@@ -179,7 +183,7 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         # Get LLM response with function calling - iterate through the async generator
         action_result = None
         async for message in self.full_round(context_message):
-            print("received message: ", message)
+            logger.debug(f"Received message: {message}")
             # Check if this is a function result message
             if message.role.value == 'function' and message.content:
                 # print("In If statement")
@@ -192,25 +196,22 @@ Respond naturally as {self.agent.first_name} would, and use the available action
                     # First try to parse as Python dict using ast.literal_eval
                     try:
                         parsed_result = ast.literal_eval(message.content)
-                        print("parsed_result using ast.literal_eval: ", parsed_result)
+                        logger.debug(f"Parsed result using ast.literal_eval: {parsed_result}")
                     except (ValueError, SyntaxError):
                         # If that fails, try JSON parsing
                         parsed_result = json.loads(message.content)
-                        print("parsed_result using json.loads: ", parsed_result)
+                        logger.debug(f"Parsed result using json.loads: {parsed_result}")
                     
                     # Check if this looks like one of our action results
-                    if isinstance(parsed_result, dict) and 'action_type' in parsed_result:
-                        # print("setting action_result")
-                        action_result = parsed_result
-                        break
-                except (json.JSONDecodeError, TypeError, ValueError, SyntaxError) as e:
-                    # If parsing fails, continue looking for other messages
-                    print(f"Parsing failed with error: {e}")
+                    action_result = parsed_result
+                    break
+                except Exception as e:
+                    logger.error(f"Parsing failed with error: {e}")
                     continue
         
-        # If no action was determined, default to perceive
-        if not action_result:
-            print("warning: fallback to default action")
+        if action_result is None:
+            logger.warning("Warning: fallback to default action")
+            # Fallback action - just perceive
             action_result = {
                 "agent_id": self.agent_id,
                 "action_type": "perceive",
@@ -365,12 +366,12 @@ Respond with ONLY a number from 1-10, nothing else."""
             
             if numbers:
                 salience_score = int(numbers[0])
-                print(f"Salience evaluation: '{event_description}' = {salience_score}")
+                logger.debug(f"Salience evaluation: '{event_description}' = {salience_score}")
                 return max(1, min(10, salience_score))
             else:
-                print(f"Could not parse salience from response: '{response_text}', defaulting to 5")
+                logger.warning(f"No response received for salience evaluation, defaulting to 5")
                 return 5
                 
         except Exception as e:
-            print(f"Error in salience evaluation: {e}")
+            logger.error(f"Error in salience evaluation: {e}")
             return 5  # Default fallback 
