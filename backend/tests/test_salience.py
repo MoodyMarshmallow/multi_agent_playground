@@ -12,9 +12,9 @@ backend_dir = Path(__file__).parent.parent  # Go up one level from tests/ to bac
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
-from character_agent.agent import Agent
-from character_agent.agent_manager import agent_manager
-from config.schema import AgentPerception
+from backend.arush_llm.integration.character_agent_adapter import CharacterAgentAdapter as Agent
+from backend.arush_llm.integration.character_agent_adapter import agent_manager
+from backend.config.schema import AgentPerception
 
 async def test_salience_evaluation():
     """Test the salience evaluation functionality"""
@@ -25,8 +25,8 @@ async def test_salience_evaluation():
         agent_dir = "../../data/agents/alex_001"
         agent = Agent(agent_dir)
         
-        # Get LLM agent using the manager
-        llm_agent = agent_manager.get_agent(agent.agent_id)
+        # Create LLM agent using the manager
+        llm_agent = create_llm_agent(agent.agent_id)
         
         # Test different types of events
         test_events = [

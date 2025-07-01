@@ -32,14 +32,15 @@ class Agent:
             config_path (str): Path to the agent's directory (should contain agent.json and memory.json).
         """
         self.agent_dir = Path(config_path)
+        
+        # Load agent configuration from agent.json
         with open(self.agent_dir / "agent.json", "r", encoding="utf-8") as file:
-            data = json.load(file)
+            data: Dict[str, Any] = json.load(file)
 
         # Core state fields
         self.agent_id = data.get("agent_id")
         self.curr_time = data.get("curr_time")
         self.curr_tile = data.get("curr_tile")
-        self.curr_room = data.get("curr_room")
         
         # Core Identity
         self.first_name = data.get("first_name")
@@ -59,7 +60,7 @@ class Agent:
         self.f_daily_schedule = data.get("f_daily_schedule", [])
         
 
-        # Memory
+        # Load memory from memory.json
         mem_path = self.agent_dir / "memory.json"
         if mem_path.exists():
             try:
@@ -103,12 +104,10 @@ class Agent:
         Args:
             data (dict): New values for agent state.
         """
-        if "current_tile" in data:
-            self.curr_tile = data["current_tile"]
-        if "current_room" in data:
-            self.curr_room = data["current_room"]
-        if "timestamp" in data:
-            self.curr_time = data["timestamp"]
+        if "curr_tile" in data:
+            self.curr_tile = data["curr_tile"]
+        if "curr_time" in data:
+            self.curr_time = data["curr_time"]
         if "currently" in data:
             self.currently = data["currently"]
         if "pending_chat_message" in data:
@@ -159,7 +158,6 @@ class Agent:
             "agent_id": self.agent_id,
             "first_name": self.first_name,
             "last_name": self.last_name,
-            "curr_room": self.curr_room,
             "curr_tile": self.curr_tile,
             "daily_req": self.daily_req,
             "memory": self.memory,
@@ -174,13 +172,20 @@ class Agent:
             # Add more fields as needed
         }
     def to_summary_dict(self):
+        # Ensure currently is always a string for API validation
+        currently_value = getattr(self, "currently", "")
+        if isinstance(currently_value, dict):
+            # Convert dict to string representation
+            currently_value = str(currently_value)
+        elif not isinstance(currently_value, str):
+            currently_value = str(currently_value) if currently_value is not None else ""
+        
         return {
             "agent_id": self.agent_id,
             "first_name": self.first_name,
             "last_name": self.last_name,
             "curr_tile": self.curr_tile,
-            "curr_room": self.curr_room,
             "age": getattr(self, "age", None),
             "occupation": getattr(self, "occupation", None),
-            "currently": getattr(self, "currently", ""),
+            "currently": currently_value,
         }

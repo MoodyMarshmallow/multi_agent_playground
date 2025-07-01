@@ -211,6 +211,7 @@ class ActionsMixin:
     
     @ai_function()
     def perceive(self,
+                 content: Annotated[str, "What you observe, notice, or want to communicate about your environment and surroundings"],
                  action_emoji: Annotated[str, "The emoji representing the action"]
                  ) -> Dict[str, Any]:
         """
@@ -221,6 +222,100 @@ class ActionsMixin:
         - Good for getting updated information about objects and other agents
         - Useful when you need to reassess the situation
         
+        Use the content field to describe what you observe, notice, or want to communicate about your surroundings.
+        This enables discourse functionality - you can share your observations, thoughts, or reactions to the environment.
+        
+        PERCEPTION PRINCIPLES:
+        - This action represents actively focusing your senses and attention
+        - Different perception styles reveal different aspects of the environment
+        - Your perception method affects what details you might notice or miss
+        - Perception is an active choice that consumes mental energy and time
+        - Use content to communicate your observations or thoughts to others
+        
+        EMOJI SELECTION FOR PERCEPTION MANNER:
+        The emoji is the soul of your observation. Choose it to paint a vivid picture of HOW your character takes in information:
+        
+        FOCUSED AND ANALYTICAL PERCEPTION:
+        - 🔍 Detective scrutiny - methodical examination, looking for clues
+        - 🎯 Laser focus - intense concentration on specific details
+        - 🧠 Intellectual analysis - thinking while observing, connecting patterns
+        - 📊 Data collection - systematic cataloging of observations
+        - 🔬 Scientific observation - objective, precise, measuring everything
+        - 🎓 Academic study - scholarly approach, taking mental notes
+        - ⚖️ Judicial assessment - weighing evidence, making careful judgments
+        
+        INTUITIVE AND EMOTIONAL PERCEPTION:
+        - 💖 Heart-centered sensing - feeling the emotional atmosphere
+        - 🦋 Intuitive flutter - sensing subtle energies and vibes
+        - 🌊 Flowing awareness - letting impressions wash over naturally
+        - 🎨 Aesthetic appreciation - noticing beauty, composition, artistry
+        - 🕯️ Spiritual sensing - perceiving deeper meanings and connections
+        - 🌟 Wonder-filled gazing - seeing magic in ordinary things
+        - 🦉 Wise observation - ancient, deep understanding
+        
+        ALERT AND VIGILANT PERCEPTION:
+        - 👁️ Sharp vigilance - constantly scanning for threats or changes
+        - ⚡ Quick scan - rapid assessment of immediate situation
+        - 🛡️ Defensive awareness - watching for danger, ready to react
+        - 🕵️ Spy surveillance - covert observation, gathering intelligence
+        - 🦅 Eagle eye - spotting details from great distance or height
+        - ⚠️ Warning detection - specifically looking for hazards
+        - 🎭 Performance monitoring - watching how others behave
+        
+        CURIOUS AND EXPLORATORY PERCEPTION:
+        - 🤔 Puzzled examination - trying to figure something out
+        - 😍 Fascinated staring - captivated by something amazing
+        - 🔎 Magnified inspection - getting close to see fine details
+        - 🗺️ Exploratory mapping - understanding spatial relationships
+        - 🎪 Playful investigation - having fun while discovering
+        - 🌈 Kaleidoscope vision - seeing multiple perspectives at once
+        - 🎁 Unwrapping discovery - excited to reveal hidden things
+        
+        SOCIAL AND INTERPERSONAL PERCEPTION:
+        - 👥 People watching - observing social dynamics and interactions
+        - 💬 Communication reading - understanding unspoken messages
+        - 🤝 Empathic sensing - feeling what others are experiencing
+        - 🎭 Behavioral analysis - studying how people act and react
+        - 👑 Leadership assessment - evaluating power structures
+        - 💔 Emotional detection - sensing sadness, joy, fear in others
+        - 🌸 Gentle observation - non-invasive, respectful watching
+        
+        ENVIRONMENTAL AND SENSORY PERCEPTION:
+        - 🌿 Nature attunement - connecting with natural rhythms
+        - 🌡️ Atmospheric sensing - feeling temperature, pressure, mood
+        - 👂 Audio focusing - concentrating on sounds and silence
+        - 👃 Scent tracking - following odors and fragrances
+        - ✋ Tactile exploration - sensing textures and vibrations
+        - 🌅 Temporal awareness - noting time passage and cycles
+        - 🗺️ Spatial mapping - understanding layout and geography
+        
+        TIRED AND IMPAIRED PERCEPTION:
+        - 😴 Drowsy scanning - struggling to stay alert and focused
+        - 🤯 Overwhelmed senses - too much information to process
+        - 😵 Dizzy observation - disoriented, confused perception
+        - 😰 Anxious hypervigilance - seeing threats everywhere
+        - 🥺 Distracted wandering - attention keeps drifting away
+        - 😒 Bored glancing - minimal effort, going through motions
+        - 🤐 Suppressed awareness - trying not to see certain things
+        
+        USAGE EXAMPLES:
+        - perceive("I notice the computer is off and there's a chair nearby. Perfect setup for starting work.", "🔍") 
+        - perceive("The room feels tense and heavy. Something's not right here.", "💖")
+        - perceive("Scanning for exits and potential threats. All clear for now.", "👁️")
+        - perceive("This place is confusing... where did everyone go?", "🤔")
+        - perceive("The morning light streaming through makes everything peaceful.", "🌿")
+        - perceive("Bob seems distracted today. Wonder what's bothering him.", "👥")
+        - perceive("Too tired to focus properly... everything looks blurry.", "😴")
+        
+        BEST PRACTICES:
+        - Think like an actor: HOW would your character approach observation?
+        - Consider your character's training, background, and natural tendencies
+        - Match perception style to your character's current mental state
+        - Let your observation method reveal personality and priorities
+        - Different perception styles notice different types of information
+        - Use perception as character development and world-building
+        - Show your character's relationship with their environment
+        - Use content to share observations that others can read and respond to
         PERCEPTION EMOJIS:
         - 👀 General observation - looking around, taking in the scene
         - 🔍 Detailed investigation - searching for specific things
@@ -232,7 +327,7 @@ class ActionsMixin:
         action_json = {
             "agent_id": getattr(self, 'agent_id', 'unknown_agent'),
             "action_type": "perceive",
-            "content": {},
+            "content": {content},
             "emoji": action_emoji
         }
         

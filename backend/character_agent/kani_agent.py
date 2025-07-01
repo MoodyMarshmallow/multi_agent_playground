@@ -12,31 +12,20 @@ This module implements the LLMAgent class which combines:
 import asyncio
 import json
 import os
-import ssl
 import sys
 from pathlib import Path
-from typing import Dict, Any, Optional, List, Union, AsyncGenerator
+from typing import Dict, Any, Optional
 from kani import Kani
 from kani.engines.openai import OpenAIEngine
 from .actions import ActionsMixin
 from .agent import Agent
 
-# Handle imports for both standalone and package usage
-try:
-    # Try relative imports first (when used as package)
-    from .actions import ActionsMixin
-    from .agent import Agent
-    from ..config.llm_config import LLMConfig
-except ImportError:
-    # Fall back to absolute imports (when run as standalone script)
-    # Add the backend directory to Python path for imports
-    backend_dir: Path = Path(__file__).parent.parent
-    if str(backend_dir) not in sys.path:
-        sys.path.insert(0, str(backend_dir))
-    
-    from character_agent.actions import ActionsMixin
-    from character_agent.agent import Agent
-    from config.llm_config import LLMConfig
+# Add the backend directory to Python path for imports
+backend_dir = Path(__file__).parent.parent
+if str(backend_dir) not in sys.path:
+    sys.path.insert(0, str(backend_dir))
+
+from backend.config.llm_config import LLMConfig
 
 
 class LLMAgent(Kani, ActionsMixin):
@@ -44,10 +33,7 @@ class LLMAgent(Kani, ActionsMixin):
     Character agent for the Multi-Agent Playground.
     """
     
-    agent_id: str
-    agent: Agent
-    
-    def __init__(self, agent: Agent, api_key: Optional[str] = None) -> None:
+    def __init__(self, agent: Agent, api_key: Optional[str] = None):
         """
         Initialize the character agent with Kani engine and agent state.
         
@@ -70,7 +56,7 @@ class LLMAgent(Kani, ActionsMixin):
         # (NOTE: THIS IS A WORKAROUND AND MAY CAUSE SECURITY ISSUES)
         # =======================================================
         try:
-            engine: OpenAIEngine = OpenAIEngine(
+            engine = OpenAIEngine(
                 api_key, 
                 model=LLMConfig.OPENAI_MODEL,
                 temperature=LLMConfig.OPENAI_TEMPERATURE,
@@ -78,49 +64,40 @@ class LLMAgent(Kani, ActionsMixin):
             )
         except OSError as e:
             if "Invalid argument" in str(e) or "SSL" in str(e):
-                # Handle SSL issues securely by updating certificate bundle
+                # Try with custom HTTP client that handles SSL issues
                 import httpx
                 import ssl
-                import certifi
                 
-                # Create SSL context with proper certificate verification
-                ssl_context: ssl.SSLContext = ssl.create_default_context(cafile=certifi.where())
-                ssl_context.check_hostname = True
-                ssl_context.verify_mode = ssl.CERT_REQUIRED
+                # Create a custom SSL context that's more permissive
+                ssl_context = ssl.create_default_context()
+                ssl_context.check_hostname = False
+                ssl_context.verify_mode = ssl.CERT_NONE
                 
-                # Create HTTP client with proper SSL configuration
-                http_client: httpx.AsyncClient = httpx.AsyncClient(
-                    verify=ssl_context,
-                    timeout=30.0,
-                    follow_redirects=True
+                # Create custom HTTP client
+                http_client = httpx.AsyncClient(
+                    verify=False,  # Disable SSL verification for testing
+                    timeout=30.0
                 )
                 
                 from openai import AsyncOpenAI
-                try:
-                    openai_client: AsyncOpenAI = AsyncOpenAI(
-                        api_key=api_key,
-                        http_client=http_client
-                    )
-                    
-                    engine = OpenAIEngine(
-                        model=LLMConfig.OPENAI_MODEL,
-                        temperature=LLMConfig.OPENAI_TEMPERATURE,
-                        max_tokens=LLMConfig.OPENAI_MAX_TOKENS,
-                        client=openai_client
-                    )
-                    print("Using custom SSL configuration with certificate verification")
-                except Exception as ssl_error:
-                    # If SSL still fails, provide clear error message instead of bypassing security
-                    raise RuntimeError(
-                        f"SSL configuration failed: {ssl_error}. "
-                        "Please update your SSL certificates or check your network configuration. "
-                        "Consider updating certifi package: pip install --upgrade certifi"
-                    ) from ssl_error
+                openai_client = AsyncOpenAI(
+                    api_key=api_key,
+                    http_client=http_client
+                )
+                
+                # When providing a client, don't pass api_key to OpenAIEngine
+                engine = OpenAIEngine(
+                    model=LLMConfig.OPENAI_MODEL,
+                    temperature=LLMConfig.OPENAI_TEMPERATURE,
+                    max_tokens=LLMConfig.OPENAI_MAX_TOKENS,
+                    client=openai_client
+                )
+                print("Warning: SSL verification disabled for testing purposes")
             else:
                 raise
         
         # Initialize Kani with system prompt
-        system_prompt: str = self._build_system_prompt()
+        system_prompt = self._build_system_prompt()
         super().__init__(engine, system_prompt=system_prompt)
         
         # Initialize ActionsMixin
@@ -133,21 +110,8 @@ class LLMAgent(Kani, ActionsMixin):
         Returns:
             str: The system prompt for the LLM
         """
-        # Load environment.json for spatial memory
-        import json
-        from pathlib import Path
-        env_path = Path(__file__).parent.parent / "memory" / "data" / "environment.json"
-        try:
-            with open(env_path, "r", encoding="utf-8") as f:
-                environment_data = json.load(f)
-        except Exception:
-            environment_data = {}
-        spatial_memory = self._format_spatial_memory(environment_data)
         agent_info = f"""
 You are {self.agent.first_name} {self.agent.last_name}, a character in a multi-agent simulation.
-
-SPATIAL MEMORY:
-{spatial_memory}
 
 PERSONALITY & BACKGROUND:
 - Age: {self.agent.age}
@@ -196,57 +160,6 @@ Respond naturally as {self.agent.first_name} would, and use the available action
 """
         return agent_info
     
-    def _format_spatial_memory(self, environment_data: Dict[str, Any]) -> str:
-        """
-        Format environment data into a readable spatial memory for the agent.
-        
-        Args:
-            environment_data (dict): The environment data loaded from environment.json
-            
-        Returns:
-            str: Formatted spatial memory description
-        """
-        if not environment_data or "house" not in environment_data:
-            return "No spatial memory available."
-        
-        house_data = environment_data["house"]
-        memory_parts = []
-        
-        # Process first floor layout
-        if "first_floor" in house_data:
-            memory_parts.append("HOUSE LAYOUT (First Floor):")
-            first_floor = house_data["first_floor"]
-            
-            for room_name, room_data in first_floor.items():
-                memory_parts.append(f"\n{room_name.upper().replace('_', ' ')}:")
-                
-                for object_name, object_info in room_data.items():
-                    if isinstance(object_info, dict):
-                        # Handle nested objects (like bookshelves with left/right)
-                        if any(isinstance(v, dict) and "shape" in v for v in object_info.values()):
-                            memory_parts.append(f"  - {object_name.replace('_', ' ')}:")
-                            for sub_name, sub_info in object_info.items():
-                                if isinstance(sub_info, dict) and "shape" in sub_info:
-                                    shape_coords = sub_info["shape"]
-                                    interact_coords = sub_info.get("interact", [])
-                                    memory_parts.append(f"    • {sub_name.replace('_', ' ')}: coordinates {shape_coords}")
-                                    if interact_coords:
-                                        memory_parts.append(f"      (interact at: {interact_coords})")
-                        elif "shape" in object_info:
-                            # Regular object with shape
-                            shape_coords = object_info["shape"]
-                            interact_coords = object_info.get("interact", [])
-                            description = object_info.get("description", "")
-                            
-                            memory_parts.append(f"  - {object_name.replace('_', ' ')}: coordinates {shape_coords}")
-                            if interact_coords:
-                                memory_parts.append(f"    (interact at: {interact_coords})")
-                            if description:
-                                memory_parts.append(f"    ({description})")
-        
-        return "\n".join(memory_parts) if memory_parts else "No spatial memory available."
-    
-    
     async def plan_next_action(self, perception_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Plan the next action based on current perception and agent state.
@@ -261,13 +174,12 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         self.agent.update_perception(perception_data)
         
         # Build context message for the LLM
-        context_message: str = self._build_context_message(perception_data)
+        context_message = self._build_context_message(perception_data)
         
         # Get LLM response with function calling - iterate through the async generator
-        action_result: Optional[Dict[str, Any]] = None
-        message: ChatMessage
+        action_result = None
         async for message in self.full_round(context_message):
-            print(f"{self.agent_id} received message: ", message, "\n")
+            print("received message: ", message)
             # Check if this is a function result message
             if message.role.value == 'function' and message.content:
                 # print("In If statement")
@@ -283,7 +195,7 @@ Respond naturally as {self.agent.first_name} would, and use the available action
                         print("parsed_result using ast.literal_eval: ", parsed_result)
                     except (ValueError, SyntaxError):
                         # If that fails, try JSON parsing
-                        parsed_result: Dict[str, Any] = eval(message.content)
+                        parsed_result = json.loads(message.content)
                         print("parsed_result using json.loads: ", parsed_result)
                     
                     # Check if this looks like one of our action results
@@ -299,7 +211,7 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         # If no action was determined, default to perceive
         if not action_result:
             print("warning: fallback to default action")
-            action_result: Dict[str, Any] = {
+            action_result = {
                 "agent_id": self.agent_id,
                 "action_type": "perceive",
                 "content": {},
@@ -312,7 +224,6 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         
         return action_result
     
-
     def _build_context_message(self, perception_data: Dict[str, Any]) -> str:
         """
         Build a context message describing the current situation to the LLM.
@@ -323,30 +234,28 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         Returns:
             str: Context message for the LLM
         """
-        message_parts: List[str] = [
+        message_parts = [
             f"Current time: {self.agent.curr_time}",
             f"Your current location: {self.agent.curr_tile}",
             f"You are currently: {self.agent.currently}",
         ]
         
         # Add visible objects information
-        visible_objects: Dict[str, Any] = perception_data.get("visible_objects", {})
+        visible_objects = perception_data.get("visible_objects", {})
         if visible_objects:
             message_parts.append("\nVisible objects around you:")
-            obj_name: str
-            obj_info: Dict[str, Any]
             for obj_name, obj_info in visible_objects.items():
-                state: str = obj_info.get("state", "unknown")
-                location: str = obj_info.get("location", "unknown")
+                state = obj_info.get("state", "unknown")
+                location = obj_info.get("location", "unknown")
                 message_parts.append(f"- {obj_name}: {state} (at {location})")
             message_parts.append(
-                "\nConsider moving toward or interacting with one of these objects, especially if it helps you achieve your daily requirements or current goals."
+            "\nConsider moving toward or interacting with one of these objects, especially if it helps you achieve your daily requirements or current goals."
             )
         else:
             message_parts.append("\nNo objects are currently visible.Consider moving to a new area to explore your environment mostly in the house if you are in the house.")
         
         # Add visible agents information
-        visible_agents: List[str] = perception_data.get("visible_agents", [])
+        visible_agents = perception_data.get("visible_agents", [])
         if visible_agents:
             message_parts.append(f"\nOther agents nearby: {', '.join(visible_agents)}")
         else:
@@ -354,14 +263,13 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         
         # Add recent memories if available
         if self.agent.memory:
-            recent_memories: List[Dict[str, Any]] = self.agent.memory[-3:]  # Last 3 memories
+            recent_memories = self.agent.memory[-3:]  # Last 3 memories
             message_parts.append("\nRecent memories:")
-            memory: Dict[str, Any]
             for memory in recent_memories:
                 message_parts.append(f"- {memory['timestamp']}: {memory['event']} (at {memory['location']})")
         
         message_parts.append(
-            "\nWhat would you like to do next? Most of the time, you should choose to move or interact with objects or agents unless you have a specific reason to perceive again. Only perceive again if you have new information to check."
+        "\nWhat would you like to do next? Most of the time, you should choose to move or interact with objects or agents unless you have a specific reason to perceive again. Only perceive again if you have new information to check."
         )
         
         return "\n".join(message_parts)

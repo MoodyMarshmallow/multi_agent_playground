@@ -40,7 +40,7 @@ class LLMAgentManager:
         """
         if agent_id not in self._agents:
             # Create Agent instance from agent_id
-            agent_dir = f"data/agents/{agent_id}"
+            agent_dir = f"../data/agents/{agent_id}"
             agent = Agent(agent_dir)
             
             # Create and store new LLMAgent
@@ -86,10 +86,14 @@ class LLMAgentManager:
         return [llm_agent.agent.to_summary_dict() for llm_agent in self._agents.values()]
     
     
-    def preload_all_agents(self, agents_folder="data/agents"):
+    def preload_all_agents(self, agents_folder="../data/agents"):
         """
         Loads all agent folders in the given directory into memory (if not already loaded).
         """
+        if not os.path.exists(agents_folder):
+            print(f"Warning: agents folder {agents_folder} does not exist")
+            return
+            
         for agent_id in os.listdir(agents_folder):
             agent_path = os.path.join(agents_folder, agent_id)
             if os.path.isdir(agent_path):

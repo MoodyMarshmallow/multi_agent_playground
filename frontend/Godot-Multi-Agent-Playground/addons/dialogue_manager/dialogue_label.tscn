@@ -15,5 +15,5 @@ meta_underlined = false
 hint_underlined = false
 deselect_on_focus_loss_enabled = false
 visible_characters_behavior = 1
-script = ExtResource("1_cital")
+script = SubResource("Resource_sjn1j")
 skip_pause_at_abbreviations = PackedStringArray("Mr", "Mrs", "Ms", "Dr", "etc", "eg", "ex")
