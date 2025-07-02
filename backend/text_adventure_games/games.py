@@ -38,6 +38,18 @@ class Game:
         self.game_over = False
         self.game_over_description = None
 
+        # NEW: Event queue for frontend
+        self.event_queue = []
+        self.event_id_counter = 0
+
+        # NEW: Track which characters are active agents
+        self.active_agents = set()
+        self.active_agents.add(player.name)
+        
+        # NEW: Track whose turn it is
+        self.current_agent_index = 0
+        self.turn_order = []
+
         # Add player to game and put them on starting point
         self.characters = {}
         self.add_character(player)
@@ -123,6 +135,80 @@ class Game:
         Puts characters in the game
         """
         self.characters[character.name] = character
+
+    def register_agent(self, character: Character):
+        """
+        Mark a character as an active agent who can take turns.
+        
+        Args:
+            character: The Character to make an active agent
+        """
+        if character.name not in self.characters:
+            raise ValueError(f"Character {character.name} not in game")
+        
+        self.active_agents.add(character.name)
+        if character.name not in self.turn_order:
+            self.turn_order.append(character.name)
+
+    def add_event(self, event_type: str, data: dict):
+        """
+        Add an event to the queue for frontend consumption.
+        
+        Args:
+            event_type: Type of event (e.g., 'move', 'get', 'drop')
+            data: Event-specific data
+        """
+        self.event_id_counter += 1
+        event = {
+            'id': self.event_id_counter,
+            'type': event_type,
+            'timestamp': self.event_id_counter,  # Simple turn counter
+            'data': data
+        }
+        self.event_queue.append(event)
+
+    def get_events_since(self, last_event_id: int) -> list[dict]:
+        """
+        Get all events after the given ID.
+        
+        Args:
+            last_event_id: ID of last processed event
+            
+        Returns:
+            List of new events
+        """
+        return [e for e in self.event_queue if e['id'] > last_event_id]
+
+    def get_world_state_for_agent(self, agent: Character) -> dict:
+        """
+        Get the observable world state for an agent.
+        
+        Returns:
+            Dict containing location info, inventory, and available actions
+        """
+        location = agent.location
+        
+        state = {
+            'agent_name': agent.name,
+            'location': {
+                'name': location.name,
+                'description': location.description
+            },
+            'inventory': list(agent.inventory.keys()),
+            'visible_items': [
+                {'name': item.name, 'description': item.description}
+                for item in location.items.values()
+            ],
+            'visible_characters': [
+                {'name': char.name, 'description': char.description}
+                for char in location.characters.values()
+                if char.name != agent.name
+            ],
+            'available_exits': list(location.connections.keys()),
+            'available_actions': self.parser.get_available_actions(agent)
+        }
+        
+        return state
 
     def describe(self) -> str:
         """

@@ -266,7 +266,7 @@ Respond naturally as {self.agent.first_name} would, and use the available action
         # Get LLM response with function calling - iterate through the async generator
         action_result: Optional[Dict[str, Any]] = None
         message: ChatMessage
-        async for message in self.full_round(context_message):
+        async for message in self.full_round(context_message, max_function_rounds=1):
             print(f"{self.agent_id} received message: ", message, "\n")
             # Check if this is a function result message
             if message.role.value == 'function' and message.content:
