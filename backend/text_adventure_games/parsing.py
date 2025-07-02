@@ -44,6 +44,7 @@ class Parser:
         """
         print(Parser.wrap_text(description))
         self.add_description_to_history(description)
+        return description
 
     def fail(self, description: str):
         """
@@ -51,6 +52,7 @@ class Parser:
         in order to create more evocative descriptions.
         """
         print(Parser.wrap_text(description))
+        return description
 
     @staticmethod
     def wrap_text(text: str, width: int = 80) -> str:
@@ -162,15 +164,35 @@ class Parser:
         self.fail(f"No action found for {command}")
         return None
 
-    def parse_command(self, command: str):
+    def parse_command(self, command: str, character: Character = None):
+        """
+        Parse and execute a command, optionally for a specific character.
+        
+        Args:
+            command: The command string to parse
+            character: Optional character to execute the command (defaults to player)
+            
+        Returns:
+            The result of the action execution
+        """
         # print("\n>", command, "\n", flush=True)
         # add this command to the history
         self.add_command_to_history(command)
-        action = self.parse_action(command)
-        if not action:
-            self.fail("I'm not sure what you want to do.")
-        else:
-            action()
+        
+        # Set the acting character for this command
+        original_player = self.game.player
+        if character:
+            self.game.player = character
+        
+        try:
+            action = self.parse_action(command)
+            if not action:
+                return self.fail("I'm not sure what you want to do.")
+            else:
+                return action()
+        finally:
+            # Restore original player
+            self.game.player = original_player
 
     @staticmethod
     def split_command(command: str, keyword: str) -> tuple[str, str]:
@@ -264,3 +286,70 @@ class Parser:
                 if exit.lower() in command:
                     return exit
         return None
+
+    def get_available_actions(self, character: Character) -> list[dict]:
+        """
+        Return all actions currently available to a character.
+        
+        Returns:
+            List of dicts with 'command' and 'description' keys
+        """
+        available = []
+        location = character.location
+        
+        if not location:
+            return available
+        
+        # Movement actions
+        for direction, connected_loc in location.connections.items():
+            # Check if the connection is blocked (basic implementation)
+            available.append({
+                'command': f"go {direction}",
+                'description': f"Move {direction} to {connected_loc.name}"
+            })
+        
+        # Item actions in location
+        for item_name, item in location.items.items():
+            if item.get_property("gettable") is not False:  # Default to gettable
+                available.append({
+                    'command': f"get {item_name}",
+                    'description': f"Pick up the {item.description}"
+                })
+            
+            # Examine action for all items
+            available.append({
+                'command': f"examine {item_name}",
+                'description': f"Examine the {item.description}"
+            })
+        
+        # Inventory actions
+        for item_name, item in character.inventory.items():
+            available.append({
+                'command': f"drop {item_name}",
+                'description': f"Drop the {item.description}"
+            })
+            
+            # Special item actions
+            if item.get_property("is_food"):
+                available.append({
+                    'command': f"eat {item_name}",
+                    'description': f"Eat the {item.description}"
+                })
+        
+        # Character interaction actions
+        for other_name, other_char in location.characters.items():
+            if other_name != character.name:
+                # Give actions
+                for item_name in character.inventory:
+                    available.append({
+                        'command': f"give {item_name} to {other_name}",
+                        'description': f"Give {item_name} to {other_char.description}"
+                    })
+        
+        # Always available actions
+        available.extend([
+            {'command': 'look', 'description': 'Examine your surroundings'},
+            {'command': 'inventory', 'description': 'Check what you are carrying'}
+        ])
+        
+        return available
