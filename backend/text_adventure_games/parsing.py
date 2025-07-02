@@ -44,6 +44,7 @@ class Parser:
         """
         print(Parser.wrap_text(description))
         self.add_description_to_history(description)
+        return description
 
     def fail(self, description: str):
         """
@@ -51,6 +52,7 @@ class Parser:
         in order to create more evocative descriptions.
         """
         print(Parser.wrap_text(description))
+        return description
 
     @staticmethod
     def wrap_text(text: str, width: int = 80) -> str:
@@ -169,6 +171,9 @@ class Parser:
         Args:
             command: The command string to parse
             character: Optional character to execute the command (defaults to player)
+            
+        Returns:
+            The result of the action execution
         """
         # print("\n>", command, "\n", flush=True)
         # add this command to the history
@@ -182,9 +187,9 @@ class Parser:
         try:
             action = self.parse_action(command)
             if not action:
-                self.fail("I'm not sure what you want to do.")
+                return self.fail("I'm not sure what you want to do.")
             else:
-                action()
+                return action()
         finally:
             # Restore original player
             self.game.player = original_player

@@ -53,7 +53,7 @@ class Get(base.Action):
         description = "{character_name} got the {item_name}.".format(
             character_name=self.character.name, item_name=self.item.name
         )
-        self.parser.ok(description)
+        return self.parser.ok(description)
 
 
 class Drop(base.Action):
@@ -125,13 +125,13 @@ class Inventory(base.Action):
     def apply_effects(self):
         if len(self.character.inventory) == 0:
             description = f"{self.character.name}'s inventory is empty."
-            self.parser.ok(description)
+            return self.parser.ok(description)
         else:
             description = f"{self.character.name}'s inventory contains:\n"
             for item_name in self.character.inventory:
                 item = self.character.inventory[item_name]
                 description += "* {item}\n".format(item=item.description)
-            self.parser.ok(description)
+            return self.parser.ok(description)
 
 
 class Examine(base.Action):

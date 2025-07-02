@@ -22,7 +22,6 @@ from kani.engines.openai import OpenAIEngine
 # Text adventure games imports
 from .text_adventure_games.things import Character
 from .text_adventure_games.games import Game
-from .config.schema import AgentSummary, AgentPerception, Message
 
 
 class AgentStrategy(Protocol):
@@ -35,14 +34,7 @@ class AgentStrategy(Protocol):
         ...
 
 
-class SimpleRandomAgent:
-    """Example agent that picks random actions for testing"""
-    async def select_action(self, world_state: dict) -> str:
-        import random
-        actions = world_state.get('available_actions', [])
-        if actions:
-            return random.choice(actions)['command']
-        return "look"
+
 
 
 class KaniAgent:
@@ -222,15 +214,15 @@ class AgentManager:
         if character_name not in self.active_agents:
             self.active_agents.append(character_name)
     
-    async def execute_agent_turn(self, agent: Character) -> Optional[str]:
+    async def execute_agent_turn(self, agent: Character) -> tuple[Optional[str], Optional[str]]:
         """
         Have an agent take their turn using their strategy.
         
         Returns:
-            The command executed, or None if no strategy
+            A tuple of (command, result), or (None, None) if no strategy.
         """
         if agent.name not in self.agent_strategies:
-            return None
+            return None, None
             
         # Get world state from agent's perspective
         world_state = self.get_world_state_for_agent(agent)
@@ -242,8 +234,9 @@ class AgentManager:
         # Execute the command
         print(f"\n{agent.name}: {command}")
         result = self.game.parser.parse_command(command, character=agent)
+        print(f"  > {result}")
         
-        return command
+        return command, result
     
     def get_world_state_for_agent(self, agent: Character) -> dict:
         """
@@ -340,14 +333,4 @@ class AgentManager:
         if self.active_agents:
             self.current_agent_index = (self.current_agent_index + 1) % len(self.active_agents)
     
-    def get_agent_summaries(self) -> List[AgentSummary]:
-        """Get summaries of all managed agents."""
-        summaries = []
-        for agent_name in self.agent_strategies.keys():
-            character = self.game.characters.get(agent_name)
-            if character:
-                summaries.append(AgentSummary(
-                    agent_id=agent_name,
-                    curr_room=character.location.name if character.location else None
-                ))
-        return summaries 
+     

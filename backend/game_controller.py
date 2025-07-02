@@ -24,14 +24,7 @@ from .text_adventure_games.games import Game
 from .text_adventure_games.things import Character, Location, Item
 
 # Agent management
-from .agent_manager import AgentManager, KaniAgent, SimpleRandomAgent
-
-# Schema imports
-from .config.schema import (
-    AgentSummary, AgentPerception, AgentActionInput, AgentActionOutput,
-    PlanActionResponse, BackendAction, MoveBackendAction, ChatBackendAction,
-    InteractBackendAction, PerceiveBackendAction, Message
-)
+from .agent_manager import AgentManager, KaniAgent
 
 # Room-based location system only - no tiles needed
 
@@ -44,6 +37,8 @@ class GameController:
     def __init__(self):
         self.game: Optional[Game] = None
         self.agent_manager: Optional[AgentManager] = None
+        self.is_running = False
+        self.task: Optional[asyncio.Task] = None
         
         # Event system for frontend
         self.event_queue: List[Dict] = []
@@ -55,6 +50,54 @@ class GameController:
         
         # Objects registry for frontend
         self.objects_registry: Dict[str, Dict] = {}
+    
+    async def start(self):
+        """Initialize and start the game loop in the background."""
+        if not self.is_running:
+            await self.initialize()
+            self.is_running = True
+            self.task = asyncio.create_task(self.run_game_loop())
+            print("Game loop started in the background")
+
+    async def stop(self):
+        """Stop the game loop."""
+        if self.is_running and self.task:
+            self.is_running = False
+            self.task.cancel()
+            try:
+                await self.task
+            except asyncio.CancelledError:
+                pass  # Expected
+            print("Game loop stopped")
+
+    async def run_game_loop(self):
+        """The main game loop where agents take turns."""
+        while self.is_running:
+            if self.turn_counter >= self.max_turns_per_session:
+                print("Max turns reached, stopping game.")
+                break
+
+            agent = self.agent_manager.get_next_agent()
+            if agent:
+                command, result = await self.agent_manager.execute_agent_turn(agent)
+                
+                # Log the action and result as an event
+                self._add_event(
+                    event_type="agent_action",
+                    data={
+                        "agent_id": agent.name,
+                        "command": command,
+                        "result": result,
+                        "turn": self.turn_counter
+                    }
+                )
+                
+                # Advance to the next agent
+                self.agent_manager.advance_turn()
+                self.turn_counter += 1
+
+            # Small delay to prevent a tight loop
+            await asyncio.sleep(1)  # Adjust as needed
     
     async def initialize(self):
         """Initialize the game world and agents."""
@@ -194,14 +237,11 @@ class GameController:
             self.agent_manager.register_agent_strategy("alan_002", alan_agent)
             
             print("AI agents set up successfully")
-            
         except Exception as e:
             print(f"Warning: Could not set up AI agents: {e}")
-            print("Using random agents as fallback")
-            
-            # Fallback to simple agents
-            self.agent_manager.register_agent_strategy("alex_001", SimpleRandomAgent())
-            self.agent_manager.register_agent_strategy("alan_002", SimpleRandomAgent())
+            print("The game will run without AI agents for NPCs")
+            # Just add the characters to active agents list without AI strategies
+            self.agent_manager.active_agents.extend(["alex_001", "alan_002"])
     
     def _initialize_objects_registry(self):
         """Initialize the objects registry for frontend communication."""
@@ -217,218 +257,47 @@ class GameController:
                     "gettable": item.get_property("gettable") if item.get_property("gettable") is not None else True
                 }
     
-    async def plan_agent_action(self, agent_id: str) -> PlanActionResponse:
+    def get_world_state(self) -> Dict[str, Any]:
         """
-        Plan an action for an agent using their AI strategy.
+        Get the complete state of the game world.
         """
         if not self.game or not self.agent_manager:
-            raise RuntimeError("Game not initialized")
-        
-        character = self.game.characters.get(agent_id)
-        if not character:
-            raise KeyError(f"Agent {agent_id} not found")
-        
-        # Get current perception
-        perception = self._get_agent_perception(character)
-        
-        # Check if agent has a strategy
-        if agent_id not in self.agent_manager.agent_strategies:
-            # Return a default perceive action
-            action = AgentActionOutput(
-                agent_id=agent_id,
-                action=PerceiveBackendAction(action_type="perceive"),
-                emoji="👀",
-                timestamp=self._get_current_timestamp(),
-                current_room=character.location.name if character.location else None
-            )
-        else:
-            # Get world state and plan action
-            world_state = self.agent_manager.get_world_state_for_agent(character)
-            strategy = self.agent_manager.agent_strategies[agent_id]
-            
-            try:
-                command = await strategy.select_action(world_state)
-                action = self._convert_command_to_action(agent_id, command, character)
-            except Exception as e:
-                print(f"Error planning action for {agent_id}: {e}")
-                action = AgentActionOutput(
-                    agent_id=agent_id,
-                    action=PerceiveBackendAction(action_type="perceive"),
-                    emoji="❌",
-                    timestamp=self._get_current_timestamp(),
-                    current_room=character.location.name if character.location else None
-                )
-        
-        return PlanActionResponse(
-            action=action,
-            perception=perception
-        )
-    
-    async def confirm_agent_action(self, action_input: AgentActionInput):
-        """
-        Confirm and execute an agent's action, updating the game state.
-        """
+            return {"status": "not_initialized"}
+
+        return {
+            "agents": self.get_all_agent_states(),
+            "objects": self.get_all_objects(),
+            "locations": self.get_all_location_states(),
+            "game_status": self.get_game_status()
+        }
+
+    def get_all_agent_states(self) -> Dict[str, Dict]:
+        """Get the state of all agents."""
         if not self.game:
-            raise RuntimeError("Game not initialized")
+            return {}
         
-        agent_id = action_input.agent_id
-        character = self.game.characters.get(agent_id)
-        if not character:
-            raise KeyError(f"Agent {agent_id} not found")
-        
-        # Execute the action based on its type
-        action = action_input.action
-        
-        if action.action_type == "move":
-            await self._execute_move_action(character, action)
-        elif action.action_type == "chat":
-            await self._execute_chat_action(character, action)
-        elif action.action_type == "interact":
-            await self._execute_interact_action(character, action)
-        elif action.action_type == "perceive":
-            # Perceive actions don't change state, just return current perception
-            pass
-        
-        # Add event to queue
-        self._add_event(action.action_type, {
-            "agent_id": agent_id,
-            "action": action.dict(),
-            "timestamp": self._get_current_timestamp()
-        })
-    
-    def _convert_command_to_action(self, agent_id: str, command: str, character: Character) -> AgentActionOutput:
-        """Convert a text command to an AgentActionOutput."""
-        command_parts = command.lower().split()
-        
-        if not command_parts:
-            return AgentActionOutput(
-                agent_id=agent_id,
-                action=PerceiveBackendAction(action_type="perceive"),
-                emoji="👀",
-                timestamp=self._get_current_timestamp(),
-                current_room=character.location.name if character.location else None
-            )
-        
-        action_verb = command_parts[0]
-        
-        # Movement commands
-        if action_verb == "go" and len(command_parts) > 1:
-            direction = command_parts[1]
-            if character.location and direction in character.location.connections:
-                destination = character.location.connections[direction]
-                
-                return AgentActionOutput(
-                    agent_id=agent_id,
-                    action=MoveBackendAction(
-                        action_type="move",
-                        destination_room=destination.name
-                    ),
-                    emoji="🚶",
-                    timestamp=self._get_current_timestamp(),
-                    current_room=character.location.name
-                )
-        
-        # Chat commands (basic implementation)
-        if action_verb == "say" or "hello" in command or "hi" in command:
-            # For now, create a simple greeting message
-            message = Message(
-                sender=agent_id,
-                receiver="player",  # Default to player
-                message="Hello!",
-                timestamp=self._get_current_timestamp()
-            )
-            
-            return AgentActionOutput(
-                agent_id=agent_id,
-                action=ChatBackendAction(
-                    action_type="chat",
-                    message=message
-                ),
-                emoji="💬",
-                timestamp=self._get_current_timestamp(),
-                current_room=character.location.name
-            )
-        
-        # Interact commands
-        if action_verb in ["get", "take", "examine", "use"]:
-            object_name = " ".join(command_parts[1:]) if len(command_parts) > 1 else "unknown"
-            
-            return AgentActionOutput(
-                agent_id=agent_id,
-                action=InteractBackendAction(
-                    action_type="interact",
-                    object=object_name,
-                    current_state="default",
-                    new_state="interacted"
-                ),
-                emoji="🤏",
-                timestamp=self._get_current_timestamp(),
-                current_room=character.location.name
-            )
-        
-        # Default to perceive
-        return AgentActionOutput(
-            agent_id=agent_id,
-            action=PerceiveBackendAction(action_type="perceive"),
-            emoji="👀",
-            timestamp=self._get_current_timestamp(),
-            current_room=character.location.name if character.location else None
-        )
-    
-    async def _execute_move_action(self, character: Character, action):
-        """Execute a move action."""
-        if hasattr(action, 'destination_room'):
-            destination_name = action.destination_room
-            destination = self.game.locations.get(destination_name)
-            
-            if destination and character.location:
-                # Remove from current location
-                character.location.remove_character(character)
-                # Add to new location
-                destination.add_character(character)
-                character.location = destination
-    
-    async def _execute_chat_action(self, character: Character, action):
-        """Execute a chat action."""
-        # In a full implementation, this would handle message routing
-        pass
-    
-    async def _execute_interact_action(self, character: Character, action):
-        """Execute an interact action."""
-        # In a full implementation, this would handle object interactions
-        pass
-    
-    def _get_agent_perception(self, character: Character) -> AgentPerception:
-        """Generate agent perception data."""
-        if not character.location:
-            return AgentPerception()
-        
-        # Get visible objects in location
-        visible_objects = {}
-        for item_name, item in character.location.items.items():
-            visible_objects[item_name] = {
-                "room": character.location.name,
-                "state": "default"
+        states = {}
+        for agent_id, character in self.game.characters.items():
+            states[agent_id] = self.get_agent_state(agent_id)
+        return states
+
+    def get_all_location_states(self) -> Dict[str, Dict]:
+        """Get the state of all locations."""
+        if not self.game:
+            return {}
+
+        states = {}
+        for loc_name, location in self.game.locations.items():
+            states[loc_name] = {
+                "name": loc_name,
+                "description": location.description,
+                "items": list(location.items.keys()),
+                "characters": list(location.characters.keys()),
+                "connections": {d: l.name for d, l in location.connections.items()}
             }
-        
-        # Get visible agents
-        visible_agents = [
-            char_name for char_name in character.location.characters.keys()
-            if char_name != character.name
-        ]
-        
-        return AgentPerception(
-            timestamp=self._get_current_timestamp(),
-            current_room=character.location.name,
-            visible_objects=visible_objects,
-            visible_agents=visible_agents,
-            chatable_agents=visible_agents,  # For simplicity, all visible agents are chatable
-            heard_messages=[]  # Would implement message system here
-        )
+        return states
     
-    def _get_current_timestamp(self) -> str:
-        """Get current timestamp in the expected format."""
-        return datetime.now().strftime("%dT%H:%M:%S")
+    
     
     def _add_event(self, event_type: str, data: Dict):
         """Add an event to the queue."""
@@ -441,23 +310,15 @@ class GameController:
         }
         self.event_queue.append(event)
     
+    def _get_current_timestamp(self) -> str:
+        """Get current timestamp as ISO format string."""
+        return datetime.now().isoformat()
+    
     def get_events_since(self, last_event_id: int) -> List[Dict]:
         """Get events since the specified ID."""
         return [e for e in self.event_queue if e["id"] > last_event_id]
     
-    def get_all_agent_summaries(self) -> List[AgentSummary]:
-        """Get summaries of all agents."""
-        if not self.game:
-            return []
-        
-        summaries = []
-        for agent_name, character in self.game.characters.items():
-            summaries.append(AgentSummary(
-                agent_id=agent_name,
-                curr_room=character.location.name if character.location else None
-            ))
-        
-        return summaries
+    
     
     def get_agent_state(self, agent_id: str) -> Dict:
         """Get current state of a specific agent."""
@@ -479,16 +340,15 @@ class GameController:
         """Get all objects and their states."""
         return list(self.objects_registry.values())
     
-    def reset_objects(self):
-        """Reset all objects to initial state."""
-        self._initialize_objects_registry()
+    
     
     async def reset(self):
         """Reset the entire game."""
-        await self.initialize()
+        await self.stop()
         self.event_queue.clear()
         self.event_id_counter = 0
         self.turn_counter = 0
+        await self.start()
     
     def get_game_status(self) -> Dict:
         """Get current game status."""
