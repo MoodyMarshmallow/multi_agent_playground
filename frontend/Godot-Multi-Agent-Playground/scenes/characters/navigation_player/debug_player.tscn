@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://bi7f5nsobe4bj"]
+
+[ext_resource type="Script" path="res://scenes/characters/navigation_player/debug_player.gd" id="1_41gyp"]
+[ext_resource type="PackedScene" uid="uid://0vuviv68yjtr" path="res://scenes/components/player_animated_sprite.tscn" id="2_tiqum"]
+[ext_resource type="SpriteFrames" uid="uid://3tn4pbylja6i" path="res://assets/game/characters/agents/sprite_frames/amelia_003_sprite_frames.tres" id="3_aeibl"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5wu6k"]
+radius = 1.0
+
+[node name="DebugPlayer" type="CharacterBody2D"]
+collision_layer = 2
+script = ExtResource("1_41gyp")
+
+[node name="AnimatedSprite2D" parent="." instance=ExtResource("2_tiqum")]
+position = Vector2(0, -4)
+sprite_frames = ExtResource("3_aeibl")
+animation = &"walk_up"
+autoplay = ""
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_5wu6k")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]

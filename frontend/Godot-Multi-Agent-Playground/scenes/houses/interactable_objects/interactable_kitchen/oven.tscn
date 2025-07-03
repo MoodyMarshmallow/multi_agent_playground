@@ -1,0 +1,110 @@
+[gd_scene load_steps=16 format=3 uid="uid://u7b4ml6h7vxa"]
+
+[ext_resource type="Texture2D" uid="uid://dxqk0hxjoo51b" path="res://modern_assets/animated_assets/animated_kitchen/animated_kitchen_oven.png" id="1_4u8c6"]
+[ext_resource type="Script" path="res://scenes/houses/interactable_objects/interactable_kitchen/oven.gd" id="1_tk54o"]
+[ext_resource type="PackedScene" uid="uid://c2w2uh4fkyjpq" path="res://scenes/components/interactable_component.tscn" id="2_tk54o"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e3bbl"]
+atlas = ExtResource("1_4u8c6")
+region = Rect2(48, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bsylf"]
+atlas = ExtResource("1_4u8c6")
+region = Rect2(64, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gvht2"]
+atlas = ExtResource("1_4u8c6")
+region = Rect2(80, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4ciru"]
+atlas = ExtResource("1_4u8c6")
+region = Rect2(0, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xg41e"]
+atlas = ExtResource("1_4u8c6")
+region = Rect2(0, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_exx1a"]
+atlas = ExtResource("1_4u8c6")
+region = Rect2(0, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a8fir"]
+atlas = ExtResource("1_4u8c6")
+region = Rect2(16, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rwfk4"]
+atlas = ExtResource("1_4u8c6")
+region = Rect2(32, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cy1os"]
+atlas = ExtResource("1_4u8c6")
+region = Rect2(48, 0, 16, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_apxl6"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e3bbl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bsylf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gvht2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4ciru")
+}],
+"loop": false,
+"name": &"close_oven",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xg41e")
+}],
+"loop": false,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_exx1a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a8fir")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rwfk4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cy1os")
+}],
+"loop": false,
+"name": &"open_oven",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ydq8c"]
+size = Vector2(16, 28)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qroym"]
+size = Vector2(52, 31)
+
+[node name="Oven" type="StaticBody2D"]
+script = ExtResource("1_tk54o")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_apxl6")
+animation = &"close_oven"
+autoplay = "default"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_ydq8c")
+
+[node name="InteractableComponent" parent="." instance=ExtResource("2_tk54o")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractableComponent"]
+position = Vector2(-4, 16.5)
+shape = SubResource("RectangleShape2D_qroym")
+debug_color = Color(0.855179, 0.27497, 0.621369, 0.42)

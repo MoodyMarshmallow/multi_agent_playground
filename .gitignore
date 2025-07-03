@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+.env/
+venv/
+
+# Godot
+*.import/
+*.godot/
+.export/
+.godot/
+frontend/godot/export/
+
+# IDEs
+.cursor/
+.vscode/
+.idea/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Project Testing
+simulacra_visualization/
+
+# Resources
+resources_old/
+resources/

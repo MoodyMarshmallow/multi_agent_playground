@@ -1,0 +1,166 @@
+[gd_scene load_steps=24 format=3 uid="uid://c5vfag0qfldly"]
+
+[ext_resource type="Script" path="res://scenes/houses/interactable_objects/interactable_bathroom/sink.gd" id="1_iuk6r"]
+[ext_resource type="Texture2D" uid="uid://bbl0ixwn5abwi" path="res://modern_assets/animated_assets/animated_bathroom/animated_bathroom_sink_new_2_3-10 loop.png" id="1_ps2qp"]
+[ext_resource type="PackedScene" uid="uid://c2w2uh4fkyjpq" path="res://scenes/components/interactable_component.tscn" id="2_iuk6r"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_edl0a"]
+atlas = ExtResource("1_ps2qp")
+region = Rect2(416, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qvgro"]
+atlas = ExtResource("1_ps2qp")
+region = Rect2(224, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8dlch"]
+atlas = ExtResource("1_ps2qp")
+region = Rect2(256, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qmhge"]
+atlas = ExtResource("1_ps2qp")
+region = Rect2(288, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5lcqp"]
+atlas = ExtResource("1_ps2qp")
+region = Rect2(320, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yjlq0"]
+atlas = ExtResource("1_ps2qp")
+region = Rect2(352, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l3oy2"]
+atlas = ExtResource("1_ps2qp")
+region = Rect2(384, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2hf1d"]
+atlas = ExtResource("1_ps2qp")
+region = Rect2(416, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xggex"]
+atlas = ExtResource("1_ps2qp")
+region = Rect2(416, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5o0j5"]
+atlas = ExtResource("1_ps2qp")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c31yr"]
+atlas = ExtResource("1_ps2qp")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oowx3"]
+atlas = ExtResource("1_ps2qp")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mkew7"]
+atlas = ExtResource("1_ps2qp")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xf3hd"]
+atlas = ExtResource("1_ps2qp")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gbdrd"]
+atlas = ExtResource("1_ps2qp")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qcrk7"]
+atlas = ExtResource("1_ps2qp")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_joefe"]
+atlas = ExtResource("1_ps2qp")
+region = Rect2(224, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_gorvp"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_edl0a")
+}],
+"loop": false,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qvgro")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8dlch")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qmhge")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5lcqp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yjlq0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_l3oy2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2hf1d")
+}],
+"loop": false,
+"name": &"sink_off",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xggex")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5o0j5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c31yr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oowx3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mkew7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xf3hd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gbdrd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qcrk7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_joefe")
+}],
+"loop": false,
+"name": &"sink_on",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_v2ylf"]
+size = Vector2(31, 19)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8cvkg"]
+size = Vector2(44, 38)
+
+[node name="Sink" type="StaticBody2D"]
+script = ExtResource("1_iuk6r")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_gorvp")
+autoplay = "default"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0.5, -0.5)
+shape = SubResource("RectangleShape2D_v2ylf")
+
+[node name="InteractableComponent" parent="." instance=ExtResource("2_iuk6r")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractableComponent"]
+position = Vector2(2, 9)
+shape = SubResource("RectangleShape2D_8cvkg")
+debug_color = Color(0.836262, 0.295092, 0.640899, 0.42)

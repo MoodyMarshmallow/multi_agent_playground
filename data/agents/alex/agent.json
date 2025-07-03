@@ -1,0 +1,63 @@
+{
+    "agent_id": "alex_001",
+    "vision_r": 4,
+    "retention": 5,
+    "curr_time": "2023-10-01T08:00:00Z",
+    "curr_tile": [12, 8],
+    "daily_plan_req": "Finish painting, make lunch, call gallery",
+    "name": "Alex",
+    "first_name": "Alex",
+    "last_name": "Smith",
+    "age": 29,
+    "innate": {
+      "openness": 7,
+      "conscientiousness": 6,
+      "extraversion": 5
+    },
+    "learned": {
+      "languages": ["English", "French"]
+    },
+    "currently": {
+      "emotion": "focused",
+      "energy": "high"
+    },
+    "lifestyle": "artist",
+    "living_area": "downtown studio",
+    "daily_req": [
+      "Work on her paintings for her upcoming show",
+      "Take a break to watch some TV",
+      "Make lunch for herself",
+      "Work on her paintings some more",
+      "Go to bed early"
+    ],
+    "f_daily_schedule": [
+      ["sleeping", 360],
+      ["wakes up and stretches", 5],
+      ["starts her morning routine", 15],
+      ["has breakfast", 20],
+      ["working on her painting", 180],
+      ["lunch break", 60]
+    ],
+    "f_daily_schedule_hourly_org": [
+      ["sleeping", 360],
+      ["morning routine", 20],
+      ["painting", 240],
+      ["lunch", 60]
+    ],
+    "act_address": "downtown studio:main:bedroom:bed",
+    "act_start_time": "2023-10-01T08:00:00Z",
+    "act_duration": 30,
+    "act_description": "waking up and stretching",
+    "act_pronunciatio": "🌅🤸‍♀️",
+    "act_event": ["Alex", "wake up", "bedroom"],
+    "act_obj_description": "bed",
+    "act_obj_pronunciatio": "🛏️",
+    "act_obj_event": ["Alex", "uses", "bed"],
+    "chatting_with": null,
+    "chat": [],
+    "chatting_with_buffer": {},
+    "chatting_end_time": null,
+    "act_path_set": false,
+    "planned_path": [[12, 8], [12, 9], [13, 9]]
+  }
+  
