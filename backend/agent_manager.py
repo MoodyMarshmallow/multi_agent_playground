@@ -10,10 +10,8 @@ This implements the agent management system described in REFACTOR.md:
 - AgentManager to coordinate agents with the game
 """
 
-import asyncio
 import os
-from typing import Protocol, Optional, Dict, Any, List
-from datetime import datetime
+from typing import Protocol, Optional, Dict, List
 
 # Kani imports
 from kani import Kani, ChatMessage

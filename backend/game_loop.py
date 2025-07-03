@@ -1,7 +1,7 @@
 import threading
 import time
-from backend.games import Game
-from backend.things.characters import Character
+from backend.text_adventure_games import Game
+from backend.text_adventure_games.things.characters import Character
 from backend.config.schema import PlanActionResponse, AgentActionOutput, AgentPerception
 from datetime import datetime
 

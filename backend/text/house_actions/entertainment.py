@@ -1,4 +1,4 @@
-from text.text_adventure_games.actions import base
+from backend.text_adventure_games.actions import base
 
 class WatchTV(base.Action):
     """Watch TV in the living room."""

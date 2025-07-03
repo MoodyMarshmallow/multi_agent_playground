@@ -1,5 +1,5 @@
-from text.text_adventure_games.actions import base
-from text.text_adventure_games.blocks.base import Block
+from backend.text_adventure_games.actions import base
+from backend.text_adventure_games.blocks.base import Block
 
 class UnlockDoor(base.Action):
     """Unlock the entry door with a key."""
@@ -14,7 +14,16 @@ class UnlockDoor(base.Action):
         self.key = self.parser.match_item("key", self.character.inventory.values())
 
     def check_preconditions(self):
-        return self.door is not None and self.door.get_property("is_locked") and self.key is not None
+        if self.door is None:
+            self.parser.fail("You don't see a door to unlock.")
+            return False
+        if not self.door.get_property("is_locked", False):
+            self.parser.fail("The door is already unlocked.")
+            return False
+        if self.key is None:
+            self.parser.fail("You don't have the key to unlock the door.")
+            return False
+        return True
 
     def apply_effects(self):
         self.door.set_property("is_locked", False)
@@ -34,7 +43,16 @@ class LockDoor(base.Action):
         self.key = self.parser.match_item("key", self.character.inventory.values())
 
     def check_preconditions(self):
-        return self.door is not None and not self.door.get_property("is_locked") and self.key is not None
+        if self.door is None:
+            self.parser.fail("You don't see a door to lock.")
+            return False
+        if self.door.get_property("is_locked", False):
+            self.parser.fail("The door is already locked.")
+            return False
+        if self.key is None:
+            self.parser.fail("You don't have the key to lock the door.")
+            return False
+        return True
 
     def apply_effects(self):
         self.door.set_property("is_locked", True)
@@ -48,4 +66,5 @@ class EntryDoorBlock(Block):
         self.door = door
 
     def is_blocked(self) -> bool:
-        return not self.door.get_property("is_open") or self.door.get_property("is_locked") 
+        # Block if the door is not open or is locked
+        return not self.door.get_property("is_open", False) or self.door.get_property("is_locked", False) 

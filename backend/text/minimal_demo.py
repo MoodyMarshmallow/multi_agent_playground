@@ -1,16 +1,17 @@
-from text.text_adventure_games import games, things
-from text.house_actions.containers import (
+from backend.text_adventure_games import games, things
+from backend.text.house_actions.containers import (
     OpenCloseItem, CloseItem, TakeFromContainer
 )
-from text.house_actions.door import (
-    UnlockDoor, LockDoor, EntryDoorBlock
+from backend.text.house_actions.door import (
+    UnlockDoor, LockDoor
 )
-from text.house_actions.appliance import (
+from backend.text.house_actions.appliance import (
     TurnOnSink, TurnOffSink, FillCup, FillBathtub, UseWashingMachine
 )
-from text.house_actions.entertainment import (
+from backend.text.house_actions.entertainment import (
     WatchTV, PlayPool, TakeBath, UseComputer
 )
+from backend.text.house_actions.house_action_protocol import HouseActionProtocol
 
 # --- Define Locations (Rooms) ---
 bedroom = things.Location(
@@ -219,7 +220,7 @@ player = things.Character(
 )
 
 # --- Register all custom actions ---
-custom_actions = [
+custom_actions: list[type[HouseActionProtocol]] = [
     OpenCloseItem, CloseItem, UnlockDoor, LockDoor, TurnOnSink, TurnOffSink, FillCup, FillBathtub, TakeFromContainer,
     UseWashingMachine, WatchTV, PlayPool, TakeBath, UseComputer
 ]

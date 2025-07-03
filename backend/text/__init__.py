@@ -1,1 +1,1 @@
-from .demo import *
+from .canonical_demo import *

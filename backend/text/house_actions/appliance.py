@@ -1,4 +1,4 @@
-from text.text_adventure_games.actions import base
+from backend.text_adventure_games.actions import base
 
 class TurnOnSink(base.Action):
     """Turn on the bathroom sink."""
@@ -12,7 +12,16 @@ class TurnOnSink(base.Action):
         self.sink = self.parser.match_item("sink", self.parser.get_items_in_scope(self.character))
 
     def check_preconditions(self):
-        return self.sink is not None and not self.sink.get_property("is_on")
+        if self.sink is None:
+            self.parser.fail("You don't see a sink to turn on.")
+            return False
+        if not self.sink.get_property("is_switchable", False):
+            self.parser.fail("The sink can't be turned on.")
+            return False
+        if self.sink.get_property("is_on", False):
+            self.parser.fail("The sink is already on.")
+            return False
+        return True
 
     def apply_effects(self):
         self.sink.set_property("is_on", True)
@@ -31,7 +40,16 @@ class TurnOffSink(base.Action):
         self.sink = self.parser.match_item("sink", self.parser.get_items_in_scope(self.character))
 
     def check_preconditions(self):
-        return self.sink is not None and self.sink.get_property("is_on")
+        if self.sink is None:
+            self.parser.fail("You don't see a sink to turn off.")
+            return False
+        if not self.sink.get_property("is_switchable", False):
+            self.parser.fail("The sink can't be turned off.")
+            return False
+        if not self.sink.get_property("is_on", False):
+            self.parser.fail("The sink is already off.")
+            return False
+        return True
 
     def apply_effects(self):
         self.sink.set_property("is_on", False)
@@ -48,7 +66,6 @@ class FillCup(base.Action):
         super().__init__(game)
         self.character = self.parser.get_character(command)
         self.sink = self.parser.match_item("sink", self.parser.get_items_in_scope(self.character))
-        # Use the cup from the sink's inventory via the containers registry
         containers = getattr(game, "containers", {})
         sink = containers.get("sink")
         if sink and hasattr(sink, "inventory"):
@@ -57,7 +74,16 @@ class FillCup(base.Action):
             self.cup = None
 
     def check_preconditions(self):
-        return self.sink is not None and self.sink.get_property("is_on") and self.cup is not None
+        if self.sink is None:
+            self.parser.fail("You don't see a sink to use.")
+            return False
+        if not self.sink.get_property("is_on", False):
+            self.parser.fail("The sink is not on.")
+            return False
+        if self.cup is None:
+            self.parser.fail("There is no cup to fill.")
+            return False
+        return True
 
     def apply_effects(self):
         self.character.add_to_inventory(self.cup)
@@ -76,7 +102,17 @@ class FillBathtub(base.Action):
         self.bathtub = self.parser.match_item("bathtub", self.parser.get_items_in_scope(self.character))
 
     def check_preconditions(self):
-        return self.bathtub is not None and self.bathtub.get_property("volume") < 10
+        if self.bathtub is None:
+            self.parser.fail("You don't see a bathtub to fill.")
+            return False
+        if not self.bathtub.get_property("is_fillable", False):
+            self.parser.fail("The bathtub can't be filled.")
+            return False
+        volume = self.bathtub.get_property("volume", 0)
+        if volume >= 10:
+            self.parser.fail("The bathtub is already full.")
+            return False
+        return True
 
     def apply_effects(self):
         self.bathtub.set_property("volume", 10)
@@ -95,7 +131,16 @@ class UseWashingMachine(base.Action):
         self.machine = self.parser.match_item("washing machine", self.parser.get_items_in_scope(self.character))
 
     def check_preconditions(self):
-        return self.machine is not None and self.character.location.name == "Laundry Room"
+        if self.machine is None:
+            self.parser.fail("You don't see a washing machine to use.")
+            return False
+        if not self.machine.get_property("is_switchable", False):
+            self.parser.fail("The washing machine can't be used.")
+            return False
+        if self.character.location.name != "Laundry Room":
+            self.parser.fail("You must be in the Laundry Room to use the washing machine.")
+            return False
+        return True
 
     def apply_effects(self):
         self.parser.ok("You start the washing machine. It hums quietly.") 

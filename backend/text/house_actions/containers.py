@@ -1,4 +1,4 @@
-from text.text_adventure_games.actions import base
+from backend.text_adventure_games.actions import base
 
 
 def match_first_item(parser, names, items_in_scope):
@@ -25,7 +25,19 @@ class OpenCloseItem(base.Action):
         )
 
     def check_preconditions(self):
-        return self.target is not None and not self.target.get_property("is_open")
+        if self.target is None:
+            self.parser.fail("You don't see anything to open.")
+            return False
+        if not self.target.get_property("is_openable", False):
+            self.parser.fail(f"The {self.target.name} can't be opened.")
+            return False
+        if self.target.get_property("is_open", False):
+            self.parser.fail(f"The {self.target.name} is already open.")
+            return False
+        if self.target.get_property("is_locked", False):
+            self.parser.fail(f"The {self.target.name} is locked.")
+            return False
+        return True
 
     def apply_effects(self):
         self.target.set_property("is_open", True)
@@ -48,7 +60,16 @@ class CloseItem(base.Action):
         )
 
     def check_preconditions(self):
-        return self.target is not None and self.target.get_property("is_open")
+        if self.target is None:
+            self.parser.fail("You don't see anything to close.")
+            return False
+        if not self.target.get_property("is_openable", False):
+            self.parser.fail(f"The {self.target.name} can't be closed.")
+            return False
+        if not self.target.get_property("is_open", False):
+            self.parser.fail(f"The {self.target.name} is already closed.")
+            return False
+        return True
 
     def apply_effects(self):
         self.target.set_property("is_open", False)
@@ -80,16 +101,18 @@ class TakeFromContainer(base.Action):
                         break
 
     def check_preconditions(self):
-        return (
-            self.target is not None and self.container is not None and
-            self.container.get_property("is_open", True)
-            if hasattr(self.container, 'get_property') else True
-        )
+        if self.target is None or self.container is None:
+            self.parser.fail("There is nothing to take from a container matching your command.")
+            return False
+        if not self.container.get_property("is_container", False):
+            self.parser.fail(f"The {self.container.name} is not a container.")
+            return False
+        if self.container.get_property("is_openable", False) and not self.container.get_property("is_open", True):
+            self.parser.fail(f"The {self.container.name} is closed.")
+            return False
+        return True
 
     def apply_effects(self):
-        if self.target is None:
-            self.parser.fail("There is nothing to take from a container matching your command.")
-            return
         self.character.add_to_inventory(self.target)
         del self.container.inventory[self.target.name]
         self.parser.ok(f"You take the {self.target.name} from the {self.container.name}.") 

@@ -1,4 +1,4 @@
-from text.text_adventure_games.actions import base
+from backend.text_adventure_games.actions import base
 
 class TurnOnItem(base.Action):
     """Turn on a switchable item (lamp, oven, TV, computer, etc.)."""
@@ -19,7 +19,19 @@ class TurnOnItem(base.Action):
                 break
 
     def check_preconditions(self):
-        return self.target is not None and not self.target.get_property("is_on", False)
+        if self.target is None:
+            self.parser.fail("You don't see anything to turn on.")
+            return False
+        if not self.target.get_property("is_switchable", False):
+            self.parser.fail(f"The {self.target.name} can't be turned on.")
+            return False
+        if self.target.get_property("is_on", False):
+            self.parser.fail(f"The {self.target.name} is already on.")
+            return False
+        if self.target.get_property("is_powered", True) is False:
+            self.parser.fail(f"The {self.target.name} has no power.")
+            return False
+        return True
 
     def apply_effects(self):
         self.target.set_property("is_on", True)
@@ -44,7 +56,16 @@ class TurnOffItem(base.Action):
                 break
 
     def check_preconditions(self):
-        return self.target is not None and self.target.get_property("is_on", False)
+        if self.target is None:
+            self.parser.fail("You don't see anything to turn off.")
+            return False
+        if not self.target.get_property("is_switchable", False):
+            self.parser.fail(f"The {self.target.name} can't be turned off.")
+            return False
+        if not self.target.get_property("is_on", False):
+            self.parser.fail(f"The {self.target.name} is already off.")
+            return False
+        return True
 
     def apply_effects(self):
         self.target.set_property("is_on", False)
@@ -67,14 +88,22 @@ class SetTemperature(base.Action):
             if (item.name in command or item.description.lower() in command.lower()) and item.get_property("temperature") is not None:
                 self.target = item
                 break
-        # Extract numeric value from command (e.g., "set oven temperature to 200")
         import re
         match = re.search(r"(\d+)", command)
         if match:
             self.value = int(match.group(1))
 
     def check_preconditions(self):
-        return self.target is not None and self.value is not None
+        if self.target is None:
+            self.parser.fail("You don't see anything whose temperature you can set.")
+            return False
+        if self.value is None:
+            self.parser.fail("You must specify a temperature value.")
+            return False
+        if not self.target.get_property("is_switchable", False) and self.target.get_property("temperature") is None:
+            self.parser.fail(f"The {self.target.name} can't have its temperature set.")
+            return False
+        return True
 
     def apply_effects(self):
         self.target.set_property("temperature", self.value)
@@ -101,7 +130,16 @@ class AdjustBrightness(base.Action):
             self.value = int(match.group(1))
 
     def check_preconditions(self):
-        return self.target is not None and self.value is not None
+        if self.target is None:
+            self.parser.fail("You don't see a lamp to adjust.")
+            return False
+        if self.value is None:
+            self.parser.fail("You must specify a brightness value.")
+            return False
+        if not self.target.get_property("is_switchable", False) and self.target.get_property("brightness") is None:
+            self.parser.fail(f"The {self.target.name} can't have its brightness adjusted.")
+            return False
+        return True
 
     def apply_effects(self):
         self.target.set_property("brightness", self.value)
@@ -128,7 +166,16 @@ class AdjustVolume(base.Action):
             self.value = int(match.group(1))
 
     def check_preconditions(self):
-        return self.target is not None and self.value is not None
+        if self.target is None:
+            self.parser.fail("You don't see anything whose volume you can adjust.")
+            return False
+        if self.value is None:
+            self.parser.fail("You must specify a volume value.")
+            return False
+        if not self.target.get_property("is_switchable", False) and self.target.get_property("volume") is None:
+            self.parser.fail(f"The {self.target.name} can't have its volume adjusted.")
+            return False
+        return True
 
     def apply_effects(self):
         self.target.set_property("volume", self.value)
