@@ -19,21 +19,12 @@ load_dotenv()
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from backend.config.schema import WorldStateResponse
 
-from backend.config.schema import (
-    AgentActionInput, AgentActionOutput, AgentPerception, 
-    StatusMsg, AgentPlanRequest, PlanActionResponse, AgentSummary
-)
-from backend.server.controller import plan_next_action
-from backend.character_agent.agent_manager import agent_manager
-from backend.objects.object_registry import object_registry, initialize_objects
+# Import the game controller
+from .game_controller import GameController
 
-# NEW: Import your game loop singleton
-# TODO: need to implement specific details of game loop and text adventure logic 
-from backend.game_loop import game_loop
-
-app = FastAPI()
+app = FastAPI(title="Multi-Agent Playground", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -43,35 +34,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# NEW: Start the background game loop at server startup
+# Global game controller instance
+game_controller: Optional[GameController] = None
+
 @app.on_event("startup")
-def on_startup():
-    game_loop.start_background_loop()
+async def startup_event():
+    """Initialize and start the game controller on startup."""
+    global game_controller
+    game_controller = GameController()
+    await game_controller.start()
 
-@app.post("/agent_act/plan", response_model=List[PlanActionResponse])
-def post_plan_action_batch(agent_ids: List[str]):
-    """
-    Step 1: Batched perception input → plan actions using LLM.
-    (Does NOT update state yet.)
-    """
-    return [plan_next_action(agent_id) for agent_id in agent_ids]
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Stop the game controller on shutdown."""
+    if game_controller:
+        await game_controller.stop()
 
-# New: Event polling endpoint (optional, for frontend to get recent actions)
-@app.get("/actions")
-def get_actions(since_tick: int = 0):
-    return game_loop.get_event_log(since_tick)
-
-# Get the list of all agents and their summaries
-@app.get("/agents/init", response_model=List[AgentSummary])
-def get_all_agents_init():
+# This is an example how we can wrap up the api call response in a schema
+# based on new text adventure game schema
+@app.get("/world_state", response_model=WorldStateResponse)
+async def get_world_state():
     """
     Return the complete state of the game world, including agents, 
     objects, and locations.
     """
     if not game_controller:
         raise HTTPException(status_code=500, detail="Game not initialized")
-    
-    return game_controller.get_world_state()
+    state = game_controller.get_world_state()
+    return WorldStateResponse(**state)
 
 @app.get("/game/events")
 async def get_game_events(since_id: int = 0):
@@ -91,3 +81,17 @@ async def reset_game():
     if game_controller:
         await game_controller.reset()
     return {"status": "ok"}
+
+@app.get("/game/status")
+async def get_game_status():
+    """
+    Get current game status and statistics.
+    """
+    if not game_controller:
+        raise HTTPException(status_code=500, detail="Game not initialized")
+    
+    return game_controller.get_game_status()
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000) 
