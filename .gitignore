@@ -1,7 +1,7 @@
 # Python
 __pycache__/
 *.pyc
-.env
+.env/
 
 # Godot
 *.import/
@@ -11,6 +11,7 @@ __pycache__/
 frontend/godot/export/
 
 # IDEs
+.cursor/
 .vscode/
 .idea/
 
@@ -19,4 +20,7 @@ frontend/godot/export/
 Thumbs.db
 
 # Project Testing
-frontend/frontend_server/
+simulacra_visualization/
+
+# Resources
+resources/

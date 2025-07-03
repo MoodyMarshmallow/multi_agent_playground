@@ -14,3 +14,7 @@ typing_extensions==4.14.0
 uvicorn==0.34.3
 kani[openai]==1.4.2
 python-dotenv==1.0.0
+dotenv==0.9.9
+flask==2.3.2
+flask_cors==3.0.10
+

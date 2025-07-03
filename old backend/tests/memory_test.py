@@ -8,7 +8,7 @@ backend_dir = Path(__file__).parent.parent  # Go up one level from tests/ to bac
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
-from memory.spatial import SpatialMemory
+from memory import SpatialMemory
 
 
 class SpatialTestCase(unittest.TestCase):
@@ -30,7 +30,7 @@ class SpatialTestCase(unittest.TestCase):
         })
         
         # Load expected result from example.json
-        with open("../example.json", "r") as f:
+        with open("backend/memory/data/example.json", "r") as f:
             expected = json.load(f)
         
         actual = memory.convert_to_JSON()

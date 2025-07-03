@@ -1,0 +1,21 @@
+# Core dependencies for arush_llm module
+kani[openai]==1.4.2
+pydantic==2.11.5
+fastapi==0.115.12
+
+# Development and testing
+pytest==8.3.3
+pytest-asyncio==0.25.0
+pytest-cov==6.0.0
+pytest-mock==3.14.0
+
+# Utilities
+python-dotenv==1.0.0
+typing-extensions==4.14.0
+
+# For performance benchmarking
+psutil==6.1.0
+memory-profiler==0.61.0
+
+# Optional: For advanced profiling
+line-profiler==4.2.0 

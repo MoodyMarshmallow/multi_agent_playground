@@ -317,26 +317,28 @@ def get_updated_perception_for_agent(agent_id: str) -> AgentPerception:
         if other_room == current_room:
             visible_agents.append(other_id)
             chatable_agents.append(other_id)
+            chatable_agents.append(other_id)
     
-    # 4. Collect undelivered messages for this agent
+    # 5. Collect undelivered messages for this agent
     heard_messages = []
-    queue = load_json(MESSAGES_PATH, [])
-    updated = False
-    for msg in queue:
-        if msg["receiver"] == agent_id and not msg.get("delivered", False):
-            heard_messages.append(Message(
-                sender=msg["sender"],
-                receiver=msg["receiver"],
-                message=msg["message"],
-                timestamp=msg.get("timestamp"),
-                conversation_id=msg.get("conversation_id"),
-            ))
-            msg["delivered"] = True
-            updated = True
-    if updated:
-        save_json(MESSAGES_PATH, queue)  # Only if any delivery status was changed
+    if MESSAGES_PATH.exists():
+        queue = load_json(MESSAGES_PATH, [])
+        updated = False
+        for msg in queue:
+            if msg["receiver"] == agent_id and not msg.get("delivered", False):
+                heard_messages.append(Message(
+                    sender=msg["sender"],
+                    receiver=msg["receiver"],
+                    message=msg["message"],
+                    timestamp=msg.get("timestamp"),
+                    conversation_id=msg.get("conversation_id"),
+                ))
+                msg["delivered"] = True
+                updated = True
+        if updated:
+            save_json(MESSAGES_PATH, queue)
     
-    # 5. Return up-to-date perception
+    # 6. Return up-to-date perception
     return AgentPerception(
         timestamp=timestamp,
         current_room=current_room,
@@ -400,10 +402,9 @@ def plan_next_action(agent_id: str) -> PlanActionResponse:
         content = next_action["content"]
         msg = Message(
             sender=agent_id,
-            receiver=content.get("receiver", ""),
-            message=content.get("message", ""),
-            timestamp=perception.timestamp,
-            conversation_id=content.get("conversation_id", "")
+            receiver=receiver,
+            message=message_text,
+            timestamp=perception.timestamp or datetime.now().strftime("%dT%H:%M:%S")
         )
         append_message_to_queue(msg, current_room)
         backend_action = ChatBackendAction(action_type="chat", message=msg)

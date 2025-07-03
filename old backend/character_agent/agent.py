@@ -32,8 +32,10 @@ class Agent:
             config_path (str): Path to the agent's directory (should contain agent.json and memory.json).
         """
         self.agent_dir = Path(config_path)
+        
+        # Load agent configuration from agent.json
         with open(self.agent_dir / "agent.json", "r", encoding="utf-8") as file:
-            data = json.load(file)
+            data: Dict[str, Any] = json.load(file)
 
         # Core state fields
         self.agent_id = data.get("agent_id")
@@ -59,7 +61,7 @@ class Agent:
         self.f_daily_schedule = data.get("f_daily_schedule", [])
         
 
-        # Memory
+        # Load memory from memory.json
         mem_path = self.agent_dir / "memory.json"
         if mem_path.exists():
             try:
@@ -174,6 +176,14 @@ class Agent:
             # Add more fields as needed
         }
     def to_summary_dict(self):
+        # Ensure currently is always a string for API validation
+        currently_value = getattr(self, "currently", "")
+        if isinstance(currently_value, dict):
+            # Convert dict to string representation
+            currently_value = str(currently_value)
+        elif not isinstance(currently_value, str):
+            currently_value = str(currently_value) if currently_value is not None else ""
+        
         return {
             "agent_id": self.agent_id,
             "first_name": self.first_name,
@@ -182,5 +192,5 @@ class Agent:
             "curr_room": self.curr_room,
             "age": getattr(self, "age", None),
             "occupation": getattr(self, "occupation", None),
-            "currently": getattr(self, "currently", ""),
+            "currently": currently_value,
         }

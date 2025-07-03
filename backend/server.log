@@ -1,0 +1,138 @@
+INFO:     Will watch for changes in these directories: ['/Users/cyberlives/Documents/GitHub/multi_agent_playground/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [33328] using StatReload
+INFO:     Started server process [33335]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:59680 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59683 - "GET /agents/init HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59686 - "POST /agent_act/plan HTTP/1.1" 422 Unprocessable Content
+INFO:     127.0.0.1:59689 - "POST /agent_act/plan HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59693 - "POST /agent_act/confirm HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59699 - "POST /agent_act/plan HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/uvicorn/protocols/http/h11_impl.py", line 403, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/fastapi/routing.py", line 214, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/starlette/concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/.env/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/backend/main.py", line 43, in post_plan_action_batch
+    return [plan_next_action(req.agent_id) for req in agent_requests]
+            ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/Users/cyberlives/Documents/GitHub/multi_agent_playground/backend/server/controller.py", line 308, in plan_next_action
+    location=current_location,
+             ^^^^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'current_location' where it is not associated with a value
+INFO:     127.0.0.1:59713 - "POST /agent_act/plan HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59715 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59716 - "GET /agents/init HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59717 - "POST /agent_act/plan HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59718 - "POST /agent_act/confirm HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59722 - "POST /agent_act/plan HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59753 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59755 - "GET /agents/init HTTP/1.1" 200 OK
+WARNING:  StatReload detected changes in 'server/controller.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [33335]
+INFO:     Started server process [45591]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'server/controller.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [45591]
+INFO:     Started server process [47420]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'test_godot_r_key_simulation.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [47420]
+INFO:     Started server process [47633]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:63131 - "GET /agents/init HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63132 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63133 - "POST /agent_act/plan HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63134 - "POST /agent_act/confirm HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63135 - "POST /agent_act/plan HTTP/1.1" 200 OK
+Error in confirm_action_and_update for agent alex_001: 'Message' object has no attribute 'get'
+INFO:     127.0.0.1:63136 - "POST /agent_act/confirm HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63137 - "POST /agent_act/plan HTTP/1.1" 200 OK
+Error in confirm_action_and_update for agent alan_002: 'Message' object has no attribute 'get'
+INFO:     127.0.0.1:63138 - "POST /agent_act/confirm HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63139 - "POST /agent_act/plan HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63140 - "POST /agent_act/confirm HTTP/1.1" 200 OK
+WARNING:  StatReload detected changes in 'test_godot_r_key_simulation.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [47633]
+INFO:     Started server process [48657]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.

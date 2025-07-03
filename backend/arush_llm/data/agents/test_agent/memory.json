@@ -1,0 +1,310 @@
+{
+  "agent_id": "test_agent",
+  "last_updated": 1750781780.983438,
+  "memory_capacity": 1000,
+  "episodic_memory": [
+    {
+      "id": "test_agent_0",
+      "timestamp": "01T15:00:00",
+      "location": "kitchen",
+      "event": "Made coffee and started testing",
+      "salience": 6,
+      "tags": [
+        "daily_routine",
+        "work"
+      ],
+      "created_at": 1750781684.0378208
+    },
+    {
+      "id": "test_agent_1",
+      "timestamp": "01T15:15:00",
+      "location": "kitchen",
+      "event": "Discussed test strategy with colleague",
+      "salience": 8,
+      "tags": [
+        "conversation",
+        "work",
+        "planning"
+      ],
+      "created_at": 1750781684.037825
+    },
+    {
+      "id": "test_agent_2",
+      "timestamp": "01T15:25:00",
+      "location": "office",
+      "event": "Reviewed code for optimization",
+      "salience": 7,
+      "tags": [
+        "work",
+        "technical",
+        "review"
+      ],
+      "created_at": 1750781684.0378282
+    },
+    {
+      "id": "test_agent_3",
+      "timestamp": "01T15:00:00",
+      "location": "kitchen",
+      "event": "Made coffee and started testing",
+      "salience": 6,
+      "tags": [
+        "daily_routine",
+        "work"
+      ],
+      "created_at": 1750781780.983424
+    },
+    {
+      "id": "test_agent_4",
+      "timestamp": "01T15:15:00",
+      "location": "kitchen",
+      "event": "Discussed test strategy with colleague",
+      "salience": 8,
+      "tags": [
+        "conversation",
+        "work",
+        "planning"
+      ],
+      "created_at": 1750781780.983427
+    },
+    {
+      "id": "test_agent_5",
+      "timestamp": "01T15:25:00",
+      "location": "office",
+      "event": "Reviewed code for optimization",
+      "salience": 7,
+      "tags": [
+        "work",
+        "technical",
+        "review"
+      ],
+      "created_at": 1750781780.9834292
+    }
+  ],
+  "salience_index": {
+    "6": [
+      "test_agent_3",
+      "test_agent_0"
+    ],
+    "8": [
+      "test_agent_4",
+      "test_agent_1"
+    ],
+    "7": [
+      "test_agent_2",
+      "test_agent_5"
+    ]
+  },
+  "context_index": {
+    "kitchen": [
+      "test_agent_3",
+      "test_agent_4",
+      "test_agent_0",
+      "test_agent_1"
+    ],
+    "daily_routine": [
+      "test_agent_3",
+      "test_agent_0"
+    ],
+    "work": [
+      "test_agent_2",
+      "test_agent_5",
+      "test_agent_1",
+      "test_agent_3",
+      "test_agent_4",
+      "test_agent_0"
+    ],
+    "conversation": [
+      "test_agent_4",
+      "test_agent_1"
+    ],
+    "planning": [
+      "test_agent_4",
+      "test_agent_1"
+    ],
+    "office": [
+      "test_agent_2",
+      "test_agent_5"
+    ],
+    "technical": [
+      "test_agent_2",
+      "test_agent_5"
+    ],
+    "review": [
+      "test_agent_2",
+      "test_agent_5"
+    ]
+  },
+  "timestamp_index": {
+    "01T15:00:00": [
+      "test_agent_3",
+      "test_agent_0"
+    ],
+    "01T15:15:00": [
+      "test_agent_4",
+      "test_agent_1"
+    ],
+    "01T15:25:00": [
+      "test_agent_2",
+      "test_agent_5"
+    ]
+  },
+  "cached_memories": {
+    "test_agent_0": {
+      "id": "test_agent_0",
+      "timestamp": "01T15:00:00",
+      "location": "kitchen",
+      "event": "Made coffee and started testing",
+      "salience": 6,
+      "tags": [
+        "daily_routine",
+        "work"
+      ],
+      "created_at": 1750781684.0378182
+    },
+    "test_agent_1": {
+      "id": "test_agent_1",
+      "timestamp": "01T15:15:00",
+      "location": "kitchen",
+      "event": "Discussed test strategy with colleague",
+      "salience": 8,
+      "tags": [
+        "conversation",
+        "work",
+        "planning"
+      ],
+      "created_at": 1750781684.037823
+    },
+    "test_agent_2": {
+      "id": "test_agent_2",
+      "timestamp": "01T15:25:00",
+      "location": "office",
+      "event": "Reviewed code for optimization",
+      "salience": 7,
+      "tags": [
+        "work",
+        "technical",
+        "review"
+      ],
+      "created_at": 1750781684.037826
+    },
+    "test_agent_3": {
+      "id": "test_agent_3",
+      "timestamp": "01T15:00:00",
+      "location": "kitchen",
+      "event": "Made coffee and started testing",
+      "salience": 6,
+      "tags": [
+        "daily_routine",
+        "work"
+      ],
+      "created_at": 1750781780.983423
+    },
+    "test_agent_4": {
+      "id": "test_agent_4",
+      "timestamp": "01T15:15:00",
+      "location": "kitchen",
+      "event": "Discussed test strategy with colleague",
+      "salience": 8,
+      "tags": [
+        "conversation",
+        "work",
+        "planning"
+      ],
+      "created_at": 1750781780.983426
+    },
+    "test_agent_5": {
+      "id": "test_agent_5",
+      "timestamp": "01T15:25:00",
+      "location": "office",
+      "event": "Reviewed code for optimization",
+      "salience": 7,
+      "tags": [
+        "work",
+        "technical",
+        "review"
+      ],
+      "created_at": 1750781780.983428
+    }
+  },
+  "memory_counter": 6,
+  "memories_by_salience": {
+    "6": [
+      "test_agent_0",
+      "test_agent_3"
+    ],
+    "8": [
+      "test_agent_1",
+      "test_agent_4"
+    ],
+    "7": [
+      "test_agent_2",
+      "test_agent_5"
+    ]
+  },
+  "memories_by_context": {
+    "daily_routine": [
+      "test_agent_0",
+      "test_agent_3"
+    ],
+    "work": [
+      "test_agent_0",
+      "test_agent_1",
+      "test_agent_2",
+      "test_agent_3",
+      "test_agent_4",
+      "test_agent_5"
+    ],
+    "location:kitchen": [
+      "test_agent_0",
+      "test_agent_1",
+      "test_agent_3",
+      "test_agent_4"
+    ],
+    "conversation": [
+      "test_agent_1",
+      "test_agent_4"
+    ],
+    "planning": [
+      "test_agent_1",
+      "test_agent_4"
+    ],
+    "technical": [
+      "test_agent_2",
+      "test_agent_5"
+    ],
+    "review": [
+      "test_agent_2",
+      "test_agent_5"
+    ],
+    "location:office": [
+      "test_agent_2",
+      "test_agent_5"
+    ]
+  },
+  "memories_by_timestamp": [
+    [
+      "01T15:00:00",
+      "test_agent_0"
+    ],
+    [
+      "01T15:15:00",
+      "test_agent_1"
+    ],
+    [
+      "01T15:25:00",
+      "test_agent_2"
+    ],
+    [
+      "01T15:00:00",
+      "test_agent_3"
+    ],
+    [
+      "01T15:15:00",
+      "test_agent_4"
+    ],
+    [
+      "01T15:25:00",
+      "test_agent_5"
+    ]
+  ]
+}
