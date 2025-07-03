@@ -49,6 +49,10 @@ def build_house_game() -> games.Game:
     bed.set_property("color", "blue")
     bed.set_property("quilt_color", "blue")
     bed.set_property("gettable", False)
+    bed.add_command_hint("sleep")
+    bed.add_command_hint("make bed")
+    bed.add_command_hint("clean bed")
+    bed.add_command_hint("change quilt to <color>")
     bedroom.add_item(bed)
     # ... (continue porting all items, containers, and their properties as in canonical_world.py) ...
     # --- Player character ---
