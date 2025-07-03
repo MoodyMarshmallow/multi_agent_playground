@@ -11,8 +11,8 @@ config_version=5
 [application]
 
 config/name="Multi-Agent-Playground"
-run/main_scene="res://scenes/test/test_scene_player.tscn"
-config/features=PackedStringArray("4.4", "Forward Plus")
+run/main_scene="res://scenes/test/test_scene_more_manipulatable_house.tscn"
+config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
