@@ -3,9 +3,10 @@ Testing world setup for the house adventure game.
 Builds and returns a grassroots Game object with certain rooms, items, and actions.
 """
 
-from backend.text_adventure_games import games, things
-from backend.text.house_actions import Sleep, MakeBed, CleanBed, ChangeQuilt, bed
-from backend.text.house_actions.legend import Legend
+from backend.text_adventure_games.actions import bed
+from lib.text_adventure_games import games, things
+from backend.text_game.house_actions import Sleep, MakeBed, CleanBed, ChangeQuilt
+from backend.text_game.house_actions.legend import Legend
 
 def demo():
     # --- Define Locations (Rooms) ---

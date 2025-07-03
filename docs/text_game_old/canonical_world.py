@@ -4,13 +4,13 @@ Builds and returns a fully populated Game object with all rooms, items, and acti
 """
 
 from backend.text_adventure_games import games, things
-from backend.text_old.house_actions import (
+from backend.text_game_old.house_actions import (
     OpenCloseItem, CloseItem, TakeFromContainer,
     UnlockDoor, LockDoor, TurnOnSink,
     TurnOffSink, FillCup, FillBathtub, UseWashingMachine,
     WatchTV, PlayPool, TakeBath, UseComputer
 )
-from backend.text_old.house_actions.house_action_protocol import HouseActionProtocol
+from backend.text_game_old.house_actions.house_action_protocol import HouseActionProtocol
 from typing import Type
 
 def build_canonical_house_environment() -> games.Game:

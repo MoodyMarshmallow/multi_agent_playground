@@ -21,11 +21,11 @@ backend_dir = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(backend_dir))
 
 # Import all components
-from arush_llm.utils.cache import LRUCache, AgentDataCache
-from arush_llm.utils.prompts import PromptTemplates
-from arush_llm.utils.parsers import ResponseParser, ActionValidator
-from arush_llm.agent.memory import AgentMemory, MemoryContextBuilder
-from arush_llm.agent.location import LocationTracker
+from lru_llm.utils.cache import LRUCache, AgentDataCache
+from lru_llm.utils.prompts import PromptTemplates
+from lru_llm.utils.parsers import ResponseParser, ActionValidator
+from lru_llm.agent.memory import AgentMemory, MemoryContextBuilder
+from lru_llm.agent.location import LocationTracker
 
 
 class PerformanceTimer:

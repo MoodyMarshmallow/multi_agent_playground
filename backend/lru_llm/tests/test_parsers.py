@@ -9,7 +9,7 @@ import time
 import json
 import re
 
-from arush_llm.utils.parsers import ResponseParser, ActionValidator
+from lru_llm.utils.parsers import ResponseParser, ActionValidator
 
 
 class TestResponseParser:

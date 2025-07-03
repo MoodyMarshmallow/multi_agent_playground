@@ -6,19 +6,19 @@ This module sets up a simple house world and runs the text game loop.
 import logging
 from typing import Any
 from backend.text_adventure_games import games, things
-from backend.text_old.house_actions.containers import (
+from backend.text_game_old.house_actions.containers import (
     OpenCloseItem, CloseItem, TakeFromContainer
 )
-from backend.text_old.house_actions.door import (
+from backend.text_game_old.house_actions.door import (
     UnlockDoor, LockDoor
 )
-from backend.text_old.house_actions.appliance import (
+from backend.text_game_old.house_actions.appliance import (
     TurnOnSink, TurnOffSink, FillCup, FillBathtub, UseWashingMachine
 )
-from backend.text_old.house_actions.entertainment import (
+from backend.text_game_old.house_actions.entertainment import (
     WatchTV, PlayPool, TakeBath, UseComputer
 )
-from backend.text_old.house_actions.house_action_protocol import HouseActionProtocol
+from backend.text_game_old.house_actions.house_action_protocol import HouseActionProtocol
 from backend.text_adventure_games.actions.things import Get
 
 # Configure logging

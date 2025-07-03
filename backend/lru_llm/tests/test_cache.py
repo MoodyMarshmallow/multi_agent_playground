@@ -9,7 +9,7 @@ import time
 import json
 from pathlib import Path
 
-from arush_llm.utils.cache import LRUCache, AgentDataCache
+from lru_llm.utils.cache import LRUCache, AgentDataCache
 
 
 class TestLRUCache:

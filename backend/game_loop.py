@@ -4,7 +4,7 @@ from backend.text_adventure_games.games import Game
 from backend.text_adventure_games.things import Character
 from backend.config.schema import PlanActionResponse, AgentActionOutput, AgentPerception, PerceiveBackendAction
 from datetime import datetime
-from backend.text_old.canonical_world import build_canonical_house_environment
+from backend.text_game_old.canonical_world import build_canonical_house_environment
 
 # this is just a placeholder for the game loop
 # TODO: We will need to implement the specific details of game loop to handle the game logic

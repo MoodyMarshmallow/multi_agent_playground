@@ -15,11 +15,11 @@ from pathlib import Path
 backend_dir = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(backend_dir))
 
-from arush_llm.agent.memory import AgentMemory
-from arush_llm.agent.location import LocationTracker
-from arush_llm.utils.cache import AgentDataCache
-from arush_llm.utils.prompts import PromptTemplates
-from arush_llm.utils.parsers import ResponseParser
+from lru_llm.agent.memory import AgentMemory
+from lru_llm.agent.location import LocationTracker
+from lru_llm.utils.cache import AgentDataCache
+from lru_llm.utils.prompts import PromptTemplates
+from lru_llm.utils.parsers import ResponseParser
 
 class QuickAgentDemo:
     """Demonstrates an agent using Arush LLM components."""

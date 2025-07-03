@@ -26,7 +26,7 @@ from backend.agent_manager import AgentManager, KaniAgent
 # Room-based location system only - no tiles needed
 
 # --- Canonical world setup from canonical_demo.py ---
-from backend.text_old.canonical_world import build_canonical_house_environment
+from backend.text_game_old.canonical_world import build_canonical_house_environment
 
 class GameController:
     """

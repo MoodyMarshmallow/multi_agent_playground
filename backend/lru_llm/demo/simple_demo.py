@@ -21,7 +21,7 @@ def test_cache():
     print("🔄 Testing Cache Components...")
     
     try:
-        from arush_llm.utils.cache import LRUCache, AgentDataCache
+        from lru_llm.utils.cache import LRUCache, AgentDataCache
         
         # Test LRU Cache
         cache = LRUCache(capacity=1000)
@@ -65,7 +65,7 @@ def test_prompts():
     print("\n💬 Testing Prompt Components...")
     
     try:
-        from arush_llm.utils.prompts import PromptTemplates
+        from lru_llm.utils.prompts import PromptTemplates
         
         templates = PromptTemplates()
         
@@ -103,7 +103,7 @@ def test_parsers():
     print("\n🔍 Testing Parser Components...")
     
     try:
-        from arush_llm.utils.parsers import ResponseParser, ActionValidator
+        from lru_llm.utils.parsers import ResponseParser, ActionValidator
         
         parser = ResponseParser()
         validator = ActionValidator()
@@ -126,7 +126,7 @@ def test_memory():
     print("\n🧠 Testing Memory Components...")
     
     try:
-        from arush_llm.agent.memory import AgentMemory, MemoryContextBuilder
+        from lru_llm.agent.memory import AgentMemory, MemoryContextBuilder
         
         memory = AgentMemory("test_agent", memory_capacity=1000)
         
@@ -165,7 +165,7 @@ def test_location():
     print("\n📍 Testing Location Components...")
     
     try:
-        from arush_llm.agent.location import LocationTracker
+        from lru_llm.agent.location import LocationTracker
         
         # Use correct constructor signature
         tracker = LocationTracker(cache_size=100)

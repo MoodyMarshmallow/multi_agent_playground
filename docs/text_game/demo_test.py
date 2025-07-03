@@ -2,7 +2,7 @@
 Driver script for grassroots demo testing of the text module, similar to canonical_demo.py.
 """
 
-from backend.text.canonical_world import demo
+from backend.text_game.canonical_world import demo
 
 HELP_TEXT = """
 Available commands:
@@ -24,7 +24,7 @@ def get_item_hints(game_obj):
         # Bed legend (special case)
         if getattr(item, 'name', '').lower() == 'bed':
             try:
-                from backend.text.house_actions.bed import get_bed_legend
+                from backend.text_adventure_games.actions.bed import get_bed_legend
                 hints.append(get_bed_legend())
             except Exception:
                 pass

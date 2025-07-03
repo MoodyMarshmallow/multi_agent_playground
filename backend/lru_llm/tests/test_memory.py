@@ -9,7 +9,7 @@ import time
 import json
 from pathlib import Path
 
-from arush_llm.agent.memory import AgentMemory, MemoryContextBuilder
+from lru_llm.agent.memory import AgentMemory, MemoryContextBuilder
 
 
 class TestAgentMemory:

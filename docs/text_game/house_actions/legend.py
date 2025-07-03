@@ -36,7 +36,7 @@ def get_item_hints(game_obj):
         # Bed legend (special case)
         if getattr(item, 'name', '').lower() == 'bed':
             try:
-                from backend.text.house_actions.bed import get_bed_legend
+                from backend.text_adventure_games.actions.bed import get_bed_legend
                 hints.append(get_bed_legend())
             except Exception:
                 pass

@@ -1,10 +1,15 @@
+import sys
+import os
+
+# Ensure the project root is in sys.path for module resolution
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 """
-Canonical text adventure demo for the house environment.
-This module sets up a detailed house world and runs the text game loop.
+Unified driver script for the canonical house text adventure game.
 """
 
-import os
-from backend.text_old.canonical_world import build_canonical_house_environment
+from backend.text_adventure_games.house import build_house_game
 
 HELP_TEXT = """
 Available commands:
@@ -16,16 +21,10 @@ Available commands:
   - quit/exit: Leave the game
 """
 
-def main() -> None:
-    """
-    Main entry point for the canonical text adventure demo.
-    Sets up the world and runs the game loop with robust error handling.
-    """
-    print("Welcome to the House Adventure!")
+def main():
+    print("Welcome to the House Adventure Demo!")
     try:
-        # Use the canonical world setup
-        game_obj = build_canonical_house_environment()
-        # --- Game loop ---
+        game_obj = build_house_game()
         while True:
             command = input("\n> ")
             if not command:
@@ -37,7 +36,6 @@ def main() -> None:
             if command.lower() in {"quit", "exit"}:
                 print("Thanks for playing!")
                 break
-            # Defensive: catch unknown commands before passing to parser
             result = game_obj.parser.parse_command(command)
             if result is None:
                 print("I'm not sure what you want to do.")

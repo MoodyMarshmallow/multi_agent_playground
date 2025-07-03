@@ -1,6 +1,6 @@
 import unittest
 
-from backend.text.canonical_world import demo
+from backend.text_game.canonical_world import demo
 
 
 class TestTextModule(unittest.TestCase):

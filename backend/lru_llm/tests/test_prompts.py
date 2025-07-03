@@ -8,7 +8,7 @@ import pytest
 import time
 from string import Template
 
-from arush_llm.utils.prompts import PromptTemplates
+from lru_llm.utils.prompts import PromptTemplates
 
 
 class TestPromptTemplates:

@@ -12,14 +12,14 @@ backend_dir = Path(__file__).parent.parent
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
-from arush_llm.agent.memory import AgentMemory
-from arush_llm.agent.location import LocationTracker  
-from arush_llm.utils.prompts import PromptTemplates
-from arush_llm.utils.parsers import ResponseParser
-from arush_llm.utils.cache import LRUCache
+from lru_llm.agent.memory import AgentMemory
+from lru_llm.agent.location import LocationTracker  
+from lru_llm.utils.prompts import PromptTemplates
+from lru_llm.utils.parsers import ResponseParser
+from lru_llm.utils.cache import LRUCache
 
 # Arush LLM imports - replaces character_agent
-from arush_llm.integration.character_agent_adapter import CharacterAgentAdapter as Agent, agent_manager
+from lru_llm.integration.character_agent_adapter import CharacterAgentAdapter as Agent, agent_manager
 from backend.config.schema import (
     AgentActionInput, AgentActionOutput, AgentPerception, BackendAction, 
     MoveBackendAction, ChatBackendAction, InteractBackendAction, PerceiveBackendAction, Message,

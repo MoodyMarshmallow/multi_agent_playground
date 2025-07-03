@@ -9,7 +9,7 @@ import time
 import json
 from pathlib import Path
 
-from arush_llm.agent.location import LocationTracker
+from lru_llm.agent.location import LocationTracker
 
 
 class TestLocationTracker:

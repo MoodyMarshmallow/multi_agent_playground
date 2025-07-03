@@ -12,7 +12,7 @@ backend_dir = Path(__file__).parent.parent  # Go up one level from tests/ to bac
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
-from backend.arush_llm.integration.character_agent_adapter import (
+from backend.lru_llm.integration.character_agent_adapter import (
     CharacterAgentAdapter as Agent,
     agent_manager,
 )
