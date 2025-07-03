@@ -23,6 +23,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # Import the game controller
 from .game_controller import GameController
+from .config.schema import WorldStateResponse
 
 # Global game controller instance
 game_controller: Optional[GameController] = None
