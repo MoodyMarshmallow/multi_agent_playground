@@ -100,10 +100,10 @@ Remember: You can only choose from the available actions provided. If unsure, us
                 observation += "\nTry to do something different if you've been repeating actions."
             
             # Get LLM response
-            response = await self.kani.chat_round_async(observation)
+            response = await self.kani.chat_round(observation)
             
             # Extract just the command (first line, stripped)
-            command = response.content.strip().split('\n')[0].lower()
+            command = response.text.strip().split('\n')[0].lower()
             
             # Validate command is in available actions
             valid_commands = [a['command'].lower() for a in world_state.get('available_actions', [])]
@@ -232,7 +232,7 @@ class AgentManager:
         # Execute the command
         print(f"\n{agent.name}: {command}")
         result = self.game.parser.parse_command(command, character=agent)
-        print(f"  > {result}")
+        print(f"Result: {result}")
         
         return command, result
     

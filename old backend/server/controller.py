@@ -12,15 +12,11 @@ backend_dir = Path(__file__).parent.parent
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
-from arush_llm.agent.memory import AgentMemory
-from arush_llm.agent.location import LocationTracker  
-from arush_llm.utils.prompts import PromptTemplates
-from arush_llm.utils.parsers import ResponseParser
-from arush_llm.utils.cache import LRUCache
-
-# Arush LLM imports - replaces character_agent
-from arush_llm.integration.character_agent_adapter import CharacterAgentAdapter as Agent, agent_manager
-from backend.config.schema import (
+from character_agent.agent import Agent
+from character_agent.actions import ActionsMixin
+from character_agent.kani_agent import LLMAgent
+from character_agent.agent_manager import call_llm_agent, agent_manager
+from config.schema import (
     AgentActionInput, AgentActionOutput, AgentPerception, BackendAction, 
     MoveBackendAction, ChatBackendAction, InteractBackendAction, PerceiveBackendAction, Message,
     PlanActionResponse
@@ -230,29 +226,43 @@ def build_event_description(next_action, perception):
 
 
 def get_updated_perception_for_agent(agent_id: str) -> AgentPerception:
-    # 1. Get basic agent info (simplified for demo)
+    """
+    Generate current perception data for an agent based on world state.
+    
+    Collects information about visible objects, visible agents, and undelivered messages
+    from the current world state and returns it as a structured perception object.
+    
+    Args:
+        agent_id (str): The ID of the agent to generate perception for
+        
+    Returns:
+        AgentPerception: Object containing timestamp, current_tile, visible_objects,
+                        visible_agents, chatable_agents, and heard_messages
+    """
+    # 1. Load the agent instance from the LLMAgentManager
+    agent = agent_manager.get_agent(agent_id).agent 
+    # Use agent's stored room if available, otherwise calculate from tile
+    current_room = getattr(agent, 'curr_room', None) or get_room_from_tile(agent.curr_tile)
     timestamp = datetime.now().strftime("%dT%H:%M:%S")
     
-    # 2. Use arush_llm LocationTracker to get current position
-    location_tracker = LocationTracker(agent_id)
-    location_data = location_tracker.get_current_location()
-    current_tile = location_data.get("position", [0, 0]) if location_data else [0, 0]
-    
-    # 3. Find visible objects (simplified for demo)
+    # 2. Find visible objects (same room as the agent)
     visible_objects = {}
-    # In a real implementation, this would query the world state
-    # For demo, we'll return empty objects
+    for obj_name, obj in object_registry.items():
+        obj_room = getattr(obj, 'location', None)
+        if obj_room == current_room:
+            visible_objects[obj_name] = obj.to_dict()
     
-    # 4. Find visible agents (simplified for demo)
+    # 3. Find visible agents (excluding self) - loop through all LLMAgents in manager
     visible_agents = []
     chatable_agents = []
-    
-    # For demo, simulate other agents being visible if they exist
-    all_agent_ids = ["alex_001", "alan_002", "test_agent"]
-    for other_id in all_agent_ids:
-        if other_id != agent_id:
-            # In a real implementation, check if agents are close enough
+    for other_id, llm_agent in agent_manager._agents.items():
+        if other_id == agent_id:
+            continue
+        other_agent = llm_agent.agent
+        other_room = getattr(other_agent, 'curr_room', None) or get_room_from_tile(getattr(other_agent, 'curr_tile', None))
+        if other_room == current_room:
             visible_agents.append(other_id)
+            chatable_agents.append(other_id)
             chatable_agents.append(other_id)
     
     # 5. Collect undelivered messages for this agent
@@ -287,81 +297,55 @@ def get_updated_perception_for_agent(agent_id: str) -> AgentPerception:
 # --- Core controller functions ---
 
 def plan_next_action(agent_id: str) -> PlanActionResponse:
-    # 1. Get latest perception for this agent from the world state
+    """
+    Plan and execute the next action for an agent based on current world state.
+    
+    This is the main controller function that:
+    1. Gets updated perception for the agent
+    2. Uses the LLM to decide on the next action
+    3. Immediately applies the action to update world state
+    4. Records the event in agent memory
+    5. Returns the action and updated perception
+    
+    Args:
+        agent_id (str): The ID of the agent to plan an action for
+        
+    Returns:
+        PlanActionResponse: Object containing the planned action and updated perception
+    """
+    # Validate agent_id before proceeding
+    agent_dir = PROJECT_ROOT / "data" / "agents" / agent_id
+    agent_json = agent_dir / "agent.json"
+    if not agent_json.exists():
+        raise FileNotFoundError(f"Agent with id '{agent_id}' does not exist: {agent_json}")
+    # 1. Get latest perception for this agent from the world state (not from passed-in parameter)
     perception = get_updated_perception_for_agent(agent_id)
     perception_dict = perception.model_dump()
     
-    # 2. Initialize arush_llm components
-    memory = AgentMemory(agent_id)
-    location_tracker = LocationTracker(agent_id)
-    prompt_templates = PromptTemplates()
-    parser = ResponseParser()
-    
-    # 3. Update location and memory with current perception
-    if perception.current_tile:
-        location_tracker.update_position(perception.current_tile)
-    
-    # 4. Generate action using arush_llm
-    current_location_data = location_tracker.get_current_location()
-    current_location = current_location_data.get("room", "unknown") if current_location_data else "unknown"
-    
-    # Add heard messages to memory
-    for msg in perception.heard_messages or []:
-        memory.add_event(
-            timestamp=msg.timestamp,
-            location=current_location,
-            event=f"Heard from {msg.sender}: {msg.message}",
-            salience=8
-        )
-    context = memory.get_relevant_memories(context=current_location, limit=10)
-    
-    # Build available actions list
-    available_actions = ["move", "chat", "interact", "perceive"]
-    
-    # Create prompt for LLM (simplified for demo)
-    # In a real implementation, this would be sent to an LLM
-    context_str = "; ".join([mem.get("event", "") for mem in context]) if context else "No context"
-    prompt = prompt_templates.generate_perceive_prompt(
-        agent_data={"agent_id": agent_id},
-        perception_data=perception_dict,
-        memory_context=context_str,
-        timestamp=perception.timestamp or datetime.now().strftime("%dT%H:%M:%S")
-    )
-    
-    # Parse response (simplified for demo)
-    action_type = "perceive"  # Default safe action
-    emoji = "👀"
-    backend_action = PerceiveBackendAction(action_type="perceive")
-    current_tile = perception.current_tile or [0, 0]
-    
-    # Simple round-robin demo behavior
-    import random
-    if random.random() < 0.3:  # 30% chance to move
-        action_type = "move"
-        # Move to a nearby position
-        x, y = current_tile if current_tile else [0, 0]
-        destination = [x + random.randint(-2, 2), y + random.randint(-2, 2)]
-        backend_action = MoveBackendAction(action_type="move", destination_tile=tuple(destination))
-        current_tile = destination
-        emoji = "🚶"
+    agent_dir = PROJECT_ROOT / "data" / "agents" / agent_id
+    agent = Agent(agent_dir)
+    agent.update_perception(perception.model_dump())
+    agent.heard_messages = perception_dict.get("heard_messages", [])
+    agent_state = agent.to_state_dict()
+
+    # 1. Decide next action using LLM
+    next_action = call_llm_agent(agent_state, perception_dict)
+    current_room = perception.current_room or get_room_from_tile(agent.curr_tile)
+
+    action_type = next_action.get("action_type")
+    backend_action = None
+
+    # 2. Immediately apply the action and update agent/object state
+    if action_type == "move":
+        destination = next_action["content"].get("destination_coordinates", [0, 0])
+        destination_room = get_room_from_tile(destination)
+        backend_action = MoveBackendAction(action_type="move", destination_room=destination_room, destination_tile=destination)
+        current_room = destination_room
         
-        # Update location tracker
-        location_tracker.update_position(destination)
-        
-        # Add memory event
-        memory.add_event(
-            timestamp=perception.timestamp or datetime.now().strftime("%dT%H:%M:%S"),
-            location=f"tile_{destination[0]}_{destination[1]}",
-            event=f"Moved to position {destination}",
-            salience=5
-        )
-    
-    elif random.random() < 0.2 and perception.chatable_agents:  # 20% chance to chat
-        action_type = "chat"
-        receiver = random.choice(perception.chatable_agents)
-        greetings = ["Hello!", "How are you?", "Nice day!", "What's up?"]
-        message_text = random.choice(greetings)
-        
+        agent.update_agent_data({"curr_tile": destination})
+        agent.update_agent_data({"current_room": current_room})
+    elif action_type == "chat":
+        content = next_action["content"]
         msg = Message(
             sender=agent_id,
             receiver=receiver,
@@ -370,105 +354,70 @@ def plan_next_action(agent_id: str) -> PlanActionResponse:
         )
         append_message_to_queue(msg, current_tile)
         backend_action = ChatBackendAction(action_type="chat", message=msg)
-        emoji = "💬"
-        
-        # Add memory event
-        memory.add_event(
-            timestamp=perception.timestamp or datetime.now().strftime("%dT%H:%M:%S"),
-            location=current_location,
-            event=f"Chatted with {receiver}: {message_text}",
-            salience=7
+    elif action_type == "interact":
+        content = next_action["content"]
+        obj_name = content.get("object", "")
+        new_state = content.get("new_state", "")
+        backend_action = InteractBackendAction(
+            action_type="interact",
+            object=obj_name,
+            current_state=content.get("current_state", ""),
+            new_state=new_state
         )
+        obj = object_registry.get(obj_name)
+        if obj and obj.can_transition(new_state):
+            obj.transition(new_state)
+    else:
+        backend_action = PerceiveBackendAction(action_type="perceive")
 
-    # 5. Save memory state
-    memory.cleanup_old_memories(days_to_keep=7)
-    
-    # 6. Get updated perception
+    # Record event/memory as before
+    event = build_event_description(next_action, perception)
+    location = extract_location(perception)
+    salience = evaluate_event_salience(agent, event)
+    agent.update_agent_data({"currently": event})
+    agent.add_memory_event(
+        timestamp=perception.timestamp,
+        location=location,
+        event=event,
+        salience=salience
+    )
+    agent.save()
+    agent.save_memory()
+
     latest_perception = get_updated_perception_for_agent(agent_id)
 
     return PlanActionResponse(
         action=AgentActionOutput(
             agent_id=agent_id,
             action=backend_action,
-            emoji=emoji,
-            timestamp=perception.timestamp or datetime.now().strftime("%dT%H:%M:%S"),
-            current_tile=current_tile
+            emoji=next_action.get("emoji", "👀"),
+            timestamp=perception.timestamp,
+            current_room=current_room
         ),
         perception=latest_perception
     )
 
-def confirm_action_and_update(agent_msg: AgentActionInput) -> None:
-    """Update agent state and memory after action confirmation"""
+def initialize_llm_agent(agent_id: str, api_key: Optional[str] = None) -> LLMAgent:
+    """
+    Evaluate how important/salient an event is for a given agent using LLM.
+    
+    Uses the agent's LLM to determine the importance of an event on a scale,
+    which helps prioritize which memories to retain and retrieve.
+    
+    Args:
+        agent (Agent): The agent for whom to evaluate the event
+        event_description (str): Description of the event to evaluate
+        
+    Returns:
+        int: Salience score (typically 1-10), with 5 as default fallback on error
+    """
     try:
-        # Initialize arush_llm components
-        memory = AgentMemory(agent_msg.agent_id)
-        location_tracker = LocationTracker(agent_msg.agent_id)
+        # Use the managed LLMAgent directly from agent_manager
+        llm_agent = agent_manager.get_agent(agent.agent_id)
         
-        # Update location if position changed
-        if agent_msg.perception.current_tile:
-            location_tracker.update_position(agent_msg.perception.current_tile)
-        
-        # Get current location for events
-        current_location_data = location_tracker.get_current_location()
-        current_location = current_location_data.get("room", "unknown") if current_location_data else "unknown"
-        
-        # Build event description from action
-        event_parts = []
-        action = getattr(agent_msg, "action", None)
-        if action:
-            action_type = getattr(action, "action_type", "unknown")
-            if action_type == "move":
-                dest = getattr(action, "destination_tile", agent_msg.perception.current_tile)
-                event_parts.append(f"Moved to tile {dest}")
-            elif action_type == "chat":
-                event_parts.append("Engaged in conversation")
-            elif action_type == "interact":
-                event_parts.append("Interacted with object")
-            elif action_type == "perceive":
-                event_parts.append("Observed surroundings")
-        
-        # Add perception context
-        if agent_msg.perception.visible_agents:
-            event_parts.append(f"Near agents: {', '.join(agent_msg.perception.visible_agents)}")
-        if agent_msg.perception.visible_objects:
-            obj_count = len(agent_msg.perception.visible_objects)
-            event_parts.append(f"Observed {obj_count} objects")
-        
-        event_description = "; ".join(event_parts) if event_parts else "Activity completed"
-        
-        # Add event to memory
-        memory.add_event(
-            timestamp=agent_msg.perception.timestamp or datetime.now().strftime("%dT%H:%M:%S"),
-            location=current_location,
-            event=event_description,
-            salience=5
-        )
-        
-        # Process heard messages
-        if agent_msg.perception.heard_messages:
-            for msg in agent_msg.perception.heard_messages:
-                memory.add_event(
-                    timestamp=msg.get("timestamp", agent_msg.perception.timestamp),
-                    location=current_location,
-                    event=f"Heard from {msg.get('sender', 'unknown')}: {msg.get('message', '')}",
-                    salience=8
-                )
-        
-        # Clean up old memories
-        memory.cleanup_old_memories(days_to_keep=7)
-        
+        salience = asyncio.run(llm_agent.evaluate_event_salience(event_description))
+        print(f"Event salience evaluation: '{event_description}' = {salience}")
+        return salience
     except Exception as e:
-        print(f"Error in confirm_action_and_update for agent {agent_msg.agent_id}: {e}")
-        # Don't fail the request, just log the error
-
-# Removed LLMAgent functions - using arush_llm instead
-
-def evaluate_event_salience(agent: Agent, event_description: str) -> int:
-    """Simple salience evaluation using arush_llm components"""
-    # For demo purposes, return a simple salience score
-    keywords = ["important", "urgent", "message", "chat", "move", "interact"]
-    salience = 3  # Base salience
-    for keyword in keywords:
-        if keyword.lower() in event_description.lower():
-            salience += 2
-    return min(salience, 10)  # Cap at 10
+        print(f"Error evaluating salience: {e}")
+        return 5  # Default fallback
