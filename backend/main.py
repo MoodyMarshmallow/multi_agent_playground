@@ -19,11 +19,21 @@ load_dotenv()
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
-# Import the game controller
-from .game_controller import GameController
+from backend.config.schema import (
+    AgentActionInput, AgentActionOutput, AgentPerception, 
+    StatusMsg, AgentPlanRequest, PlanActionResponse, AgentSummary
+)
+from backend.server.controller import plan_next_action
+from backend.character_agent.agent_manager import agent_manager
+from backend.objects.object_registry import object_registry, initialize_objects
 
-app = FastAPI(title="Multi-Agent Playground", version="1.0.0")
+# NEW: Import your game loop singleton
+# TODO: need to implement specific details of game loop and text adventure logic 
+from backend.game_loop import game_loop
+
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -33,24 +43,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Global game controller instance
-game_controller: Optional[GameController] = None
-
+# NEW: Start the background game loop at server startup
 @app.on_event("startup")
-async def startup_event():
-    """Initialize and start the game controller on startup."""
-    global game_controller
-    game_controller = GameController()
-    await game_controller.start()
+def on_startup():
+    game_loop.start_background_loop()
 
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Stop the game controller on shutdown."""
-    if game_controller:
-        await game_controller.stop()
+@app.post("/agent_act/plan", response_model=List[PlanActionResponse])
+def post_plan_action_batch(agent_ids: List[str]):
+    """
+    Step 1: Batched perception input → plan actions using LLM.
+    (Does NOT update state yet.)
+    """
+    return [plan_next_action(agent_id) for agent_id in agent_ids]
 
-@app.get("/world_state")
-async def get_world_state():
+# New: Event polling endpoint (optional, for frontend to get recent actions)
+@app.get("/actions")
+def get_actions(since_tick: int = 0):
+    return game_loop.get_event_log(since_tick)
+
+# Get the list of all agents and their summaries
+@app.get("/agents/init", response_model=List[AgentSummary])
+def get_all_agents_init():
     """
     Return the complete state of the game world, including agents, 
     objects, and locations.
@@ -78,17 +91,3 @@ async def reset_game():
     if game_controller:
         await game_controller.reset()
     return {"status": "ok"}
-
-@app.get("/game/status")
-async def get_game_status():
-    """
-    Get current game status and statistics.
-    """
-    if not game_controller:
-        raise HTTPException(status_code=500, detail="Game not initialized")
-    
-    return game_controller.get_game_status()
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000) 

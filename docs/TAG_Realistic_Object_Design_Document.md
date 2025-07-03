@@ -253,4 +253,80 @@ This catalog should be updated as new objects or interactions are added to the g
 
 ---
 
-**Please review and suggest any changes or additions. Once approved, implementation will proceed.** 
+**Please review and suggest any changes or additions. Once approved, implementation will proceed.**
+
+---
+
+## 9. Managerial Overview: Highly Interactable Objects (HIOs) and Key Objects by Room
+
+This section provides a comprehensive, narrative overview of all Highly Interactable Objects (HIOs) and other significant objects included in the game environment. Each object is described in terms of its function, its role in gameplay or narrative, and its integration into the TAG system. This overview is intended for managerial and design stakeholders to understand the scope and purpose of each object, without technical implementation details.
+
+### 9.1. Kitchen
+
+- **Refrigerator**: A central storage appliance for perishable food and drinks. Players can open and close the refrigerator, store and retrieve items, and use it to prevent food spoilage. It supports a variety of interactions, making it a core HIO for resource management and realism.
+- **Oven**: Used for cooking food, the oven can be turned on or off and opened or closed. It enables cooking-based puzzles and time-based events, and can introduce hazards if misused. Its stateful nature (on/off, open/closed) makes it a key HIO.
+- **Microwave**: Provides a quick way to heat food. Like the oven, it can be opened, closed, turned on, and turned off, supporting alternative cooking mechanics and time-based challenges.
+- **Sink**: Supplies water for cleaning and filling containers. The sink can be turned on or off, and is essential for hygiene-related tasks and certain puzzles.
+- **Cabinets**: Storage spaces for dishes, utensils, and food. Cabinets can be opened and closed, and items can be placed inside or retrieved, supporting search and organization gameplay.
+- **Trash Can**: Used for waste disposal, the trash can can be opened and closed. It may contain clues or items, and supports environmental management mechanics.
+- **Toaster**: Allows players to toast bread, introducing breakfast routines and potential hazards. The toaster can be turned on or off and used with bread items.
+- **Coffee Maker**: Enables brewing coffee, which can affect player energy or trigger events. The coffee maker can be turned on or off and used to create consumable items.
+- **Food Items (Bread, Apple, Milk, etc.)**: Consumable resources that restore health or fulfill quests. These items can be eaten or drunk, and may be used in cooking or combined with other objects.
+- **Dishes (Plate, Cup, Bowl)**: Used for serving and eating food. Dishes can be cleaned, used, or stored, supporting realism and certain cleaning or serving tasks.
+- **Utensils (Fork, Knife, Spoon)**: Tools for eating or food preparation. Utensils can be used, cleaned, or stored, and may be required for specific actions or puzzles.
+
+### 9.2. Bathroom
+
+- **Toilet**: A hygiene fixture that can be flushed and have its lid opened or closed. The toilet supports realism, humor, and may be involved in puzzles or hiding items.
+- **Sink**: Provides water for washing and filling containers. The bathroom sink is essential for hygiene and may be used in cleaning or health-related tasks.
+- **Bathtub**: Can be filled or drained and entered by the player. The bathtub supports bathing, hiding, and certain puzzle mechanics.
+- **Shower**: Used for bathing, the shower can be turned on or off and entered. It may be involved in time-based events or hygiene routines.
+- **Medicine Cabinet**: A storage space for medicine and hygiene products. The cabinet can be opened or closed, and items can be retrieved or stored, supporting health and puzzle mechanics.
+- **Medicine**: Consumable items that restore health or fulfill quest requirements. Medicine can be used or given to other characters.
+- **Toothbrush and Toothpaste**: Hygiene items that can be used and, in the case of toothpaste, consumed. They support daily routine realism and may be involved in specific tasks or puzzles.
+
+### 9.3. Living Room
+
+- **TV**: An entertainment device that can be turned on or off and have its channel changed. The TV can provide clues, trigger events, or serve as a distraction, supporting both narrative and puzzle elements.
+- **Remote Control**: Used to operate the TV, the remote can be found, lost, or used, supporting search and convenience mechanics.
+- **Couch**: A piece of furniture that can be sat on or searched for hidden items. The couch supports rest mechanics and item discovery.
+- **Lamp**: Provides lighting and can be turned on or off. The lamp is essential for visibility and may be involved in mood or puzzle mechanics.
+- **Bookshelf**: Stores books and can be searched for items or clues. The bookshelf supports lore discovery and puzzle-solving.
+- **Book**: Can be read for information, clues, or story progression. Books may be required for certain puzzles or quests.
+- **Board Game**: An entertainment item that can be played, sometimes containing pieces or clues. Board games support group events and narrative depth.
+
+### 9.4. Bedroom
+
+- **Bed**: Used for sleeping, resting, or searching for hidden items. The bed supports time passage, health restoration, and item discovery.
+- **Closet**: Storage for clothes and other items. The closet can be opened or closed, and supports hiding, searching, and organization gameplay.
+- **Dresser**: Another storage option for clothes and personal items. Like the closet, it can be opened or closed and supports similar mechanics.
+- **Alarm Clock**: Can be set and turned on or off. The alarm clock is used for time-based events, waking the player, or triggering puzzles.
+- **Clothes**: Wearable items that can be put on or removed. Clothes may affect player status, disguise, or be required for certain actions or quests.
+
+### 9.5. Utility/Other
+
+- **Door**: Provides access between rooms and can be opened, closed, locked, or unlocked. Doors are central to navigation, access control, and puzzle mechanics, often involving keys or codes.
+- **Window**: Can be opened or closed, providing alternative access, escape routes, or ventilation. Windows may be involved in puzzles or environmental effects.
+- **Light Switch**: Controls lighting in a room. Light switches can be turned on or off, affecting visibility and enabling or disabling certain actions.
+- **Thermostat**: Allows the player to set the room temperature. The thermostat can affect comfort, trigger events, or be part of environmental puzzles.
+- **Phone**: Used to make calls, the phone can be involved in communication-based puzzles, receiving clues, or triggering events.
+- **Computer**: A device that can be used and turned on or off. Computers may provide information, access to other systems, or be central to certain puzzles.
+- **Battery**: A consumable resource used to power devices. Batteries can be inserted into objects like flashlights, supporting resource management mechanics.
+- **Flashlight**: Provides portable light and can be turned on or off. The flashlight is essential for exploring dark areas and may require batteries to function.
+
+### 9.6. Outdoor
+
+- **Mailbox**: A container for mail that can be opened or closed. The mailbox may contain quest items, clues, or be involved in delivery-based puzzles.
+- **Garden Hose**: Used for watering plants, the hose can be turned on or off and may be involved in gardening tasks or environmental puzzles.
+- **Grill**: An outdoor cooking appliance that can be turned on or off. The grill supports cooking events, social gatherings, or specific quests.
+- **Lawn Mower**: Used for cutting grass, the lawn mower can be started or stopped and may be involved in chores, maintenance, or unique puzzles.
+
+---
+
+**Integration into the TAG System:**
+
+All objects and HIOs are modeled as instances of the `Thing` class (typically as `Item`), with properties such as `is_interactable`, `is_consumable`, `is_openable`, `is_switchable`, and others as appropriate. Actions (e.g., open, close, use, eat, wear) are registered in the TAG parser and are available based on the object's properties. Blocks are used to restrict movement or interaction when certain conditions are not met (e.g., a locked door or a powered-off appliance). This design ensures that every object supports meaningful, context-sensitive interactions, contributing to both gameplay depth and narrative immersion.
+
+This catalog is exhaustive for the current design and should be updated as new objects or interactions are added to the game world.
+
+---
