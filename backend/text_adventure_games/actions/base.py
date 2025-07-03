@@ -297,4 +297,4 @@ class Describe(Action):
         return True
 
     def apply_effects(self):
-        self.parser.ok(self.game.describe())
+        return self.parser.ok(self.game.describe())
