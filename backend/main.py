@@ -14,6 +14,7 @@ This combines:
 from dotenv import load_dotenv
 from typing import List, Dict, Any, Optional
 import asyncio
+from contextlib import asynccontextmanager
 
 load_dotenv()
 
@@ -23,7 +24,24 @@ from fastapi.middleware.cors import CORSMiddleware
 # Import the game controller
 from .game_controller import GameController
 
-app = FastAPI(title="Multi-Agent Playground", version="1.0.0")
+# Global game controller instance
+game_controller: Optional[GameController] = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan event handler for startup and shutdown."""
+    # Startup
+    global game_controller
+    game_controller = GameController()
+    await game_controller.start()
+    
+    yield
+    
+    # Shutdown
+    if game_controller:
+        await game_controller.stop()
+
+app = FastAPI(title="Multi-Agent Playground", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -32,22 +50,6 @@ app.add_middleware(
     allow_methods=["GET", "POST"], # Allow POST only for reset
     allow_headers=["*"],
 )
-
-# Global game controller instance
-game_controller: Optional[GameController] = None
-
-@app.on_event("startup")
-async def startup_event():
-    """Initialize and start the game controller on startup."""
-    global game_controller
-    game_controller = GameController()
-    await game_controller.start()
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Stop the game controller on shutdown."""
-    if game_controller:
-        await game_controller.stop()
 
 @app.get("/world_state")
 async def get_world_state():
@@ -91,4 +93,4 @@ async def get_game_status():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000) 
+    uvicorn.run(app, host="0.0.0.0", port=8000)
