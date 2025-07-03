@@ -59,8 +59,8 @@ async def get_world_state():
     """
     if not game_controller:
         raise HTTPException(status_code=500, detail="Game not initialized")
-    
-    return game_controller.get_world_state()
+    state = game_controller.get_world_state()
+    return WorldStateResponse(**state)
 
 @app.get("/game/events")
 async def get_game_events(since_id: int = 0):

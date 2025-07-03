@@ -67,11 +67,11 @@ class Thing:
         """
         self.properties[property_name] = property
 
-    def get_property(self, property_name: str):
+    def get_property(self, property_name: str, default=None):
         """
-        Gets the value of this property for this item (defaults to False)
+        Gets the value of this property for this item (returns default if not set)
         """
-        return self.properties.get(property_name, None)
+        return self.properties.get(property_name, default)
 
     def add_command_hint(self, command: str):
         """

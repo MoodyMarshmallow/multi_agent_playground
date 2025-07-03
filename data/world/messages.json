@@ -2,23 +2,47 @@
   {
     "sender": "alan_002",
     "receiver": "alex_001",
-    "message": "Let's start cooking! What's our first step? \ud83c\udf73",
-    "timestamp": "01T10:04:27",
-    "conversation_id": "dd0649b2-ad0f-0250-eeb8-92cf76578ce5",
+    "message": "Hey Alex! Let's head to the kitchen and start gathering those ingredients. I'm excited to cook some ratatouille! \ud83d\ude0a",
+    "timestamp": "01T00:05:00",
+    "conversation_id": "140e0e1f-c417-2aaa-20b2-323fd5edecc6",
     "location": [
-      25,
-      13
+      22,
+      8
     ],
     "delivered": true
   },
   {
     "sender": "alex_001",
     "receiver": "alan_002",
-    "message": "Hey Alan, do you have any art projects you're working on? I'd love to hear about them!",
-    "timestamp": "01T10:04:27",
-    "conversation_id": "dd0649b2-ad0f-0250-eeb8-92cf76578ce5",
+    "message": "Hey Alan! Ratatouille sounds like a fantastic idea. Let's definitely experiment with those flavors together. Maybe we can plan a time to cook it soon! \ud83d\ude0a",
+    "timestamp": "01T00:05:00",
+    "conversation_id": "140e0e1f-c417-2aaa-20b2-323fd5edecc6",
     "location": [
-      33,
+      32,
+      12
+    ],
+    "delivered": true
+  },
+  {
+    "sender": "alex_001",
+    "receiver": "alan_002",
+    "message": "Hey Alan! Cooking ratatouille sounds like a great idea. Let's set a time that works for both of us. \ud83d\ude0a",
+    "timestamp": "01T00:45:00",
+    "conversation_id": "140e0e1f-c417-2aaa-20b2-323fd5edecc6",
+    "location": [
+      31,
+      12
+    ],
+    "delivered": true
+  },
+  {
+    "sender": "alan_002",
+    "receiver": "alan_002",
+    "message": "Hey! That cooking session sounds like a great idea. Looking forward to it this weekend! \ud83d\ude0a",
+    "timestamp": "01T00:45:00",
+    "conversation_id": "1e2f310c-6719-724e-6db2-a5ce491a1492",
+    "location": [
+      31,
       12
     ],
     "delivered": true
@@ -26,23 +50,23 @@
   {
     "sender": "alan_002",
     "receiver": "alex_001",
-    "message": "I've gathered all the ingredients. Should we start chopping or mixing first? \ud83c\udf7d\ufe0f",
-    "timestamp": "01T10:29:26",
-    "conversation_id": "dd0649b2-ad0f-0250-eeb8-92cf76578ce5",
+    "message": "Hey Alex! Let's plan our cooking session. How about this weekend? \ud83d\ude0a",
+    "timestamp": "01T01:00:00",
+    "conversation_id": "f737f02f-f94b-a2af-1034-86ad52138305",
     "location": [
-      26,
-      13
+      30,
+      12
     ],
     "delivered": true
   },
   {
     "sender": "alex_001",
     "receiver": "alan_002",
-    "message": "Hey Alan, I'm curious if you have any art exhibitions coming up or ideas you'd like to exchange. Let's chat about it!",
-    "timestamp": "01T10:29:26",
-    "conversation_id": "dd0649b2-ad0f-0250-eeb8-92cf76578ce5",
+    "message": "Good morning, Alan! Hope you slept well. \ud83d\ude0a",
+    "timestamp": "01T01:00:00",
+    "conversation_id": "f737f02f-f94b-a2af-1034-86ad52138305",
     "location": [
-      33,
+      31,
       12
     ],
     "delivered": false

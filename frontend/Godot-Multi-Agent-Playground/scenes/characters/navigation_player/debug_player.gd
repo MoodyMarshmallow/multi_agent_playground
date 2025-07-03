@@ -17,7 +17,7 @@ func _ready():
 	navigation_agent_2d.debug_path_custom_line_width = 3.0
 	
 	#Make the agent follow the path more precisely
-	navigation_agent_2d.path_desired_distance = 10.0  # Default is usually 20.0
+	navigation_agent_2d.path_desired_distance = 3.0  # Default is usually 20.0
 	navigation_agent_2d.target_desired_distance = 10.0  # Default is usually 10.0
 	navigation_agent_2d.path_max_distance = 15.0
 	navigation_agent_2d.simplify_path = false
@@ -70,25 +70,44 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 func navigate_to(target_position: Vector2) -> void:
-	navigation_agent_2d.set_target_position(target_position)
+	var nav_map = navigation_agent_2d.get_navigation_map()
+	if nav_map:
+		var closest_point = NavigationServer2D.map_get_closest_point(nav_map, target_position)
+		navigation_agent_2d.set_target_position(closest_point)
+	else:
+		navigation_agent_2d.set_target_position(target_position)
 	using_navigation = true
 
 func _on_debugging_input_submitted(text: String) -> void:
 	var regex = RegEx.new()
-	regex.compile("^go to (.+)$")  # Matches "go to {room}"
-	var result = regex.search(text.strip_edges())
+	var result
+
+	# Handle "go to {room}" or "g {room}"
+	regex.compile("^(go to|g)\\s+(.+)$")
+	result = regex.search(text.strip_edges())
 	if result:
-		var room_name = result.get_string(1)  # Capture group 1
-		var func_name = "get_empty_position_in_%s" % room_name
-		if HouseLayout.has_method(func_name):
-			var tile: Vector2i = HouseLayout.call(func_name)
-			if tile != null:
-				var world_pos = tile * 16
-				navigate_to(world_pos)
-				print("Navigating to", room_name, "at tile", tile, "world pos", world_pos)
-			else:
-				print("No empty tile found in", room_name)
+		var room_name = result.get_string(2).replace(" ", "_")
+		var tile: Vector2i = HouseLayout.get_empty_position_in_room_by_name(room_name)
+		if tile != null and tile != Vector2i(-1, -1):
+			var world_pos = tile * 16
+			navigate_to(world_pos)
+			print("Navigating to ", room_name, "at tile ", tile, "world pos ", world_pos)
 		else:
-			print("Unknown room:", room_name)
-	else:
-		print("Unrecognized command:", text)
+			print("No empty tile found in ", room_name)
+		return  # Only handle one command at a time
+
+	# Handle "interact with {object}" or "i {object}"
+	regex.compile("^(interact with|i)\\s+(.+)$")
+	result = regex.search(text.strip_edges())
+	if result:
+		var object_name = result.get_string(2).replace(" ", "_")
+		var tile: Vector2i = HouseLayout.get_empty_position_by_object(object_name)
+		if tile != null and tile != Vector2i(-1, -1):
+			var world_pos = tile * 16
+			navigate_to(world_pos)
+			print("Navigating to ", object_name, "at tile ", tile, "world pos ", world_pos)
+		else:
+			print("No empty tile found by ", object_name)
+		return
+
+	print("Unrecognized command: ", text)

@@ -1,21 +1,3 @@
-"""
-Multi-Agent Playground - Main Controller
-========================================
-Core controller module that handles agent action planning, perception updates, and world state management.
-
-This module implements the main control flow for multi-agent interactions including:
-- Agent action planning and execution (move, chat, interact, perceive)
-- World state perception generation and updates
-- Message queue management for inter-agent communication
-- Memory and event handling with salience evaluation
-- LLM agent lifecycle management (creation, cleanup, status)
-- Object and location tracking through spatial awareness
-- JSON-based persistence for agent state and global messages
-
-The controller serves as the bridge between the frontend (Godot) and backend systems,
-orchestrating agent behaviors and maintaining consistent world state across all agents.
-"""
-
 import asyncio
 import sys
 from pathlib import Path
@@ -40,63 +22,27 @@ from config.schema import (
     PlanActionResponse
 )
 from backend.objects.object_registry import object_registry
-from utils.room_mapping import build_tile_to_room_map
-
-with open("backend/memory/data/environment.json", "r", encoding="utf-8") as f:
-    env_map = json.load(f)
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent.resolve()
 MESSAGES_PATH = PROJECT_ROOT / "data" / "world" / "messages.json"
 
 # TODO: adjust/ what is a good timeout?
 CONVERSATION_TIMEOUT_MINUTES = 30
-tile_to_room = build_tile_to_room_map(env_map)
 
 # --- Utility functions ---
-def get_room_from_tile(tile):
-    """Returns the room name for a tile tuple (x, y) using the mapping."""
-    return tile_to_room.get(tuple(tile), None) if tile is not None else None
 
 def load_json(path, default):
-    """
-    Load JSON data from a file, returning a default value if the file doesn't exist.
-    
-    Args:
-        path: File path to the JSON file
-        default: Default value to return if file doesn't exist or can't be read
-        
-    Returns:
-        The loaded JSON data as a Python object, or the default value if loading fails
-    """
     if path.exists():
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     return default
 
 def save_json(path, data):
-    """
-    Save Python data as JSON to a file with pretty formatting.
-    
-    Args:
-        path: File path where the JSON should be saved
-        data: Python object to serialize and save as JSON
-        
-    Returns:
-        None
-    """
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
 def parse_timestamp(timestamp_str):
-    """
-    Parse timestamp string that could be in either short format (01T04:35:20) or full ISO format (2024-06-13T10:00:00).
-    
-    Args:
-        timestamp_str (str): Timestamp string in either full ISO format or short day+time format
-        
-    Returns:
-        datetime: Parsed datetime object, or current time if parsing fails
-    """
+    """Parse timestamp string that could be in either short format (01T04:35:20) or full ISO format (2024-06-13T10:00:00)"""
     try:
         # Try the full ISO format first
         return datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%S")
@@ -114,19 +60,10 @@ def parse_timestamp(timestamp_str):
 
 def get_or_create_conversation_id(sender: str, receiver: str, queue: list) -> str:
     """
-    Find existing conversation between two agents or create a new one.
-    
+    Find existing conversation between these agents or create a new one.
     A conversation is considered active if:
     1. It's between the same agents (in either direction)
     2. The last message was within CONVERSATION_TIMEOUT_MINUTES
-    
-    Args:
-        sender (str): ID of the agent sending the message
-        receiver (str): ID of the agent receiving the message  
-        queue (list): List of existing message dictionaries
-        
-    Returns:
-        str: UUID string for the conversation ID (existing or newly generated)
     """
     print(f"DEBUG: get_or_create_conversation_id - {sender} -> {receiver}")
     print(f"DEBUG: Queue has {len(queue)} messages")
@@ -179,16 +116,6 @@ def get_or_create_conversation_id(sender: str, receiver: str, queue: list) -> st
     return uuid_str
 
 def append_message_to_queue(msg, location):
-    """
-    Add a message to the global message queue and save it to disk.
-    
-    Args:
-        msg: Message object with sender, receiver, message, timestamp attributes
-        location: Current location/tile where the message was sent
-        
-    Returns:
-        None
-    """
     queue = load_json(MESSAGES_PATH, [])
     print(f"DEBUG: append_message_to_queue - Queue has {len(queue)} messages before adding")
     
@@ -207,19 +134,45 @@ def append_message_to_queue(msg, location):
     })
     save_json(MESSAGES_PATH, queue)
     print(f"DEBUG: append_message_to_queue - Queue now has {len(queue)} messages after adding")
+    
+# this if for the agent to see the messages that it has not seen yet
+# for example, in 1st round agent a sent a message to agent b, but agent b did not see it yet, then it can extract the message from the queue if it is not delivered yet
+# but currently we do not save the message into the queue when agent a sent a message to agent b
+# def inject_messages_for_agent(agent_id, agent, perception):
+#     if not MESSAGES_PATH.exists():
+#         return
+#     queue = load_json(MESSAGES_PATH, [])
+#     heard = []
+#     updated = False
+#     for msg in queue:
+#         if msg["receiver"] == agent_id and not msg["delivered"]:
+#             heard.append({
+#                 "sender": msg["sender"],
+#                 "receiver": msg["receiver"],
+#                 "message": msg["message"],
+#                 "timestamp": msg["timestamp"],
+#                 "conversation_id": msg.get("conversation_id")
+#             })
+#             msg["delivered"] = True
+#             event_str = f"Received message from {msg['sender']}: '{msg['message']}'"
+#             salience = evaluate_event_salience(agent, event_str)
+#             agent.add_memory_event(
+#                 timestamp=msg["timestamp"],
+#                 location=msg.get("location"),
+#                 event=event_str,
+#                 salience=salience
+#             )
+#             updated = True
+#     if heard:
+#         perception["heard_messages"] = perception.get("heard_messages", []) + heard
+#     if updated:
+#         save_json(MESSAGES_PATH, queue)
+#         # Save memory after processing all messages
+#         agent.save_memory()
 
 # --- Event and location helpers ---
 # TODO: neeed to replace this with the actual location of the agent from spatial memory
 def extract_location(perception):
-    """
-    Extract location information from agent perception data.
-    
-    Args:
-        perception: AgentPerception object or dict containing visible_objects
-        
-    Returns:
-        str: Human-readable location description based on visible objects' rooms
-    """
     # For Pydantic BaseModel, just use dot notation
     visible_objects = perception.visible_objects
     if visible_objects:
@@ -232,14 +185,7 @@ def extract_location(perception):
 
 def build_event_description(next_action, perception):
     """
-    Build a descriptive event string summarizing the action taken and perception received.
-    
-    Args:
-        next_action (dict): Dictionary containing action_type and content details
-        perception: AgentPerception object with visible_objects, visible_agents, heard_messages
-        
-    Returns:
-        str: Human-readable description of what happened during this action/perception cycle
+    Build an event string summarizing the action and perception.
     """
     parts = []
     # Action details
@@ -341,7 +287,7 @@ def get_updated_perception_for_agent(agent_id: str) -> AgentPerception:
     # 6. Return up-to-date perception
     return AgentPerception(
         timestamp=timestamp,
-        current_room=current_room,
+        current_tile=current_tile,
         visible_objects=visible_objects,
         visible_agents=visible_agents,
         chatable_agents=chatable_agents,
@@ -406,7 +352,7 @@ def plan_next_action(agent_id: str) -> PlanActionResponse:
             message=message_text,
             timestamp=perception.timestamp or datetime.now().strftime("%dT%H:%M:%S")
         )
-        append_message_to_queue(msg, current_room)
+        append_message_to_queue(msg, current_tile)
         backend_action = ChatBackendAction(action_type="chat", message=msg)
     elif action_type == "interact":
         content = next_action["content"]

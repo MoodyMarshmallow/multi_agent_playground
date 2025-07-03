@@ -1,7 +1,7 @@
 [gd_scene load_steps=16 format=3 uid="uid://u7b4ml6h7vxa"]
 
 [ext_resource type="Texture2D" uid="uid://dxqk0hxjoo51b" path="res://modern_assets/animated_assets/animated_kitchen/animated_kitchen_oven.png" id="1_4u8c6"]
-[ext_resource type="Script" uid="uid://bir58gvg6a4dw" path="res://scenes/houses/interactable_objects/interactable_kitchen/oven.gd" id="1_tk54o"]
+[ext_resource type="Script" path="res://scenes/houses/interactable_objects/interactable_kitchen/oven.gd" id="1_tk54o"]
 [ext_resource type="PackedScene" uid="uid://c2w2uh4fkyjpq" path="res://scenes/components/interactable_component.tscn" id="2_tk54o"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_e3bbl"]
@@ -89,7 +89,7 @@ animations = [{
 size = Vector2(16, 28)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qroym"]
-size = Vector2(14, 15)
+size = Vector2(52, 31)
 
 [node name="Oven" type="StaticBody2D"]
 script = ExtResource("1_tk54o")
@@ -105,6 +105,6 @@ shape = SubResource("RectangleShape2D_ydq8c")
 [node name="InteractableComponent" parent="." instance=ExtResource("2_tk54o")]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractableComponent"]
-position = Vector2(0, 8.5)
+position = Vector2(-4, 16.5)
 shape = SubResource("RectangleShape2D_qroym")
 debug_color = Color(0.855179, 0.27497, 0.621369, 0.42)
