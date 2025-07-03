@@ -19,6 +19,7 @@ load_dotenv()
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from backend.config.schema import WorldStateResponse
 
 # Import the game controller
 from .game_controller import GameController
@@ -49,7 +50,9 @@ async def shutdown_event():
     if game_controller:
         await game_controller.stop()
 
-@app.get("/world_state")
+# This is an example how we can wrap up the api call response in a schema
+# based on new text adventure game schema
+@app.get("/world_state", response_model=WorldStateResponse)
 async def get_world_state():
     """
     Return the complete state of the game world, including agents, 
@@ -57,8 +60,8 @@ async def get_world_state():
     """
     if not game_controller:
         raise HTTPException(status_code=500, detail="Game not initialized")
-    
-    return game_controller.get_world_state()
+    state = game_controller.get_world_state()
+    return WorldStateResponse(**state)
 
 @app.get("/game/events")
 async def get_game_events(since_id: int = 0):
