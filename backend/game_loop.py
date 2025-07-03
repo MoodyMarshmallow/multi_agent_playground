@@ -1,9 +1,10 @@
 import threading
 import time
-from backend.text_adventure_games import Game
-from backend.text_adventure_games.things.characters import Character
-from backend.config.schema import PlanActionResponse, AgentActionOutput, AgentPerception
+from backend.text_adventure_games.games import Game
+from backend.text_adventure_games.things import Character
+from backend.config.schema import PlanActionResponse, AgentActionOutput, AgentPerception, PerceiveBackendAction
 from datetime import datetime
+from backend.text_old.canonical_world import build_canonical_house_environment
 
 # this is just a placeholder for the game loop
 # TODO: We will need to implement the specific details of game loop to handle the game logic
@@ -18,15 +19,14 @@ class GameLoop:
         self.step_seconds = step_seconds
 
     def _build_game(self):
-        # Build your Game as before
-        player = Character(name="alex_001")
-        return Game(start_at=..., player=player, characters=[...])
+        # Use the canonical house environment for a valid world setup
+        return build_canonical_house_environment()
 
     def plan_and_log_actions(self):
         """
         Advance one step for all agents, log the actions.
         """
-        for agent_id in self.game.active_agent_ids():
+        for agent_id in self.game.active_agents:
             plan = self.plan_next_action(agent_id)
             with self.lock:
                 self.action_log.append({
@@ -39,10 +39,10 @@ class GameLoop:
     def plan_next_action(self, agent_id: str) -> PlanActionResponse:
         agent = self.game.characters[agent_id]
         perception = self.game.get_world_state_for_agent(agent)
-        # TODO: Call your LLM/agent planner here
+        # Use a valid PerceiveBackendAction as a placeholder
         action = AgentActionOutput(
             agent_id=agent_id,
-            action=...,  # Build using BackendAction
+            action=PerceiveBackendAction(action_type="perceive"),
             emoji="🤖",
             timestamp=datetime.utcnow().isoformat(),
             current_room=perception['location']['name']

@@ -80,10 +80,7 @@ class TakeFromContainer(base.Action):
     """Take an item from a container (drawer, cabinet, fridge, bathtub). Uses a registry on the game object."""
     ACTION_NAME = "take"
     ACTION_DESCRIPTION = "Take an item from a container (drawer, cabinet, fridge, bathtub)."
-    ACTION_ALIASES = [
-        "take note", "take bandage", "take apple", "take sandwich",
-        "take water bottle", "take rubber ducky"
-    ]
+    ACTION_ALIASES = ["take"]
 
     def __init__(self, game, command):
         super().__init__(game)
@@ -115,4 +112,47 @@ class TakeFromContainer(base.Action):
     def apply_effects(self):
         self.character.add_to_inventory(self.target)
         del self.container.inventory[self.target.name]
-        self.parser.ok(f"You take the {self.target.name} from the {self.container.name}.") 
+        self.parser.ok(f"You take the {self.target.name} from the {self.container.name}.")
+
+
+class RetrieveFromContainer(base.Action):
+    """Retrieve an item from a container (drawer, cabinet, fridge, bathtub). Uses a registry on the game object."""
+    ACTION_NAME = "retrieve"
+    ACTION_DESCRIPTION = "Retrieve an item from a container (drawer, cabinet, fridge, bathtub)."
+    ACTION_ALIASES = [
+        "retrieve",
+        "retrieve from",
+        "retrieve item",
+        "retrieve <item> from <container>",
+    ]
+
+    def __init__(self, game, command):
+        super().__init__(game)
+        self.character = self.parser.get_character(command)
+        self.target = None
+        self.container = None
+        containers = getattr(game, "containers", {})
+        for container in containers.values():
+            if hasattr(container, 'inventory'):
+                for item in container.inventory.values():
+                    if item.name in command:
+                        self.target = item
+                        self.container = container
+                        break
+
+    def check_preconditions(self):
+        if self.target is None or self.container is None:
+            self.parser.fail("There is nothing to retrieve from a container matching your command.")
+            return False
+        if not self.container.get_property("is_container", False):
+            self.parser.fail(f"The {self.container.name} is not a container.")
+            return False
+        if self.container.get_property("is_openable", False) and not self.container.get_property("is_open", True):
+            self.parser.fail(f"The {self.container.name} is closed.")
+            return False
+        return True
+
+    def apply_effects(self):
+        self.character.add_to_inventory(self.target)
+        del self.container.inventory[self.target.name]
+        self.parser.ok(f"You retrieve the {self.target.name} from the {self.container.name}.")

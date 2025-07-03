@@ -18,8 +18,8 @@ from kani import Kani, ChatMessage
 from kani.engines.openai import OpenAIEngine
 
 # Text adventure games imports
-from .text_adventure_games.things import Character
-from .text_adventure_games.games import Game
+from backend.text_adventure_games.things import Character
+from backend.text_adventure_games.games import Game
 
 
 class AgentStrategy(Protocol):

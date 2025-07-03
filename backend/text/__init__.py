@@ -1,1 +1,1 @@
-from .canonical_demo import *
+# This file marks the text_test directory as a Python package. 
