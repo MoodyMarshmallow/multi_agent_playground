@@ -20,7 +20,7 @@ Key Features:
 - External library noise is filtered out
 
 Usage:
-    from backend.logging import setup_logging, log_game_event, log_agent_decision
+    from backend.log_config import setup_logging, log_game_event, log_agent_decision
     
     # Set up logging (call once at startup)
     setup_logging()

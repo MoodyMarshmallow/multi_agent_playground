@@ -17,16 +17,14 @@ from typing import Dict, List, Optional, Any
 from datetime import datetime
 
 # Text adventure games imports
-from backend.text_adventure_games.games import Game
-from backend.text_adventure_games.things import Character, Location, Item
+from .text_adventure_games.games import Game
+from .text_adventure_games.things import Character, Location, Item
 
 # Agent management
-from backend.agent_manager import AgentManager, KaniAgent
-
-# Room-based location system only - no tiles needed
+from .agent_manager import AgentManager, KaniAgent
 
 # --- Canonical world setup from canonical_demo.py ---
-from backend.text_adventure_games.house import build_house_game
+from .text_adventure_games.house import build_house_game
 
 class GameController:
     """
@@ -118,6 +116,7 @@ class GameController:
         """
         Create a house environment matching the canonical canonical_demo.py world.
         """
+        
         return build_house_game()
     
     async def _setup_agents(self):
