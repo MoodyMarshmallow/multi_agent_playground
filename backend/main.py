@@ -23,7 +23,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # Import the game controller
 from .game_controller import GameController
-from .config.schema import WorldStateResponse
+from .config.schema import WorldStateResponse, GameEvent, GameEventList, StatusMsg, GameStatus, PlanActionResponse, AgentStateResponse, GameObject
 
 # Global game controller instance
 game_controller: Optional[GameController] = None
@@ -52,6 +52,53 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.get("/agent_act/next", response_model=List[PlanActionResponse])
+async def get_latest_agent_actions():
+    """
+    Poll the latest planned actions for all agents.
+    Returns only the actions that are available.
+    Each returned action is removed from the backend store to prevent duplicate delivery.
+    """
+    if not game_controller:
+        raise HTTPException(status_code=500, detail="Game not initialized")
+    
+    actions = []
+    # Copy the keys to avoid modifying the dict while iterating
+    for agent_id in list(game_controller.latest_agent_actions.keys()):
+        plan = game_controller.latest_agent_actions[agent_id]
+        actions.append(plan)
+        # Remove after serving, so it's not returned next poll
+        del game_controller.latest_agent_actions[agent_id]
+    return actions
+
+# check if this is the same as get world state, and do we need this?
+@app.get("/agents/states", response_model=List[AgentStateResponse])
+async def get_agents_states(agent_ids: List[str]):
+    """
+    Get the current state of multiple agents.
+    """
+    if not game_controller:
+        raise HTTPException(status_code=500, detail="Game not initialized")
+    states = []
+    for agent_id in agent_ids:
+        try:
+            state = game_controller.get_agent_state(agent_id)
+            states.append(AgentStateResponse(**state))
+        except KeyError:
+            continue  # skip missing
+    return states
+
+
+
+@app.get("/objects", response_model=List[GameObject])
+async def get_objects():
+    if not game_controller:
+        raise HTTPException(status_code=500, detail="Game not initialized")
+    return [GameObject(**obj) for obj in game_controller.objects_registry.values()]
+
+
+
 @app.get("/world_state")
 async def get_world_state():
     """
@@ -63,34 +110,26 @@ async def get_world_state():
     state = game_controller.get_world_state()
     return WorldStateResponse(**state)
 
-@app.get("/game/events")
+@app.get("/game/events", response_model=GameEventList)
 async def get_game_events(since_id: int = 0):
-    """
-    Get game events since the specified ID for frontend visualization.
-    """
     if not game_controller:
         raise HTTPException(status_code=500, detail="Game not initialized")
-    
-    return game_controller.get_events_since(since_id)
+    events = game_controller.get_events_since(since_id)
+    # Ensure each event matches GameEvent
+    return GameEventList(events=[GameEvent(**e) for e in events])
 
-@app.post("/game/reset")
+@app.post("/game/reset", response_model=StatusMsg)
 async def reset_game():
-    """
-    Reset the entire game to its initial state.
-    """
     if game_controller:
         await game_controller.reset()
-    return {"status": "ok"}
+    return StatusMsg(status="ok")
 
-@app.get("/game/status")
+@app.get("/game/status", response_model=GameStatus)
 async def get_game_status():
-    """
-    Get current game status and statistics.
-    """
     if not game_controller:
         raise HTTPException(status_code=500, detail="Game not initialized")
-    
-    return game_controller.get_game_status()
+    return GameStatus(**game_controller.get_game_status())
+
 
 if __name__ == "__main__":
     import uvicorn
