@@ -11,20 +11,22 @@ Unified driver script for the canonical house text adventure game.
 
 from backend.text_adventure_games.house import build_house_game
 
-HELP_TEXT = """
-Available commands:
-  - look: Describe the current room
-  - get/take <item>: Pick up an item
-  - open/close/unlock/lock <object>: Interact with doors, drawers, etc.
-  - use <object>: Use an object (if possible)
-  - help/controls: Show this help message
-  - quit/exit: Leave the game
-"""
+HELP_TEXT = (
+    "Available commands:\n"
+    "  - look: Describe the current room\n"
+    "  - get/take <item>: Pick up an item\n"
+    "  - open/close/unlock/lock <object>: Interact with doors, drawers, etc.\n"
+    "  - use <object>: Use an object (if possible)\n"
+    "  - look in/view <container>: View the contents of a container\n"
+    "  - help/controls: Show this help message\n"
+    "  - quit/exit: Leave the game\n"
+)
 
 def main():
-    print("Welcome to the House Adventure Demo!")
+    print("Welcome to the House Adventure Demo!" + "\n" * 5)
     try:
         game_obj = build_house_game()
+        game_obj.parser.parse_command("look")
         while True:
             command = input("\n> ")
             if not command:

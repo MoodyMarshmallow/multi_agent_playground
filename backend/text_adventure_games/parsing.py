@@ -9,6 +9,7 @@ The implementation that I have given below only uses simple keyword matching.
 
 import inspect
 import textwrap
+import re
 
 from .things import Character, Item, Location
 from . import actions, blocks
@@ -140,9 +141,13 @@ class Parser:
             return "quit"
         else:
             for _, action in self.actions.items():
-                special_command = action.action_name()
-                if special_command in command:
-                    return action.action_name()
+                aliases = [action.action_name()]
+                if getattr(action, "ACTION_ALIASES", None):
+                    aliases += action.ACTION_ALIASES
+                for alias in aliases:
+                    # Match if command is exactly alias or starts with alias + space
+                    if command == alias or command.startswith(alias + " "):
+                        return action.action_name()
         return None
 
     def parse_action(self, command: str) -> actions.Action:
@@ -249,15 +254,28 @@ class Parser:
 
     def get_items_in_scope(self, character=None) -> dict[str, Item]:
         """
-        Returns a list of items in character's location and in their inventory
+        Returns a list of items in character's location, their inventory, and in open containers in the location (recursively).
         """
         if character is None:
             character = self.game.player
         items_in_scope = {}
-        for item_name in character.location.items:
-            items_in_scope[item_name] = character.location.items[item_name]
-        for item_name in character.inventory:
-            items_in_scope[item_name] = character.inventory[item_name]
+        # Items in the location
+        for item_name, item in character.location.items.items():
+            items_in_scope[item_name] = item
+            # If the item is a container and open, add its contents
+            if hasattr(item, 'get_property') and item.get_property('is_container', False):
+                if item.get_property('is_open', False):
+                    # Recursively add items in the open container
+                    def add_container_items(container):
+                        for subitem_name, subitem in getattr(container, 'items', {}).items():
+                            items_in_scope[subitem_name] = subitem
+                            if hasattr(subitem, 'get_property') and subitem.get_property('is_container', False):
+                                if subitem.get_property('is_open', False):
+                                    add_container_items(subitem)
+                    add_container_items(item)
+        # Items in inventory
+        for item_name, item in character.inventory.items():
+            items_in_scope[item_name] = item
         return items_in_scope
 
     def get_direction(self, command: str, location: Location = None) -> str:

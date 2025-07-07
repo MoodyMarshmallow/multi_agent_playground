@@ -5,6 +5,11 @@ Builds and returns a fully populated Game object with all rooms, items, and acti
 
 from backend.text_adventure_games import games, things
 from backend.text_adventure_games.actions.bed import Sleep, MakeBed, CleanBed, ChangeQuilt, ExamineBed
+from backend.text_adventure_games.things.containers import Container
+from backend.text_adventure_games.things.items import Item
+from backend.text_adventure_games.actions.containers import (
+    OpenContainer, CloseContainer, TakeFromContainer, ViewContainer, PutInContainer
+)
 # from backend.text_adventure_games.actions import ... (add custom actions as needed)
 
 def build_house_game() -> games.Game:
@@ -41,7 +46,7 @@ def build_house_game() -> games.Game:
     dining.add_connection("east", living)
     dining.add_connection("north", bedroom)
     # --- Add Items, Characters, etc. (verbatim from canonical_world.py) ---
-    bed = things.Item("bed", "a comfortable bed", "A soft bed for sleeping.")
+    bed: Item = things.Item("bed", "a comfortable bed", "A soft bed for sleeping.")
     bed.set_property("is_interactable", True)
     bed.set_property("is_sleepable", True)
     bed.set_property("is_made", True)
@@ -54,17 +59,55 @@ def build_house_game() -> games.Game:
     bed.add_command_hint("clean bed")
     bed.add_command_hint("change quilt to <color>")
     bedroom.add_item(bed)
+
+    # Add a closet container to the bedroom (canonical Container class)
+    closet: Container = Container("closet", "A large wooden closet.", is_openable=True, is_open=False)
+    closet.set_property("is_interactable", True)
+    closet.set_property("fullness", 50)  # numeric 0-100
+    closet.set_property("material", "wood")
+    closet.add_command_hint("open")
+    closet.add_command_hint("close")
+    closet.add_command_hint("take")
+    closet.add_command_hint("view")
+    # Add multiple objects to the closet
+    jacket: Item = Item("jacket", "a warm jacket", "A warm, cozy jacket.")
+    jacket.add_command_hint("wear")
+    jacket.add_command_hint("examine")
+    boots: Item = Item("boots", "a pair of boots", "Sturdy leather boots.")
+    boots.add_command_hint("wear")
+    boots.add_command_hint("examine")
+    hat: Item = Item("hat", "a sun hat", "A wide-brimmed sun hat.")
+    hat.add_command_hint("wear")
+    hat.add_command_hint("examine")
+    scarf: Item = Item("scarf", "a wool scarf", "A long, woolen scarf.")
+    scarf.add_command_hint("wear")
+    scarf.add_command_hint("examine")
+    closet.add_item(jacket)
+    closet.add_item(boots)
+    closet.add_item(hat)
+    closet.add_item(scarf)
+    # Add quilt items to the closet
+    for color in ["red", "blue", "green", "yellow", "white", "black"]:
+        quilt = Item(f"{color} quilt", f"a {color} quilt", f"A soft, {color} quilt for the bed.")
+        quilt.set_property("quilt_color", color)
+        quilt.add_command_hint("take")
+        quilt.add_command_hint("examine")
+        closet.add_item(quilt)
+    closet.add_command_hint("view")
+    bedroom.add_item(closet)
+
     # ... (continue porting all items, containers, and their properties as in canonical_world.py) ...
     # --- Player character ---
-    player = things.Character(
+    player: things.Character = things.Character(
         name="Player",
         description="An explorer in a large, modern house.",
         persona="I am curious and love to explore new places."
     )
     # --- Custom actions (add as needed) ---
     custom_actions = [
-        Sleep, MakeBed, CleanBed, ChangeQuilt, ExamineBed
+        Sleep, MakeBed, CleanBed, ChangeQuilt, ExamineBed,
+        OpenContainer, CloseContainer, TakeFromContainer, ViewContainer, PutInContainer
     ]
     # --- Build and return the game object ---
-    game_obj = games.Game(entry, player, custom_actions=custom_actions)
+    game_obj: games.Game = games.Game(entry, player, custom_actions=custom_actions)
     return game_obj

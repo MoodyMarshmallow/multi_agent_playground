@@ -18,7 +18,6 @@ from datetime import datetime
 
 # Text adventure games imports
 from backend.text_adventure_games.games import Game
-from backend.text_adventure_games.things import Character, Location, Item
 
 # Agent management
 from backend.agent_manager import AgentManager, KaniAgent
