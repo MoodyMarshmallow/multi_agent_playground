@@ -157,6 +157,7 @@ class AgentActionOutput(BaseModel):
     timestamp: Optional[str] = None
     current_room: Optional[str] = None
     description: Optional[str] = None #  for chat box description
+    current_object: Optional[str] = None #  for chat box description
 
 
 class AgentPlanRequest(BaseModel):
