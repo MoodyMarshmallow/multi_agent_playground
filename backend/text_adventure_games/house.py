@@ -103,6 +103,24 @@ def build_house_game() -> games.Game:
         description="An explorer in a large, modern house.",
         persona="I am curious and love to explore new places."
     )
+    
+    # AI-controlled characters that the game controller expects
+    alex = things.Character(
+        name="alex_001",
+        description="Alex is a friendly and social person who loves to chat with others.",
+        persona="I am Alex, a friendly and social person who loves to chat with others. I enjoy reading books and might want to explore the house. I'm curious about what others are doing and like to help when I can."
+    )
+    
+    alan = things.Character(
+        name="alan_002", 
+        description="Alan is a quiet and thoughtful person who likes to observe and think.",
+        persona="I am Alan, a quiet and thoughtful person who likes to observe and think. I prefer to explore slowly and examine things carefully. I might be interested in food and practical items."
+    )
+
+    # Place characters in different rooms
+    bedroom.add_character(alex)
+    kitchen.add_character(alan)
+    
     # --- Custom actions (add as needed) ---
     custom_actions = [
         Sleep, MakeBed, CleanBed, ChangeQuilt, ExamineBed,
@@ -111,3 +129,106 @@ def build_house_game() -> games.Game:
     # --- Build and return the game object ---
     game_obj: games.Game = games.Game(entry, player, custom_actions=custom_actions)
     return game_obj
+
+# def _build_house_environment(self) -> Game:
+#         """
+#         Create a house environment matching the Godot scene.
+#         """
+#         # Create rooms
+#         living_room = Location(
+#             "Living Room",
+#             "A cozy living room with a comfortable couch and TV. Sunlight streams through large windows."
+#         )
+        
+#         kitchen = Location(
+#             "Kitchen", 
+#             "A modern kitchen with stainless steel appliances and granite countertops."
+#         )
+        
+#         bathroom = Location(
+#             "Bathroom",
+#             "A clean bathroom with a bathtub, sink, and mirror."
+#         )
+        
+#         bedroom = Location(
+#             "Bedroom",
+#             "A peaceful bedroom with a large bed and dresser. Soft lighting creates a relaxing atmosphere."
+#         )
+        
+#         dining_room = Location(
+#             "Dining Room",
+#             "A formal dining room with a wooden table and elegant chairs."
+#         )
+        
+#         # Connect rooms (bidirectional)
+#         living_room.add_connection("north", kitchen)
+#         kitchen.add_connection("south", living_room)
+        
+#         living_room.add_connection("east", bedroom)
+#         bedroom.add_connection("west", living_room)
+        
+#         kitchen.add_connection("east", dining_room)
+#         dining_room.add_connection("west", kitchen)
+        
+#         dining_room.add_connection("south", bedroom)
+#         bedroom.add_connection("north", dining_room)
+        
+#         bedroom.add_connection("northeast", bathroom)
+#         bathroom.add_connection("southwest", bedroom)
+        
+#         # Add furniture and items
+#         couch = Item("couch", "a comfortable couch", "A plush three-seater couch perfect for relaxing.")
+#         couch.set_property("gettable", False)
+#         living_room.add_item(couch)
+        
+#         tv = Item("tv", "a large TV", "A modern flat-screen television.")
+#         tv.set_property("gettable", False)
+#         living_room.add_item(tv)
+        
+#         refrigerator = Item("refrigerator", "a large refrigerator", "A stainless steel refrigerator humming quietly.")
+#         refrigerator.set_property("gettable", False)
+#         kitchen.add_item(refrigerator)
+        
+#         # Add gettable items
+#         book = Item("book", "a mystery novel", "A well-worn mystery novel with an intriguing cover.")
+#         living_room.add_item(book)
+        
+#         apple = Item("apple", "a red apple", "A fresh, crispy apple that looks delicious.")
+#         apple.set_property("is_food", True)
+#         kitchen.add_item(apple)
+        
+#         towel = Item("towel", "a fluffy towel", "A soft, clean towel.")
+#         bathroom.add_item(towel)
+        
+#         # Create player character
+#         player = Character(
+#             "player", 
+#             "the main character",
+#             "I am exploring this house and interacting with other characters."
+#         )
+        
+#         # Create other characters
+#         alex = Character(
+#             "alex_001",
+#             "Alex, a friendly resident",
+#             "I am Alex, a cheerful person who loves to chat and help others. I enjoy reading books and cooking."
+#         )
+        
+#         alan = Character(
+#             "alan_002", 
+#             "Alan, a thoughtful person",
+#             "I am Alan, a quiet and contemplative individual. I like to observe my surroundings and think deeply about things."
+#         )
+        
+#         # Place characters in different rooms
+#         bedroom.add_character(alex)
+#         kitchen.add_character(alan)
+        
+#         # Create the game
+#         game = Game(
+#             start_at=living_room,
+#             player=player,
+#             characters=[alex, alan]
+#         )
+        
+#         return game

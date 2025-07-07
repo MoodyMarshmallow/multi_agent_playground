@@ -18,8 +18,8 @@ from kani import Kani, ChatMessage
 from kani.engines.openai import OpenAIEngine
 
 # Text adventure games imports
-from backend.text_adventure_games.things import Character
-from backend.text_adventure_games.games import Game
+from .text_adventure_games.things import Character
+from .text_adventure_games.games import Game
 
 
 class AgentStrategy(Protocol):
@@ -181,6 +181,7 @@ Remember: You can only choose from the available actions provided. If unsure, us
                 lines.append(f"  - {action['command']}: {action.get('description', 'perform action')}")
         
         return '\n'.join(lines)
+
 
 
 class AgentManager:

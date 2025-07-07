@@ -6,30 +6,34 @@ This module provides comprehensive logging setup for the Multi-Agent Playground 
 It includes:
 
 1. **Centralized Logging Setup**: Configures root logger with file and console handlers
-2. **Kani Library Integration**: Pretty-prints Kani LLM logs for better readability
-3. **Utility Functions**: Helper functions for logging agent actions, perceptions, etc.
+2. **Game Framework Integration**: Logs for text adventure games, game controller, agent manager
+3. **Kani Library Integration**: Pretty-prints Kani LLM logs for better readability
+4. **LRU LLM System Integration**: Logs for the optimized agent system
+5. **Utility Functions**: Helper functions for logging game events, agent actions, etc.
 
 Key Features:
 - Debug logs go to debug.log file with detailed formatting
 - Console shows only INFO and above for clean development experience
 - Kani logs with long content are automatically pretty-printed
+- Turn-based game system logging utilities
+- Agent decision-making and action logging
 - External library noise is filtered out
-- Comprehensive utility functions for agent-specific logging
 
 Usage:
-    from backend.logging import setup_logging, log_agent_action
+    from backend.log_config import setup_logging, log_game_event, log_agent_decision
     
     # Set up logging (call once at startup)
     setup_logging()
     
     # Use utility functions for clean logging
-    log_agent_action("agent_001", "move", {"from": [1,1], "to": [2,2]})
+    log_game_event("turn_start", {"agent": "alex_001", "turn": 42})
+    log_agent_decision("alex_001", "go north", {"reasoning": "exploring"})
 """
 
 import logging
 import json
 import pprint
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 import re
 
 def setup_logging():
@@ -72,6 +76,12 @@ def setup_logging():
     # Filter out kani library verbose logs
     logging.getLogger("kani.get_prompt").setLevel(logging.WARNING)
     
+    # Configure backend module loggers
+    logging.getLogger("backend.game_controller").setLevel(logging.INFO)
+    logging.getLogger("backend.agent_manager").setLevel(logging.INFO)
+    logging.getLogger("backend.text_adventure_games").setLevel(logging.INFO)
+    logging.getLogger("backend.lru_llm").setLevel(logging.INFO)
+    
     # Set up pretty-printing for Kani logs with long content
     _setup_kani_pretty_handlers()
 
@@ -106,7 +116,7 @@ def _setup_kani_pretty_handlers():
                     return  # Don't let the original log through
             # For logs without \n, let them pass through normally
     
-    # Handler for agent tool call messages (from character_agent loggers)
+    # Handler for agent tool call messages (from KaniAgent loggers)
     class AgentToolCallPrettyHandler(logging.Handler):
         def emit(self, record):
             msg = record.getMessage()
@@ -194,14 +204,94 @@ def _setup_kani_pretty_handlers():
     kani_logger.addHandler(KaniToolCallPrettyHandler())
     kani_logger.propagate = False
     
-    # Configure character_agent loggers for tool calls
-    character_agent_logger = logging.getLogger("character_agent")
-    character_agent_logger.handlers = []
-    character_agent_logger.addHandler(AgentToolCallPrettyHandler())
-    character_agent_logger.propagate = False
+    # Configure agent loggers for tool calls (covering both old and new systems)
+    agent_logger = logging.getLogger("backend.agent_manager")
+    agent_logger.handlers = []
+    agent_logger.addHandler(AgentToolCallPrettyHandler())
+    agent_logger.propagate = False
+
+# ===== GAME SYSTEM LOGGING UTILITIES =====
+
+def log_game_event(event_type: str, details: Dict[str, Any], game_id: Optional[str] = None):
+    """Log game events like turn changes, game state changes, etc."""
+    logger = logging.getLogger(__name__)
+    prefix = f"[Game {game_id}] " if game_id else "[Game] "
+    
+    if event_type == "turn_start":
+        agent = details.get('agent', 'unknown')
+        turn = details.get('turn', 'unknown')
+        logger.info(f"{prefix}Turn {turn}: Agent '{agent}' begins their turn")
+    
+    elif event_type == "turn_end":
+        agent = details.get('agent', 'unknown')
+        turn = details.get('turn', 'unknown')
+        action = details.get('action', 'unknown')
+        logger.info(f"{prefix}Turn {turn}: Agent '{agent}' completed action '{action}'")
+    
+    elif event_type == "game_start":
+        logger.info(f"{prefix}Game started with {details.get('agent_count', 0)} agents")
+    
+    elif event_type == "game_end":
+        reason = details.get('reason', 'unknown')
+        total_turns = details.get('total_turns', 'unknown')
+        logger.info(f"{prefix}Game ended after {total_turns} turns. Reason: {reason}")
+    
+    else:
+        logger.info(f"{prefix}Event '{event_type}': {details}")
+
+def log_agent_decision(agent_id: str, chosen_action: str, decision_context: Dict[str, Any]):
+    """Log agent decision-making process with context"""
+    logger = logging.getLogger(__name__)
+    logger.info(f"[Agent {agent_id}] Decision: '{chosen_action}'")
+    
+    if decision_context.get('available_actions'):
+        available = decision_context['available_actions']
+        logger.debug(f"[Agent {agent_id}] Available actions: {available}")
+    
+    if decision_context.get('reasoning'):
+        reasoning = decision_context['reasoning']
+        logger.debug(f"[Agent {agent_id}] Reasoning: {reasoning}")
+    
+    if decision_context.get('world_state'):
+        location = decision_context['world_state'].get('location', {}).get('name', 'unknown')
+        logger.debug(f"[Agent {agent_id}] Current location: {location}")
+
+def log_action_execution(agent_id: str, action: str, result: str, success: bool = True):
+    """Log the execution of an action and its result"""
+    logger = logging.getLogger(__name__)
+    status = "SUCCESS" if success else "FAILED"
+    logger.info(f"[Agent {agent_id}] Action '{action}' {status}")
+    logger.debug(f"[Agent {agent_id}] Action result: {result}")
+
+def log_world_state_change(change_type: str, details: Dict[str, Any]):
+    """Log changes to the world state"""
+    logger = logging.getLogger(__name__)
+    
+    if change_type == "item_moved":
+        item = details.get('item', 'unknown')
+        from_loc = details.get('from_location', 'unknown')
+        to_loc = details.get('to_location', 'unknown')
+        logger.debug(f"[World] Item '{item}' moved: {from_loc} -> {to_loc}")
+    
+    elif change_type == "agent_moved":
+        agent = details.get('agent', 'unknown')
+        from_loc = details.get('from_location', 'unknown')
+        to_loc = details.get('to_location', 'unknown')
+        logger.debug(f"[World] Agent '{agent}' moved: {from_loc} -> {to_loc}")
+    
+    elif change_type == "object_state_change":
+        obj = details.get('object', 'unknown')
+        old_state = details.get('old_state', 'unknown')
+        new_state = details.get('new_state', 'unknown')
+        logger.debug(f"[World] Object '{obj}' state changed: {old_state} -> {new_state}")
+    
+    else:
+        logger.debug(f"[World] {change_type}: {details}")
+
+# ===== LEGACY COMPATIBILITY UTILITIES =====
 
 def log_agent_action(agent_id: str, action_type: str, details: Dict[str, Any]):
-    """Clean, readable logging for agent actions"""
+    """Legacy compatibility - clean, readable logging for agent actions"""
     logger = logging.getLogger(__name__)
     logger.info(f"[Agent {agent_id}] Action: {action_type}")
     
@@ -210,8 +300,8 @@ def log_agent_action(agent_id: str, action_type: str, details: Dict[str, Any]):
         receiver = details.get('receiver', 'unknown')
         logger.info(f"[Agent {agent_id}] Chat Details:\n  To: {receiver}\n  Message: '{message}'")
     elif action_type == "move":
-        from_tile = details.get('from_tile', 'unknown')
-        to_tile = details.get('to_tile', 'unknown')
+        from_tile = details.get('from_tile', details.get('from_location', 'unknown'))
+        to_tile = details.get('to_tile', details.get('to_location', 'unknown'))
         logger.info(f"[Agent {agent_id}] Move Details:\n  From: {from_tile}\n  To: {to_tile}")
     elif action_type == "interact":
         obj = details.get('object', 'unknown')
@@ -256,4 +346,41 @@ def log_queue_status(queue_size: int, operation: str):
 def log_salience_evaluation(agent_id: str, event: str, salience: int):
     """Log salience evaluation results in a clean format"""
     logger = logging.getLogger(__name__)
-    logger.debug(f"[Salience] Evaluation:\n  Agent: {agent_id}\n  Event: '{event}'\n  Score: {salience}/10") 
+    logger.debug(f"[Salience] Evaluation:\n  Agent: {agent_id}\n  Event: '{event}'\n  Score: {salience}/10")
+
+# ===== LRU LLM SYSTEM LOGGING UTILITIES =====
+
+# def log_cache_operation(cache_type: str, operation: str, key: str, hit: bool = None):
+#     """Log cache operations for the LRU LLM system"""
+#     logger = logging.getLogger(__name__)
+#     if hit is not None:
+#         status = "HIT" if hit else "MISS"
+#         logger.debug(f"[Cache-{cache_type}] {operation} '{key}': {status}")
+#     else:
+#         logger.debug(f"[Cache-{cache_type}] {operation} '{key}'")
+
+# def log_memory_operation(agent_id: str, operation: str, details: Dict[str, Any]):
+#     """Log memory operations for agent memory management"""
+#     logger = logging.getLogger(__name__)
+    
+#     if operation == "store":
+#         event_type = details.get('event_type', 'unknown')
+#         importance = details.get('importance', 'unknown')
+#         logger.debug(f"[Memory-{agent_id}] Store: {event_type} (importance: {importance})")
+    
+#     elif operation == "retrieve":
+#         query = details.get('query', 'unknown')
+#         count = details.get('result_count', 0)
+#         logger.debug(f"[Memory-{agent_id}] Retrieve: '{query}' -> {count} results")
+    
+#     elif operation == "consolidate":
+#         removed_count = details.get('removed_count', 0)
+#         logger.debug(f"[Memory-{agent_id}] Consolidate: removed {removed_count} low-importance memories")
+    
+#     else:
+#         logger.debug(f"[Memory-{agent_id}] {operation}: {details}")
+
+# def log_performance_metrics(component: str, metrics: Dict[str, Any]):
+#     """Log performance metrics for monitoring"""
+#     logger = logging.getLogger(__name__)
+#     logger.info(f"[Performance-{component}] Metrics: {metrics}") 
