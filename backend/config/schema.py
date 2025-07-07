@@ -164,7 +164,7 @@ class AgentActionOutput(BaseModel):
 
 class PlanActionResponse(BaseModel):
     action: AgentActionOutput
-    perception: AgentPerception
+    # perception: AgentPerception
 
 class AgentPlanRequest(BaseModel):
     agent_id: str
@@ -202,4 +202,17 @@ class GameStatus(BaseModel):
 
 # ------------------------------
 # (expand as needed for objects, agents, locations, etc.)
+# TODO: we can remove this if we don't need it
 # ------------------------------
+class AgentStateResponse(BaseModel):
+    agent_id: str
+    location: Optional[str]
+    inventory: List[str]
+    properties: Dict[str, Any]
+    
+class GameObject(BaseModel):
+    name: str
+    description: str
+    location: str
+    state: str
+    gettable: bool
