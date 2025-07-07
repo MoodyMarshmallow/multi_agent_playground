@@ -95,6 +95,7 @@ class GameController:
                 )
                 
                 # Store the action for polling
+                # TODO: warp up the command/ result from a text descrition to agent action output
                 self.latest_agent_actions[agent.name] = AgentActionOutput(
                     action=command,
                 )
