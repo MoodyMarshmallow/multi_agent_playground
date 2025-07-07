@@ -151,8 +151,8 @@ class ChangeQuilt(base.Action):
             # Try to find a closet in the room
             location = getattr(self.character, 'location', None)
             closet = None
-            if location and hasattr(location, 'inventory'):
-                closet = location.inventory.get("closet")
+            if location and hasattr(location, 'items'):
+                closet = location.items.get("closet")
             if closet:
                 closet.add_item(old_quilt_item)
         # Set the bed's quilt color
