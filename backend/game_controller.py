@@ -26,7 +26,7 @@ from .agent_manager import AgentManager, KaniAgent
 # --- Canonical world setup from canonical_demo.py ---
 from .text_adventure_games.house import build_house_game
 
-from .config.schema import PlanActionResponse
+from .config.schema import AgentActionOutput
 
 class GameController:
     """
@@ -51,7 +51,7 @@ class GameController:
         self.objects_registry: Dict[str, Dict] = {}
         
         # Latest agent actions for polling
-        self.latest_agent_actions: Dict[str, PlanActionResponse] = {}
+        self.latest_agent_actions: Dict[str, AgentActionOutput] = {}
     
     async def start(self):
         """Initialize and start the game loop in the background."""
@@ -95,7 +95,8 @@ class GameController:
                 )
                 
                 # Store the action for polling
-                self.latest_agent_actions[agent.name] = PlanActionResponse(
+                # TODO: warp up the command/ result from a text descrition to agent action output
+                self.latest_agent_actions[agent.name] = AgentActionOutput(
                     action=command,
                 )
                 
