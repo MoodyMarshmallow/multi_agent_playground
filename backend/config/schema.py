@@ -109,6 +109,10 @@ class AdjustVolumeAction(BaseModel):
     value: int    # volume value
 
 # --- UNION OF ALL ACTIONS ---
+class NoOpAction(BaseModel):
+    action_type: Literal["noop"]
+    reason: Optional[str] = None
+
 HouseAction = Annotated[
     Union[
         # Appliance
@@ -137,6 +141,8 @@ HouseAction = Annotated[
         SetTemperatureAction,
         AdjustBrightnessAction,
         AdjustVolumeAction,
+        # No-op fallback
+        NoOpAction,
     ],
     Field(discriminator="action_type")
 ]

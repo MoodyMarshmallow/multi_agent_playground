@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 
 # Ensure the project root is in sys.path for module resolution
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
@@ -26,7 +27,18 @@ def main():
     print("Welcome to the House Adventure Demo!" + "\n" * 5)
     try:
         game_obj = build_house_game()
-        game_obj.parser.parse_command("look")
+        # Canonical parse and render for initial look
+        narration, schema = game_obj.parser.parse_command("look")
+        game_obj.parser.print_narration(narration)
+        print(f"[DEBUG] Action schema: {getattr(schema, 'description', schema)}")
+        if hasattr(schema, '__dict__'):
+            print(f"[DEBUG] ActionResult fields: {vars(schema)}")
+        try:
+            schema_result = game_obj.get_schema()
+            print("[get_schema() DEBUG OUTPUT]:")
+            print(json.dumps(schema_result.model_dump(), indent=2))
+        except Exception as e:
+            print(f"[get_schema() ERROR]: {e}")
         while True:
             command = input("\n> ")
             if not command:
@@ -38,9 +50,19 @@ def main():
             if command.lower() in {"quit", "exit"}:
                 print("Thanks for playing!")
                 break
-            result = game_obj.parser.parse_command(command)
-            if result is None:
-                print("I'm not sure what you want to do.")
+            # Canonical parse and render for user command
+            narration, schema = game_obj.parser.parse_command(command)
+            game_obj.parser.print_narration(narration)
+            print(f"[DEBUG] Action schema: {getattr(schema, 'description', schema)}")
+            if hasattr(schema, '__dict__'):
+                print(f"[DEBUG] ActionResult fields: {vars(schema)}")
+            # Print the get_schema() output for debugging
+            try:
+                schema_result = game_obj.get_schema()
+                print("[get_schema() DEBUG OUTPUT]:")
+                print(json.dumps(schema_result.model_dump(), indent=2))
+            except Exception as e:
+                print(f"[get_schema() ERROR]: {e}")
     except (KeyboardInterrupt, EOFError):
         print("\nExiting game. Goodbye!")
     except Exception as e:

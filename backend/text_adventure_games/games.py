@@ -4,6 +4,8 @@ from . import parsing, actions, blocks
 import json
 import inspect
 from collections import namedtuple
+from backend.config.schema import AgentActionOutput
+from datetime import datetime
 
 
 class Game:
@@ -95,16 +97,23 @@ class Game:
                     self.parser.add_block(b)
                     seen_before[name] = True
 
+        self._last_action_result = None
+        self._last_action_agent_id = None
+
     def game_loop(self):
         """
         A simple loop that starts the game, loops over commands from the user,
         and then stops if the game's state says the game is over.
         """
-        self.parser.parse_command("look")
+        narration, schema = self.parser.parse_command("look")
+        print(narration)
+        print(f"[DEBUG] Action schema: {schema}")
 
         while True:
             command = input("\n> ")
-            self.parser.parse_command(command)
+            narration, schema = self.parser.parse_command(command)
+            print(narration)
+            print(f"[DEBUG] Action schema: {schema}")
             if self.is_game_over():
                 break
 
@@ -518,3 +527,62 @@ class Game:
         with open(filename, 'r') as f:
             save_data = f.read()
             return cls.from_json(save_data, **kw)
+
+    def get_schema(self) -> AgentActionOutput:
+        """
+        Export the last action as an AgentActionOutput schema object.
+        The description is narrative and user-friendly for the GUI chat, while the reason in NoOpAction remains technical.
+        """
+        if not self._last_action_result or not self._last_action_agent_id:
+            raise RuntimeError("No action has been taken yet.")
+        agent = self.characters.get(self._last_action_agent_id)
+        current_room = agent.location.name if agent and agent.location else None
+        # Compose a technical, GUI-friendly description
+        # 1. Always include the action type and affected object (if any)
+        action_type = getattr(self._last_action_result.house_action, 'action_type', 'noop')
+        affected_object = self._last_action_result.object_id
+        # 2. For NoOp, always use a technical, non-narrative reason/description
+        if action_type == 'noop':
+            # Compose a presentable summary for the GUI chat
+            room_desc = f"You are in the {current_room}." if current_room else ""
+            visible_items = []
+            visible_characters = []
+            available_exits = []
+            if agent and agent.location:
+                visible_items = [item.name for item in agent.location.items.values()]
+                visible_characters = [char.name for char in agent.location.characters.values() if char.name != agent.name]
+                available_exits = list(agent.location.connections.keys())
+            lines = [room_desc]
+            if visible_items:
+                lines.append(f"You see: {', '.join(visible_items)}.")
+            if visible_characters:
+                lines.append(f"{', '.join(visible_characters)} {'is' if len(visible_characters)==1 else 'are'} here.")
+            if available_exits:
+                lines.append(f"Exits are {', '.join(available_exits)}.")
+            narrative_desc = " ".join([l for l in lines if l])
+            description = narrative_desc.strip()
+            reason = 'No backend state change for this command.'
+        else:
+            # For real actions, use the action result's description (assumed user-facing)
+            description = self._last_action_result.description
+            reason = None
+        # Context for frontend (not in main description)
+        visible_items = []
+        visible_characters = []
+        available_exits = []
+        if agent and agent.location:
+            visible_items = [item.name for item in agent.location.items.values()]
+            visible_characters = [char.name for char in agent.location.characters.values() if char.name != agent.name]
+            available_exits = list(agent.location.connections.keys())
+        # Patch the NoOpAction reason if needed
+        action_obj = self._last_action_result.house_action
+        if action_type == 'noop' and hasattr(action_obj, 'reason'):
+            action_obj.reason = reason
+        return AgentActionOutput(
+            agent_id=self._last_action_agent_id,
+            action=action_obj,
+            timestamp=datetime.now().isoformat(),
+            current_room=current_room,
+            description=description,
+            current_object=self._last_action_result.object_id
+        )

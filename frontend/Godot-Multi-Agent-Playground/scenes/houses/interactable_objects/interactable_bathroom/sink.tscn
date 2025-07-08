@@ -1,6 +1,6 @@
 [gd_scene load_steps=24 format=3 uid="uid://c5vfag0qfldly"]
 
-[ext_resource type="Script" path="res://scenes/houses/interactable_objects/interactable_bathroom/sink.gd" id="1_iuk6r"]
+[ext_resource type="Script" uid="uid://busbqnqej5gn0" path="res://scenes/houses/interactable_objects/interactable_bathroom/sink.gd" id="1_iuk6r"]
 [ext_resource type="Texture2D" uid="uid://bbl0ixwn5abwi" path="res://modern_assets/animated_assets/animated_bathroom/animated_bathroom_sink_new_2_3-10 loop.png" id="1_ps2qp"]
 [ext_resource type="PackedScene" uid="uid://c2w2uh4fkyjpq" path="res://scenes/components/interactable_component.tscn" id="2_iuk6r"]
 
