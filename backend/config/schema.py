@@ -153,7 +153,7 @@ HouseAction = Annotated[
 
 class AgentActionOutput(BaseModel):
     agent_id: str
-    action: HouseAction
+    action: str
     timestamp: Optional[str] = None
     current_room: Optional[str] = None
     description: Optional[str] = None #  for chat box description

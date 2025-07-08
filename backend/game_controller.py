@@ -96,9 +96,14 @@ class GameController:
                 
                 # Store the action for polling
                 # TODO: warp up the command/ result from a text descrition to agent action output
+                # this is just a placeholder for now, we need to implement the actual agent action output
                 self.latest_agent_actions[agent.name] = AgentActionOutput(
-                    action=command,
+                    agent_id=agent.name,
+                    action=str(command),                # string representation of command
+                    description=str(result),            # put result text here
+                    timestamp=datetime.now().isoformat()  #
                 )
+                    
                 
                 # Advance to the next agent
                 self.agent_manager.advance_turn()
