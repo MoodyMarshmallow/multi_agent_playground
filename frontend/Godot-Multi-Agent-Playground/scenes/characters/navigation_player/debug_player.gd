@@ -3,6 +3,7 @@ extends CharacterBody2D
 
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 @onready var navigation_agent_2d: NavigationAgent2D = $NavigationAgent2D
+@onready var object_manager: Node2D = $"../ObjectManager"
 
 var speed: float = 50.0
 var last_direction: String = "down"
@@ -108,6 +109,23 @@ func _on_debugging_input_submitted(text: String) -> void:
 			print("Navigating to ", object_name, "at tile ", tile, "world pos ", world_pos)
 		else:
 			print("No empty tile found by ", object_name)
+	# Take object
+	regex.compile("^take\\s+(.+)$")
+	result = regex.search(text.strip_edges())
+	if result:
+		var object_name = result.get_string(1)
+		if object_manager:
+			print("calling object_manager")
+			object_manager.take_object(object_name)
+		return
+
+	# Place object
+	regex.compile("^place\\s+(.+)$")
+	result = regex.search(text.strip_edges())
+	if result:
+		var object_name = result.get_string(1)
+		if object_manager:
+			object_manager.place_object(object_name)
 		return
 
 	print("Unrecognized command: ", text)
