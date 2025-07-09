@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://d1gdbqhr6vn37"]
 
-[ext_resource type="Script" path="res://scenes/ui/user_input/debugging_input/debugging_input.gd" id="1_5f03b"]
+[ext_resource type="Script" uid="uid://dpjk63yfbgqv8" path="res://scenes/ui/user_input/debugging_input/debugging_input.gd" id="1_5f03b"]
 
 [node name="DebuggingInput" type="LineEdit"]
 offset_right = 67.0625

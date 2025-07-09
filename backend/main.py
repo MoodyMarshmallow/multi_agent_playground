@@ -23,7 +23,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # Import the game controller
 from .game_controller import GameController
-from .config.schema import WorldStateResponse, GameEvent, GameEventList, StatusMsg, GameStatus, PlanActionResponse, AgentStateResponse, GameObject
+from .config.schema import WorldStateResponse, GameEvent, GameEventList, StatusMsg, GameStatus, AgentStateResponse, GameObject, AgentActionOutput
 
 # Global game controller instance
 game_controller: Optional[GameController] = None
@@ -53,7 +53,7 @@ app.add_middleware(
 )
 
 
-@app.get("/agent_act/next", response_model=List[PlanActionResponse])
+@app.get("/agent_act/next", response_model=List[AgentActionOutput])
 async def get_latest_agent_actions():
     """
     Poll the latest planned actions for all agents.

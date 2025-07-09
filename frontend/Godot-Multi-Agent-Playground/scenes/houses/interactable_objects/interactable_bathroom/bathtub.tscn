@@ -1,7 +1,7 @@
 [gd_scene load_steps=22 format=3 uid="uid://c6go2i4ku4nxa"]
 
 [ext_resource type="Texture2D" uid="uid://lrb7h6ff7dgr" path="res://modern_assets/animated_assets/animated_bathroom/animated_bathtub_3_new_4-7 loop.png" id="1_3pw6u"]
-[ext_resource type="Script" path="res://scenes/houses/interactable_objects/interactable_bathroom/bathtub.gd" id="1_4or8j"]
+[ext_resource type="Script" uid="uid://bhitprqkfj4q2" path="res://scenes/houses/interactable_objects/interactable_bathroom/bathtub.gd" id="1_4or8j"]
 [ext_resource type="PackedScene" uid="uid://c2w2uh4fkyjpq" path="res://scenes/components/interactable_component.tscn" id="2_4or8j"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_wt4y0"]

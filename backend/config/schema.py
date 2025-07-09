@@ -7,10 +7,6 @@ This is the schema defined for fastapi based on response for api calls
 # ------------------------------
 # AGENT AND WORLD MODELS (optional) - we can remove this if we don't need it
 # ------------------------------
-class AgentSummary(BaseModel):
-    agent_id: str
-    curr_tile: Optional[List[int]] = None
-    curr_room: Optional[str] = None
 
 class Message(BaseModel):
     sender: str
@@ -113,6 +109,10 @@ class AdjustVolumeAction(BaseModel):
     value: int    # volume value
 
 # --- UNION OF ALL ACTIONS ---
+class NoOpAction(BaseModel):
+    action_type: Literal["noop"]
+    reason: Optional[str] = None
+
 HouseAction = Annotated[
     Union[
         # Appliance
@@ -141,6 +141,8 @@ HouseAction = Annotated[
         SetTemperatureAction,
         AdjustBrightnessAction,
         AdjustVolumeAction,
+        # No-op fallback
+        NoOpAction,
     ],
     Field(discriminator="action_type")
 ]
@@ -158,13 +160,11 @@ HouseAction = Annotated[
 class AgentActionOutput(BaseModel):
     agent_id: str
     action: HouseAction
-    emoji: str
     timestamp: Optional[str] = None
     current_room: Optional[str] = None
+    description: Optional[str] = None #  for chat box description
+    current_object: Optional[str] = None #  for chat box description
 
-class PlanActionResponse(BaseModel):
-    action: AgentActionOutput
-    # perception: AgentPerception
 
 class AgentPlanRequest(BaseModel):
     agent_id: str

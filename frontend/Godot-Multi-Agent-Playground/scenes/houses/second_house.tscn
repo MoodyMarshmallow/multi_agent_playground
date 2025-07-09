@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=4 uid="uid://dblfsnmsnqmyj"]
 
-[ext_resource type="TileSet" path="res://Tilesets/modern_tile_set.tres" id="1_sou70"]
+[ext_resource type="TileSet" uid="uid://dfl6kn3bmjfc2" path="res://Tilesets/modern_tile_set.tres" id="1_sou70"]
 
 [node name="SecondHouse" type="Node2D"]
 

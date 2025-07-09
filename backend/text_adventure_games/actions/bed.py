@@ -1,5 +1,6 @@
 from backend.text_adventure_games.actions import base
 from backend.text_adventure_games.things import Item
+from backend.config import schema
 
 
 def get_bed_legend():
@@ -55,7 +56,10 @@ class Sleep(base.Action):
         msg = f"{self.character.name} sleeps peacefully in the bed. Health: {health}/100. Bed is now unmade."
         if bed_became_unclean:
             msg += " The bed is getting dirty."
-        return self.parser.ok(msg)
+        narration = self.parser.ok(msg)
+        # No HouseAction for sleep in schema
+        schema = base.ActionResult(description="Slept in bed.", house_action=None, object_id=self.bed.name)
+        return narration, schema
 
 
 class MakeBed(base.Action):
@@ -78,7 +82,10 @@ class MakeBed(base.Action):
 
     def apply_effects(self):
         self.bed.set_property("is_made", True)
-        return self.parser.ok("You make the bed. It looks tidy now.")
+        narration = self.parser.ok("You make the bed. It looks tidy now.")
+        # No HouseAction for make bed in schema
+        schema = base.ActionResult(description="Made the bed.", house_action=None, object_id=self.bed.name)
+        return narration, schema
 
 
 class CleanBed(base.Action):
@@ -102,7 +109,10 @@ class CleanBed(base.Action):
 
     def apply_effects(self):
         self.bed.set_property("cleanliness", 100)
-        return self.parser.ok("You clean the bed. It's spotless now.")
+        narration = self.parser.ok("You clean the bed. It's spotless now.")
+        house_action = schema.CleanItemAction(action_type="clean_item", target=self.bed.name)
+        schema_result = base.ActionResult(description="Cleaned the bed.", house_action=house_action, object_id=self.bed.name)
+        return narration, schema_result
 
 
 class ChangeQuilt(base.Action):
@@ -155,9 +165,11 @@ class ChangeQuilt(base.Action):
                 closet = location.items.get("closet")
             if closet:
                 closet.add_item(old_quilt_item)
-        # Set the bed's quilt color
         self.bed.set_property("quilt_color", self.new_quilt)
-        return self.parser.ok(f"You change the quilt to {self.new_quilt}.")
+        narration = self.parser.ok(f"You change the quilt to {self.new_quilt}.")
+        # No HouseAction for change quilt in schema
+        schema = base.ActionResult(description=f"Changed quilt to {self.new_quilt}.", house_action=None, object_id=self.bed.name)
+        return narration, schema
 
 
 class ExamineBed(base.Action):
@@ -192,4 +204,7 @@ class ExamineBed(base.Action):
         hints = self.bed.get_command_hints()
         if hints:
             state.append("Hints: " + ", ".join(hints))
-        return self.parser.ok(desc + "\n" + "\n".join(state)) 
+        narration = self.parser.ok(desc + "\n" + "\n".join(state))
+        # No HouseAction for examine in schema
+        schema = base.ActionResult(description="Examined the bed.", house_action=None, object_id=self.bed.name)
+        return narration, schema 
