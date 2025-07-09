@@ -26,8 +26,6 @@ from .agent_manager import AgentManager, KaniAgent
 # --- Canonical world setup from canonical_demo.py ---
 from .text_adventure_games.house import build_house_game
 
-from .config.schema import AgentActionOutput
-
 class GameController:
     """
     Main controller for the multi-agent playground.
@@ -49,9 +47,6 @@ class GameController:
         
         # Objects registry for frontend
         self.objects_registry: Dict[str, Dict] = {}
-        
-        # Latest agent actions for polling
-        self.latest_agent_actions: Dict[str, AgentActionOutput] = {}
     
     async def start(self):
         """Initialize and start the game loop in the background."""
@@ -93,17 +88,6 @@ class GameController:
                         "turn": self.turn_counter
                     }
                 )
-                
-                # Store the action for polling
-                # TODO: warp up the command/ result from a text descrition to agent action output
-                # this is just a placeholder for now, we need to implement the actual agent action output
-                self.latest_agent_actions[agent.name] = AgentActionOutput(
-                    agent_id=agent.name,
-                    action=str(command),                # string representation of command
-                    description=str(result),            # put result text here
-                    timestamp=datetime.now().isoformat()  #
-                )
-                    
                 
                 # Advance to the next agent
                 self.agent_manager.advance_turn()
@@ -256,6 +240,7 @@ class GameController:
     def get_all_objects(self) -> List[Dict]:
         """Get all objects and their states."""
         return list(self.objects_registry.values())
+    
     
     
     async def reset(self):
