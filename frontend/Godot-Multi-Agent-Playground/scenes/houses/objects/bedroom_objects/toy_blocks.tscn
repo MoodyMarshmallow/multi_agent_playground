@@ -1,0 +1,22 @@
+[gd_scene load_steps=6 format=3 uid="uid://4cnmrbak0nmq"]
+
+[ext_resource type="Script" path="res://scenes/houses/objects/bedroom_objects/house_object.gd" id="1_33j2y"]
+[ext_resource type="Texture2D" uid="uid://cmojxpge0eyqw" path="res://modern_assets/bedroom.png" id="1_luh4t"]
+[ext_resource type="Script" path="res://scenes/houses/objects/components/takeable_component.gd" id="3_mi3eg"]
+[ext_resource type="Script" path="res://scenes/houses/objects/components/placeable_component.gd" id="4_wxs1d"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wq1mk"]
+atlas = ExtResource("1_luh4t")
+region = Rect2(1, 568, 29, 22)
+
+[node name="Dresser" type="Node2D"]
+script = ExtResource("1_33j2y")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = SubResource("AtlasTexture_wq1mk")
+
+[node name="TakeableComponent" type="Node2D" parent="."]
+script = ExtResource("3_mi3eg")
+
+[node name="PlaceableComponent" type="Node2D" parent="."]
+script = ExtResource("4_wxs1d")

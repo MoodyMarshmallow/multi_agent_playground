@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://c6go2i4ku4nxa"]
+[gd_scene load_steps=21 format=3 uid="uid://c6go2i4ku4nxa"]
 
 [ext_resource type="Texture2D" uid="uid://lrb7h6ff7dgr" path="res://modern_assets/animated_assets/animated_bathroom/animated_bathtub_3_new_4-7 loop.png" id="1_3pw6u"]
 [ext_resource type="Script" path="res://scenes/houses/interactable_objects/interactable_bathroom/bathtub.gd" id="1_4or8j"]
@@ -131,9 +131,6 @@ animations = [{
 radius = 9.0
 height = 32.0
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_wn4d5"]
-size = Vector2(52, 31)
-
 [node name="Bathtub" type="StaticBody2D"]
 script = ExtResource("1_4or8j")
 
@@ -147,8 +144,3 @@ shape = SubResource("CapsuleShape2D_dyf5m")
 debug_color = Color(0.294889, 0.583602, 0.650043, 0.42)
 
 [node name="InteractableComponent" parent="." instance=ExtResource("2_4or8j")]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractableComponent"]
-position = Vector2(-5, 11.5)
-shape = SubResource("RectangleShape2D_wn4d5")
-debug_color = Color(0.824011, 0.267501, 0.74267, 0.42)

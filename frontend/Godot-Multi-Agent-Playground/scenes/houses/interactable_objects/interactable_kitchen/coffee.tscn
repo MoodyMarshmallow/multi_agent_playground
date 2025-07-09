@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://dl0vnrqaxgvli"]
+[gd_scene load_steps=15 format=3 uid="uid://dl0vnrqaxgvli"]
 
 [ext_resource type="Script" path="res://scenes/houses/interactable_objects/interactable_kitchen/coffee.gd" id="1_6b7kc"]
 [ext_resource type="Texture2D" uid="uid://omiadq8r4dq1" path="res://modern_assets/animated_assets/animated_kitchen/animated_coffee.png" id="1_fsiqm"]
@@ -88,9 +88,6 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_uu4xl"]
 radius = 4.0
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_rdtut"]
-size = Vector2(33, 15)
-
 [node name="Coffee" type="StaticBody2D"]
 script = ExtResource("1_6b7kc")
 
@@ -103,8 +100,3 @@ position = Vector2(0, 6)
 shape = SubResource("CircleShape2D_uu4xl")
 
 [node name="InteractableComponent" parent="." instance=ExtResource("2_6b7kc")]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractableComponent"]
-position = Vector2(-2.5, 9.5)
-shape = SubResource("RectangleShape2D_rdtut")
-debug_color = Color(0.848837, 0.236717, 0.723091, 0.42)

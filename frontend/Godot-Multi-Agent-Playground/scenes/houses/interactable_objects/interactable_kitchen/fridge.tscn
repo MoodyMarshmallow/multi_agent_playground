@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://cuquxyn65y6ii"]
+[gd_scene load_steps=19 format=3 uid="uid://cuquxyn65y6ii"]
 
 [ext_resource type="Texture2D" uid="uid://crjes0mdv1c7r" path="res://modern_assets/animated_assets/animated_kitchen/animated_fridge_grey.png" id="1_3qa6s"]
 [ext_resource type="Script" path="res://scenes/houses/interactable_objects/interactable_kitchen/fridge.gd" id="1_r3jmu"]
@@ -116,9 +116,6 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_r3jmu"]
 size = Vector2(14, 35)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_elob8"]
-size = Vector2(25.5, 44)
-
 [node name="Fridge" type="StaticBody2D"]
 script = ExtResource("1_r3jmu")
 
@@ -134,8 +131,3 @@ shape = SubResource("RectangleShape2D_r3jmu")
 
 [node name="InteractableComponent" parent="." instance=ExtResource("2_651ai")]
 position = Vector2(0, 54)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractableComponent"]
-position = Vector2(5.25, -24)
-shape = SubResource("RectangleShape2D_elob8")
-debug_color = Color(0.855408, 0.245989, 0.684481, 0.42)

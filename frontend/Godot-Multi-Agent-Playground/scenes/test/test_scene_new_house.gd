@@ -1,6 +1,6 @@
 extends Node2D
 
-@onready var debugging_input: LineEdit = $Camera2D/DebuggingInput
+@onready var debugging_input: LineEdit = $UIManager/DebuggingInput
 @onready var debug_player: DebugPlayer = $DebugPlayer
 
 func _ready():
