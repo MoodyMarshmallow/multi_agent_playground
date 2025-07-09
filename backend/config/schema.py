@@ -164,6 +164,8 @@ class AgentActionOutput(BaseModel):
     current_room: Optional[str] = None
     description: Optional[str] = None #  for chat box description
     current_object: Optional[str] = None #  for chat box description
+    event_id: Optional[int] = None  # For event tracking
+    event_type: Optional[str] = None  # For event type tracking
 
 
 class AgentPlanRequest(BaseModel):

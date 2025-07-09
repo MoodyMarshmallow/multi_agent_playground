@@ -8,9 +8,9 @@ from backend.config.schema import AgentActionOutput
 from datetime import datetime
 
 
-class GameController:
+class Game:
     """
-    The GameController class keeps track of the state of the world, and describes what
+    The Game class keeps track of the state of the world, and describes what
     the player sees as they move through different locations.
 
     Internally, we use a graph of Location objects and Item objects, which can
@@ -265,6 +265,7 @@ class GameController:
                 item = self.player.location.items[item_name]
                 description += "\n * " + item.description
                 if self.give_hints:
+                    description += "\n   You can:"
                     special_commands = item.get_command_hints()
                     for cmd in special_commands:
                         description += "\n\t" + cmd

@@ -17,7 +17,7 @@ from typing import Dict, List, Optional, Any
 from datetime import datetime
 
 # Text adventure games imports
-from .text_adventure_games.game_controller import GameController
+from .text_adventure_games.games import Game
 from .text_adventure_games.things import Character, Location, Item
 
 # Agent management
@@ -35,13 +35,13 @@ class GameLoop:
     """
     
     def __init__(self):
-        self.game: Optional[GameController] = None
+        self.game: Optional[Game] = None
         self.agent_manager: Optional[AgentManager] = None
         self.is_running = False
         self.task: Optional[asyncio.Task] = None
         
-        # Event system for frontend
-        self.event_queue: List[Dict] = []
+        # Event system for frontend (only AgentActionOutput objects)
+        self.event_queue: List[AgentActionOutput] = []
         self.event_id_counter = 0
         
         # Turn management
@@ -82,26 +82,21 @@ class GameLoop:
 
             agent = self.agent_manager.get_next_agent()
             if agent:
-                command, result = await self.agent_manager.execute_agent_turn(agent)
+                # Execute turn and get schema
+                action_schema = await self.agent_manager.execute_agent_turn(agent)
                 
-                # Log the action and result as an event
-                self._add_event(
-                    event_type="agent_action",
-                    data={
-                        "agent_id": agent.name,
-                        "command": command,
-                        "result": result,
-                        "turn": self.turn_counter
-                    }
-                )
+                # Only process if an action was actually taken
+                if action_schema:
+                    # Log the turn
+                    print(f"Turn {self.turn_counter}: {agent.name} executed action")
+                    
+                    # Add the action schema directly as an event
+                    self._add_action_event(action_schema)
+                    
+                    # Store the structured action for polling
+                    self.latest_agent_actions[agent.name] = action_schema
                 
-                # Store the action for polling
-                # TODO: warp up the command/ result from a text descrition to agent action output
-                self.latest_agent_actions[agent.name] = AgentActionOutput(
-                    action=command,
-                )
-                
-                # Advance to the next agent
+                # Advance to the next agent (whether action succeeded or not)
                 self.agent_manager.advance_turn()
                 self.turn_counter += 1
 
@@ -124,7 +119,7 @@ class GameLoop:
         
         print("Game controller initialized successfully")
     
-    def _build_house_environment(self) -> GameController:
+    def _build_house_environment(self) -> Game:
         """
         Create a house environment matching the canonical canonical_demo.py world.
         """
@@ -151,7 +146,10 @@ class GameLoop:
             
             print("AI agents set up successfully")
         except Exception as e:
+            import traceback
             print(f"Warning: Could not set up AI agents: {e}")
+            print(f"Full error traceback:")
+            traceback.print_exc()
             print("The game will run without AI agents for NPCs")
             # Just add the characters to active agents list without AI strategies
             self.agent_manager.active_agents.extend(["alex_001", "alan_002"])
@@ -212,24 +210,23 @@ class GameLoop:
     
     
     
-    def _add_event(self, event_type: str, data: Dict):
-        """Add an event to the queue."""
+    def _add_action_event(self, action_output: AgentActionOutput):
+        """Add an AgentActionOutput to the event queue."""
         self.event_id_counter += 1
-        event = {
-            "id": self.event_id_counter,
-            "type": event_type,
-            "timestamp": self._get_current_timestamp(),
-            "data": data
-        }
-        self.event_queue.append(event)
+        
+        # Add event metadata to the action output
+        action_output.event_id = self.event_id_counter
+        action_output.event_type = "agent_action"
+        
+        self.event_queue.append(action_output)
     
     def _get_current_timestamp(self) -> str:
         """Get current timestamp as ISO format string."""
         return datetime.now().isoformat()
     
-    def get_events_since(self, last_event_id: int) -> List[Dict]:
+    def get_events_since(self, last_event_id: int) -> List[AgentActionOutput]:
         """Get events since the specified ID."""
-        return [e for e in self.event_queue if e["id"] > last_event_id]
+        return [event for event in self.event_queue if event.event_id > last_event_id]
     
     
     
