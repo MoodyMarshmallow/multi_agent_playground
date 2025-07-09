@@ -72,8 +72,8 @@ async def get_latest_agent_actions():
         del game_controller.latest_agent_actions[agent_id]
     return actions
 
-# check if this is the same as get world state, and do we need this?
-@app.get("/agents/states", response_model=List[AgentStateResponse])
+# requst body is a list of agent ids to retrive states for specific agents
+@app.post("/agents/states", response_model=List[AgentStateResponse])
 async def get_agents_states(agent_ids: List[str]):
     """
     Get the current state of multiple agents.
@@ -110,14 +110,8 @@ async def get_world_state():
     state = game_controller.get_world_state()
     return WorldStateResponse(**state)
 
-@app.get("/game/events", response_model=GameEventList)
-async def get_game_events(since_id: int = 0):
-    if not game_controller:
-        raise HTTPException(status_code=500, detail="Game not initialized")
-    events = game_controller.get_events_since(since_id)
-    # Ensure each event matches GameEvent
-    return GameEventList(events=[GameEvent(**e) for e in events])
 
+# dont know if we need this, but just in case
 @app.post("/game/reset", response_model=StatusMsg)
 async def reset_game():
     if game_controller:
