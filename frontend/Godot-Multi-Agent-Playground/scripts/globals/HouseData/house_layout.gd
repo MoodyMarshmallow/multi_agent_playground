@@ -53,13 +53,14 @@ func _set_up_bedroom():
 		"desk" : null, 
 		"carpet" : null, 
 		"mirror" : null, 
-		"blocks" : null, 
+		"toy_blocks" : null, 
 		"crib" : null, 
 		"tv" : null, 
 		"chest" : null, 
 		"toy_cars" : null, 
 		"cubbies" : null, 
 		"transformer" : null, 
+		"toy_trains" : null,
 		"rug" : null, 
 		"book" : null, 
 		"plant" : null, 
@@ -88,10 +89,19 @@ func _set_up_bathroom():
 	bathroom.corners.dl = Vector2i(19, 5)
 	bathroom.corners.dr = Vector2i(30, 5)
 	bathroom.adjacent_rooms = ["game_room"]
+
 	bathroom.objects = {
-		"sink" : null,
-		"bathtub" : null,
-		"cabinet" : null,
+		"faucet" : null,
+		"counter" : null, 
+		"mat" : null, 
+		"shelf" : null, 
+		"cabinet" : null, 
+		"plunger" : null, 
+		"toilet" : null, 
+		"toilet_paper" : null, 
+		"shower" : null, 
+		"bathtub" : null, 
+		"bathmat" : null, 
 	}
 	
 	var sink : InteractableObject = InteractableObject.new()
@@ -136,10 +146,24 @@ func _set_up_kitchen():
 	kitchen.corners.dl = Vector2i(0, 14)
 	kitchen.corners.dr = Vector2i(11, 14)
 	kitchen.adjacent_rooms = ["dining_room", "entry_room"]
+
 	kitchen.objects = {
 		"fridge" : null,
+		"kitchen_tools" : null, 
+		"sink" : null, 
+		"dining_counter" : null,
+		"left_high_seat" : null, 
+		"middle_high_seat" : null, 
+		"right_high_seat" : null, 
+		"stove" : null, 
 		"oven" : null,
-		"coffee" : null,
+		"dishwasher" : null, 
+		"knives" : null, 
+		"cuttingboard" : null, 
+		"plates" : null, 
+		"coffee_machine" : null, 
+		"toaster" : null, 
+		"microwave" : null, 
 	}
 	
 	var fridge : InteractableObject = InteractableObject.new()
@@ -160,19 +184,19 @@ func _set_up_kitchen():
 	}
 	oven.current_state = "closed"
 	
-	var coffee : InteractableObject = InteractableObject.new()
-	coffee.name = "coffee"
-	coffee.tile = Vector2i(8, 10)
-	coffee.states = {
+	var coffee_machine : InteractableObject = InteractableObject.new()
+	coffee_machine.name = "coffee"
+	coffee_machine.tile = Vector2i(8, 10)
+	coffee_machine.states = {
 		"on" : null,
 		"off" : null
 	}
-	coffee.current_state = "off"
+	coffee_machine.current_state = "off"
 	
 	kitchen.interactable_objects = {
 		"fridge" : fridge,
 		"oven" : oven,
-		"coffee" : coffee,
+		"coffee_machine" : coffee_machine,
 	}
 	kitchen.idle_positions = {}
 	kitchen.occupied_positions = {}
@@ -185,7 +209,12 @@ func _set_up_entry_room():
 	entry_room.corners.dr = Vector2i(9, 22)
 	entry_room.adjacent_rooms = ["kitchen"]
 	entry_room.objects = {
-		"" : null,
+		"plant" : null,
+		"vase" : null,
+		"fruitbasket" : null,
+		"door" : null,
+		"left_window" : null,
+		"right_window" : null,
 	}
 	entry_room.interactable_objects = {
 		"" : null,
@@ -201,7 +230,14 @@ func _set_up_dining_room():
 	dining_room.corners.dr = Vector2i(18, 19)
 	dining_room.adjacent_rooms = ["kitchen", "bedroom", "living_room"]
 	dining_room.objects = {
-		"" : null,
+		"plant" : null,
+		"upper_seat" : null,
+		"upper_left_seat" : null,
+		"upper_right_seat" : null,
+		"bottom_left_seat" : null,
+		"bottom_right_seat" : null,
+		"bottom_seat" : null,
+		"dining_table" : null,
 	}
 	dining_room.interactable_objects = {
 		"" : null,
@@ -217,7 +253,12 @@ func _set_up_living_room():
 	living_room.corners.dr = Vector2i(25, 19)
 	living_room.adjacent_rooms = ["dining_room", "game_room"]
 	living_room.objects = {
-		"" : null,
+		"bookshelf" : null,
+		"game_bins" : null,
+		"television" : null,
+		"table" : null,
+		"sofa" : null,
+		"stool" : null,
 	}
 	living_room.interactable_objects = {
 		"" : null,
@@ -233,7 +274,12 @@ func _set_up_laundry_room():
 	laundry_room.corners.dr = Vector2i(24, 11)
 	laundry_room.adjacent_rooms = ["bathroom", "game_room"]
 	laundry_room.objects = {
-		"" : null,
+		"cleaning_supplies" : null,
+		"rug" : null,
+		"trash_bin" : null,
+		"dirty_clothes" : null,
+		"washing_machine" : null,
+		"paper_towels" : null,
 	}
 	laundry_room.interactable_objects = {
 		"" : null,
@@ -249,7 +295,12 @@ func _set_up_game_room():
 	game_room.corners.dr = Vector2i(30, 19)
 	game_room.adjacent_rooms = ["bathroom", "living_room"]
 	game_room.objects = {
-		"" : null,
+		"lamp" : null,
+		"pool_table" : null,
+		"plant" : null,
+		"pool_queues" : null,
+		"top_arcade_machine" : null,
+		"bottom_arcade_machine" : null,
 	}
 	game_room.interactable_objects = {
 		"" : null,

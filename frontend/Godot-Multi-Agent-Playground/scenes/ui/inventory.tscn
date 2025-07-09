@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://4s17jcdb6vfl"]
+
+[node name="CanvasLayer" type="CanvasLayer"]
+
+[node name="PopupMenu" type="PopupMenu" parent="."]
+auto_translate_mode = 1
+item_count = 1
+item_0/text = "Inventory"
