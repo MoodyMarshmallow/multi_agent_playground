@@ -121,7 +121,7 @@ Remember: You can only choose from the available actions provided. If unsure, su
             command: The exact command you want to perform (e.g., "go north", "get lamp", "look")
         """
         self.selected_command = command.lower().strip()
-        print(f"🤖 [{self.character_name}] FUNCTION CALL: submit_command('{command}') -> stored as '{self.selected_command}'")
+        print(f"[{self.character_name}] FUNCTION CALL: submit_command('{command}') -> stored as '{self.selected_command}'")
         return f"Command '{command}' submitted successfully."
     
     async def select_action(self, world_state: dict) -> str:
@@ -129,7 +129,7 @@ Remember: You can only choose from the available actions provided. If unsure, su
         Use LLM with function calling to select an action based on world state.
         """
         try:
-            print(f"\n🎮 [{self.character_name}] === AGENT TURN STARTED ===")
+            print(f"\n[{self.character_name}] === AGENT TURN STARTED ===")
             # Reset selected command
             self.selected_command = None
             
@@ -145,52 +145,52 @@ Remember: You can only choose from the available actions provided. If unsure, su
             observation += "\n\nYou must call the submit_command function with your chosen action."
             
             # Debug: Print the full observation sent to the LLM
-            print(f"\n📋 [{self.character_name}] WORLD STATE OBSERVATION:")
+            print(f"\n[{self.character_name}] WORLD STATE OBSERVATION:")
             print("=" * 60)
             print(observation)
             print("=" * 60)
             
             # Get LLM response with function calling
-            print(f"🧠 [{self.character_name}] Sending observation to LLM...")
+            print(f"[{self.character_name}] Sending observation to LLM...")
             # Use full_round to allow function calling
             async for message in self.full_round(observation, max_function_rounds=1):
-                print(f"🔄 [{self.character_name}] LLM message: {message.role}")
-            print(f"✅ [{self.character_name}] LLM response received")
+                print(f"[{self.character_name}] LLM message: {message.role}")
+            print(f"[{self.character_name}] LLM response received")
             
             # Check if a command was submitted via function call
             if self.selected_command:
                 command = self.selected_command
-                print(f"✅ [{self.character_name}] Function call successful: '{command}'")
+                print(f"[{self.character_name}] Function call successful: '{command}'")
             else:
                 # Fallback if no function was called (shouldn't happen with proper prompting)
-                print(f"⚠️  [{self.character_name}] WARNING: No submit_command function was called!")
-                print(f"🔄 [{self.character_name}] Using fallback command: 'look'")
-                print(f"🎯 [{self.character_name}] FINAL ACTION: 'look'\n")
+                print(f"[{self.character_name}] WARNING: No submit_command function was called!")
+                print(f"[{self.character_name}] Using fallback command: 'look'")
+                print(f"[{self.character_name}] FINAL ACTION: 'look'\n")
                 return "look"
             
             # Validate command is in available actions
             valid_commands = [a['command'].lower() for a in world_state.get('available_actions', [])]
-            print(f"🔍 [{self.character_name}] Validating command '{command}' against {len(valid_commands)} available actions")
-            print(f"📝 [{self.character_name}] Available commands: {valid_commands}")
+            print(f"[{self.character_name}] Validating command '{command}' against {len(valid_commands)} available actions")
+            print(f"[{self.character_name}] Available commands: {valid_commands}")
             
             if command in valid_commands:
                 # Track this action
                 self.recent_actions.append(command)
                 if len(self.recent_actions) > self.max_recent_actions:
                     self.recent_actions.pop(0)
-                print(f"✅ [{self.character_name}] Command VALID: '{command}'")
-                print(f"🎯 [{self.character_name}] FINAL ACTION: '{command}'\n")
+                print(f"[{self.character_name}] Command VALID: '{command}'")
+                print(f"[{self.character_name}] FINAL ACTION: '{command}'\n")
                 return command
             else:
-                print(f"❌ [{self.character_name}] Command NOT VALID: '{command}'")
+                print(f"[{self.character_name}] Command NOT VALID: '{command}'")
                 # Try to find a close match
                 for valid_cmd in valid_commands:
                     if command in valid_cmd or valid_cmd in command:
                         self.recent_actions.append(valid_cmd)
                         if len(self.recent_actions) > self.max_recent_actions:
                             self.recent_actions.pop(0)
-                        print(f"🔄 [{self.character_name}] Found close match: '{command}' -> '{valid_cmd}'")
-                        print(f"🎯 [{self.character_name}] FINAL ACTION: '{valid_cmd}'\n")
+                        print(f"[{self.character_name}] Found close match: '{command}' -> '{valid_cmd}'")
+                        print(f"[{self.character_name}] FINAL ACTION: '{valid_cmd}'\n")
                         return valid_cmd
                 
                 # Fallback to first available action or "look"
@@ -199,18 +199,18 @@ Remember: You can only choose from the available actions provided. If unsure, su
                     self.recent_actions.append(fallback)
                     if len(self.recent_actions) > self.max_recent_actions:
                         self.recent_actions.pop(0)
-                    print(f"🔄 [{self.character_name}] No match found, using first available: '{fallback}'")
-                    print(f"🎯 [{self.character_name}] FINAL ACTION: '{fallback}'\n")
+                    print(f"[{self.character_name}] No match found, using first available: '{fallback}'")
+                    print(f"[{self.character_name}] FINAL ACTION: '{fallback}'\n")
                     return fallback
                 else:
-                    print(f"🔄 [{self.character_name}] No available commands, using fallback: 'look'")
-                    print(f"🎯 [{self.character_name}] FINAL ACTION: 'look'\n")
+                    print(f"[{self.character_name}] No available commands, using fallback: 'look'")
+                    print(f"[{self.character_name}] FINAL ACTION: 'look'\n")
                     return "look"
                     
         except Exception as e:
-            print(f"🚨 [{self.character_name}] ERROR in select_action: {e}")
-            print(f"🔄 [{self.character_name}] Using emergency fallback: 'look'")
-            print(f"🎯 [{self.character_name}] FINAL ACTION: 'look'\n")
+            print(f"[{self.character_name}] ERROR in select_action: {e}")
+            print(f"[{self.character_name}] Using emergency fallback: 'look'")
+            print(f"[{self.character_name}] FINAL ACTION: 'look'\n")
             return "look"  # Safe fallback
     
     def _format_world_state(self, state: dict) -> str:

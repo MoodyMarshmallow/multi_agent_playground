@@ -218,7 +218,63 @@ class GameLoop:
         action_output.event_id = self.event_id_counter
         action_output.event_type = "agent_action"
         
+        # Print the AgentActionOutput in readable format
+        self._print_action_output(action_output)
+        
         self.event_queue.append(action_output)
+    
+    def _print_action_output(self, action_output: AgentActionOutput):
+        """Print AgentActionOutput in a readable format."""
+        print(f"\nEVENT #{action_output.event_id} ADDED TO QUEUE:")
+        print("═" * 60)
+        print(f"Agent: {action_output.agent_id}")
+        print(f"Location: {action_output.current_room or 'Unknown'}")
+        print(f"Action Type: {action_output.action.action_type}")
+        
+        # Print all action fields dynamically (excluding action_type which we already showed)
+        action_fields = self._get_action_fields(action_output.action)
+        if action_fields:
+            for field_name, field_value in action_fields.items():
+                if field_value is not None:  # Only show fields with values
+                    print(f"{field_name.title()}: {field_value}")
+        
+        if action_output.current_object:
+            print(f"Current Object: {action_output.current_object}")
+        
+        print(f"Timestamp: {action_output.timestamp}")
+        
+        if action_output.description:
+            print(f"Description:")
+            print("─" * 40)
+            print(action_output.description)
+            print("─" * 40)
+        
+        print("═" * 60)
+    
+    def _get_action_fields(self, action) -> dict:
+        """Extract all fields from an action object, excluding action_type."""
+        fields = {}
+        
+        # Get all fields from the Pydantic model
+        if hasattr(action, '__fields__'):
+            # Pydantic v1 style
+            for field_name in action.__fields__:
+                if field_name != 'action_type':
+                    fields[field_name] = getattr(action, field_name, None)
+        elif hasattr(action, 'model_fields'):
+            # Pydantic v2 style
+            for field_name in action.model_fields:
+                if field_name != 'action_type':
+                    fields[field_name] = getattr(action, field_name, None)
+        else:
+            # Fallback: use __dict__ but filter out private attributes
+            for field_name, field_value in action.__dict__.items():
+                if not field_name.startswith('_') and field_name != 'action_type':
+                    fields[field_name] = field_value
+        
+        return fields
+    
+
     
     def _get_current_timestamp(self) -> str:
         """Get current timestamp as ISO format string."""
