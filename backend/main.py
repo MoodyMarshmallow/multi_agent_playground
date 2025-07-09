@@ -22,18 +22,18 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 # Import the game controller
-from .game_controller import GameController
+from .game_loop import GameLoop
 from .config.schema import WorldStateResponse, GameEvent, GameEventList, StatusMsg, GameStatus, AgentStateResponse, GameObject, AgentActionOutput
 
 # Global game controller instance
-game_controller: Optional[GameController] = None
+game_controller: Optional[GameLoop] = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan event handler for startup and shutdown."""
     # Startup
     global game_controller
-    game_controller = GameController()
+    game_controller = GameLoop()
     await game_controller.start()
     
     yield

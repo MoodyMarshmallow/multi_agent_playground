@@ -19,7 +19,7 @@ from kani.engines.openai import OpenAIEngine
 
 # Text adventure games imports
 from .text_adventure_games.things import Character
-from .text_adventure_games.games import Game
+from .text_adventure_games.game_controller import GameController
 
 
 class AgentStrategy(Protocol):
@@ -188,7 +188,7 @@ class AgentManager:
     """
     Manages the connection between Characters and their AI strategies.
     """
-    def __init__(self, game: Game):
+    def __init__(self, game: GameController):
         self.game = game
         self.agent_strategies: Dict[str, AgentStrategy] = {}
         

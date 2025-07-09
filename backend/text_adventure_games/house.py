@@ -3,7 +3,7 @@ Canonical house world setup for the text adventure game.
 Builds and returns a fully populated Game object with all rooms, items, and actions.
 """
 
-from backend.text_adventure_games import games, things
+from backend.text_adventure_games import game_controller, things
 from backend.text_adventure_games.actions.bed import Sleep, MakeBed, CleanBed, ChangeQuilt, ExamineBed
 from backend.text_adventure_games.things.containers import Container
 from backend.text_adventure_games.things.items import Item
@@ -12,9 +12,9 @@ from backend.text_adventure_games.actions.containers import (
 )
 # from backend.text_adventure_games.actions import ... (add custom actions as needed)
 
-def build_house_game() -> games.Game:
+def build_house_game() -> game_controller.GameController:
     """
-    Build and return the canonical house adventure Game object.
+    Build and return the canonical house adventure GameController object.
     Includes all rooms, items, containers, and hooks for custom actions.
     """
     # --- Define Locations (Rooms) ---
@@ -127,5 +127,5 @@ def build_house_game() -> games.Game:
         OpenContainer, CloseContainer, TakeFromContainer, ViewContainer, PutInContainer
     ]
     # --- Build and return the game object ---
-    game_obj: games.Game = games.Game(entry, player, custom_actions=custom_actions)
+    game_obj: game_controller.GameController = game_controller.GameController(entry, player, custom_actions=custom_actions)
     return game_obj

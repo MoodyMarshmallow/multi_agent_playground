@@ -22,7 +22,7 @@ project_root = backend_dir.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-from backend.game_controller import GameController
+from backend.game_loop import GameLoop
 from backend.agent_manager import SimpleRandomAgent
 from backend.config.schema import AgentSummary
 
@@ -34,7 +34,7 @@ async def test_basic_functionality():
     
     # Initialize the game controller
     print("\n1. Initializing game controller...")
-    controller = GameController()
+    controller = GameLoop()
     await controller.initialize()
     print("✓ Game controller initialized successfully")
     
@@ -81,7 +81,7 @@ async def test_simple_agent_interaction():
     print("\nTesting with Simple Random Agents")
     print("=" * 40)
     
-    controller = GameController()
+    controller = GameLoop()
     await controller.initialize()
     
     # Replace Kani agents with simple random agents for testing

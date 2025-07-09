@@ -68,11 +68,11 @@ def verify_tile_removal():
     # Test 3: Check for any remaining tile references
     try:
         # This would catch any remaining tile references in the module
-        import backend.game_controller
+        import backend.game_loop
         import backend.agent_manager
         
         # Verify LocationToTileMapper class is gone
-        assert not hasattr(backend.game_controller, 'LocationToTileMapper'), "❌ LocationToTileMapper class still exists"
+        assert not hasattr(backend.game_loop, 'LocationToTileMapper'), "❌ LocationToTileMapper class still exists"
         print("✅ Game Controller: LocationToTileMapper class removed")
         
     except Exception as e:

@@ -17,7 +17,7 @@ from typing import Dict, List, Optional, Any
 from datetime import datetime
 
 # Text adventure games imports
-from .text_adventure_games.games import Game
+from .text_adventure_games.game_controller import GameController
 from .text_adventure_games.things import Character, Location, Item
 
 # Agent management
@@ -28,13 +28,14 @@ from .text_adventure_games.house import build_house_game
 
 from .config.schema import AgentActionOutput
 
-class GameController:
+class GameLoop:
     """
-    Main controller for the multi-agent playground.
+    Drives the game loop for the multi-agent playground.
+    Also enqueues events for the frontend to consume.
     """
     
     def __init__(self):
-        self.game: Optional[Game] = None
+        self.game: Optional[GameController] = None
         self.agent_manager: Optional[AgentManager] = None
         self.is_running = False
         self.task: Optional[asyncio.Task] = None
@@ -123,7 +124,7 @@ class GameController:
         
         print("Game controller initialized successfully")
     
-    def _build_house_environment(self) -> Game:
+    def _build_house_environment(self) -> GameController:
         """
         Create a house environment matching the canonical canonical_demo.py world.
         """

@@ -3,7 +3,7 @@
 __all__ = [
     'AgentManager',
     'KaniAgent', 
-    'GameController'
+    'GameLoop'
 ]
 
 # Import other modules conditionally to avoid circular imports
@@ -12,5 +12,5 @@ def get_agent_manager():
     return AgentManager, KaniAgent
 
 def get_game_controller():
-    from .game_controller import GameController
-    return GameController 
+    from .game_loop import GameLoop
+    return GameLoop 

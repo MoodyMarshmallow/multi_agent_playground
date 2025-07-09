@@ -8,9 +8,9 @@ from backend.config.schema import AgentActionOutput
 from datetime import datetime
 
 
-class Game:
+class GameController:
     """
-    The Game class keeps track of the state of the world, and describes what
+    The GameController class keeps track of the state of the world, and describes what
     the player sees as they move through different locations.
 
     Internally, we use a graph of Location objects and Item objects, which can

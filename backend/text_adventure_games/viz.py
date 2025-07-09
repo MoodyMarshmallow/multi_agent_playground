@@ -1,6 +1,6 @@
 from .things import Character, Item, Location
 from . import actions
-from .games import Game
+from .game_controller import GameController
 
 from graphviz import Digraph
 from IPython.display import Image
@@ -14,7 +14,7 @@ class Visualizer:
     using graphviz.
     """
 
-    def __init__(self, game: Game):
+    def __init__(self, game: GameController):
         self.game = game
 
     def visualize(self) -> Digraph:
