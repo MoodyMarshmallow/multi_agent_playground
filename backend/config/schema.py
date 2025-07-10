@@ -108,6 +108,20 @@ class AdjustVolumeAction(BaseModel):
     target: str   # e.g., "tv", "alarm clock"
     value: int    # volume value
 
+# --- NEW GENERIC HOUSE ACTION SCHEMA (for standardized actions) ---
+class HouseActionSimple(BaseModel):
+    action_type: Literal[
+        "take", "place", "place_on", "use",
+        "open", "close", "turn_on", "turn_off", "clean_item", "tidy_bed"
+    ]
+    target: str
+    recipient: Optional[str] = None  # Only for place_on
+
+# --- MOVEMENT ACTION ---
+class MoveAction(BaseModel):
+    action_type: Literal["move"]
+    target: str  # e.g., direction or destination
+
 # --- UNION OF ALL ACTIONS ---
 class NoOpAction(BaseModel):
     action_type: Literal["noop"]
@@ -141,6 +155,9 @@ HouseAction = Annotated[
         SetTemperatureAction,
         AdjustBrightnessAction,
         AdjustVolumeAction,
+        # New generic actions
+        HouseActionSimple,
+        MoveAction,
         # No-op fallback
         NoOpAction,
     ],
@@ -159,7 +176,7 @@ HouseAction = Annotated[
 
 class AgentActionOutput(BaseModel):
     agent_id: str
-    action: str
+    action: Dict[str, Any]
     timestamp: Optional[str] = None
     current_room: Optional[str] = None
     description: Optional[str] = None #  for chat box description
