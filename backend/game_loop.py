@@ -28,9 +28,10 @@ from .text_adventure_games.house import build_house_game
 
 from .config.schema import AgentActionOutput
 
-class GameController:
+class GameLoop:
     """
-    Main controller for the multi-agent playground.
+    Drives the game loop for the multi-agent playground.
+    Also enqueues events for the frontend to consume.
     """
     
     def __init__(self):
@@ -39,8 +40,8 @@ class GameController:
         self.is_running = False
         self.task: Optional[asyncio.Task] = None
         
-        # Event system for frontend
-        self.event_queue: List[Dict] = []
+        # Event system for frontend (only AgentActionOutput objects)
+        self.event_queue: List[AgentActionOutput] = []
         self.event_id_counter = 0
         
         # Turn management
@@ -81,31 +82,21 @@ class GameController:
 
             agent = self.agent_manager.get_next_agent()
             if agent:
-                command, result = await self.agent_manager.execute_agent_turn(agent)
+                # Execute turn and get schema
+                action_schema = await self.agent_manager.execute_agent_turn(agent)
                 
-                # Log the action and result as an event
-                self._add_event(
-                    event_type="agent_action",
-                    data={
-                        "agent_id": agent.name,
-                        "command": command,
-                        "result": result,
-                        "turn": self.turn_counter
-                    }
-                )
-                
-                # Store the action for polling
-                # TODO: warp up the command/ result from a text descrition to agent action output
-                # this is just a placeholder for now, we need to implement the actual agent action output
-                self.latest_agent_actions[agent.name] = AgentActionOutput(
-                    agent_id=agent.name,
-                    action=str(command),                # string representation of command
-                    description=str(result),            # put result text here
-                    timestamp=datetime.now().isoformat()  #
-                )
+                # Only process if an action was actually taken
+                if action_schema:
+                    # Log the turn
+                    print(f"Turn {self.turn_counter}: {agent.name} executed action")
                     
+                    # Add the action schema directly as an event
+                    self._add_action_event(action_schema)
+                    
+                    # Store the structured action for polling
+                    self.latest_agent_actions[agent.name] = action_schema
                 
-                # Advance to the next agent
+                # Advance to the next agent (whether action succeeded or not)
                 self.agent_manager.advance_turn()
                 self.turn_counter += 1
 
@@ -155,7 +146,10 @@ class GameController:
             
             print("AI agents set up successfully")
         except Exception as e:
+            import traceback
             print(f"Warning: Could not set up AI agents: {e}")
+            print(f"Full error traceback:")
+            traceback.print_exc()
             print("The game will run without AI agents for NPCs")
             # Just add the characters to active agents list without AI strategies
             self.agent_manager.active_agents.extend(["alex_001", "alan_002"])
@@ -216,24 +210,79 @@ class GameController:
     
     
     
-    def _add_event(self, event_type: str, data: Dict):
-        """Add an event to the queue."""
+    def _add_action_event(self, action_output: AgentActionOutput):
+        """Add an AgentActionOutput to the event queue."""
         self.event_id_counter += 1
-        event = {
-            "id": self.event_id_counter,
-            "type": event_type,
-            "timestamp": self._get_current_timestamp(),
-            "data": data
-        }
-        self.event_queue.append(event)
+        
+        # Add event metadata to the action output
+        action_output.event_id = self.event_id_counter
+        action_output.event_type = "agent_action"
+        
+        # Print the AgentActionOutput in readable format
+        self._print_action_output(action_output)
+        
+        self.event_queue.append(action_output)
+    
+    def _print_action_output(self, action_output: AgentActionOutput):
+        """Print AgentActionOutput in a readable format."""
+        print(f"\nEVENT #{action_output.event_id} ADDED TO QUEUE:")
+        print("═" * 60)
+        print(f"Agent: {action_output.agent_id}")
+        print(f"Location: {action_output.current_room or 'Unknown'}")
+        print(f"Action Type: {action_output.action.action_type}")
+        
+        # Print all action fields dynamically (excluding action_type which we already showed)
+        action_fields = self._get_action_fields(action_output.action)
+        if action_fields:
+            for field_name, field_value in action_fields.items():
+                if field_value is not None:  # Only show fields with values
+                    print(f"{field_name.title()}: {field_value}")
+        
+        if action_output.current_object:
+            print(f"Current Object: {action_output.current_object}")
+        
+        print(f"Timestamp: {action_output.timestamp}")
+        
+        if action_output.description:
+            print(f"Description:")
+            print("─" * 40)
+            print(action_output.description)
+            print("─" * 40)
+        
+        print("═" * 60)
+    
+    def _get_action_fields(self, action) -> dict:
+        """Extract all fields from an action object, excluding action_type."""
+        fields = {}
+        
+        # Get all fields from the Pydantic model
+        if hasattr(action, '__fields__'):
+            # Pydantic v1 style
+            for field_name in action.__fields__:
+                if field_name != 'action_type':
+                    fields[field_name] = getattr(action, field_name, None)
+        elif hasattr(action, 'model_fields'):
+            # Pydantic v2 style
+            for field_name in action.model_fields:
+                if field_name != 'action_type':
+                    fields[field_name] = getattr(action, field_name, None)
+        else:
+            # Fallback: use __dict__ but filter out private attributes
+            for field_name, field_value in action.__dict__.items():
+                if not field_name.startswith('_') and field_name != 'action_type':
+                    fields[field_name] = field_value
+        
+        return fields
+    
+
     
     def _get_current_timestamp(self) -> str:
         """Get current timestamp as ISO format string."""
         return datetime.now().isoformat()
     
-    def get_events_since(self, last_event_id: int) -> List[Dict]:
+    def get_events_since(self, last_event_id: int) -> List[AgentActionOutput]:
         """Get events since the specified ID."""
-        return [e for e in self.event_queue if e["id"] > last_event_id]
+        return [event for event in self.event_queue if event.event_id > last_event_id]
     
     
     
@@ -256,6 +305,7 @@ class GameController:
     def get_all_objects(self) -> List[Dict]:
         """Get all objects and their states."""
         return list(self.objects_registry.values())
+    
     
     
     async def reset(self):

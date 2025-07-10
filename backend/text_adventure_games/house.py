@@ -5,11 +5,16 @@ Builds and returns a fully populated Game object with all rooms, items, and acti
 
 from backend.text_adventure_games import games, things
 from backend.text_adventure_games.actions.bed import Sleep, MakeBed, CleanBed, ChangeQuilt, ExamineBed
+from backend.text_adventure_games.things.containers import Container
+from backend.text_adventure_games.things.items import Item
+from backend.text_adventure_games.actions.containers import (
+    OpenContainer, CloseContainer, TakeFromContainer, ViewContainer, PutInContainer
+)
 # from backend.text_adventure_games.actions import ... (add custom actions as needed)
 
 def build_house_game() -> games.Game:
     """
-    Build and return the canonical house adventure Game object.
+    Build and return the canonical house adventure GameController object.
     Includes all rooms, items, containers, and hooks for custom actions.
     """
     # --- Define Locations (Rooms) ---
@@ -41,7 +46,7 @@ def build_house_game() -> games.Game:
     dining.add_connection("east", living)
     dining.add_connection("north", bedroom)
     # --- Add Items, Characters, etc. (verbatim from canonical_world.py) ---
-    bed = things.Item("bed", "a comfortable bed", "A soft bed for sleeping.")
+    bed: Item = things.Item("bed", "a comfortable bed", "A soft bed for sleeping.")
     bed.set_property("is_interactable", True)
     bed.set_property("is_sleepable", True)
     bed.set_property("is_made", True)
@@ -49,12 +54,51 @@ def build_house_game() -> games.Game:
     bed.set_property("color", "blue")
     bed.set_property("quilt_color", "blue")
     bed.set_property("gettable", False)
+    bed.add_command_hint("sleep")
+    bed.add_command_hint("make bed")
+    bed.add_command_hint("clean bed")
+    bed.add_command_hint("change quilt to <color>")
     bedroom.add_item(bed)
+
+    # Add a closet container to the bedroom (canonical Container class)
+    closet: Container = Container("closet", "A large wooden closet.", is_openable=True, is_open=False)
+    closet.set_property("is_interactable", True)
+    closet.set_property("fullness", 50)  # numeric 0-100
+    closet.set_property("material", "wood")
+    closet.add_command_hint("open")
+    closet.add_command_hint("close")
+    closet.add_command_hint("take")
+    closet.add_command_hint("view")
+    # Add multiple objects to the closet
+    jacket: Item = Item("jacket", "a warm jacket", "A warm, cozy jacket.")
+    jacket.add_command_hint("wear")
+    jacket.add_command_hint("examine")
+    boots: Item = Item("boots", "a pair of boots", "Sturdy leather boots.")
+    boots.add_command_hint("wear")
+    boots.add_command_hint("examine")
+    hat: Item = Item("hat", "a sun hat", "A wide-brimmed sun hat.")
+    hat.add_command_hint("wear")
+    hat.add_command_hint("examine")
+    scarf: Item = Item("scarf", "a wool scarf", "A long, woolen scarf.")
+    scarf.add_command_hint("wear")
+    scarf.add_command_hint("examine")
+    closet.add_item(jacket)
+    closet.add_item(boots)
+    closet.add_item(hat)
+    closet.add_item(scarf)
+    # Add quilt items to the closet
+    for color in ["red", "blue", "green", "yellow", "white", "black"]:
+        quilt = Item(f"{color} quilt", f"a {color} quilt", f"A soft, {color} quilt for the bed.")
+        quilt.set_property("quilt_color", color)
+        quilt.add_command_hint("take")
+        quilt.add_command_hint("examine")
+        closet.add_item(quilt)
+    closet.add_command_hint("view")
+    bedroom.add_item(closet)
+
     # ... (continue porting all items, containers, and their properties as in canonical_world.py) ...
-    
-    # --- Characters ---
-    # Player character
-    player = things.Character(
+    # --- Player character ---
+    player: things.Character = things.Character(
         name="Player",
         description="An explorer in a large, modern house.",
         persona="I am curious and love to explore new places."
@@ -79,116 +123,11 @@ def build_house_game() -> games.Game:
     
     # --- Custom actions (add as needed) ---
     custom_actions = [
-        Sleep, MakeBed, CleanBed, ChangeQuilt, ExamineBed
+        Sleep, MakeBed, CleanBed, ChangeQuilt, ExamineBed,
+        OpenContainer, CloseContainer, TakeFromContainer, ViewContainer, PutInContainer
     ]
-    
-    # --- Build and return the game object with all characters ---
-    # Pass all non-player characters to the game constructor
-    game_obj = games.Game(start_at=entry, 
-                          player=player, 
-                          characters=[alex, alan], 
-                          custom_actions=custom_actions)
+    # --- Build and return the game object ---
+    # Pass the NPCs to the Game constructor so they get registered
+    npcs = [alex, alan]
+    game_obj: games.Game = games.Game(entry, player, characters=npcs, custom_actions=custom_actions)
     return game_obj
-
-# def _build_house_environment(self) -> Game:
-#         """
-#         Create a house environment matching the Godot scene.
-#         """
-#         # Create rooms
-#         living_room = Location(
-#             "Living Room",
-#             "A cozy living room with a comfortable couch and TV. Sunlight streams through large windows."
-#         )
-        
-#         kitchen = Location(
-#             "Kitchen", 
-#             "A modern kitchen with stainless steel appliances and granite countertops."
-#         )
-        
-#         bathroom = Location(
-#             "Bathroom",
-#             "A clean bathroom with a bathtub, sink, and mirror."
-#         )
-        
-#         bedroom = Location(
-#             "Bedroom",
-#             "A peaceful bedroom with a large bed and dresser. Soft lighting creates a relaxing atmosphere."
-#         )
-        
-#         dining_room = Location(
-#             "Dining Room",
-#             "A formal dining room with a wooden table and elegant chairs."
-#         )
-        
-#         # Connect rooms (bidirectional)
-#         living_room.add_connection("north", kitchen)
-#         kitchen.add_connection("south", living_room)
-        
-#         living_room.add_connection("east", bedroom)
-#         bedroom.add_connection("west", living_room)
-        
-#         kitchen.add_connection("east", dining_room)
-#         dining_room.add_connection("west", kitchen)
-        
-#         dining_room.add_connection("south", bedroom)
-#         bedroom.add_connection("north", dining_room)
-        
-#         bedroom.add_connection("northeast", bathroom)
-#         bathroom.add_connection("southwest", bedroom)
-        
-#         # Add furniture and items
-#         couch = Item("couch", "a comfortable couch", "A plush three-seater couch perfect for relaxing.")
-#         couch.set_property("gettable", False)
-#         living_room.add_item(couch)
-        
-#         tv = Item("tv", "a large TV", "A modern flat-screen television.")
-#         tv.set_property("gettable", False)
-#         living_room.add_item(tv)
-        
-#         refrigerator = Item("refrigerator", "a large refrigerator", "A stainless steel refrigerator humming quietly.")
-#         refrigerator.set_property("gettable", False)
-#         kitchen.add_item(refrigerator)
-        
-#         # Add gettable items
-#         book = Item("book", "a mystery novel", "A well-worn mystery novel with an intriguing cover.")
-#         living_room.add_item(book)
-        
-#         apple = Item("apple", "a red apple", "A fresh, crispy apple that looks delicious.")
-#         apple.set_property("is_food", True)
-#         kitchen.add_item(apple)
-        
-#         towel = Item("towel", "a fluffy towel", "A soft, clean towel.")
-#         bathroom.add_item(towel)
-        
-#         # Create player character
-#         player = Character(
-#             "player", 
-#             "the main character",
-#             "I am exploring this house and interacting with other characters."
-#         )
-        
-#         # Create other characters
-#         alex = Character(
-#             "alex_001",
-#             "Alex, a friendly resident",
-#             "I am Alex, a cheerful person who loves to chat and help others. I enjoy reading books and cooking."
-#         )
-        
-#         alan = Character(
-#             "alan_002", 
-#             "Alan, a thoughtful person",
-#             "I am Alan, a quiet and contemplative individual. I like to observe my surroundings and think deeply about things."
-#         )
-        
-#         # Place characters in different rooms
-#         bedroom.add_character(alex)
-#         kitchen.add_character(alan)
-        
-#         # Create the game
-#         game = Game(
-#             start_at=living_room,
-#             player=player,
-#             characters=[alex, alan]
-#         )
-        
-#         return game

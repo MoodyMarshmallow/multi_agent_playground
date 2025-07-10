@@ -1,12 +1,12 @@
 [gd_scene load_steps=11 format=4 uid="uid://dpxnto6hu6888"]
 
-[ext_resource type="Script" path="res://scenes/test/test_scene_new_house.gd" id="1_4mda8"]
+[ext_resource type="Script" uid="uid://loknd00pj0ry" path="res://scenes/test/test_scene_new_house.gd" id="1_4mda8"]
 [ext_resource type="TileSet" uid="uid://clqkkmcjq30g" path="res://Tilesets/game_tile_set.tres" id="1_hpk8u"]
 [ext_resource type="PackedScene" uid="uid://dsv32w5f65vpb" path="res://scenes/components/http_manager/http_manager.tscn" id="2_4ssll"]
 [ext_resource type="PackedScene" uid="uid://dblfsnmsnqmyj" path="res://scenes/houses/second_house.tscn" id="2_35nos"]
-[ext_resource type="Script" path="res://scenes/components/http_manager/http_manager.gd" id="3_tiiuw"]
-[ext_resource type="Script" path="res://scenes/components/agent_manager/agent_manager.gd" id="4_xlksk"]
-[ext_resource type="Script" path="res://scripts/camera/camera_2d.gd" id="5_u5ot0"]
+[ext_resource type="Script" uid="uid://chwwwvl7wy3jd" path="res://scenes/components/http_manager/http_manager.gd" id="3_tiiuw"]
+[ext_resource type="Script" uid="uid://5rdkttw7ghjl" path="res://scenes/components/agent_manager/agent_manager.gd" id="4_xlksk"]
+[ext_resource type="Script" uid="uid://x4tp7nxlrv1a" path="res://scripts/camera/camera_2d.gd" id="5_u5ot0"]
 [ext_resource type="PackedScene" uid="uid://d1gdbqhr6vn37" path="res://scenes/ui/user_input/debugging_input/debugging_input.tscn" id="7_d0xpu"]
 [ext_resource type="PackedScene" uid="uid://bi7f5nsobe4bj" path="res://scenes/characters/navigation_player/debug_player.tscn" id="7_dhu1n"]
 

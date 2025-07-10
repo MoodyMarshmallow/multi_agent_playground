@@ -109,6 +109,10 @@ class AdjustVolumeAction(BaseModel):
     value: int    # volume value
 
 # --- UNION OF ALL ACTIONS ---
+class NoOpAction(BaseModel):
+    action_type: Literal["noop"]
+    reason: Optional[str] = None
+
 HouseAction = Annotated[
     Union[
         # Appliance
@@ -137,6 +141,8 @@ HouseAction = Annotated[
         SetTemperatureAction,
         AdjustBrightnessAction,
         AdjustVolumeAction,
+        # No-op fallback
+        NoOpAction,
     ],
     Field(discriminator="action_type")
 ]
@@ -158,6 +164,8 @@ class AgentActionOutput(BaseModel):
     current_room: Optional[str] = None
     description: Optional[str] = None #  for chat box description
     current_object: Optional[str] = None #  for chat box description
+    event_id: Optional[int] = None  # For event tracking
+    event_type: Optional[str] = None  # For event type tracking
 
 
 class AgentPlanRequest(BaseModel):

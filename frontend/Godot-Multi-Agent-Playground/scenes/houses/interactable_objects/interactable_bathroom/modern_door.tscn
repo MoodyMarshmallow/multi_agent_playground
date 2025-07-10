@@ -1,6 +1,6 @@
 [gd_scene load_steps=24 format=3 uid="uid://c4k6t6rbqteau"]
 
-[ext_resource type="Script" path="res://scenes/houses/interactable_objects/interactable_bathroom/modern_door.gd" id="1_3ja6a"]
+[ext_resource type="Script" uid="uid://cuit0y4ln2bxi" path="res://scenes/houses/interactable_objects/interactable_bathroom/modern_door.gd" id="1_3ja6a"]
 [ext_resource type="Texture2D" uid="uid://6gbpbssr2tw6" path="res://modern_assets/animated_assets/animated_door_condominium_2.png" id="1_pnovg"]
 [ext_resource type="PackedScene" uid="uid://c2w2uh4fkyjpq" path="res://scenes/components/interactable_component.tscn" id="2_5e33k"]
 

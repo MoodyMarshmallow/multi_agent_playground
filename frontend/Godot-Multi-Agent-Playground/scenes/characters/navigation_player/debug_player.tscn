@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bi7f5nsobe4bj"]
 
-[ext_resource type="Script" path="res://scenes/characters/navigation_player/debug_player.gd" id="1_41gyp"]
+[ext_resource type="Script" uid="uid://dcm74h47htew3" path="res://scenes/characters/navigation_player/debug_player.gd" id="1_41gyp"]
 [ext_resource type="PackedScene" uid="uid://0vuviv68yjtr" path="res://scenes/components/player_animated_sprite.tscn" id="2_tiqum"]
 [ext_resource type="SpriteFrames" uid="uid://3tn4pbylja6i" path="res://assets/game/characters/agents/sprite_frames/amelia_003_sprite_frames.tres" id="3_aeibl"]
 

@@ -9,6 +9,7 @@ The implementation that I have given below only uses simple keyword matching.
 
 import inspect
 import textwrap
+import re
 
 from .things import Character, Item, Location
 from . import actions, blocks
@@ -36,14 +37,15 @@ class Parser:
         # A pointer to the game.
         self.game = game
         self.game.parser = self
+        self.last_error_message = None
 
     def ok(self, description: str):
         """
         In the next homework, we'll replace this with a call to the OpenAI API
         in order to create more evocative descriptions.
         """
-        print(Parser.wrap_text(description))
         self.add_description_to_history(description)
+        self.last_error_message = None
         return description
 
     def fail(self, description: str):
@@ -51,7 +53,7 @@ class Parser:
         In the next homework, we'll replace this with a call to the OpenAI API
         in order to create more evocative descriptions.
         """
-        print(Parser.wrap_text(description))
+        self.last_error_message = description
         return description
 
     @staticmethod
@@ -140,9 +142,13 @@ class Parser:
             return "quit"
         else:
             for _, action in self.actions.items():
-                special_command = action.action_name()
-                if special_command in command:
-                    return action.action_name()
+                aliases = [action.action_name()]
+                if getattr(action, "ACTION_ALIASES", None):
+                    aliases += action.ACTION_ALIASES
+                for alias in aliases:
+                    # Match if command is exactly alias or starts with alias + space
+                    if command == alias or command.startswith(alias + " "):
+                        return action.action_name()
         return None
 
     def parse_action(self, command: str) -> actions.Action:
@@ -173,7 +179,7 @@ class Parser:
             character: Optional character to execute the command (defaults to player)
             
         Returns:
-            The result of the action execution
+            (narration, schema) tuple: narration is user-facing, schema is ActionResult
         """
         # print("\n>", command, "\n", flush=True)
         # add this command to the history
@@ -187,9 +193,28 @@ class Parser:
         try:
             action = self.parse_action(command)
             if not action:
-                return self.fail("I'm not sure what you want to do.")
+                narration = self.fail("I'm not sure what you want to do.")
+                from backend.text_adventure_games.actions.base import ActionResult
+                schema = ActionResult(description=str(narration))
+                return narration, schema
             else:
-                return action()
+                result = action()
+                # result should be (narration, schema)
+                if not (isinstance(result, tuple) and len(result) == 2):
+                    narration = str(result)
+                    from backend.text_adventure_games.actions.base import ActionResult
+                    schema = ActionResult(description=narration)
+                else:
+                    narration, schema = result
+                # If narration is None, use last error message
+                if narration is None:
+                    narration = self.last_error_message or "An unknown error occurred."
+                # Record the last acting agent's id for schema export
+                if hasattr(self.game, '_last_action_agent_id'):
+                    self.game._last_action_agent_id = self.game.player.name
+                # Get the narration from the ActionResult (if available)
+            # Always return (narration, schema)
+            return narration, schema
         finally:
             # Restore original player
             self.game.player = original_player
@@ -249,15 +274,28 @@ class Parser:
 
     def get_items_in_scope(self, character=None) -> dict[str, Item]:
         """
-        Returns a list of items in character's location and in their inventory
+        Returns a list of items in character's location, their inventory, and in open containers in the location (recursively).
         """
         if character is None:
             character = self.game.player
         items_in_scope = {}
-        for item_name in character.location.items:
-            items_in_scope[item_name] = character.location.items[item_name]
-        for item_name in character.inventory:
-            items_in_scope[item_name] = character.inventory[item_name]
+        # Items in the location
+        for item_name, item in character.location.items.items():
+            items_in_scope[item_name] = item
+            # If the item is a container and open, add its contents
+            if hasattr(item, 'get_property') and item.get_property('is_container', False):
+                if item.get_property('is_open', False):
+                    # Recursively add items in the open container
+                    def add_container_items(container):
+                        for subitem_name, subitem in getattr(container, 'items', {}).items():
+                            items_in_scope[subitem_name] = subitem
+                            if hasattr(subitem, 'get_property') and subitem.get_property('is_container', False):
+                                if subitem.get_property('is_open', False):
+                                    add_container_items(subitem)
+                    add_container_items(item)
+        # Items in inventory
+        for item_name, item in character.inventory.items():
+            items_in_scope[item_name] = item
         return items_in_scope
 
     def get_direction(self, command: str, location: Location = None) -> str:
@@ -353,3 +391,14 @@ class Parser:
         ])
         
         return available
+
+    def print_narration(self, narration):
+        # Always print a blank line before narration for consistent output
+        print("")
+        if narration and narration.lower() != "none":
+            print(narration)
+            if narration == self.last_error_message:
+                print("I'm not sure what you want to do.\n")
+        else:
+            print("I'm not sure what you want to do.\n")
+        print("")

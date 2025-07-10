@@ -1,6 +1,15 @@
 from ..things import Thing, Character, Item, Location
 import re
+from backend.config.schema import HouseAction, NoOpAction
+from typing import Optional, Any
 
+class ActionResult:
+    def __init__(self, description: str, house_action: Optional[Any] = None, object_id: Optional[str] = None):
+        if house_action is None:
+            house_action = NoOpAction(action_type="noop", reason=description)
+        self.description = description
+        self.house_action = house_action
+        self.object_id = object_id
 
 class Action:
     """
@@ -36,12 +45,35 @@ class Action:
     def apply_effects(self):
         """
         This method applies the action and changes the state of the game.
+        Returns a (narration, schema) tuple.
         """
-        return self.parser.ok("no effect")
+        narration = self.parser.ok("no effect")
+        schema = ActionResult(description="no effect")
+        return narration, schema
 
     def __call__(self):
         if self.check_preconditions():
-            return self.apply_effects()
+            result = self.apply_effects()
+            # If result is not a tuple, wrap it
+            if not (isinstance(result, tuple) and len(result) == 2):
+                narration = str(result)
+                schema = ActionResult(description=narration)
+                result = (narration, schema)
+            # Store last action result in the game for schema export
+            if hasattr(self.game, '_last_action_result'):
+                self.game._last_action_result = result[1]
+            else:
+                self.game._last_action_result = result[1]
+            return result
+        else:
+            # On precondition failure, return last error message as narration and schema
+            narration = self.parser.last_error_message or "Action could not be performed."
+            schema = ActionResult(description=narration)
+            if hasattr(self.game, '_last_action_result'):
+                self.game._last_action_result = schema
+            else:
+                self.game._last_action_result = schema
+            return narration, schema
 
     @classmethod
     def action_name(cls):
@@ -252,7 +284,9 @@ class ActionSequence(Action):
         for cmd in self.command.split(","):
             cmd = cmd.strip()
             responses.append(self.parser.parse_command(cmd))
-        return responses
+        narration = "; ".join(str(r[0]) for r in responses)
+        schema = ActionResult(description="Sequence of actions executed.")
+        return narration, schema
 
 
 class Quit(Action):
@@ -276,8 +310,12 @@ class Quit(Action):
             self.game.game_over = True
             if not self.game.game_over_description:
                 self.game.game_over_description = "The End"
-            return self.parser.ok(self.game.game_over_description)
-        return self.parser.fail("Game already ended.")
+            narration = self.parser.ok(self.game.game_over_description)
+            schema = ActionResult(description="Game ended.")
+            return narration, schema
+        narration = self.parser.fail("Game already ended.")
+        schema = ActionResult(description="Game already ended.")
+        return narration, schema
 
 
 class Describe(Action):
@@ -297,4 +335,6 @@ class Describe(Action):
         return True
 
     def apply_effects(self):
-        return self.parser.ok(self.game.describe())
+        narration = self.parser.ok(self.game.describe())
+        schema = ActionResult(description="Described current location.")
+        return narration, schema

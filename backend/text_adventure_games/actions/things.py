@@ -101,7 +101,7 @@ class Drop(base.Action):
             item_name=self.item.name,
             location=self.location.name,
         )
-        self.parser.ok(description)
+        return self.parser.ok(description)
 
 
 class Inventory(base.Action):
@@ -127,10 +127,13 @@ class Inventory(base.Action):
             description = f"{self.character.name}'s inventory is empty."
             return self.parser.ok(description)
         else:
-            description = f"{self.character.name}'s inventory contains:\n"
+            description = "In your inventory, you have:\n"
             for item_name in self.character.inventory:
                 item = self.character.inventory[item_name]
-                description += "* {item}\n".format(item=item.description)
+                description += f"* {item_name} - {item.description}\n"
+                hints = item.get_command_hints() if hasattr(item, 'get_command_hints') else []
+                for cmd in hints:
+                    description += f"\t{cmd}\n"
             return self.parser.ok(description)
 
 
@@ -158,12 +161,14 @@ class Examine(base.Action):
     def apply_effects(self):
         """The player wants to examine an item"""
         if self.matched_item:
-            if self.matched_item.examine_text:
-                self.parser.ok(self.matched_item.examine_text)
-            else:
-                self.parser.ok(self.matched_item.description)
+            desc = self.matched_item.examine_text or self.matched_item.description
+            description = f"* {desc}"
+            hints = self.matched_item.get_command_hints() if hasattr(self.matched_item, 'get_command_hints') else []
+            for cmd in hints:
+                description += f"\n\t{cmd}"
+            return self.parser.ok(description)
         else:
-            self.parser.ok("You don't see anything special.")
+            return self.parser.ok("You don't see anything special.")
 
 
 class Give(base.Action):
