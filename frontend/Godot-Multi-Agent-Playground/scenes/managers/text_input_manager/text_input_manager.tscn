@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://mgbup0ujo054"]
+
+[ext_resource type="Script" path="res://scenes/managers/text_input_manager/text_input_manager.gd" id="1_o0bx8"]
+
+[node name="TextInputManager" type="Node2D"]
+script = ExtResource("1_o0bx8")

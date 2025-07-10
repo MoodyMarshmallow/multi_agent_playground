@@ -56,6 +56,10 @@ func instantiate_agents(agent_summaries: Array) -> void:
 	if agent_ids.size() > 0:
 		current_agent_id = agent_ids[0]
 
+# The starting point for parsing all agent actions
+func _on_action_received(action: Dictionary) -> void:
+	pass
+
 # Find a safe position that's not inside a collider
 func find_safe_position(initial_position: Vector2) -> Vector2:
 	# Get the world 2D from the current scene

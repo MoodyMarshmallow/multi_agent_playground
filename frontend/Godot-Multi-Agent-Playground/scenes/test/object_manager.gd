@@ -1,5 +1,9 @@
 extends Node
 
+# The starting point for parsing all object actions
+func _on_action_received(action: Dictionary) -> void:
+	pass
+
 func take_object(object_name: String) -> void:
 	for child in get_children():
 		print(child.name)
