@@ -1,3 +1,4 @@
+class_name TextInputManager
 extends Node2D
 
 signal action(action : Dictionary)
@@ -7,6 +8,7 @@ signal action(action : Dictionary)
 	# action_type: Literal[
 		# "take", "place", "place_on", "use",
 		# "open", "close", "turn_on", "turn_off", "clean_item", "tidy_bed"
+		# "go_to"
 	# ]
 	# target: str
 	# recipient: Optional[str] = None  # Only for place_on
@@ -15,7 +17,7 @@ signal action(action : Dictionary)
 # Parses any input submitted through the debugging input line edit object (displayed at the bottom 
 # of the game screen)
 func _on_debugging_input_submitted(text: String) -> void:
-	print("Received debuggin input: ", text)
+	print("Received debugging input: ", text)
 	_parse_action(text)
 
 # Matches strings of the types: 
@@ -24,7 +26,8 @@ func _on_debugging_input_submitted(text: String) -> void:
 # clean {object}, tidy bed, and emit the corresponding signal. the {object} 
 # should always be the target field, and in the case of place it should be 
 # place {target} on {recipient}. Also for tidy bed it will have action 
-# type tidy_bed and target bed
+# type tidy_bed and target bed. For go_to {room} the target will be the room to 
+# go to instead of an object
 
 func _parse_action(text: String):
 	var regex = RegEx.new()
@@ -34,11 +37,13 @@ func _parse_action(text: String):
 	regex.compile("^place\\s+(\\w+)\\s+on\\s+(\\w+)$")
 	result = regex.search(text.strip_edges())
 	if result:
+		var target = _to_snake_case(result.get_string(1))
+		var recipient = _to_snake_case(result.get_string(2))
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
 			"action_type": "place_on",
-			"target": result.get_string(1),
-			"recipient": result.get_string(2)
+			"target": target,
+			"recipient": recipient
 		})
 		return
 
@@ -49,7 +54,7 @@ func _parse_action(text: String):
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
 			"action_type": "take",
-			"target": result.get_string(1)
+			"target": _to_snake_case(result.get_string(1))
 		})
 		return
 
@@ -60,7 +65,7 @@ func _parse_action(text: String):
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
 			"action_type": "place",
-			"target": result.get_string(1)
+			"target": _to_snake_case(result.get_string(1))
 		})
 		return
 
@@ -71,7 +76,7 @@ func _parse_action(text: String):
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
 			"action_type": "use",
-			"target": result.get_string(1)
+			"target": _to_snake_case(result.get_string(1))
 		})
 		return
 
@@ -82,7 +87,7 @@ func _parse_action(text: String):
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
 			"action_type": "open",
-			"target": result.get_string(1)
+			"target": _to_snake_case(result.get_string(1))
 		})
 		return
 
@@ -93,7 +98,7 @@ func _parse_action(text: String):
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
 			"action_type": "close",
-			"target": result.get_string(1)
+			"target": _to_snake_case(result.get_string(1))
 		})
 		return
 
@@ -104,7 +109,7 @@ func _parse_action(text: String):
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
 			"action_type": "turn_on",
-			"target": result.get_string(1)
+			"target": _to_snake_case(result.get_string(1))
 		})
 		return
 
@@ -115,7 +120,7 @@ func _parse_action(text: String):
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
 			"action_type": "turn_off",
-			"target": result.get_string(1)
+			"target": _to_snake_case(result.get_string(1))
 		})
 		return
 
@@ -126,7 +131,7 @@ func _parse_action(text: String):
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
 			"action_type": "clean_item",
-			"target": result.get_string(1)
+			"target": _to_snake_case(result.get_string(1))
 		})
 		return
 
@@ -141,5 +146,20 @@ func _parse_action(text: String):
 		})
 		return
 
+	# go_to {room} or g {room}
+	regex.compile("^(go_to|g)\\s+(\\w+)$")
+	result = regex.search(text.strip_edges())
+	if result:
+		var target = _to_snake_case(result.get_string(2))
+		emit_signal("action", {
+			"agent_id": "DebugAgent",
+			"action_type": "go_to",
+			"target": target
+		})
+		return
+
 	# If no match, print for debugging
 	print("Unrecognized action command:", text)
+
+func _to_snake_case(s: String) -> String:
+	return s.strip_edges().to_lower().replace(" ", "_")

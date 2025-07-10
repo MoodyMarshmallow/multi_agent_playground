@@ -29,7 +29,7 @@ func _on_text_submitted(submitted_text: String) -> void:
 	release_focus()
 
 func parse_input(input_text: String) -> void:
-	print("Parsed input: ", input_text)
+	pass
 
 func _on_focus_entered():
 	active = true

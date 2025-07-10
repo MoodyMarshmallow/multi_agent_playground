@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cxk0lfrpb357b"]
+
+[ext_resource type="Script" path="res://scenes/managers/agent_manager/old_agent_manager.gd" id="1_0i5uv"]
+
+[node name="AgentManager" type="Node2D"]
+script = ExtResource("1_0i5uv")

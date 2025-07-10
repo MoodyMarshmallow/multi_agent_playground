@@ -1,3 +1,4 @@
+class_name ActionManager
 extends Node2D
 
 signal object_action(action : Dictionary)
@@ -10,7 +11,8 @@ signal agent_action(action : Dictionary)
 # agent_id: str
 # action_type: Literal[
 	# "take", "place", "place_on", "use",
-	# "open", "close", "turn_on", "turn_off", "clean_item", "tidy_bed"
+	# "open", "close", "turn_on", "turn_off", "clean_item", "tidy_bed",
+	# "go_to"
 # ]
 # target: str
 # recipient: Optional[str] = None  # Only for place_on

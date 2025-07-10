@@ -1,4 +1,4 @@
-class_name AgentManager
+class_name OldAgentManager
 
 extends Node
 
@@ -16,7 +16,7 @@ var agent_ids : Array = []
 var action_queue: Array[Action] = []
 
 # Agent Scene
-const agent_scene = preload("res://scenes/characters/agents/agent.tscn")
+const agent_scene = preload("res://scenes/characters/agents/old/agent.tscn")
 
 # Dynamically instantiate agents from summaries
 func instantiate_agents(agent_summaries: Array) -> void:

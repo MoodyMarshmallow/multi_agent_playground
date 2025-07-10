@@ -1,3 +1,4 @@
+class_name HttpManager
 extends Node
 
 # Configuration
@@ -12,7 +13,7 @@ var _is_processing_actions: bool = false
 var is_polling: bool = true
 
 # References to children
-@onready var agent_manager: AgentManager = $AgentManager
+@onready var agent_manager: Node2D = $"../AgentManager"
 
 # List of agent IDs to poll (could be made dynamic)
 var agent_ids := []

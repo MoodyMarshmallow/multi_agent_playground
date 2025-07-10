@@ -1,0 +1,497 @@
+[gd_scene load_steps=62 format=3 uid="uid://87lmxewh1kml"]
+
+[ext_resource type="Script" path="res://scenes/managers/object_manager/object_manager.gd" id="1_qigme"]
+[ext_resource type="PackedScene" uid="uid://cuqajcajlvp5g" path="res://scenes/houses/objects/bedroom_objects/bed.tscn" id="2_8d1d4"]
+[ext_resource type="PackedScene" uid="uid://dclrtgqjexelw" path="res://scenes/houses/objects/bedroom_objects/dresser.tscn" id="3_qv13i"]
+[ext_resource type="PackedScene" uid="uid://buaglmo3rtgdf" path="res://scenes/houses/objects/bedroom_objects/closet.tscn" id="4_71i66"]
+[ext_resource type="PackedScene" uid="uid://bgiu6l1keygyc" path="res://scenes/houses/interactable_objects/interactable_random/toybox.tscn" id="5_bymom"]
+[ext_resource type="Texture2D" uid="uid://xodojgfypofi" path="res://modern_assets/bathroom.png" id="6_lxapm"]
+[ext_resource type="PackedScene" uid="uid://c6go2i4ku4nxa" path="res://scenes/houses/interactable_objects/interactable_bathroom/bathtub.tscn" id="7_vhv7d"]
+[ext_resource type="PackedScene" uid="uid://c5vfag0qfldly" path="res://scenes/houses/interactable_objects/interactable_bathroom/sink.tscn" id="8_irb6h"]
+[ext_resource type="PackedScene" uid="uid://door48gqcuan5" path="res://scenes/houses/interactable_objects/interactable_bathroom/cabinet.tscn" id="9_av2r1"]
+[ext_resource type="PackedScene" uid="uid://c4k6t6rbqteau" path="res://scenes/houses/interactable_objects/interactable_bathroom/modern_door.tscn" id="10_48fhl"]
+[ext_resource type="Texture2D" uid="uid://crjes0mdv1c7r" path="res://modern_assets/animated_assets/animated_kitchen/animated_fridge_grey.png" id="11_55j6w"]
+[ext_resource type="PackedScene" uid="uid://cuquxyn65y6ii" path="res://scenes/houses/interactable_objects/interactable_kitchen/fridge.tscn" id="12_5w3ag"]
+[ext_resource type="Texture2D" uid="uid://dxqk0hxjoo51b" path="res://modern_assets/animated_assets/animated_kitchen/animated_kitchen_oven.png" id="13_ehese"]
+[ext_resource type="PackedScene" uid="uid://u7b4ml6h7vxa" path="res://scenes/houses/interactable_objects/interactable_kitchen/oven.tscn" id="14_0cstq"]
+[ext_resource type="Texture2D" uid="uid://cmr6euh4xnewa" path="res://modern_assets/kitchen.png" id="15_i0w7t"]
+[ext_resource type="Texture2D" uid="uid://omiadq8r4dq1" path="res://modern_assets/animated_assets/animated_kitchen/animated_coffee.png" id="16_fnw4d"]
+[ext_resource type="PackedScene" uid="uid://dl0vnrqaxgvli" path="res://scenes/houses/interactable_objects/interactable_kitchen/coffee.tscn" id="17_t66b7"]
+[ext_resource type="Texture2D" uid="uid://dwwmiy5adq6di" path="res://modern_assets/animated_assets/animated_door_2.png" id="18_414a5"]
+[ext_resource type="Texture2D" uid="uid://enmyg61e2tas" path="res://modern_assets/furniture.png" id="19_u8c2h"]
+[ext_resource type="Texture2D" uid="uid://76i0te6lvfny" path="res://modern_assets/basement.png" id="20_xnip6"]
+[ext_resource type="Texture2D" uid="uid://dbkh8gpdeehfd" path="res://modern_assets/living_room.png" id="21_60jnj"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dirb7"]
+atlas = ExtResource("6_lxapm")
+region = Rect2(209, 375, 14, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r7agn"]
+atlas = ExtResource("6_lxapm")
+region = Rect2(198, 794, 19, 27)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3wf32"]
+atlas = ExtResource("6_lxapm")
+region = Rect2(199, 776, 17, 17)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dahq6"]
+atlas = ExtResource("6_lxapm")
+region = Rect2(241, 624, 14, 28)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uy724"]
+atlas = ExtResource("11_55j6w")
+region = Rect2(0, 7, 16, 36)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qfi56"]
+atlas = ExtResource("13_ehese")
+region = Rect2(0, 2, 16, 25)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ym6hy"]
+atlas = ExtResource("15_i0w7t")
+region = Rect2(133, 129, 24, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hv7fb"]
+atlas = ExtResource("15_i0w7t")
+region = Rect2(64, 112, 47, 9)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_06scx"]
+atlas = ExtResource("15_i0w7t")
+region = Rect2(160, 528, 16, 13)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7ycg2"]
+atlas = ExtResource("15_i0w7t")
+region = Rect2(146, 98, 13, 11)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hgp31"]
+atlas = ExtResource("16_fnw4d")
+region = Rect2(4, 17, 9, 9)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i0bfg"]
+atlas = ExtResource("18_414a5")
+region = Rect2(1, 11, 14, 21)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mc2ob"]
+atlas = ExtResource("19_u8c2h")
+region = Rect2(181, 202, 22, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wa31u"]
+atlas = ExtResource("20_xnip6")
+region = Rect2(134, 563, 20, 23)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_54pry"]
+atlas = ExtResource("20_xnip6")
+region = Rect2(66, 596, 19, 26)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_isisi"]
+atlas = ExtResource("20_xnip6")
+region = Rect2(43, 532, 19, 26)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cmqgv"]
+atlas = ExtResource("20_xnip6")
+region = Rect2(66, 596, 19, 26)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k1was"]
+atlas = ExtResource("20_xnip6")
+region = Rect2(43, 532, 19, 26)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kn7y2"]
+atlas = ExtResource("20_xnip6")
+region = Rect2(133, 627, 22, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nr4hl"]
+atlas = ExtResource("15_i0w7t")
+region = Rect2(105, 449, 30, 21)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sxecu"]
+atlas = ExtResource("15_i0w7t")
+region = Rect2(105, 432, 30, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b2nua"]
+atlas = ExtResource("15_i0w7t")
+region = Rect2(105, 448, 30, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8s4mi"]
+atlas = ExtResource("20_xnip6")
+region = Rect2(112, 128, 48, 27)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wuhae"]
+atlas = ExtResource("21_60jnj")
+region = Rect2(192, 438, 32, 33)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_07u5e"]
+atlas = ExtResource("20_xnip6")
+region = Rect2(194, 472, 29, 19)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_msml3"]
+atlas = ExtResource("21_60jnj")
+region = Rect2(33, 123, 30, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gb18y"]
+atlas = ExtResource("20_xnip6")
+region = Rect2(99, 761, 59, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dhbvh"]
+atlas = ExtResource("6_lxapm")
+region = Rect2(39, 513, 18, 26)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xho8p"]
+atlas = ExtResource("6_lxapm")
+region = Rect2(38, 513, 20, 27)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bosuy"]
+atlas = ExtResource("6_lxapm")
+region = Rect2(194, 491, 28, 9)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1sb4p"]
+atlas = ExtResource("6_lxapm")
+region = Rect2(226, 500, 28, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lr2cc"]
+atlas = ExtResource("6_lxapm")
+region = Rect2(196, 470, 15, 10)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7h41j"]
+atlas = ExtResource("6_lxapm")
+region = Rect2(0, 552, 16, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_snfit"]
+atlas = ExtResource("6_lxapm")
+region = Rect2(0, 521, 16, 13)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_66fr8"]
+atlas = SubResource("AtlasTexture_snfit")
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1ww05"]
+atlas = ExtResource("21_60jnj")
+region = Rect2(193, 200, 13, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_syavb"]
+atlas = ExtResource("20_xnip6")
+region = Rect2(110, 656, 17, 31)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7lvgn"]
+atlas = ExtResource("20_xnip6")
+region = Rect2(142, 656, 17, 31)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u7nbf"]
+atlas = ExtResource("20_xnip6")
+region = Rect2(7, 331, 34, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3ukm8"]
+atlas = ExtResource("20_xnip6")
+region = Rect2(65, 319, 14, 16)
+
+[node name="ObjectManager" type="Node2D"]
+script = ExtResource("1_qigme")
+
+[node name="Bedroom" type="Node2D" parent="."]
+position = Vector2(200, 83)
+
+[node name="Bed" parent="Bedroom" instance=ExtResource("2_8d1d4")]
+position = Vector2(-87, -36)
+
+[node name="Dresser" parent="Bedroom" instance=ExtResource("3_qv13i")]
+position = Vector2(-119, -44)
+
+[node name="Closet" parent="Bedroom" instance=ExtResource("4_71i66")]
+position = Vector2(105, -43)
+
+[node name="ToyBin" parent="Bedroom" instance=ExtResource("5_bymom")]
+position = Vector2(-23, -31)
+
+[node name="Bathroom" type="Node2D" parent="."]
+position = Vector2(448, 67)
+
+[node name="Toilet" type="Node2D" parent="Bathroom"]
+position = Vector2(33, -31)
+
+[node name="Sprite2D" type="Sprite2D" parent="Bathroom/Toilet"]
+texture = SubResource("AtlasTexture_dirb7")
+
+[node name="Bathtub" type="Node2D" parent="Bathroom"]
+position = Vector2(-448, -67)
+
+[node name="Sprite2D" type="Sprite2D" parent="Bathroom/Bathtub"]
+position = Vector2(513, 44)
+texture = SubResource("AtlasTexture_r7agn")
+
+[node name="Bathtub2" parent="Bathroom" instance=ExtResource("7_vhv7d")]
+position = Vector2(65, -32)
+
+[node name="Shower" type="Node2D" parent="Bathroom"]
+position = Vector2(-448, -67)
+
+[node name="Sprite2D" type="Sprite2D" parent="Bathroom/Shower"]
+position = Vector2(513, 20)
+texture = SubResource("AtlasTexture_3wf32")
+
+[node name="Sink" parent="Bathroom" instance=ExtResource("8_irb6h")]
+position = Vector2(-63, -31)
+
+[node name="MedicineCabinet" type="Node2D" parent="Bathroom"]
+position = Vector2(-448, -67)
+
+[node name="Sprite2D" type="Sprite2D" parent="Bathroom/MedicineCabinet"]
+position = Vector2(449, 34)
+texture = SubResource("AtlasTexture_dahq6")
+
+[node name="MedicineCabinet2" parent="Bathroom" instance=ExtResource("9_av2r1")]
+position = Vector2(1, -31)
+
+[node name="BathrromDoor" parent="Bathroom" instance=ExtResource("10_48fhl")]
+position = Vector2(18, 49)
+
+[node name="Kitchen" type="Node2D" parent="."]
+position = Vector2(123, 205)
+
+[node name="Fridge" type="Node2D" parent="Kitchen"]
+position = Vector2(-59, -41)
+
+[node name="Sprite2D" type="Sprite2D" parent="Kitchen/Fridge"]
+texture = SubResource("AtlasTexture_uy724")
+
+[node name="Fridge2" parent="Kitchen" instance=ExtResource("12_5w3ag")]
+position = Vector2(-58, -58)
+
+[node name="Oven" type="Node2D" parent="Kitchen"]
+position = Vector2(22, -27)
+
+[node name="Sprite2D" type="Sprite2D" parent="Kitchen/Oven"]
+texture = SubResource("AtlasTexture_qfi56")
+
+[node name="Oven2" parent="Kitchen" instance=ExtResource("14_0cstq")]
+position = Vector2(22, -25)
+
+[node name="Sink" type="Node2D" parent="Kitchen"]
+position = Vector2(-9, -41)
+
+[node name="Sprite2D" type="Sprite2D" parent="Kitchen/Sink"]
+texture = SubResource("AtlasTexture_ym6hy")
+
+[node name="Cabinets" type="Node2D" parent="Kitchen"]
+position = Vector2(-11, -28)
+
+[node name="Sprite2D" type="Sprite2D" parent="Kitchen/Cabinets"]
+texture = SubResource("AtlasTexture_hv7fb")
+
+[node name="Microwave" type="Node2D" parent="Kitchen"]
+position = Vector2(102, -42)
+
+[node name="Sprite2D" type="Sprite2D" parent="Kitchen/Microwave"]
+texture = SubResource("AtlasTexture_06scx")
+
+[node name="Toaster" type="Node2D" parent="Kitchen"]
+position = Vector2(86, -41)
+
+[node name="Sprite2D" type="Sprite2D" parent="Kitchen/Toaster"]
+texture = SubResource("AtlasTexture_7ycg2")
+
+[node name="CoffeeMaker" type="Node2D" parent="Kitchen"]
+position = Vector2(70, -19)
+
+[node name="Sprite2D" type="Sprite2D" parent="Kitchen/CoffeeMaker"]
+texture = SubResource("AtlasTexture_hgp31")
+
+[node name="Coffee" parent="Kitchen" instance=ExtResource("17_t66b7")]
+position = Vector2(70, -20)
+
+[node name="EntryRoom" type="Node2D" parent="."]
+position = Vector2(145, 351)
+
+[node name="EntryDoor" type="Node2D" parent="EntryRoom"]
+visible = false
+position = Vector2(2, 37)
+
+[node name="Sprite2D" type="Sprite2D" parent="EntryRoom/EntryDoor"]
+texture = SubResource("AtlasTexture_i0bfg")
+
+[node name="EntryDoor2" parent="EntryRoom" instance=ExtResource("10_48fhl")]
+position = Vector2(0, 38)
+
+[node name="WelcomMat" type="Node2D" parent="EntryRoom"]
+
+[node name="Sprite2D" type="Sprite2D" parent="EntryRoom/WelcomMat"]
+texture = SubResource("AtlasTexture_mc2ob")
+
+[node name="DiningRoom" type="Node2D" parent="."]
+position = Vector2(274, 179)
+
+[node name="UpperChair" type="Node2D" parent="DiningRoom"]
+position = Vector2(31, 16)
+
+[node name="Sprite2D" type="Sprite2D" parent="DiningRoom/UpperChair"]
+texture = SubResource("AtlasTexture_wa31u")
+
+[node name="UpperLeftChair" type="Node2D" parent="DiningRoom"]
+position = Vector2(10, 50)
+
+[node name="Sprite2D" type="Sprite2D" parent="DiningRoom/UpperLeftChair"]
+texture = SubResource("AtlasTexture_54pry")
+
+[node name="UpperRightChair" type="Node2D" parent="DiningRoom"]
+position = Vector2(52, 50)
+
+[node name="Sprite2D" type="Sprite2D" parent="DiningRoom/UpperRightChair"]
+texture = SubResource("AtlasTexture_isisi")
+
+[node name="BottomLeftChair" type="Node2D" parent="DiningRoom"]
+position = Vector2(11, 82)
+
+[node name="Sprite2D" type="Sprite2D" parent="DiningRoom/BottomLeftChair"]
+texture = SubResource("AtlasTexture_cmqgv")
+
+[node name="BottomRightChair" type="Node2D" parent="DiningRoom"]
+position = Vector2(68, 81)
+
+[node name="Sprite2D" type="Sprite2D" parent="DiningRoom/BottomRightChair"]
+texture = SubResource("AtlasTexture_k1was")
+
+[node name="BottomChair" type="Node2D" parent="DiningRoom"]
+position = Vector2(31, 109)
+
+[node name="Sprite2D" type="Sprite2D" parent="DiningRoom/BottomChair"]
+texture = SubResource("AtlasTexture_kn7y2")
+
+[node name="DiningTable" type="Node2D" parent="DiningRoom"]
+position = Vector2(31, 32)
+
+[node name="Sprite2D" type="Sprite2D" parent="DiningRoom/DiningTable"]
+position = Vector2(0, 52)
+texture = SubResource("AtlasTexture_nr4hl")
+
+[node name="Sprite2D2" type="Sprite2D" parent="DiningRoom/DiningTable"]
+position = Vector2(0, 34)
+texture = SubResource("AtlasTexture_sxecu")
+
+[node name="Sprite2D4" type="Sprite2D" parent="DiningRoom/DiningTable"]
+position = Vector2(0, 19)
+texture = SubResource("AtlasTexture_sxecu")
+
+[node name="Sprite2D3" type="Sprite2D" parent="DiningRoom/DiningTable"]
+position = Vector2(0, 3)
+texture = SubResource("AtlasTexture_b2nua")
+
+[node name="LivingRoom" type="Node2D" parent="."]
+position = Vector2(416, 299)
+
+[node name="Couch" type="Node2D" parent="LivingRoom"]
+position = Vector2(1, -26)
+
+[node name="Sprite2D" type="Sprite2D" parent="LivingRoom/Couch"]
+texture = SubResource("AtlasTexture_8s4mi")
+
+[node name="Bookshelf" type="Node2D" parent="LivingRoom"]
+position = Vector2(-47, -88)
+
+[node name="Sprite2D" type="Sprite2D" parent="LivingRoom/Bookshelf"]
+texture = SubResource("AtlasTexture_wuhae")
+
+[node name="TV" type="Node2D" parent="LivingRoom"]
+position = Vector2(10, -93)
+
+[node name="Sprite2D" type="Sprite2D" parent="LivingRoom/TV"]
+texture = SubResource("AtlasTexture_07u5e")
+
+[node name="GameTable" type="Node2D" parent="LivingRoom"]
+position = Vector2(1, -50)
+
+[node name="Sprite2D" type="Sprite2D" parent="LivingRoom/GameTable"]
+texture = SubResource("AtlasTexture_msml3")
+
+[node name="TVShelf" type="Node2D" parent="LivingRoom"]
+position = Vector2(2, -85)
+
+[node name="Sprite2D" type="Sprite2D" parent="LivingRoom/TVShelf"]
+texture = SubResource("AtlasTexture_gb18y")
+
+[node name="LaundryRoom" type="Node2D" parent="."]
+position = Vector2(397, 157)
+
+[node name="Washer" type="Node2D" parent="LaundryRoom"]
+position = Vector2(-397, -157)
+
+[node name="Sprite2D" type="Sprite2D" parent="LaundryRoom/Washer"]
+position = Vector2(417, 122)
+texture = SubResource("AtlasTexture_dhbvh")
+
+[node name="Dryer" type="Node2D" parent="LaundryRoom"]
+position = Vector2(-397, -157)
+
+[node name="Sprite2D" type="Sprite2D" parent="LaundryRoom/Dryer"]
+position = Vector2(417, 122)
+texture = SubResource("AtlasTexture_xho8p")
+
+[node name="LaundryBasket" type="Node2D" parent="LaundryRoom"]
+position = Vector2(-397, -157)
+
+[node name="Sprite2D" type="Sprite2D" parent="LaundryRoom/LaundryBasket"]
+
+[node name="Shelves" type="Node2D" parent="LaundryRoom"]
+position = Vector2(-12, -43)
+
+[node name="Sprite2D" type="Sprite2D" parent="LaundryRoom/Shelves"]
+position = Vector2(0, -6)
+texture = SubResource("AtlasTexture_bosuy")
+
+[node name="Sprite2D2" type="Sprite2D" parent="LaundryRoom/Shelves"]
+position = Vector2(0, 8)
+texture = SubResource("AtlasTexture_1sb4p")
+
+[node name="DirtyClothesBasket" type="Node2D" parent="LaundryRoom"]
+position = Vector2(-397, -157)
+
+[node name="Sprite2D" type="Sprite2D" parent="LaundryRoom/DirtyClothesBasket"]
+
+[node name="Detergent" type="Node2D" parent="LaundryRoom"]
+position = Vector2(-397, -157)
+
+[node name="Sprite2D" type="Sprite2D" parent="LaundryRoom/Detergent"]
+position = Vector2(389, 104)
+texture = SubResource("AtlasTexture_lr2cc")
+
+[node name="DirtyClothesBasket2" type="Node2D" parent="LaundryRoom"]
+position = Vector2(-397, -157)
+
+[node name="Sprite2D" type="Sprite2D" parent="LaundryRoom/DirtyClothesBasket2"]
+position = Vector2(413, 107)
+texture = SubResource("AtlasTexture_7h41j")
+
+[node name="LaundryBasket2" type="Node2D" parent="LaundryRoom"]
+position = Vector2(-397, -157)
+
+[node name="Sprite2D" type="Sprite2D" parent="LaundryRoom/LaundryBasket2"]
+position = Vector2(426, 134)
+texture = SubResource("AtlasTexture_66fr8")
+
+[node name="GameRoom" type="Node2D" parent="."]
+position = Vector2(495, 217)
+
+[node name="Lamp" type="Node2D" parent="GameRoom"]
+position = Vector2(-14, -100)
+
+[node name="Sprite2D" type="Sprite2D" parent="GameRoom/Lamp"]
+texture = SubResource("AtlasTexture_1ww05")
+
+[node name="TopArcadeMachine" type="Node2D" parent="GameRoom"]
+position = Vector2(33, -5)
+
+[node name="Sprite2D" type="Sprite2D" parent="GameRoom/TopArcadeMachine"]
+texture = SubResource("AtlasTexture_syavb")
+
+[node name="BottomArcadeMachine" type="Node2D" parent="GameRoom"]
+position = Vector2(33, 27)
+
+[node name="Sprite2D" type="Sprite2D" parent="GameRoom/BottomArcadeMachine"]
+texture = SubResource("AtlasTexture_7lvgn")
+
+[node name="PoolTable" type="Node2D" parent="GameRoom"]
+position = Vector2(2, -50)
+
+[node name="Sprite2D" type="Sprite2D" parent="GameRoom/PoolTable"]
+texture = SubResource("AtlasTexture_u7nbf")
+
+[node name="PoolTriangle" type="Node2D" parent="GameRoom"]
+position = Vector2(2, -54)
+
+[node name="Sprite2D" type="Sprite2D" parent="GameRoom/PoolTriangle"]
+texture = SubResource("AtlasTexture_3ukm8")
