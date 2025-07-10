@@ -1,6 +1,6 @@
 [gd_scene load_steps=19 format=3 uid="uid://door48gqcuan5"]
 
-[ext_resource type="Script" path="res://scenes/houses/interactable_objects/interactable_bathroom/cabinet.gd" id="1_raxka"]
+[ext_resource type="Script" uid="uid://im55jhrfn2ao" path="res://scenes/houses/interactable_objects/interactable_bathroom/cabinet.gd" id="1_raxka"]
 [ext_resource type="Texture2D" uid="uid://choookt1o67hu" path="res://modern_assets/animated_assets/animated_bathroom/animated_bathroom_cabinet_white_full.png" id="2_8pin3"]
 [ext_resource type="PackedScene" uid="uid://c2w2uh4fkyjpq" path="res://scenes/components/interactable_component.tscn" id="3_2yhru"]
 

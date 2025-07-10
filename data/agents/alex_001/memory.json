@@ -1,101 +1,26 @@
 [
   {
-    "timestamp": "01T00:10:18",
+    "timestamp": "01T10:34:18",
     "location": "unknown location",
-    "event": "I saw these people: alan_002. I heard alan_002 say to alex_001: 'Hey Alex! Let's head to the kitchen and start gathering those ingredients. I'm excited to cook some ratatouille! \ud83d\ude0a'",
-    "salience": 5
-  },
-  {
-    "timestamp": "01T00:05:00",
-    "location": [
-      22,
-      8
-    ],
-    "event": "Received message from alan_002: 'Hey Alex! Let's head to the kitchen and start gathering those ingredients. I'm excited to cook some ratatouille! \ud83d\ude0a'",
-    "salience": 6
-  },
-  {
-    "timestamp": "01T00:05:00",
-    "location": [
-      32,
-      12
-    ],
-    "event": "Sent message to alan_002: 'Hey Alan! Ratatouille sounds like a fantastic idea. Let's definitely experiment with those flavors together. Maybe we can plan a time to cook it soon! \ud83d\ude0a'",
-    "salience": 5
-  },
-  {
-    "timestamp": "01T00:20:23",
-    "location": "unknown location",
-    "event": "I moved to position (22, 8). I saw these people: alan_002",
+    "event": "I saw these people: alan_002. I heard alan_002 say to alex_001: 'I've gathered all the ingredients. Should we start chopping or mixing first? \ud83c\udf7d\ufe0f'",
     "salience": 3
   },
   {
-    "timestamp": "01T00:32:57",
-    "location": "unknown location",
-    "event": "I moved to position (22, 8). I saw these people: alan_002. I heard alan_002 say to alex_001: 'Hey Alex! I was thinking about our ratatouille plan. How about we set a time to cook together? \ud83d\ude0a'",
-    "salience": 6
-  },
-  {
-    "timestamp": "01T00:40:18",
-    "location": "unknown location",
-    "event": "I saw these people: alan_002",
+    "timestamp": "01T10:29:26",
+    "location": [
+      26,
+      13
+    ],
+    "event": "Received message from alan_002: 'I've gathered all the ingredients. Should we start chopping or mixing first? \ud83c\udf7d\ufe0f'",
     "salience": 3
   },
   {
-    "timestamp": "01T00:48:44",
-    "location": "unknown location",
-    "event": "I saw these people: alan_002",
-    "salience": 5
-  },
-  {
-    "timestamp": "01T00:45:00",
+    "timestamp": "01T10:29:26",
     "location": [
-      31,
+      33,
       12
     ],
-    "event": "Sent message to alan_002: 'Hey Alan! Cooking ratatouille sounds like a great idea. Let's set a time that works for both of us. \ud83d\ude0a'",
-    "salience": 5
-  },
-  {
-    "timestamp": "01T00:57:08",
-    "location": "unknown location",
-    "event": "I moved to position (22, 8). I saw these people: alan_002",
-    "salience": 3
-  },
-  {
-    "timestamp": "01T01:05:05",
-    "location": "unknown location",
-    "event": "I saw these people: alan_002. I heard alan_002 say to alex_001: 'Hey Alex! Let's plan our cooking session. How about this weekend? \ud83d\ude0a'",
-    "salience": 6
-  },
-  {
-    "timestamp": "01T01:00:00",
-    "location": [
-      30,
-      12
-    ],
-    "event": "Received message from alan_002: 'Hey Alex! Let's plan our cooking session. How about this weekend? \ud83d\ude0a'",
-    "salience": 6
-  },
-  {
-    "timestamp": "01T01:00:00",
-    "location": [
-      31,
-      12
-    ],
-    "event": "Sent message to alan_002: 'Good morning, Alan! Hope you slept well. \ud83d\ude0a'",
-    "salience": 3
-  },
-  {
-    "timestamp": "01T01:13:52",
-    "location": "unknown location",
-    "event": "I saw these people: alan_002",
-    "salience": 5
-  },
-  {
-    "timestamp": "01T01:18:03",
-    "location": "unknown location",
-    "event": "I moved to position (22, 8). I saw these people: alan_002. I heard alan_002 say to alex_001: 'I'm excited to try that new recipe with you, Alex! Do you have everything we need, or should I grab some ingredients? \ud83d\ude0a'",
+    "event": "Sent message to alan_002: 'Hey Alan, I'm curious if you have any art exhibitions coming up or ideas you'd like to exchange. Let's chat about it!'",
     "salience": 5
   },
   {

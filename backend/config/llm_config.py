@@ -31,39 +31,4 @@ class LLMConfig:
     
     # Kani Configuration
     KANI_RETRY_ATTEMPTS: int = 3
-    KANI_TIMEOUT: int = 30
-    
-    @classmethod
-    def get_openai_api_key(cls) -> str:
-        """
-        Get OpenAI API key from environment or raise an error if not found.
-        
-        Returns:
-            str: The OpenAI API key
-            
-        Raises:
-            ValueError: If API key is not found
-        """
-        api_key = cls.OPENAI_API_KEY
-        if not api_key:
-            raise ValueError(
-                "OpenAI API key not found. Please set the OPENAI_API_KEY environment variable."
-            )
-        return api_key
-    
-    @classmethod
-    def validate_config(cls) -> bool:
-        """
-        Validate that all required configuration is present.
-        
-        Returns:
-            bool: True if configuration is valid
-            
-        Raises:
-            ValueError: If required configuration is missing
-        """
-        try:
-            cls.get_openai_api_key()
-            return True
-        except ValueError as e:
-            raise ValueError(f"LLM configuration validation failed: {e}") 
+    KANI_TIMEOUT: int = 30 

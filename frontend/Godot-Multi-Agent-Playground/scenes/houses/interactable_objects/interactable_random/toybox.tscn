@@ -1,7 +1,7 @@
 [gd_scene load_steps=21 format=3 uid="uid://bgiu6l1keygyc"]
 
 [ext_resource type="Texture2D" uid="uid://7jc6u53cvx7u" path="res://modern_assets/animated_assets/animated_living/animated_toybox_full_2.png" id="1_id75x"]
-[ext_resource type="Script" path="res://scenes/houses/interactable_objects/interactable_random/toybox.gd" id="1_tt5kc"]
+[ext_resource type="Script" uid="uid://ced1nbkgj12gt" path="res://scenes/houses/interactable_objects/interactable_random/toybox.gd" id="1_tt5kc"]
 [ext_resource type="PackedScene" uid="uid://c2w2uh4fkyjpq" path="res://scenes/components/interactable_component.tscn" id="2_tt5kc"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_6koso"]

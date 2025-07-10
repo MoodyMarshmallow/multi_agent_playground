@@ -1,4 +1,4 @@
-#!/Users/ichisei/Desktop/multi_agent_playground/.venv/bin/python
+#!/Users/ichisei/Desktop/multi_agent_playground/.venv/bin/python3.10
 # -*- coding: utf-8 -*-
 import re
 import sys
