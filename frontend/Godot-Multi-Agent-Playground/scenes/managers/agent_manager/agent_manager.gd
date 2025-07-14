@@ -104,3 +104,10 @@ func get_agent_inventory(agent_id: String) -> Array[String]:
 	else:
 		print("AgentManager: No agent found with id:", agent_id)
 		return []
+
+# Gets the global position of the specified agent
+func get_agent_location(agent_id: String) -> Vector2:
+	if agent_dictionary.has(agent_id):
+		return agent_dictionary[agent_id].global_position
+	else:
+		return Vector2(-INF, -INF)

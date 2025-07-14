@@ -6,10 +6,12 @@ var objects : Dictionary = {} # snake_case_name -> Node2D
 
 # Populate the lists of rooms and objects with the respective objects
 func _ready():
-	# Clear lists in case of re-initialization
+	update_children_objects()
+
+# Repopulate the rooms and objects dictionaries from the scene tree
+func update_children_objects():
 	rooms.clear()
 	objects.clear()
-	# Add all direct children (rooms) to the rooms array
 	for room in get_children():
 		if room is Node2D:
 			var room_key = to_snake_case(room.name)
@@ -22,7 +24,28 @@ func _ready():
 
 # The starting point for handling all object actions
 func handle_object_action(action: Dictionary) -> void:
-	pass
+	var action_type = action.get("action_type", "")
+	var target = action.get("target", "")
+	var place_location = action.get("place_location", null)
+	var obj = get_object_by_name(target)
+	if obj == null:
+		print("ObjectManager: No object found with name:", target)
+		return
+	if action_type == "take":
+		if obj.has_method("take_object"):
+			obj.take_object()
+		else:
+			print("ObjectManager: Object does not have take_object method:", target)
+	elif action_type == "use":
+		if obj.has_method("use"):
+			obj.use()
+		else:
+			print("ObjectManager: Object does not have use method:", target)
+	elif action_type in ["place", "place_on"]:
+		if obj.has_method("place_object_at") and place_location != null:
+			obj.place_object_at(place_location)
+		else:
+			print("ObjectManager: Object does not have place_object_at method or place_location missing:", target)
 
 # No need for _normalize_name anymore!
 

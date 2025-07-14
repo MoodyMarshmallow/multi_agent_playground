@@ -1,4 +1,4 @@
-[gd_scene load_steps=59 format=3 uid="uid://87lmxewh1kml"]
+[gd_scene load_steps=61 format=3 uid="uid://87lmxewh1kml"]
 
 [ext_resource type="Script" path="res://scenes/managers/object_manager/object_manager.gd" id="1_qigme"]
 [ext_resource type="PackedScene" uid="uid://cuqajcajlvp5g" path="res://scenes/houses/objects/bedroom_objects/bed.tscn" id="2_8d1d4"]
@@ -28,6 +28,8 @@
 [ext_resource type="Texture2D" uid="uid://76i0te6lvfny" path="res://modern_assets/basement.png" id="20_xnip6"]
 [ext_resource type="Texture2D" uid="uid://dbkh8gpdeehfd" path="res://modern_assets/living_room.png" id="21_60jnj"]
 [ext_resource type="PackedScene" uid="uid://cw0lecymp5o4" path="res://scenes/houses/objects/kitchen_objects/coffee_maker.tscn" id="21_q01qo"]
+[ext_resource type="Script" path="res://scenes/houses/objects/base_object/base_object.gd" id="24_f5nuw"]
+[ext_resource type="Texture2D" uid="uid://d0chwjabiavh6" path="res://assets/game/food/mega_food_pack/red-apple.png" id="24_ijhcb"]
 [ext_resource type="PackedScene" uid="uid://bjv0y3uv2miya" path="res://scenes/houses/objects/entry_room_objects/welcom_mat.tscn" id="25_he3b4"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hgp31"]
@@ -213,6 +215,20 @@ position = Vector2(123, 205)
 [node name="Fridge2" parent="Kitchen" instance=ExtResource("12_5w3ag")]
 position = Vector2(-58, -58)
 
+[node name="Bread" type="Node2D" parent="Kitchen"]
+position = Vector2(-59, -23)
+
+[node name="Apple" type="Node2D" parent="Kitchen"]
+position = Vector2(-58, -23)
+script = ExtResource("24_f5nuw")
+start_visible = false
+
+[node name="Sprite2D" type="Sprite2D" parent="Kitchen/Apple"]
+texture = ExtResource("24_ijhcb")
+
+[node name="Milk" type="Node2D" parent="Kitchen"]
+position = Vector2(-59, -23)
+
 [node name="Oven" parent="Kitchen" instance=ExtResource("15_u53nr")]
 
 [node name="Oven2" parent="Kitchen" instance=ExtResource("14_0cstq")]
@@ -234,15 +250,6 @@ position = Vector2(70, -20)
 [node name="Sprite2D" type="Sprite2D" parent="Kitchen/Coffee"]
 position = Vector2(0, 1)
 texture = SubResource("AtlasTexture_hgp31")
-
-[node name="Bread" type="Node2D" parent="Kitchen"]
-position = Vector2(-59, -23)
-
-[node name="Apple" type="Node2D" parent="Kitchen"]
-position = Vector2(-58, -23)
-
-[node name="Milk" type="Node2D" parent="Kitchen"]
-position = Vector2(-59, -23)
 
 [node name="EntryRoom" type="Node2D" parent="."]
 position = Vector2(145, 351)

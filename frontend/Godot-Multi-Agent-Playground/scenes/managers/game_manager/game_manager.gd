@@ -20,6 +20,14 @@ func _ready():
 	action_manager.connect("agent_action", Callable(self, "on_agent_action_received"))
 
 func on_object_action_received(action: Dictionary):
+	# If the action is 'place', set place_location to the agent's location
+	if action.has("action_type") and action["action_type"] == "place":
+		if action.has("agent_id"):
+			action["place_location"] = agent_manager.get_agent_location(action["agent_id"])
+	# If the action is 'place_on', set place_location to the recipient object's location
+	elif action.has("action_type") and action["action_type"] == "place_on":
+		if action.has("recipient"):
+			action["place_location"] = object_manager.get_object_location(action["recipient"])
 	object_manager.handle_object_action(action)
 	pass
 

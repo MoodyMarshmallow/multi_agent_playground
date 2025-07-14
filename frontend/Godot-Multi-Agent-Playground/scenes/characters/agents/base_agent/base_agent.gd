@@ -17,11 +17,11 @@ var pending_action: Dictionary = {}
 
 func _ready():
 	# Enable debug visualization
-	navigation_agent_2d.debug_enabled = true
-	navigation_agent_2d.debug_use_custom = true
-	navigation_agent_2d.debug_path_custom_color = Color.RED
-	navigation_agent_2d.debug_path_custom_point_size = 8.0
-	navigation_agent_2d.debug_path_custom_line_width = 3.0
+	#navigation_agent_2d.debug_enabled = true
+	#navigation_agent_2d.debug_use_custom = true
+	#navigation_agent_2d.debug_path_custom_color = Color.RED
+	#navigation_agent_2d.debug_path_custom_point_size = 8.0
+	#navigation_agent_2d.debug_path_custom_line_width = 3.0
 	
 	#Make the agent follow the path more precisely
 	navigation_agent_2d.path_desired_distance = 3.0  # Default is usually 20.0
