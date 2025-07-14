@@ -198,7 +198,7 @@ position = Vector2(-63, -22)
 [node name="MedicineCabinet" parent="Bathroom" instance=ExtResource("9_av2r1")]
 position = Vector2(1, -19)
 
-[node name="BathrromDoor" parent="Bathroom" instance=ExtResource("10_48fhl")]
+[node name="BathroomDoor" parent="Bathroom" instance=ExtResource("10_48fhl")]
 position = Vector2(18, 65)
 
 [node name="Kitchen" type="Node2D" parent="."]
