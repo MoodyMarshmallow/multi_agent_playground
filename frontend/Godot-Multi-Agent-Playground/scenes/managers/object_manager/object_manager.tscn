@@ -1,4 +1,4 @@
-[gd_scene load_steps=62 format=3 uid="uid://87lmxewh1kml"]
+[gd_scene load_steps=59 format=3 uid="uid://87lmxewh1kml"]
 
 [ext_resource type="Script" path="res://scenes/managers/object_manager/object_manager.gd" id="1_qigme"]
 [ext_resource type="PackedScene" uid="uid://cuqajcajlvp5g" path="res://scenes/houses/objects/bedroom_objects/bed.tscn" id="2_8d1d4"]
@@ -6,61 +6,29 @@
 [ext_resource type="PackedScene" uid="uid://buaglmo3rtgdf" path="res://scenes/houses/objects/bedroom_objects/closet.tscn" id="4_71i66"]
 [ext_resource type="PackedScene" uid="uid://bgiu6l1keygyc" path="res://scenes/houses/interactable_objects/interactable_random/toybox.tscn" id="5_bymom"]
 [ext_resource type="Texture2D" uid="uid://xodojgfypofi" path="res://modern_assets/bathroom.png" id="6_lxapm"]
+[ext_resource type="PackedScene" uid="uid://dylfvh0c70gcu" path="res://scenes/houses/objects/bathroom_objects/toilet.tscn" id="6_x48w8"]
+[ext_resource type="PackedScene" uid="uid://bi5itobdnkmwl" path="res://scenes/houses/objects/bathroom_objects/bathtub.tscn" id="7_87641"]
 [ext_resource type="PackedScene" uid="uid://c6go2i4ku4nxa" path="res://scenes/houses/interactable_objects/interactable_bathroom/bathtub.tscn" id="7_vhv7d"]
 [ext_resource type="PackedScene" uid="uid://c5vfag0qfldly" path="res://scenes/houses/interactable_objects/interactable_bathroom/sink.tscn" id="8_irb6h"]
+[ext_resource type="PackedScene" uid="uid://p1sag05kga0a" path="res://scenes/houses/objects/bathroom_objects/shower.tscn" id="9_2mfam"]
 [ext_resource type="PackedScene" uid="uid://door48gqcuan5" path="res://scenes/houses/interactable_objects/interactable_bathroom/cabinet.tscn" id="9_av2r1"]
 [ext_resource type="PackedScene" uid="uid://c4k6t6rbqteau" path="res://scenes/houses/interactable_objects/interactable_bathroom/modern_door.tscn" id="10_48fhl"]
-[ext_resource type="Texture2D" uid="uid://crjes0mdv1c7r" path="res://modern_assets/animated_assets/animated_kitchen/animated_fridge_grey.png" id="11_55j6w"]
 [ext_resource type="PackedScene" uid="uid://cuquxyn65y6ii" path="res://scenes/houses/interactable_objects/interactable_kitchen/fridge.tscn" id="12_5w3ag"]
-[ext_resource type="Texture2D" uid="uid://dxqk0hxjoo51b" path="res://modern_assets/animated_assets/animated_kitchen/animated_kitchen_oven.png" id="13_ehese"]
+[ext_resource type="PackedScene" uid="uid://bt7j0pv4vt0i7" path="res://scenes/houses/objects/kitchen_objects/fridge.tscn" id="13_s6ol6"]
 [ext_resource type="PackedScene" uid="uid://u7b4ml6h7vxa" path="res://scenes/houses/interactable_objects/interactable_kitchen/oven.tscn" id="14_0cstq"]
 [ext_resource type="Texture2D" uid="uid://cmr6euh4xnewa" path="res://modern_assets/kitchen.png" id="15_i0w7t"]
+[ext_resource type="PackedScene" uid="uid://cfwxhqgcrtr40" path="res://scenes/houses/objects/kitchen_objects/oven.tscn" id="15_u53nr"]
 [ext_resource type="Texture2D" uid="uid://omiadq8r4dq1" path="res://modern_assets/animated_assets/animated_kitchen/animated_coffee.png" id="16_fnw4d"]
+[ext_resource type="PackedScene" uid="uid://b2ywfkfi4vj6r" path="res://scenes/houses/objects/kitchen_objects/sink.tscn" id="17_e5d6u"]
 [ext_resource type="PackedScene" uid="uid://dl0vnrqaxgvli" path="res://scenes/houses/interactable_objects/interactable_kitchen/coffee.tscn" id="17_t66b7"]
 [ext_resource type="Texture2D" uid="uid://dwwmiy5adq6di" path="res://modern_assets/animated_assets/animated_door_2.png" id="18_414a5"]
-[ext_resource type="Texture2D" uid="uid://enmyg61e2tas" path="res://modern_assets/furniture.png" id="19_u8c2h"]
+[ext_resource type="PackedScene" uid="uid://8gxhc0s2nvi" path="res://scenes/houses/objects/kitchen_objects/cabinets.tscn" id="18_m2tgo"]
+[ext_resource type="PackedScene" uid="uid://yd7y0ysewqpr" path="res://scenes/houses/objects/kitchen_objects/microwave.tscn" id="19_3afbn"]
+[ext_resource type="PackedScene" uid="uid://cywkv7exjjrpx" path="res://scenes/houses/objects/kitchen_objects/toaster.tscn" id="20_ggome"]
 [ext_resource type="Texture2D" uid="uid://76i0te6lvfny" path="res://modern_assets/basement.png" id="20_xnip6"]
 [ext_resource type="Texture2D" uid="uid://dbkh8gpdeehfd" path="res://modern_assets/living_room.png" id="21_60jnj"]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_dirb7"]
-atlas = ExtResource("6_lxapm")
-region = Rect2(209, 375, 14, 34)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_r7agn"]
-atlas = ExtResource("6_lxapm")
-region = Rect2(198, 794, 19, 27)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_3wf32"]
-atlas = ExtResource("6_lxapm")
-region = Rect2(199, 776, 17, 17)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_dahq6"]
-atlas = ExtResource("6_lxapm")
-region = Rect2(241, 624, 14, 28)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_uy724"]
-atlas = ExtResource("11_55j6w")
-region = Rect2(0, 7, 16, 36)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_qfi56"]
-atlas = ExtResource("13_ehese")
-region = Rect2(0, 2, 16, 25)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ym6hy"]
-atlas = ExtResource("15_i0w7t")
-region = Rect2(133, 129, 24, 14)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_hv7fb"]
-atlas = ExtResource("15_i0w7t")
-region = Rect2(64, 112, 47, 9)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_06scx"]
-atlas = ExtResource("15_i0w7t")
-region = Rect2(160, 528, 16, 13)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_7ycg2"]
-atlas = ExtResource("15_i0w7t")
-region = Rect2(146, 98, 13, 11)
+[ext_resource type="PackedScene" uid="uid://cw0lecymp5o4" path="res://scenes/houses/objects/kitchen_objects/coffee_maker.tscn" id="21_q01qo"]
+[ext_resource type="PackedScene" uid="uid://bjv0y3uv2miya" path="res://scenes/houses/objects/entry_room_objects/welcom_mat.tscn" id="25_he3b4"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hgp31"]
 atlas = ExtResource("16_fnw4d")
@@ -69,10 +37,6 @@ region = Rect2(4, 17, 9, 9)
 [sub_resource type="AtlasTexture" id="AtlasTexture_i0bfg"]
 atlas = ExtResource("18_414a5")
 region = Rect2(1, 11, 14, 21)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_mc2ob"]
-atlas = ExtResource("19_u8c2h")
-region = Rect2(181, 202, 22, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_wa31u"]
 atlas = ExtResource("20_xnip6")
@@ -188,112 +152,97 @@ script = ExtResource("1_qigme")
 position = Vector2(200, 83)
 
 [node name="Bed" parent="Bedroom" instance=ExtResource("2_8d1d4")]
-position = Vector2(-87, -36)
+position = Vector2(-87, -21)
 
 [node name="Dresser" parent="Bedroom" instance=ExtResource("3_qv13i")]
-position = Vector2(-119, -44)
+position = Vector2(-119, -33)
 
 [node name="Closet" parent="Bedroom" instance=ExtResource("4_71i66")]
-position = Vector2(105, -43)
+position = Vector2(105, -25)
 
 [node name="ToyBin" parent="Bedroom" instance=ExtResource("5_bymom")]
-position = Vector2(-23, -31)
+position = Vector2(-23, -23)
+
+[node name="Jacket" type="Node2D" parent="Bedroom"]
+position = Vector2(105, -25)
+
+[node name="Boots" type="Node2D" parent="Bedroom"]
+position = Vector2(105, -25)
+
+[node name="Hat" type="Node2D" parent="Bedroom"]
+position = Vector2(105, -25)
+
+[node name="Scarf" type="Node2D" parent="Bedroom"]
+position = Vector2(105, -25)
+
+[node name="RedQuilt" type="Node2D" parent="Bedroom"]
+position = Vector2(105, -25)
+
+[node name="GreenQuilt" type="Node2D" parent="Bedroom"]
+position = Vector2(105, -25)
 
 [node name="Bathroom" type="Node2D" parent="."]
 position = Vector2(448, 67)
 
-[node name="Toilet" type="Node2D" parent="Bathroom"]
-position = Vector2(33, -31)
+[node name="Toilet" parent="Bathroom" instance=ExtResource("6_x48w8")]
+position = Vector2(33, -16)
 
-[node name="Sprite2D" type="Sprite2D" parent="Bathroom/Toilet"]
-texture = SubResource("AtlasTexture_dirb7")
+[node name="Bathtub2" parent="Bathroom" instance=ExtResource("7_87641")]
+position = Vector2(65, -12)
 
-[node name="Bathtub" type="Node2D" parent="Bathroom"]
-position = Vector2(-448, -67)
+[node name="Bathtub" parent="Bathroom" instance=ExtResource("7_vhv7d")]
+position = Vector2(65, -11)
 
-[node name="Sprite2D" type="Sprite2D" parent="Bathroom/Bathtub"]
-position = Vector2(513, 44)
-texture = SubResource("AtlasTexture_r7agn")
-
-[node name="Bathtub2" parent="Bathroom" instance=ExtResource("7_vhv7d")]
-position = Vector2(65, -32)
-
-[node name="Shower" type="Node2D" parent="Bathroom"]
-position = Vector2(-448, -67)
-
-[node name="Sprite2D" type="Sprite2D" parent="Bathroom/Shower"]
-position = Vector2(513, 20)
-texture = SubResource("AtlasTexture_3wf32")
+[node name="Shower" parent="Bathroom" instance=ExtResource("9_2mfam")]
+position = Vector2(64, -39)
 
 [node name="Sink" parent="Bathroom" instance=ExtResource("8_irb6h")]
-position = Vector2(-63, -31)
-
-[node name="MedicineCabinet" type="Node2D" parent="Bathroom"]
-position = Vector2(-448, -67)
-
-[node name="Sprite2D" type="Sprite2D" parent="Bathroom/MedicineCabinet"]
-position = Vector2(449, 34)
-texture = SubResource("AtlasTexture_dahq6")
+position = Vector2(-63, -22)
 
 [node name="MedicineCabinet2" parent="Bathroom" instance=ExtResource("9_av2r1")]
-position = Vector2(1, -31)
+position = Vector2(1, -19)
 
 [node name="BathrromDoor" parent="Bathroom" instance=ExtResource("10_48fhl")]
-position = Vector2(18, 49)
+position = Vector2(18, 65)
 
 [node name="Kitchen" type="Node2D" parent="."]
 position = Vector2(123, 205)
 
-[node name="Fridge" type="Node2D" parent="Kitchen"]
-position = Vector2(-59, -41)
-
-[node name="Sprite2D" type="Sprite2D" parent="Kitchen/Fridge"]
-texture = SubResource("AtlasTexture_uy724")
+[node name="Fridge" parent="Kitchen" instance=ExtResource("13_s6ol6")]
 
 [node name="Fridge2" parent="Kitchen" instance=ExtResource("12_5w3ag")]
 position = Vector2(-58, -58)
 
-[node name="Oven" type="Node2D" parent="Kitchen"]
-position = Vector2(22, -27)
-
-[node name="Sprite2D" type="Sprite2D" parent="Kitchen/Oven"]
-texture = SubResource("AtlasTexture_qfi56")
+[node name="Oven" parent="Kitchen" instance=ExtResource("15_u53nr")]
 
 [node name="Oven2" parent="Kitchen" instance=ExtResource("14_0cstq")]
 position = Vector2(22, -25)
 
-[node name="Sink" type="Node2D" parent="Kitchen"]
-position = Vector2(-9, -41)
+[node name="Sink" parent="Kitchen" instance=ExtResource("17_e5d6u")]
 
-[node name="Sprite2D" type="Sprite2D" parent="Kitchen/Sink"]
-texture = SubResource("AtlasTexture_ym6hy")
+[node name="Cabinets" parent="Kitchen" instance=ExtResource("18_m2tgo")]
 
-[node name="Cabinets" type="Node2D" parent="Kitchen"]
-position = Vector2(-11, -28)
+[node name="Microwave" parent="Kitchen" instance=ExtResource("19_3afbn")]
 
-[node name="Sprite2D" type="Sprite2D" parent="Kitchen/Cabinets"]
-texture = SubResource("AtlasTexture_hv7fb")
+[node name="Toaster" parent="Kitchen" instance=ExtResource("20_ggome")]
 
-[node name="Microwave" type="Node2D" parent="Kitchen"]
-position = Vector2(102, -42)
-
-[node name="Sprite2D" type="Sprite2D" parent="Kitchen/Microwave"]
-texture = SubResource("AtlasTexture_06scx")
-
-[node name="Toaster" type="Node2D" parent="Kitchen"]
-position = Vector2(86, -41)
-
-[node name="Sprite2D" type="Sprite2D" parent="Kitchen/Toaster"]
-texture = SubResource("AtlasTexture_7ycg2")
-
-[node name="CoffeeMaker" type="Node2D" parent="Kitchen"]
-position = Vector2(70, -19)
-
-[node name="Sprite2D" type="Sprite2D" parent="Kitchen/CoffeeMaker"]
-texture = SubResource("AtlasTexture_hgp31")
+[node name="CoffeeMaker" parent="Kitchen" instance=ExtResource("21_q01qo")]
 
 [node name="Coffee" parent="Kitchen" instance=ExtResource("17_t66b7")]
 position = Vector2(70, -20)
+
+[node name="Sprite2D" type="Sprite2D" parent="Kitchen/Coffee"]
+position = Vector2(0, 1)
+texture = SubResource("AtlasTexture_hgp31")
+
+[node name="Bread" type="Node2D" parent="Kitchen"]
+position = Vector2(-59, -23)
+
+[node name="Apple" type="Node2D" parent="Kitchen"]
+position = Vector2(-58, -23)
+
+[node name="Milk" type="Node2D" parent="Kitchen"]
+position = Vector2(-59, -23)
 
 [node name="EntryRoom" type="Node2D" parent="."]
 position = Vector2(145, 351)
@@ -308,10 +257,7 @@ texture = SubResource("AtlasTexture_i0bfg")
 [node name="EntryDoor2" parent="EntryRoom" instance=ExtResource("10_48fhl")]
 position = Vector2(0, 38)
 
-[node name="WelcomMat" type="Node2D" parent="EntryRoom"]
-
-[node name="Sprite2D" type="Sprite2D" parent="EntryRoom/WelcomMat"]
-texture = SubResource("AtlasTexture_mc2ob")
+[node name="WelcomMat" parent="EntryRoom" instance=ExtResource("25_he3b4")]
 
 [node name="DiningRoom" type="Node2D" parent="."]
 position = Vector2(274, 179)

@@ -5,10 +5,15 @@ extends CharacterBody2D
 @onready var navigation_agent_2d: NavigationAgent2D = $NavigationAgent2D
 @onready var collision_shape_2d: CollisionShape2D = $CollisionShape2D
 
-var agent_id: String = ""
+@export var agent_id: String = ""
 var speed: float = 50.0
 var last_direction: String = "down"
 var using_navigation := false
+var inventory: Array[String] = []
+
+signal reached_destination(action: Dictionary)
+
+var pending_action: Dictionary = {}
 
 func _ready():
 	# Enable debug visualization
@@ -31,6 +36,9 @@ func _physics_process(delta: float) -> void:
 		if navigation_agent_2d.is_navigation_finished():
 			using_navigation = false
 			animated_sprite_2d.play("idle_" + last_direction)
+			if pending_action.size() > 0:
+				emit_signal("reached_destination", pending_action)
+				pending_action = {}
 			return
 
 		var next_path_pos = navigation_agent_2d.get_next_path_position()
@@ -80,3 +88,42 @@ func navigate_to(target_position: Vector2) -> void:
 	else:
 		navigation_agent_2d.set_target_position(target_position)
 	using_navigation = true
+
+# Call this to start a navigation action and store the action
+func start_navigation_action(target_position: Vector2, action: Dictionary) -> void:
+	pending_action = action
+	navigate_to(target_position)
+
+# Helper to convert a string to snake_case
+func to_snake_case(name: String) -> String:
+	var snake = ""
+	for i in name.length():
+		var c = name[i]
+		if c == c.to_upper() and c != c.to_lower() and i > 0:
+			snake += "_"
+		snake += c.to_lower()
+	# Replace spaces with underscores
+	snake = snake.replace(" ", "_")
+	return snake
+
+# Adds an item to the inventory by name (standardized to snake_case)
+func add_to_inventory(item: String) -> void:
+	var key = to_snake_case(item)
+	if key not in inventory:
+		inventory.append(key)
+
+# Removes an item from the inventory by name (standardized to snake_case)
+func remove_from_inventory(item: String) -> void:
+	var key = to_snake_case(item)
+	if key in inventory:
+		inventory.erase(key)
+
+# Prints the inventory in the specified format (underscores replaced by spaces)
+func print_inventory() -> void:
+	print(agent_id + "'s inventory:")
+	for item in inventory:
+		print(item.replace("_", " "))
+
+# Returns the inventory data structure
+func get_inventory() -> Array[String]:
+	return inventory

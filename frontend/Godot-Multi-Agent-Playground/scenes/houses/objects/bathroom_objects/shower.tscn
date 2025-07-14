@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://p1sag05kga0a"]
+
+[ext_resource type="Texture2D" uid="uid://xodojgfypofi" path="res://modern_assets/bathroom.png" id="1_qk8bg"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3wf32"]
+atlas = ExtResource("1_qk8bg")
+region = Rect2(199, 776, 17, 17)
+
+[node name="Shower" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -8)
+texture = SubResource("AtlasTexture_3wf32")

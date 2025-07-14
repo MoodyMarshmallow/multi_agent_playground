@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://bt7j0pv4vt0i7"]
+
+[ext_resource type="Texture2D" uid="uid://crjes0mdv1c7r" path="res://modern_assets/animated_assets/animated_kitchen/animated_fridge_grey.png" id="1_28xhj"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uy724"]
+atlas = ExtResource("1_28xhj")
+region = Rect2(0, 7, 16, 36)
+
+[node name="Fridge" type="Node2D"]
+position = Vector2(-59, -24)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -17)
+texture = SubResource("AtlasTexture_uy724")

@@ -9,4 +9,5 @@ region = Rect2(64, 1576, 47, 40)
 [node name="Closet" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -18)
 texture = SubResource("AtlasTexture_udsdf")

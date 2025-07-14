@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://b2ywfkfi4vj6r"]
+
+[ext_resource type="Texture2D" uid="uid://cmr6euh4xnewa" path="res://modern_assets/kitchen.png" id="1_u0jov"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ym6hy"]
+atlas = ExtResource("1_u0jov")
+region = Rect2(133, 129, 24, 14)
+
+[node name="Sink" type="Node2D"]
+position = Vector2(-9, -35)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -6)
+texture = SubResource("AtlasTexture_ym6hy")

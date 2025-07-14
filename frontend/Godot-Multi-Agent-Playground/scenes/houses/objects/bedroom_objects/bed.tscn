@@ -12,4 +12,5 @@ atlas = SubResource("AtlasTexture_d5dud")
 [node name="Bed" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -16)
 texture = SubResource("AtlasTexture_qh0im")

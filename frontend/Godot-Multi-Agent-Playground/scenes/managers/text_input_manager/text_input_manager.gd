@@ -158,6 +158,16 @@ func _parse_action(text: String):
 		})
 		return
 
+	# print_inventory
+	regex.compile("^print_inventory$")
+	result = regex.search(text.strip_edges())
+	if result:
+		emit_signal("action", {
+			"agent_id": "DebugAgent",
+			"action_type": "print_inventory"
+		})
+		return
+
 	# If no match, print for debugging
 	print("Unrecognized action command:", text)
 

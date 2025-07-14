@@ -1,7 +1,7 @@
 [gd_scene load_steps=21 format=3 uid="uid://c6go2i4ku4nxa"]
 
 [ext_resource type="Texture2D" uid="uid://lrb7h6ff7dgr" path="res://modern_assets/animated_assets/animated_bathroom/animated_bathtub_3_new_4-7 loop.png" id="1_3pw6u"]
-[ext_resource type="Script" uid="uid://bhitprqkfj4q2" path="res://scenes/houses/interactable_objects/interactable_bathroom/bathtub.gd" id="1_4or8j"]
+[ext_resource type="Script" path="res://scenes/houses/interactable_objects/interactable_bathroom/bathtub.gd" id="1_4or8j"]
 [ext_resource type="PackedScene" uid="uid://c2w2uh4fkyjpq" path="res://scenes/components/interactable_component.tscn" id="2_4or8j"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_wt4y0"]
@@ -135,12 +135,14 @@ height = 32.0
 script = ExtResource("1_4or8j")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -20)
 sprite_frames = SubResource("SpriteFrames_s6jg7")
 autoplay = "default"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, 6)
+position = Vector2(0, -14)
 shape = SubResource("CapsuleShape2D_dyf5m")
 debug_color = Color(0.294889, 0.583602, 0.650043, 0.42)
 
 [node name="InteractableComponent" parent="." instance=ExtResource("2_4or8j")]
+position = Vector2(0, -20)

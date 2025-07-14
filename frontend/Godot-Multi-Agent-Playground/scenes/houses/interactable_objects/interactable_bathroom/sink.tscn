@@ -1,6 +1,6 @@
 [gd_scene load_steps=24 format=3 uid="uid://c5vfag0qfldly"]
 
-[ext_resource type="Script" uid="uid://busbqnqej5gn0" path="res://scenes/houses/interactable_objects/interactable_bathroom/sink.gd" id="1_iuk6r"]
+[ext_resource type="Script" path="res://scenes/houses/interactable_objects/interactable_bathroom/sink.gd" id="1_iuk6r"]
 [ext_resource type="Texture2D" uid="uid://bbl0ixwn5abwi" path="res://modern_assets/animated_assets/animated_bathroom/animated_bathroom_sink_new_2_3-10 loop.png" id="1_ps2qp"]
 [ext_resource type="PackedScene" uid="uid://c2w2uh4fkyjpq" path="res://scenes/components/interactable_component.tscn" id="2_iuk6r"]
 
@@ -151,14 +151,16 @@ size = Vector2(44, 38)
 script = ExtResource("1_iuk6r")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -9)
 sprite_frames = SubResource("SpriteFrames_gorvp")
 autoplay = "default"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0.5, -0.5)
+position = Vector2(0.5, -9.5)
 shape = SubResource("RectangleShape2D_v2ylf")
 
 [node name="InteractableComponent" parent="." instance=ExtResource("2_iuk6r")]
+position = Vector2(0, -9)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractableComponent"]
 position = Vector2(2, 9)

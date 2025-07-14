@@ -53,10 +53,20 @@ func get_room_location(room: String) -> Vector2:
 		print("room location is: ", room_node.global_position)
 		return room_node.global_position
 	print("defaulting to 0, 0 room location")
-	return Vector2.ZERO
+	return Vector2(-INF, -INF)
 # Returns the global position of an object (usually around the center of the object's sprite)
 func get_object_location(object: String) -> Vector2:
 	var obj_node = get_object_by_name(object)
 	if obj_node:
 		return obj_node.global_position
-	return Vector2.ZERO
+	return Vector2(-INF, -INF)
+
+# Returns the global position of a room or object, given its name
+func get_location(name: String) -> Vector2:
+	var obj_node = get_object_by_name(name)
+	if obj_node:
+		return obj_node.global_position
+	var room_node = get_room_by_name(name)
+	if room_node:
+		return room_node.global_position
+	return Vector2(-INF, -INF)
