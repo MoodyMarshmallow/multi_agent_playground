@@ -3,6 +3,7 @@ extends Node2D
 
 signal object_action(action : Dictionary)
 signal agent_action(action : Dictionary)
+signal general_action(action: Dictionary)
 
 # Parses an action and calls the corresponding functions in the 
 # agent manager and object manager
@@ -18,5 +19,4 @@ signal agent_action(action : Dictionary)
 # recipient: Optional[str] = None  # Only for place_on
 
 func _on_action_received(action: Dictionary):
-	object_action.emit(action)
-	agent_action.emit(action)
+	general_action.emit(action)

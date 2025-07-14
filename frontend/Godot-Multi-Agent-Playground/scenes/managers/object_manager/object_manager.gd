@@ -24,12 +24,20 @@ func update_children_objects():
 
 # The starting point for handling all object actions
 func handle_object_action(action: Dictionary) -> void:
+	if action.has("move_to"):
+		# Wait for post-navigation callback
+		return
+	_do_object_action(action)
+
+func handle_post_navigation_object_action(action: Dictionary):
+	_do_object_action(action)
+
+func _do_object_action(action: Dictionary) -> void:
 	var action_type = action.get("action_type", "")
 	var target = action.get("target", "")
 	var place_location = action.get("place_location", null)
 	var obj = get_object_by_name(target)
 	if obj == null:
-		print("ObjectManager: No object found with name:", target)
 		return
 	if action_type == "take":
 		if obj.has_method("take_object"):
@@ -46,8 +54,28 @@ func handle_object_action(action: Dictionary) -> void:
 			obj.place_object_at(place_location)
 		else:
 			print("ObjectManager: Object does not have place_object_at method or place_location missing:", target)
-
-# No need for _normalize_name anymore!
+	elif action_type in ["open", "close"]:
+		var interactive_targets = ["toy_bin", "oven", "fridge", "medicine_cabinet", "bathroom_door", "entry_door"]
+		if to_snake_case(target) in interactive_targets:
+			var component = obj.get_node_or_null("InteractableComponent")
+			if component:
+				if action_type == "open":
+					component.interactable_activated.emit()
+				elif action_type == "close":
+					component.interactable_deactivated.emit()
+			else:
+				print("ObjectManager: No InteractableComponent found on object:", target)
+	elif action_type in ["turn_on", "turn_off"]:
+		var interactive_targets = ["coffee_maker", "faucet", "bathtub"]
+		if to_snake_case(target) in interactive_targets:
+			var component = obj.get_node_or_null("InteractableComponent")
+			if component:
+				if action_type == "turn_on":
+					component.interactable_activated.emit()
+				elif action_type == "turn_off":
+					component.interactable_deactivated.emit()
+			else:
+				print("ObjectManager: No InteractableComponent found on object:", target)
 
 func to_snake_case(name: String) -> String:
 	var snake = ""

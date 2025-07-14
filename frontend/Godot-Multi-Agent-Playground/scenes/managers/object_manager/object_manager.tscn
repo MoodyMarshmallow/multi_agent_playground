@@ -1,4 +1,4 @@
-[gd_scene load_steps=61 format=3 uid="uid://87lmxewh1kml"]
+[gd_scene load_steps=58 format=3 uid="uid://87lmxewh1kml"]
 
 [ext_resource type="Script" path="res://scenes/managers/object_manager/object_manager.gd" id="1_qigme"]
 [ext_resource type="PackedScene" uid="uid://cuqajcajlvp5g" path="res://scenes/houses/objects/bedroom_objects/bed.tscn" id="2_8d1d4"]
@@ -7,17 +7,14 @@
 [ext_resource type="PackedScene" uid="uid://bgiu6l1keygyc" path="res://scenes/houses/interactable_objects/interactable_random/toybox.tscn" id="5_bymom"]
 [ext_resource type="Texture2D" uid="uid://xodojgfypofi" path="res://modern_assets/bathroom.png" id="6_lxapm"]
 [ext_resource type="PackedScene" uid="uid://dylfvh0c70gcu" path="res://scenes/houses/objects/bathroom_objects/toilet.tscn" id="6_x48w8"]
-[ext_resource type="PackedScene" uid="uid://bi5itobdnkmwl" path="res://scenes/houses/objects/bathroom_objects/bathtub.tscn" id="7_87641"]
 [ext_resource type="PackedScene" uid="uid://c6go2i4ku4nxa" path="res://scenes/houses/interactable_objects/interactable_bathroom/bathtub.tscn" id="7_vhv7d"]
 [ext_resource type="PackedScene" uid="uid://c5vfag0qfldly" path="res://scenes/houses/interactable_objects/interactable_bathroom/sink.tscn" id="8_irb6h"]
 [ext_resource type="PackedScene" uid="uid://p1sag05kga0a" path="res://scenes/houses/objects/bathroom_objects/shower.tscn" id="9_2mfam"]
 [ext_resource type="PackedScene" uid="uid://door48gqcuan5" path="res://scenes/houses/interactable_objects/interactable_bathroom/cabinet.tscn" id="9_av2r1"]
 [ext_resource type="PackedScene" uid="uid://c4k6t6rbqteau" path="res://scenes/houses/interactable_objects/interactable_bathroom/modern_door.tscn" id="10_48fhl"]
 [ext_resource type="PackedScene" uid="uid://cuquxyn65y6ii" path="res://scenes/houses/interactable_objects/interactable_kitchen/fridge.tscn" id="12_5w3ag"]
-[ext_resource type="PackedScene" uid="uid://bt7j0pv4vt0i7" path="res://scenes/houses/objects/kitchen_objects/fridge.tscn" id="13_s6ol6"]
 [ext_resource type="PackedScene" uid="uid://u7b4ml6h7vxa" path="res://scenes/houses/interactable_objects/interactable_kitchen/oven.tscn" id="14_0cstq"]
 [ext_resource type="Texture2D" uid="uid://cmr6euh4xnewa" path="res://modern_assets/kitchen.png" id="15_i0w7t"]
-[ext_resource type="PackedScene" uid="uid://cfwxhqgcrtr40" path="res://scenes/houses/objects/kitchen_objects/oven.tscn" id="15_u53nr"]
 [ext_resource type="Texture2D" uid="uid://omiadq8r4dq1" path="res://modern_assets/animated_assets/animated_kitchen/animated_coffee.png" id="16_fnw4d"]
 [ext_resource type="PackedScene" uid="uid://b2ywfkfi4vj6r" path="res://scenes/houses/objects/kitchen_objects/sink.tscn" id="17_e5d6u"]
 [ext_resource type="PackedScene" uid="uid://dl0vnrqaxgvli" path="res://scenes/houses/interactable_objects/interactable_kitchen/coffee.tscn" id="17_t66b7"]
@@ -189,19 +186,16 @@ position = Vector2(448, 67)
 [node name="Toilet" parent="Bathroom" instance=ExtResource("6_x48w8")]
 position = Vector2(33, -16)
 
-[node name="Bathtub2" parent="Bathroom" instance=ExtResource("7_87641")]
-position = Vector2(65, -12)
-
 [node name="Bathtub" parent="Bathroom" instance=ExtResource("7_vhv7d")]
 position = Vector2(65, -11)
 
 [node name="Shower" parent="Bathroom" instance=ExtResource("9_2mfam")]
 position = Vector2(64, -39)
 
-[node name="Sink" parent="Bathroom" instance=ExtResource("8_irb6h")]
+[node name="Faucet" parent="Bathroom" instance=ExtResource("8_irb6h")]
 position = Vector2(-63, -22)
 
-[node name="MedicineCabinet2" parent="Bathroom" instance=ExtResource("9_av2r1")]
+[node name="MedicineCabinet" parent="Bathroom" instance=ExtResource("9_av2r1")]
 position = Vector2(1, -19)
 
 [node name="BathrromDoor" parent="Bathroom" instance=ExtResource("10_48fhl")]
@@ -210,15 +204,14 @@ position = Vector2(18, 65)
 [node name="Kitchen" type="Node2D" parent="."]
 position = Vector2(123, 205)
 
-[node name="Fridge" parent="Kitchen" instance=ExtResource("13_s6ol6")]
-
-[node name="Fridge2" parent="Kitchen" instance=ExtResource("12_5w3ag")]
-position = Vector2(-58, -58)
+[node name="Fridge" parent="Kitchen" instance=ExtResource("12_5w3ag")]
+position = Vector2(-58, -23)
 
 [node name="Bread" type="Node2D" parent="Kitchen"]
 position = Vector2(-59, -23)
 
 [node name="Apple" type="Node2D" parent="Kitchen"]
+visible = false
 position = Vector2(-58, -23)
 script = ExtResource("24_f5nuw")
 start_visible = false
@@ -229,10 +222,8 @@ texture = ExtResource("24_ijhcb")
 [node name="Milk" type="Node2D" parent="Kitchen"]
 position = Vector2(-59, -23)
 
-[node name="Oven" parent="Kitchen" instance=ExtResource("15_u53nr")]
-
-[node name="Oven2" parent="Kitchen" instance=ExtResource("14_0cstq")]
-position = Vector2(22, -25)
+[node name="Oven" parent="Kitchen" instance=ExtResource("14_0cstq")]
+position = Vector2(22, -11)
 
 [node name="Sink" parent="Kitchen" instance=ExtResource("17_e5d6u")]
 

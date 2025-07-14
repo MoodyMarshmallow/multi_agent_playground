@@ -1,3 +1,4 @@
+class_name BaseObject
 extends Node2D
 
 @export var start_visible: bool = true

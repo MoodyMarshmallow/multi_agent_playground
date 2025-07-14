@@ -1,7 +1,7 @@
 [gd_scene load_steps=19 format=3 uid="uid://cuquxyn65y6ii"]
 
 [ext_resource type="Texture2D" uid="uid://crjes0mdv1c7r" path="res://modern_assets/animated_assets/animated_kitchen/animated_fridge_grey.png" id="1_3qa6s"]
-[ext_resource type="Script" uid="uid://dksju7sp0ond" path="res://scenes/houses/interactable_objects/interactable_kitchen/fridge.gd" id="1_r3jmu"]
+[ext_resource type="Script" path="res://scenes/houses/interactable_objects/interactable_kitchen/fridge.gd" id="1_r3jmu"]
 [ext_resource type="PackedScene" uid="uid://c2w2uh4fkyjpq" path="res://scenes/components/interactable_component.tscn" id="2_651ai"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_r3jmu"]
@@ -120,14 +120,14 @@ size = Vector2(14, 35)
 script = ExtResource("1_r3jmu")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(7, 15)
+position = Vector2(7, -19)
 sprite_frames = SubResource("SpriteFrames_t4dop")
 animation = &"open_fridge"
 autoplay = "default"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-1, 16)
+position = Vector2(-1, -18)
 shape = SubResource("RectangleShape2D_r3jmu")
 
 [node name="InteractableComponent" parent="." instance=ExtResource("2_651ai")]
-position = Vector2(0, 54)
+position = Vector2(0, 20)

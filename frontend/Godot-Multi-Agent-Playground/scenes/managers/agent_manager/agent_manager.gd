@@ -56,6 +56,8 @@ func handle_agent_action(action: Dictionary):
 # Called when an agent reaches its destination
 func _on_agent_reached_destination(action: Dictionary):
 	_handle_post_navigation_action(action)
+	if action.has("agent_id"):
+		emit_signal("agent_action_completed", action["agent_id"], action)
 
 # Handle the rest of the action after navigation
 func _handle_post_navigation_action(action: Dictionary):
@@ -111,3 +113,5 @@ func get_agent_location(agent_id: String) -> Vector2:
 		return agent_dictionary[agent_id].global_position
 	else:
 		return Vector2(-INF, -INF)
+
+signal agent_action_completed(agent_id: String, action: Dictionary)
