@@ -579,9 +579,13 @@ class Game:
         action_obj = self._last_action_result.house_action
         if action_type == 'noop' and hasattr(action_obj, 'reason'):
             action_obj.reason = reason
+        # Pass as dict, not string
+        action_val = action_obj
+        if hasattr(action_obj, 'model_dump'):
+            action_val = action_obj.model_dump()
         return AgentActionOutput(
             agent_id=self._last_action_agent_id,
-            action=action_obj,
+            action=action_val,
             timestamp=datetime.now().isoformat(),
             current_room=current_room,
             description=description,

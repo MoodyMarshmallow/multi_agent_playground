@@ -2,6 +2,7 @@ from . import base
 from . import preconditions as P
 from .consume import Drink, Eat
 from .rose import Smell_Rose
+from backend.config.schema import HouseActionSimple
 
 
 class Get(base.Action):
@@ -53,7 +54,8 @@ class Get(base.Action):
         description = "{character_name} got the {item_name}.".format(
             character_name=self.character.name, item_name=self.item.name
         )
-        return self.parser.ok(description)
+        house_action = HouseActionSimple(action_type="take", target=self.item.name)
+        return self.parser.ok(description), base.ActionResult(description=description, house_action=house_action, object_id=self.item.name)
 
 
 class Drop(base.Action):
@@ -101,7 +103,8 @@ class Drop(base.Action):
             item_name=self.item.name,
             location=self.location.name,
         )
-        return self.parser.ok(description)
+        house_action = HouseActionSimple(action_type="place", target=self.item.name)
+        return self.parser.ok(description), base.ActionResult(description=description, house_action=house_action, object_id=self.item.name)
 
 
 class Inventory(base.Action):
