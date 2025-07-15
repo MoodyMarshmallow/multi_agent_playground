@@ -1,8 +1,87 @@
-[gd_scene format=3 uid="uid://b10qd3jlkbfqj"]
+[gd_scene load_steps=10 format=3 uid="uid://b10qd3jlkbfqj"]
+
+[ext_resource type="Theme" uid="uid://cq7qbrou06v2b" path="res://scenes/ui/game_ui_theme.tres" id="1_u07v1"]
+[ext_resource type="Texture2D" uid="uid://jmm04y6w2ak5" path="res://assets 2/ui/characters/Bob_idle_anim_16x16.png" id="2_prgcp"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_157xx"]
+atlas = ExtResource("2_prgcp")
+region = Rect2(288, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gdn4g"]
+atlas = ExtResource("2_prgcp")
+region = Rect2(304, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jyaba"]
+atlas = ExtResource("2_prgcp")
+region = Rect2(320, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0v663"]
+atlas = ExtResource("2_prgcp")
+region = Rect2(336, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d1qn1"]
+atlas = ExtResource("2_prgcp")
+region = Rect2(352, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ue7v4"]
+atlas = ExtResource("2_prgcp")
+region = Rect2(368, 0, 16, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_6kdp3"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_157xx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gdn4g")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jyaba")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0v663")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d1qn1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ue7v4")
+}],
+"loop": true,
+"name": &"idle_bob",
+"speed": 5.0
+}]
 
 [node name="EmotesPanel" type="Panel"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+custom_minimum_size = Vector2(50, 50)
+offset_right = 50.0
+offset_bottom = 50.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme = ExtResource("1_u07v1")
+theme_type_variation = &"DarkWoodPanel"
+metadata/_edit_use_anchors_ = true
+
+[node name="Emote" type="Control" parent="."]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Emote"]
+position = Vector2(20, 15)
+scale = Vector2(1.5, 1.5)
+sprite_frames = SubResource("SpriteFrames_6kdp3")
+animation = &"idle_bob"
+frame = 1
+frame_progress = 0.757198

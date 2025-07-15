@@ -2,8 +2,8 @@
 
 [ext_resource type="TileSet" uid="uid://clqkkmcjq30g" path="res://Tilesets/game_tile_set.tres" id="1_ji6ie"]
 [ext_resource type="PackedScene" uid="uid://dsv32w5f65vpb" path="res://scenes/managers/http_manager/http_manager.tscn" id="2_yqrfd"]
-[ext_resource type="Script" path="res://scenes/managers/http_manager/http_manager.gd" id="3_q84wa"]
-[ext_resource type="Script" path="res://scenes/components/agent_manager.gd" id="4_sixte"]
+[ext_resource type="Script" uid="uid://b0htjifjykju3" path="res://scenes/managers/http_manager/http_manager.gd" id="3_q84wa"]
+[ext_resource type="Script" uid="uid://c60slo30ykst5" path="res://scenes/managers/agent_manager/agent_manager.gd" id="4_sixte"]
 [ext_resource type="PackedScene" uid="uid://dleatrinsn5so" path="res://scenes/characters/agents/old/agent.tscn" id="6_wivxd"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_1ojii"]
