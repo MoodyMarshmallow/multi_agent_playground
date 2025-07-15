@@ -1,4 +1,5 @@
 from . import base
+from backend.config.schema import HouseActionSimple, MoveAction
 
 # from . import preconditions as P
 
@@ -88,17 +89,17 @@ class Go(base.Action):
         if is_main_player:
             self.has_been_visited = True
 
-        # CCB - we don't need to describe this action
-        # description = "{character_name} moved to {place}".format(
-        #     character_name=self.character.name, place=to_loc.name
-        # )
-        # self.parser.ok(description)
-
         # Some locations finish game
         if to_loc.get_property("game_over") and is_main_player:
             self.game.game_over = True
             self.game.game_over_description = to_loc.description
-            return self.parser.ok(to_loc.description)
+            narration = self.parser.ok(to_loc.description)
+            # Use MoveAction for structured movement
+            house_action = MoveAction(action_type="move", target=self.direction)
+            return narration, base.ActionResult(description=to_loc.description, house_action=house_action, object_id=to_loc.name)
         else:
             action = base.Describe(self.game, command=self.command)
-            return action()
+            narration, schema = action()
+            # Use MoveAction for structured movement
+            house_action = MoveAction(action_type="move", target=self.direction)
+            return narration, base.ActionResult(description=schema.description, house_action=house_action, object_id=to_loc.name)

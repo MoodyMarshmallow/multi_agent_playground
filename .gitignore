@@ -182,3 +182,8 @@ cython_debug/
 
 # Cursor Memory Bank - AI assistant memory files
 cursor_memory/
+
+# Other
+resources/
+resources_old/
+simulacra_visualization/

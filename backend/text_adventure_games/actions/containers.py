@@ -1,6 +1,7 @@
 from backend.text_adventure_games.actions import base
 from backend.text_adventure_games.things.containers import Container
 from backend.config import schema
+from backend.config.schema import HouseActionSimple  # Only use new schema
 
 def match_container_in_scope(parser, command, character):
     items_in_scope = parser.get_items_in_scope(character)
@@ -50,7 +51,7 @@ class OpenContainer(base.Action):
             narration = self.parser.ok(f"You open the {self.container.name}.\nInside the {self.container.name} you see:")
             for item in items:
                 narration += f"\n * {item.description}"
-        house_action = schema.OpenItemAction(action_type="open_item", target=self.container.name)
+        house_action = HouseActionSimple(action_type="open", target=self.container.name)
         schema_result = base.ActionResult(description=f"Opened {self.container.name}.", house_action=house_action, object_id=self.container.name)
         return narration, schema_result
 
@@ -79,7 +80,7 @@ class CloseContainer(base.Action):
     def apply_effects(self):
         self.container.set_property("is_open", False)
         narration = self.parser.ok(f"You close the {self.container.name}.")
-        house_action = schema.CloseItemAction(action_type="close_item", target=self.container.name)
+        house_action = HouseActionSimple(action_type="close", target=self.container.name)
         schema_result = base.ActionResult(description=f"Closed {self.container.name}.", house_action=house_action, object_id=self.container.name)
         return narration, schema_result
 
@@ -110,7 +111,7 @@ class TakeFromContainer(base.Action):
         self.character.add_to_inventory(self.target)
         self.container.remove_item(self.target)
         narration = self.parser.ok(f"You take the {self.target.name} from the {self.container.name}.")
-        house_action = schema.TakeFromContainerAction(action_type="take_from_container", item=self.target.name, container=self.container.name)
+        house_action = HouseActionSimple(action_type="take", target=self.target.name)
         schema_result = base.ActionResult(description=f"Took {self.target.name} from {self.container.name}.", house_action=house_action, object_id=self.target.name)
         return narration, schema_result
 
