@@ -108,6 +108,35 @@ class AdjustVolumeAction(BaseModel):
     target: str   # e.g., "tv", "alarm clock"
     value: int    # volume value
 
+# --- Movement ---
+class MoveAction(BaseModel):
+    action_type: Literal["move"]
+    direction: str   # e.g., "north", "south", "east", "west"
+
+# --- Basic Actions ---
+class LookAction(BaseModel):
+    action_type: Literal["look"]
+
+class InventoryAction(BaseModel):
+    action_type: Literal["inventory"]
+
+class GetItemAction(BaseModel):
+    action_type: Literal["get_item"]
+    item: str   # e.g., "apple", "key"
+
+class DropItemAction(BaseModel):
+    action_type: Literal["drop_item"]
+    item: str
+
+class GiveItemAction(BaseModel):
+    action_type: Literal["give_item"]
+    item: str
+    target: str   # character to give item to
+
+class ExamineAction(BaseModel):
+    action_type: Literal["examine"]
+    target: str   # item or object to examine
+
 # --- UNION OF ALL ACTIONS ---
 class NoOpAction(BaseModel):
     action_type: Literal["noop"]
@@ -115,6 +144,14 @@ class NoOpAction(BaseModel):
 
 HouseAction = Annotated[
     Union[
+        # Movement and Basic Actions
+        MoveAction,
+        LookAction,
+        InventoryAction,
+        GetItemAction,
+        DropItemAction,
+        GiveItemAction,
+        ExamineAction,
         # Appliance
         TurnOnSinkAction,
         TurnOffSinkAction,

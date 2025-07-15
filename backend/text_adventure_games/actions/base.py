@@ -1,6 +1,6 @@
 from ..things import Thing, Character, Item, Location
 import re
-from backend.config.schema import HouseAction, NoOpAction
+from backend.config.schema import HouseAction, NoOpAction, LookAction
 from typing import Optional, Any
 
 class ActionResult:
@@ -336,5 +336,10 @@ class Describe(Action):
 
     def apply_effects(self):
         narration = self.parser.ok(self.game.describe())
-        schema = ActionResult(description="Described current location.")
+        look_action = LookAction(action_type="look")
+        schema = ActionResult(
+            description="Described current location.",
+            house_action=look_action,
+            object_id=self.game.player.location.name if self.game.player.location else None
+        )
         return narration, schema

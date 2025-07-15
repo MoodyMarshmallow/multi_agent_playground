@@ -1,4 +1,5 @@
 from . import base
+from backend.config.schema import MoveAction
 
 # from . import preconditions as P
 
@@ -100,5 +101,16 @@ class Go(base.Action):
             self.game.game_over_description = to_loc.description
             return self.parser.ok(to_loc.description)
         else:
+            # Create proper MoveAction schema
+            move_action = MoveAction(action_type="move", direction=self.direction)
+            
+            # Get description from Describe action
             action = base.Describe(self.game, command=self.command)
-            return action()
+            narration, _ = action()
+            
+            # Return ActionResult with proper schema
+            return narration, base.ActionResult(
+                description=narration,
+                house_action=move_action,
+                object_id=to_loc.name
+            )

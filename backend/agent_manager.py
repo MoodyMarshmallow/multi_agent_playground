@@ -314,12 +314,12 @@ class AgentManager:
             # Format result for readable output
             if isinstance(result, tuple) and len(result) >= 1:
                 description = result[0]
-                print(f"Result:")
+                print(f"Action result passed to agent:")
                 print("─" * 50)
                 print(description)
                 print("─" * 50)
             else:
-                print(f"Result: {result}")
+                print(f"Action result passed to agent: {result}")
             
             # Get the schema immediately after execution
             action_schema = self.game.get_schema()

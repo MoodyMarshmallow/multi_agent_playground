@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:kani.readthedocs.io)"
+    ],
+    "deny": []
+  }
+}
