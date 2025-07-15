@@ -21,7 +21,7 @@ from .text_adventure_games.games import Game
 from .text_adventure_games.things import Character, Location, Item
 
 # Agent management
-from .agent_manager import AgentManager, KaniAgent
+from .kani_agent import AgentManager, KaniAgent
 
 # --- Canonical world setup from canonical_demo.py ---
 from .text_adventure_games.house import build_house_game

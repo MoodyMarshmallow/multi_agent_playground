@@ -15,7 +15,7 @@ from .goals import InteractionGoal, ActionSequenceGoal
 from ..text_adventure_games.games import Game
 from ..text_adventure_games.house import build_house_game
 from ..text_adventure_games.things import Character, Item, Location
-from ..agent_manager import AgentManager, KaniAgent
+from ..kani_agent import AgentManager, KaniAgent
 from ..config.schema import AgentActionOutput
 
 

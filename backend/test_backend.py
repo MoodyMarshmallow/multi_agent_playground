@@ -23,7 +23,7 @@ if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
 from backend.game_loop import GameLoop
-from backend.agent_manager import SimpleRandomAgent
+from backend.kani_agent import KaniAgent
 from backend.config.schema import AgentSummary
 
 

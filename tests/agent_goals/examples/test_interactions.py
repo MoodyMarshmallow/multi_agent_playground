@@ -7,6 +7,12 @@ Example test cases for agent interaction capabilities.
 
 import pytest
 import asyncio
+import sys
+import os
+
+# Add the project root to the Python path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+
 from backend.testing.agent_goal_test import AgentGoalTest
 from backend.testing.agent_test_runner import AgentTestRunner
 from backend.testing.goals import InteractionGoal, InventoryGoal, LocationGoal
