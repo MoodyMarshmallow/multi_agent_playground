@@ -200,9 +200,9 @@ class AgentActionOutput(BaseModel):
     timestamp: Optional[str] = None
     current_room: Optional[str] = None
     description: Optional[str] = None #  for chat box description
-    current_object: Optional[str] = None #  for chat box description
-    event_id: Optional[int] = None  # For event tracking
-    event_type: Optional[str] = None  # For event type tracking
+    current_object: Optional[str] = None #  for chat box description TODO: remove this
+    event_id: Optional[int] = None  # For event tracking TODO: remove this
+    event_type: Optional[str] = None  # For event type tracking TODO: remove this
 
 
 class AgentPlanRequest(BaseModel):

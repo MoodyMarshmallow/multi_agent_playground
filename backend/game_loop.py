@@ -21,7 +21,8 @@ from .text_adventure_games.games import Game
 from .text_adventure_games.things import Character, Location, Item
 
 # Agent management
-from .kani_agent import AgentManager, KaniAgent
+from .agent import AgentManager
+from .agent.agent_strategies import KaniAgent, ManualAgent
 
 # --- Canonical world setup from canonical_demo.py ---
 from .text_adventure_games.house import build_house_game
@@ -34,11 +35,14 @@ class GameLoop:
     Also enqueues events for the frontend to consume.
     """
     
-    def __init__(self):
+    def __init__(self, agent_config: Optional[Dict[str, str]] = None):
         self.game: Optional[Game] = None
         self.agent_manager: Optional[AgentManager] = None
         self.is_running = False
         self.task: Optional[asyncio.Task] = None
+        
+        # Agent configuration: maps agent_name -> agent_type ("ai" or "manual")
+        self.agent_config = agent_config or {}
         
         # Event system for frontend (only AgentActionOutput objects)
         self.event_queue: List[AgentActionOutput] = []
@@ -127,32 +131,63 @@ class GameLoop:
         return build_house_game()
     
     async def _setup_agents(self):
-        """Setup AI agents for the non-player characters."""
+        """Setup agents based on configuration (AI or manual)."""
         try:
-            # Create Kani agents for each NPC
-            alex_agent = KaniAgent(
-                character_name="alex_001",
-                persona="I am Alex, a friendly and social person who loves to chat with others. I enjoy reading books and might want to explore the house. I'm curious about what others are doing and like to help when I can."
-            )
+            # Define agent personas
+            agent_personas = {
+                "alex_001": "I am Alex, a friendly and social person who loves to chat with others. I enjoy reading books and might want to explore the house. I'm curious about what others are doing and like to help when I can.",
+                "alan_002": "I am Alan, a quiet and thoughtful person who likes to observe and think. I prefer to explore slowly and examine things carefully. I might be interested in food and practical items."
+            }
             
-            alan_agent = KaniAgent(
-                character_name="alan_002",
-                persona="I am Alan, a quiet and thoughtful person who likes to observe and think. I prefer to explore slowly and examine things carefully. I might be interested in food and practical items."
-            )
+            # Create agents based on configuration
+            for agent_name, persona in agent_personas.items():
+                agent_strategy = self._create_agent_strategy(agent_name, persona)
+                if agent_strategy:
+                    self.agent_manager.register_agent_strategy(agent_name, agent_strategy)
             
-            # Register agents with the agent manager
-            self.agent_manager.register_agent_strategy("alex_001", alex_agent)
-            self.agent_manager.register_agent_strategy("alan_002", alan_agent)
-            
-            print("AI agents set up successfully")
+            print("Agents set up successfully")
+            if self.agent_config:
+                manual_agents = [name for name, type_ in self.agent_config.items() if type_ == "manual"]
+                ai_agents = [name for name, type_ in self.agent_config.items() if type_ == "ai"]
+                print(f"Manual agents: {manual_agents}")
+                print(f"AI agents: {ai_agents}")
+            else:
+                print("All agents using AI (default)")
+                
         except Exception as e:
             import traceback
-            print(f"Warning: Could not set up AI agents: {e}")
+            print(f"Warning: Could not set up agents: {e}")
             print(f"Full error traceback:")
             traceback.print_exc()
-            print("The game will run without AI agents for NPCs")
-            # Just add the characters to active agents list without AI strategies
+            print("The game will run without agent strategies")
+            # Just add the characters to active agents list without strategies
             self.agent_manager.active_agents.extend(["alex_001", "alan_002"])
+    
+    def _create_agent_strategy(self, character_name: str, persona: str):
+        """Create either a manual or AI agent based on configuration."""
+        agent_type = self.agent_config.get(character_name, "ai")  # Default to AI
+        
+        if agent_type == "manual":
+            print(f"Creating manual agent for {character_name}")
+            return ManualAgent(character_name, persona)
+        else:  # agent_type == "ai" or any other value
+            try:
+                print(f"Creating AI agent for {character_name}")
+                return KaniAgent(character_name, persona)
+            except Exception as e:
+                print(f"Failed to create AI agent for {character_name}: {e}")
+                print(f"Falling back to manual agent for {character_name}")
+                return ManualAgent(character_name, persona)
+    
+    def set_agent_config(self, agent_config: Dict[str, str]):
+        """Update agent configuration and reinitialize agents."""
+        self.agent_config = agent_config
+        # Note: This would require stopping and restarting the game loop
+        # to take effect, or implementing hot-swapping of agent strategies
+    
+    def get_agent_config(self) -> Dict[str, str]:
+        """Get current agent configuration."""
+        return self.agent_config.copy()
     
     def _initialize_objects_registry(self):
         """Initialize the objects registry for frontend communication."""

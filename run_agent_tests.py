@@ -71,7 +71,7 @@ async def run_collection_test():
             }
         ),
         agent_config=AgentConfig(
-            persona="I am helpful and collect items when needed.",
+            persona="You want should find and collect an apple.",
             name="collector_agent"
         ),
         goal=InventoryGoal(
@@ -95,55 +95,6 @@ async def run_collection_test():
     return result
 
 
-async def run_test_suite():
-    """Run a small test suite."""
-    print("\nRunning test suite...")
-    
-    tests = [
-        AgentGoalTest(
-            name="nav_to_kitchen",
-            description="Navigate to kitchen",
-            initial_world_state=WorldStateConfig(agent_location="Bedroom"),
-            agent_config=AgentConfig(name="nav_agent"),
-            goal=LocationGoal(target_location="Kitchen"),
-            success_criteria=[LocationCriterion(location="Kitchen")],
-            max_turns=10
-        ),
-        
-        AgentGoalTest(
-            name="nav_to_bathroom",
-            description="Navigate to bathroom",
-            initial_world_state=WorldStateConfig(agent_location="Kitchen"),
-            agent_config=AgentConfig(name="nav_agent2"),
-            goal=LocationGoal(target_location="Bathroom"),
-            success_criteria=[LocationCriterion(location="Bathroom")],
-            max_turns=12
-        ),
-        
-        AgentGoalTest(
-            name="collect_jacket",
-            description="Collect jacket from bedroom",
-            initial_world_state=WorldStateConfig(agent_location="Bedroom"),
-            agent_config=AgentConfig(name="collector"),
-            goal=InventoryGoal(must_have=["jacket"]),
-            success_criteria=[InventoryCriterion(has_items=["jacket"])],
-            max_turns=15
-        )
-    ]
-    
-    runner = AgentTestRunner()
-    result = await runner.run_test_suite(tests, "Basic Agent Test Suite")
-    
-    # Generate and print report
-    report = runner.generate_report(result)
-    print("\n" + "="*60)
-    print("TEST SUITE REPORT")
-    print("="*60)
-    print(report)
-    
-    return result
-
-
 async def main():
     """Main function to run various test scenarios."""
     print("Agent Goal-Based Testing System")
@@ -152,10 +103,7 @@ async def main():
     try:
         # Run simple tests
         await run_simple_test()
-        # await run_collection_test()
-        
-        # Run test suite
-        # suite_result = await run_test_suite()
+        await run_collection_test()
         
         print(f"\nOverall Results:")
         # print(f"Suite success rate: {suite_result.success_rate:.1f}%")

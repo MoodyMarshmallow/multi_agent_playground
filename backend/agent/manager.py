@@ -15,7 +15,7 @@ from ..text_adventure_games.games import Game
 from ..config.schema import AgentActionOutput
 
 # Local imports
-from .kani_agent import AgentStrategy
+from .agent_strategies import AgentStrategy
 
 
 class AgentManager:

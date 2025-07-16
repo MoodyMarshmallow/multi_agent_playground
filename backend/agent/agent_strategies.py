@@ -242,3 +242,104 @@ Remember: You can only choose from the available actions provided. If unsure, su
                 lines.append(f"  - {action['command']}: {action.get('description', 'perform action')}")
         
         return '\n'.join(lines)
+
+
+class ManualAgent:
+    """
+    Manual agent implementation that prompts the developer to select actions.
+    Implements the AgentStrategy protocol for debugging and testing purposes.
+    """
+    
+    def __init__(self, character_name: str, persona: Optional[str] = None):
+        self.character_name = character_name
+        self.persona = persona or f"Manual control for {character_name}"
+        
+    async def select_action(self, world_state: dict) -> str:
+        """
+        Prompt the developer to manually select an action based on world state.
+        """
+        print(f"\n{'='*60}")
+        print(f"MANUAL CONTROL - {self.character_name}")
+        print(f"{'='*60}")
+        
+        # Display current world state
+        self._display_world_state(world_state)
+        
+        # Display available actions
+        available_actions = world_state.get('available_actions', [])
+        if not available_actions:
+            print("No actions available!")
+            return "look"
+        
+        print(f"\nAvailable Actions ({len(available_actions)} options):")
+        print("-" * 40)
+        
+        for i, action in enumerate(available_actions, 1):
+            command = action.get('command', 'unknown')
+            description = action.get('description', 'No description')
+            print(f"{i:2}. {command:<20} - {description}")
+        
+        # Prompt for selection
+        while True:
+            try:
+                print(f"\nSelect action for {self.character_name} (1-{len(available_actions)}, 'q' to quit, 's' to skip):")
+                user_input = input("> ").strip().lower()
+                
+                if user_input == 'q':
+                    return "quit"
+                elif user_input == 's':
+                    return "look"  # Safe default action
+                
+                choice = int(user_input)
+                if 1 <= choice <= len(available_actions):
+                    selected_action = available_actions[choice - 1]
+                    command = selected_action.get('command', 'look')
+                    print(f"Selected: {command}")
+                    return command
+                else:
+                    print(f"Invalid choice. Please enter 1-{len(available_actions)}")
+                    
+            except ValueError:
+                print("Invalid input. Please enter a number, 'q' to quit, or 's' to skip.")
+            except KeyboardInterrupt:
+                print("\nInterrupted. Skipping turn.")
+                return "look"
+    
+    def _display_world_state(self, state: dict):
+        """Display the current world state in a readable format."""
+        
+        # Location information
+        location_info = state.get('location', {})
+        print(f"\nLocation: {location_info.get('name', 'Unknown')}")
+        if location_info.get('description'):
+            print(f"Description: {location_info['description']}")
+        
+        # Inventory
+        inventory = state.get('inventory', [])
+        if inventory:
+            print(f"\nInventory: {', '.join(inventory)}")
+        else:
+            print("\nInventory: Empty")
+        
+        # Visible items
+        visible_items = state.get('visible_items', [])
+        if visible_items:
+            print(f"\nVisible Items:")
+            for item in visible_items:
+                name = item.get('name', 'unknown item')
+                description = item.get('description', 'no description')
+                print(f"  - {name}: {description}")
+        
+        # Other characters
+        visible_characters = state.get('visible_characters', [])
+        if visible_characters:
+            print(f"\nOther Characters:")
+            for char in visible_characters:
+                name = char.get('name', 'unknown character')
+                description = char.get('description', 'no description')
+                print(f"  - {name}: {description}")
+        
+        # Available exits
+        available_exits = state.get('available_exits', [])
+        if available_exits:
+            print(f"\nExits: {', '.join(available_exits)}")

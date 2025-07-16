@@ -15,7 +15,7 @@ from .goals import InteractionGoal, ActionSequenceGoal
 from ..text_adventure_games.games import Game
 from ..text_adventure_games.house import build_house_game
 from ..text_adventure_games.things import Character, Item, Location
-from ..kani_agent import AgentManager, KaniAgent
+from ..agent import AgentManager, KaniAgent
 from ..config.schema import AgentActionOutput
 
 
@@ -316,7 +316,7 @@ class AgentTestRunner:
                     item = Item(
                         name=item_data["name"],
                         description=item_data["description"],
-                        long_description=item_data.get("long_description", item_data["description"])
+                        examine_text=item_data.get("long_description", item_data["description"])
                     )
                     location.add_item(item)
         
