@@ -1,9 +1,43 @@
 from pydantic import BaseModel, Field
 from typing import Dict, Any, List, Optional, Union, Literal, Annotated, Tuple
+from enum import Enum
 
 '''
 This is the schema defined for fastapi based on response for api calls
 '''
+
+# ------------------------------
+# BASE CLASSES AND COMMON TYPES
+# ------------------------------
+
+class Direction(str, Enum):
+    """Common movement directions"""
+    NORTH = "north"
+    SOUTH = "south"
+    EAST = "east"
+    WEST = "west"
+
+class ToggleState(str, Enum):
+    """Common toggle states"""
+    ON = "on"
+    OFF = "off"
+
+class BaseAction(BaseModel):
+    """Base class for all actions"""
+    action_type: str
+
+class TargetedAction(BaseAction):
+    """Actions that target a specific object"""
+    target: str
+
+class ItemAction(BaseAction):
+    """Actions that involve an item"""
+    item: str
+
+class ValueAction(BaseAction):
+    """Actions that set a numeric value"""
+    target: str
+    value: int
 # ------------------------------
 # AGENT AND WORLD MODELS (optional) - we can remove this if we don't need it
 # ------------------------------
@@ -27,158 +61,152 @@ class AgentPerception(BaseModel):
 # HOUSE ACTIONS
 # ------------------------------
 
-# --- Appliance ---
-class TurnOnSinkAction(BaseModel):
-    action_type: Literal["turn_on_sink"]
+# --- Appliance Actions ---
+class ToggleSinkAction(BaseAction):
+    """Turn sink on or off"""
+    action_type: Literal["turn_on_sink", "turn_off_sink"]
 
-class TurnOffSinkAction(BaseModel):
-    action_type: Literal["turn_off_sink"]
-
-class FillCupAction(BaseModel):
+class FillCupAction(BaseAction):
+    """Fill a cup with water"""
     action_type: Literal["fill_cup"]
 
-class FillBathtubAction(BaseModel):
+class FillBathtubAction(BaseAction):
+    """Fill the bathtub with water"""
     action_type: Literal["fill_bathtub"]
 
-class UseWashingMachineAction(BaseModel):
+class UseWashingMachineAction(BaseAction):
+    """Use the washing machine"""
     action_type: Literal["use_washing_machine"]
 
-# --- Cleaning ---
-class CleanItemAction(BaseModel):
+# --- Cleaning Actions ---
+class CleanItemAction(TargetedAction):
+    """Clean a specific item (bed, sink, table, etc.)"""
     action_type: Literal["clean_item"]
-    target: str   # e.g., "bed", "sink", "table"
 
-# --- Containers ---
-class OpenItemAction(BaseModel):
-    action_type: Literal["open_item"]
-    target: str   # e.g., "drawer", "cabinet", "fridge", "entry door"
+# --- Container Actions ---
+class ToggleContainerAction(TargetedAction):
+    """Open or close containers (drawer, cabinet, fridge, etc.)"""
+    action_type: Literal["open_item", "close_item"]
 
-class CloseItemAction(BaseModel):
-    action_type: Literal["close_item"]
-    target: str
-
-class TakeFromContainerAction(BaseModel):
+class TakeFromContainerAction(BaseAction):
+    """Take an item from a container"""
     action_type: Literal["take_from_container"]
     item: str         # What to take (e.g., "apple", "note")
     container: str    # From which container (e.g., "fridge", "drawer")
 
-# --- Door ---
-class UnlockDoorAction(BaseModel):
-    action_type: Literal["unlock_door"]
+# --- Door Actions ---
+class ToggleDoorLockAction(TargetedAction):
+    """Lock or unlock doors"""
+    action_type: Literal["unlock_door", "lock_door"]
     target: str = "entry door"
 
-class LockDoorAction(BaseModel):
-    action_type: Literal["lock_door"]
-    target: str = "entry door"
-
-# --- Entertainment ---
-class WatchTVAction(BaseModel):
+# --- Entertainment Actions ---
+class WatchTVAction(BaseAction):
+    """Watch television"""
     action_type: Literal["watch_tv"]
 
-class PlayPoolAction(BaseModel):
+class PlayPoolAction(BaseAction):
+    """Play pool/billiards"""
     action_type: Literal["play_pool"]
 
-class TakeBathAction(BaseModel):
+class TakeBathAction(BaseAction):
+    """Take a bath"""
     action_type: Literal["take_bath"]
 
-class UseComputerAction(BaseModel):
+class UseComputerAction(BaseAction):
+    """Use the computer"""
     action_type: Literal["use_computer"]
 
-# --- Power/Electronics ---
-class TurnOnItemAction(BaseModel):
-    action_type: Literal["turn_on_item"]
-    target: str   # e.g., "lamp", "oven", "tv", "computer"
+# --- Power/Electronics Actions ---
+class ToggleItemAction(TargetedAction):
+    """Turn items on or off (lamp, oven, tv, computer, etc.)"""
+    action_type: Literal["turn_on_item", "turn_off_item"]
 
-class TurnOffItemAction(BaseModel):
-    action_type: Literal["turn_off_item"]
-    target: str
-
-class SetTemperatureAction(BaseModel):
+class SetTemperatureAction(ValueAction):
+    """Set temperature for appliances (oven, fridge, grill, thermostat)"""
     action_type: Literal["set_temperature"]
-    target: str   # e.g., "oven", "fridge", "grill", "thermostat"
-    value: int    # temperature value
 
-class AdjustBrightnessAction(BaseModel):
+class AdjustBrightnessAction(ValueAction):
+    """Adjust brightness of lights"""
     action_type: Literal["adjust_brightness"]
-    target: str   # e.g., "lamp"
-    value: int    # brightness value
 
-class AdjustVolumeAction(BaseModel):
+class AdjustVolumeAction(ValueAction):
+    """Adjust volume of devices (tv, alarm clock)"""
     action_type: Literal["adjust_volume"]
-    target: str   # e.g., "tv", "alarm clock"
-    value: int    # volume value
 
-# --- Movement ---
-class MoveAction(BaseModel):
+# --- Movement Actions ---
+class MoveAction(BaseAction):
+    """Move in a specific direction"""
     action_type: Literal["move"]
-    direction: str   # e.g., "north", "south", "east", "west"
+    direction: Direction
 
-# --- Basic Actions ---
-class LookAction(BaseModel):
+# --- Basic Game Actions ---
+class LookAction(BaseAction):
+    """Look around current location"""
     action_type: Literal["look"]
 
-class InventoryAction(BaseModel):
+class InventoryAction(BaseAction):
+    """Check inventory contents"""
     action_type: Literal["inventory"]
 
-class GetItemAction(BaseModel):
+class GetItemAction(ItemAction):
+    """Pick up an item"""
     action_type: Literal["get_item"]
-    item: str   # e.g., "apple", "key"
 
-class DropItemAction(BaseModel):
+class DropItemAction(ItemAction):
+    """Drop an item from inventory"""
     action_type: Literal["drop_item"]
-    item: str
 
-class GiveItemAction(BaseModel):
+class GiveItemAction(ItemAction):
+    """Give an item to another character"""
     action_type: Literal["give_item"]
-    item: str
     target: str   # character to give item to
 
-class ExamineAction(BaseModel):
+class ExamineAction(TargetedAction):
+    """Examine an item or object closely"""
     action_type: Literal["examine"]
-    target: str   # item or object to examine
 
-# --- UNION OF ALL ACTIONS ---
-class NoOpAction(BaseModel):
+# --- Fallback Action ---
+class NoOpAction(BaseAction):
+    """No-operation action used when no valid action can be performed"""
     action_type: Literal["noop"]
-    reason: Optional[str] = None
+    reason: Optional[str] = "Command not recognized or invalid"
 
+# --- UNIFIED ACTION TYPE ---
 HouseAction = Annotated[
     Union[
-        # Movement and Basic Actions
-        MoveAction,
+        # Basic Game Actions
         LookAction,
         InventoryAction,
         GetItemAction,
         DropItemAction,
         GiveItemAction,
         ExamineAction,
-        # Appliance
-        TurnOnSinkAction,
-        TurnOffSinkAction,
+        # Movement
+        MoveAction,
+        # Appliance Actions
+        ToggleSinkAction,
         FillCupAction,
         FillBathtubAction,
         UseWashingMachineAction,
-        # Cleaning
+        # Cleaning Actions
         CleanItemAction,
-        # Containers
-        OpenItemAction,
-        CloseItemAction,
+        # Container Actions
+        ToggleContainerAction,
         TakeFromContainerAction,
-        # Door
-        UnlockDoorAction,
-        LockDoorAction,
-        # Entertainment
+        # Door Actions
+        ToggleDoorLockAction,
+        # Entertainment Actions
         WatchTVAction,
         PlayPoolAction,
         TakeBathAction,
         UseComputerAction,
-        # Power/Electronics
-        TurnOnItemAction,
-        TurnOffItemAction,
+        # Power/Electronics Actions
+        ToggleItemAction,
         SetTemperatureAction,
         AdjustBrightnessAction,
         AdjustVolumeAction,
-        # No-op fallback
+        # Fallback
         NoOpAction,
     ],
     Field(discriminator="action_type")
@@ -199,10 +227,7 @@ class AgentActionOutput(BaseModel):
     action: HouseAction
     timestamp: Optional[str] = None
     current_room: Optional[str] = None
-    description: Optional[str] = None #  for chat box description
-    current_object: Optional[str] = None #  for chat box description TODO: remove this
-    event_id: Optional[int] = None  # For event tracking TODO: remove this
-    event_type: Optional[str] = None  # For event type tracking TODO: remove this
+    description: Optional[str] = None  # for chat box description
 
 
 class AgentPlanRequest(BaseModel):

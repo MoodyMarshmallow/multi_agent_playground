@@ -57,20 +57,15 @@ app.add_middleware(
 async def get_latest_agent_actions():
     """
     Poll the latest planned actions for all agents.
-    Returns only the actions that are available.
-    Each returned action is removed from the backend store to prevent duplicate delivery.
+    Returns only the actions that haven't been served yet.
+    Each returned action is marked as served to prevent duplicate delivery.
     """
     if not game_controller:
         raise HTTPException(status_code=500, detail="Game not initialized")
     
-    actions = []
-    # Copy the keys to avoid modifying the dict while iterating
-    for agent_id in list(game_controller.latest_agent_actions.keys()):
-        plan = game_controller.latest_agent_actions[agent_id]
-        actions.append(plan)
-        # Remove after serving, so it's not returned next poll
-        del game_controller.latest_agent_actions[agent_id]
-    return actions
+    # Get unserved events from the event queue
+    unserved_events = game_controller.get_unserved_events()
+    return unserved_events
 
 # check if this is the same as get world state, and do we need this?
 @app.get("/agents/states", response_model=List[AgentStateResponse])
@@ -111,12 +106,20 @@ async def get_world_state():
     return WorldStateResponse(**state)
 
 @app.get("/game/events", response_model=GameEventList)
-async def get_game_events(since_id: int = 0):
+async def get_game_events(since_timestamp: str = ""):
     if not game_controller:
         raise HTTPException(status_code=500, detail="Game not initialized")
-    events = game_controller.get_events_since(since_id)
-    # Ensure each event matches GameEvent
-    return GameEventList(events=[GameEvent(**e) for e in events])
+    events = game_controller.get_events_since(since_timestamp)
+    # Convert AgentActionOutput to GameEvent format
+    game_events = []
+    for event in events:
+        game_events.append(GameEvent(
+            id=hash(event.timestamp) if event.timestamp else 0,
+            type="agent_action",
+            timestamp=event.timestamp or "",
+            data=event.dict()
+        ))
+    return GameEventList(events=game_events)
 
 @app.post("/game/reset", response_model=StatusMsg)
 async def reset_game():

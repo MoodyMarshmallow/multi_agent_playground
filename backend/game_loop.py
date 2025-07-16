@@ -55,8 +55,8 @@ class GameLoop:
         # Objects registry for frontend
         self.objects_registry: Dict[str, Dict] = {}
         
-        # Latest agent actions for polling
-        self.latest_agent_actions: Dict[str, AgentActionOutput] = {}
+        # Track served events for polling endpoint
+        self.last_served_event_index = 0
     
     async def start(self):
         """Initialize and start the game loop in the background."""
@@ -96,9 +96,6 @@ class GameLoop:
                     
                     # Add the action schema directly as an event
                     self._add_action_event(action_schema)
-                    
-                    # Store the structured action for polling
-                    self.latest_agent_actions[agent.name] = action_schema
                 
                 # Advance to the next agent (whether action succeeded or not)
                 self.agent_manager.advance_turn()
@@ -249,10 +246,6 @@ class GameLoop:
         """Add an AgentActionOutput to the event queue."""
         self.event_id_counter += 1
         
-        # Add event metadata to the action output
-        action_output.event_id = self.event_id_counter
-        action_output.event_type = "agent_action"
-        
         # Print the AgentActionOutput in readable format
         self._print_action_output(action_output)
         
@@ -260,31 +253,54 @@ class GameLoop:
     
     def _print_action_output(self, action_output: AgentActionOutput):
         """Print AgentActionOutput in a readable format."""
-        print(f"\nEVENT #{action_output.event_id} ADDED TO QUEUE:")
-        print("═" * 60)
-        print(f"Agent: {action_output.agent_id}")
-        print(f"Location: {action_output.current_room or 'Unknown'}")
-        print(f"Action Type: {action_output.action.action_type}")
+        # Check if this is a noop action (non-fatal error)
+        is_noop = action_output.action.action_type == "noop"
         
-        # Print all action fields dynamically (excluding action_type which we already showed)
-        action_fields = self._get_action_fields(action_output.action)
-        if action_fields:
-            for field_name, field_value in action_fields.items():
-                if field_value is not None:  # Only show fields with values
-                    print(f"{field_name.title()}: {field_value}")
-        
-        if action_output.current_object:
-            print(f"Current Object: {action_output.current_object}")
-        
-        print(f"Timestamp: {action_output.timestamp}")
-        
-        if action_output.description:
-            print(f"Description:")
-            print("─" * 40)
-            print(action_output.description)
-            print("─" * 40)
-        
-        print("═" * 60)
+        if is_noop:
+            print(f"\n ACTION ERROR - Agent: {action_output.agent_id}")
+            print("─" * 60)
+            print(f"Location: {action_output.current_room or 'Unknown'}")
+            print(f"Error Type: Invalid Action (noop)")
+            
+            # Print action fields for debugging
+            action_fields = self._get_action_fields(action_output.action)
+            if action_fields:
+                for field_name, field_value in action_fields.items():
+                    if field_value is not None:
+                        print(f"{field_name.title()}: {field_value}")
+            
+            print(f"Timestamp: {action_output.timestamp}")
+            
+            if action_output.description:
+                print(f"Error Details:")
+                print("─" * 40)
+                print(action_output.description)
+                print("─" * 40)
+            
+            print("─" * 60)
+        else:
+            # Normal action output
+            print(f"\n✓ ACTION EXECUTED - Agent: {action_output.agent_id}")
+            print("═" * 60)
+            print(f"Location: {action_output.current_room or 'Unknown'}")
+            print(f"Action Type: {action_output.action.action_type}")
+            
+            # Print all action fields dynamically (excluding action_type which we already showed)
+            action_fields = self._get_action_fields(action_output.action)
+            if action_fields:
+                for field_name, field_value in action_fields.items():
+                    if field_value is not None:  # Only show fields with values
+                        print(f"{field_name.title()}: {field_value}")
+            
+            print(f"Timestamp: {action_output.timestamp}")
+            
+            if action_output.description:
+                print(f"Result:")
+                print("─" * 40)
+                print(action_output.description)
+                print("─" * 40)
+            
+            print("═" * 60)
     
     def _get_action_fields(self, action) -> dict:
         """Extract all fields from an action object, excluding action_type."""
@@ -315,9 +331,18 @@ class GameLoop:
         """Get current timestamp as ISO format string."""
         return datetime.now().isoformat()
     
-    def get_events_since(self, last_event_id: int) -> List[AgentActionOutput]:
-        """Get events since the specified ID."""
-        return [event for event in self.event_queue if event.event_id > last_event_id]
+    def get_events_since(self, last_timestamp: str) -> List[AgentActionOutput]:
+        """Get events since the specified timestamp."""
+        if not last_timestamp:
+            return self.event_queue
+        return [event for event in self.event_queue if event.timestamp and event.timestamp > last_timestamp]
+    
+    def get_unserved_events(self) -> List[AgentActionOutput]:
+        """Get events that haven't been served to the polling endpoint yet."""
+        unserved_events = self.event_queue[self.last_served_event_index:]
+        # Update the index to mark these as served
+        self.last_served_event_index = len(self.event_queue)
+        return unserved_events
     
     
     

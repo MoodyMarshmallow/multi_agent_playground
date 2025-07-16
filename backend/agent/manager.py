@@ -69,18 +69,29 @@ class AgentManager:
             print(f"\n{agent.name}: {command}")
             result = self.game.parser.parse_command(command, character=agent)
             
-            # Format result for readable output
-            if isinstance(result, tuple) and len(result) >= 1:
-                description = result[0]
-                print(f"Action result passed to agent:")
-                print("─" * 50)
-                print(description)
-                print("─" * 50)
-            else:
-                print(f"Action result passed to agent: {result}")
-            
             # Get the schema immediately after execution
             action_schema = self.game.get_schema()
+            
+            # Check if this was a noop action (non-fatal error)
+            is_noop = action_schema.action.action_type == "noop"
+            
+            if is_noop:
+                # For noop actions, provide error feedback
+                print(f"[WARNING]: Command failed for {agent.name}")
+                print("─" * 50)
+                print(f"Error: {action_schema.description}")
+                print("─" * 50)
+            else:
+                # For successful actions, provide normal feedback
+                if isinstance(result, tuple) and len(result) >= 1:
+                    description = result[0]
+                    print(f"✓ Action result for {agent.name}:")
+                    print("─" * 50)
+                    print(description)
+                    print("─" * 50)
+                else:
+                    print(f"✓ Action result for {agent.name}: {result}")
+            
             return action_schema
             
         except Exception as e:
