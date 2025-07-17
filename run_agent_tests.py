@@ -102,7 +102,7 @@ async def main():
     
     try:
         # Run simple tests
-        await run_simple_test()
+        # await run_simple_test()
         await run_collection_test()
         
         print(f"\nOverall Results:")

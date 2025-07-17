@@ -340,39 +340,174 @@ class Parser:
         
         # Movement actions
         for direction, connected_loc in location.connections.items():
-            # Check if the connection is blocked (basic implementation)
-            available.append({
-                'command': f"go {direction}",
-                'description': f"Move {direction} to {connected_loc.name}"
-            })
+            # Check if the connection is blocked
+            if not location.is_blocked(direction):
+                available.append({
+                    'command': f"go {direction}",
+                    'description': f"Move {direction} to {connected_loc.name}"
+                })
         
-        # Item actions in location
+        # Item actions - Get/Take items in location
         for item_name, item in location.items.items():
-            if item.get_property("gettable") is not False:  # Default to gettable
+            if item.get_property("gettable") is True:  # Default to not gettable
                 available.append({
                     'command': f"get {item_name}",
                     'description': f"Pick up the {item.description}"
                 })
+                available.append({
+                    'command': f"take {item_name}",
+                    'description': f"Take the {item.description}"
+                })
             
-            # Examine action for all items
+            # Examine actions for items in location
             available.append({
                 'command': f"examine {item_name}",
                 'description': f"Examine the {item.description}"
             })
+            available.append({
+                'command': f"look at {item_name}",
+                'description': f"Look at the {item.description}"
+            })
+            
+            # Container-specific actions
+            if item.get_property("is_container", False):
+                if item.get_property("is_openable", False):
+                    if not item.get_property("is_open", False):
+                        available.append({
+                            'command': f"open {item_name}",
+                            'description': f"Open the {item.description}"
+                        })
+                    else:
+                        available.append({
+                            'command': f"close {item_name}",
+                            'description': f"Close the {item.description}"
+                        })
+                        available.append({
+                            'command': f"view {item_name}",
+                            'description': f"View contents of the {item.description}"
+                        })
+                        # Show items that can be taken from container
+                        if hasattr(item, 'inventory'):
+                            for container_item_name in item.inventory.keys():
+                                available.append({
+                                    'command': f"take {container_item_name} from {item_name}",
+                                    'description': f"Take {container_item_name} from {item.description}"
+                                })
+            
+            # Bed-specific actions
+            if item.get_property("is_sleepable", False):
+                available.append({
+                    'command': "sleep",
+                    'description': f"Sleep in the {item.description}"
+                })
+                if not item.get_property("is_made", True):
+                    available.append({
+                        'command': "make bed",
+                        'description': f"Make the {item.description}"
+                    })
+                if item.get_property("cleanliness", 100) < 100:
+                    available.append({
+                        'command': "clean bed",
+                        'description': f"Clean the {item.description}"
+                    })
+                available.append({
+                    'command': "examine bed",
+                    'description': f"Examine the {item.description} closely"
+                })
+            
+            # Food/drink actions for items with those properties
+            if item.get_property("is_food", False):
+                available.append({
+                    'command': f"eat {item_name}",
+                    'description': f"Eat the {item.description}"
+                })
+            
+            if item.get_property("is_drink", False):
+                available.append({
+                    'command': f"drink {item_name}",
+                    'description': f"Drink the {item.description}"
+                })
+            
+            # Lightable items
+            if item.get_property("is_lightable", False) and not item.get_property("is_lit", False):
+                available.append({
+                    'command': f"light {item_name}",
+                    'description': f"Light the {item.description}"
+                })
+            
+            # Rose-specific actions
+            if item_name == "rosebush" and item.get_property("has_rose", False):
+                available.append({
+                    'command': "pick rose",
+                    'description': "Pick a rose from the rosebush"
+                })
+            
+            # Weapon actions if other characters present
+            if item.get_property("is_weapon", False) and len(location.characters) > 1:
+                for other_name, other_char in location.characters.items():
+                    if other_name != character.name and not other_char.get_property("is_dead", False):
+                        available.append({
+                            'command': f"attack {other_name} with {item_name}",
+                            'description': f"Attack {other_char.description} with {item.description}"
+                        })
         
         # Inventory actions
         for item_name, item in character.inventory.items():
+            # Drop actions
             available.append({
                 'command': f"drop {item_name}",
                 'description': f"Drop the {item.description}"
             })
             
-            # Special item actions
-            if item.get_property("is_food"):
+            # Examine actions for inventory items
+            available.append({
+                'command': f"examine {item_name}",
+                'description': f"Examine the {item.description}"
+            })
+            
+            # Container actions for items in inventory
+            for location_item_name, location_item in location.items.items():
+                if location_item.get_property("is_container", False) and location_item.get_property("is_open", False):
+                    available.append({
+                        'command': f"put {item_name} in {location_item_name}",
+                        'description': f"Put {item.description} in {location_item.description}"
+                    })
+            
+            # Food/drink actions for inventory items
+            if item.get_property("is_food", False):
                 available.append({
                     'command': f"eat {item_name}",
                     'description': f"Eat the {item.description}"
                 })
+            
+            if item.get_property("is_drink", False):
+                available.append({
+                    'command': f"drink {item_name}",
+                    'description': f"Drink the {item.description}"
+                })
+            
+            # Light actions for inventory items
+            if item.get_property("is_lightable", False) and not item.get_property("is_lit", False):
+                available.append({
+                    'command': f"light {item_name}",
+                    'description': f"Light the {item.description}"
+                })
+            
+            # Rose smell action
+            if item_name == "rose":
+                available.append({
+                    'command': "smell rose",
+                    'description': "Smell the rose"
+                })
+            
+            # Weapon actions against other characters
+            if item.get_property("is_weapon", False):
+                for other_name, other_char in location.characters.items():
+                    if other_name != character.name and not other_char.get_property("is_dead", False):
+                        available.append({
+                            'command': f"attack {other_name} with {item_name}",
+                            'description': f"Attack {other_char.description} with {item.description}"
+                        })
         
         # Character interaction actions
         for other_name, other_char in location.characters.items():
@@ -384,10 +519,35 @@ class Parser:
                         'description': f"Give {item_name} to {other_char.description}"
                     })
         
+        # Fishing actions if at pond location
+        if hasattr(location, 'get_property') and location.get_property("has_fish", False):
+            # Check if character has a pole
+            if "pole" in character.inventory:
+                available.append({
+                    'command': "catch fish with pole",
+                    'description': "Catch fish using the fishing pole"
+                })
+            else:
+                available.append({
+                    'command': "catch fish",
+                    'description': "Try to catch fish with hands"
+                })
+        
+        # Door unlocking if key and locked door present
+        if "key" in character.inventory:
+            for item_name, item in location.items.items():
+                if item_name == "door" and item.get_property("is_locked", False):
+                    available.append({
+                        'command': "unlock door",
+                        'description': "Unlock the door with the key"
+                    })
+        
         # Always available actions
         available.extend([
             {'command': 'look', 'description': 'Examine your surroundings'},
-            {'command': 'inventory', 'description': 'Check what you are carrying'}
+            {'command': 'describe', 'description': 'Describe the current location'},
+            {'command': 'inventory', 'description': 'Check what you are carrying'},
+            {'command': 'quit', 'description': 'Quit the game'}
         ])
         
         return available

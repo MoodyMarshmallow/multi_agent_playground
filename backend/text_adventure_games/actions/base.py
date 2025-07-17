@@ -335,7 +335,20 @@ class Describe(Action):
         return True
 
     def apply_effects(self):
-        narration = self.parser.ok(self.game.describe())
+        # Get basic location description
+        base_description = self.game.describe()
+        
+        # Get available actions from parser
+        available_actions = self.parser.get_available_actions(self.game.player)
+        
+        # Create enhanced description with available actions
+        enhanced_description = base_description
+        if available_actions:
+            enhanced_description += "\n\nAvailable actions:"
+            for action in available_actions:
+                enhanced_description += f"\n• {action['command']}: {action['description']}"
+        
+        narration = self.parser.ok(enhanced_description)
         look_action = LookAction(action_type="look")
         schema = ActionResult(
             description="Described current location.",
