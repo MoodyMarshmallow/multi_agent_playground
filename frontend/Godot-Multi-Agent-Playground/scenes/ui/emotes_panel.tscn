@@ -83,5 +83,6 @@ position = Vector2(20, 15)
 scale = Vector2(1.5, 1.5)
 sprite_frames = SubResource("SpriteFrames_6kdp3")
 animation = &"idle_bob"
+autoplay = "idle_bob"
 frame = 1
 frame_progress = 0.757198

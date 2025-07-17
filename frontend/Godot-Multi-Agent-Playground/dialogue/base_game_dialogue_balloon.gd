@@ -32,7 +32,9 @@ var dialogue_line: DialogueLine:
 			apply_dialogue_line()
 		else:
 			# The dialogue has finished so close the balloon
-			queue_free()
+			#queue_free()
+			dialogue_label.text = ""
+			character_label.text = ""
 	get:
 		return dialogue_line
 
@@ -49,16 +51,16 @@ var mutation_cooldown: Timer = Timer.new()
 @onready var dialogue_label: DialogueLabel = %DialogueLabel
 
 ## The menu of responses
-@onready var responses_menu: DialogueResponsesMenu = %ResponsesMenu
+#@onready var responses_menu: DialogueResponsesMenu = %ResponsesMenu
 
 
 func _ready() -> void:
-	balloon.hide()
+	#balloon.hide()
 	Engine.get_singleton("DialogueManager").mutated.connect(_on_mutated)
 
 	# If the responses menu doesn't have a next action set, use this one
-	if responses_menu.next_action.is_empty():
-		responses_menu.next_action = next_action
+	#if responses_menu.next_action.is_empty():
+		#responses_menu.next_action = next_action
 
 	mutation_cooldown.timeout.connect(_on_mutation_cooldown_timeout)
 	add_child(mutation_cooldown)
@@ -101,8 +103,8 @@ func apply_dialogue_line() -> void:
 	dialogue_label.hide()
 	dialogue_label.dialogue_line = dialogue_line
 
-	responses_menu.hide()
-	responses_menu.responses = dialogue_line.responses
+	#responses_menu.hide()
+	#responses_menu.responses = dialogue_line.responses
 
 	# Show our balloon
 	balloon.show()
@@ -116,7 +118,7 @@ func apply_dialogue_line() -> void:
 	# Wait for input
 	if dialogue_line.responses.size() > 0:
 		balloon.focus_mode = Control.FOCUS_NONE
-		responses_menu.show()
+		#responses_menu.show()
 	elif dialogue_line.time != "":
 		var time = dialogue_line.text.length() * 0.02 if dialogue_line.time == "auto" else dialogue_line.time.to_float()
 		await get_tree().create_timer(time).timeout
@@ -138,7 +140,7 @@ func next(next_id: String) -> void:
 func _on_mutation_cooldown_timeout() -> void:
 	if will_hide_balloon:
 		will_hide_balloon = false
-		balloon.hide()
+		#balloon.hide()
 
 
 func _on_mutated(_mutation: Dictionary) -> void:
@@ -172,5 +174,21 @@ func _on_balloon_gui_input(event: InputEvent) -> void:
 func _on_responses_menu_response_selected(response: DialogueResponse) -> void:
 	next(response.next_id)
 
+func show_line(text: String, character: String = "") -> void:
+	is_waiting_for_input = false
+	will_hide_balloon = false
 
+	# Optional: disable grabbing input
+	balloon.focus_mode = Control.FOCUS_NONE
+
+	# Update character label
+	character_label.visible = not character.is_empty()
+	character_label.text = character
+
+	# Skip typing if it was mid-line
+	if dialogue_label.is_typing:
+		dialogue_label.skip_typing()
+
+	# Directly set and show text
+	dialogue_label.text = text
 #endregion

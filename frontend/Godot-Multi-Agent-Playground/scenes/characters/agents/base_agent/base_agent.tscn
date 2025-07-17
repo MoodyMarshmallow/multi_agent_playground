@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://deei71h1kowkb"]
 
 [ext_resource type="SpriteFrames" uid="uid://b7ofwbp0j5rlf" path="res://assets/game/characters/agents/sprite_frames/bob_004_sprite_frames.tres" id="1_2ney3"]
-[ext_resource type="Script" path="res://scenes/characters/agents/base_agent/base_agent.gd" id="1_rbydt"]
+[ext_resource type="Script" uid="uid://cqjll3p6nj2si" path="res://scenes/characters/agents/base_agent/base_agent.gd" id="1_rbydt"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_6xp3e"]
 radius = 1.0
