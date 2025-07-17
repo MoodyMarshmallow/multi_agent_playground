@@ -25,10 +25,10 @@ HouseLayout="*res://scripts/globals/HouseData/house_layout.gd"
 
 [display]
 
-window/size/viewport_width=640
-window/size/viewport_height=360
-window/size/window_width_override=1920
-window/size/window_height_override=1080
+window/size/viewport_width=800
+window/size/viewport_height=400
+window/size/window_width_override=2400
+window/size/window_height_override=1200
 window/stretch/mode="viewport"
 window/stretch/aspect="keep_height"
 window/stretch/scale_mode="integer"

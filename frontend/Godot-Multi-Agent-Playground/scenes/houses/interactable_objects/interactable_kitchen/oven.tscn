@@ -98,6 +98,7 @@ animation = &"close_oven"
 autoplay = "default"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(0, -14)
 shape = SubResource("RectangleShape2D_ydq8c")
 

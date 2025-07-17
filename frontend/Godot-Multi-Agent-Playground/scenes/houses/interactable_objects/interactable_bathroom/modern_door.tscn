@@ -155,6 +155,7 @@ animation = &"close_door"
 autoplay = "default"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(-1, -16)
 shape = SubResource("RectangleShape2D_ubm6w")
 

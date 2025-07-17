@@ -126,6 +126,7 @@ animation = &"close_cabinet"
 autoplay = "default"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(0, -14)
 shape = SubResource("RectangleShape2D_72cyi")
 

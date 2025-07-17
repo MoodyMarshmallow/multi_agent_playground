@@ -140,6 +140,7 @@ sprite_frames = SubResource("SpriteFrames_s6jg7")
 autoplay = "default"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(0, -14)
 shape = SubResource("CapsuleShape2D_dyf5m")
 debug_color = Color(0.294889, 0.583602, 0.650043, 0.42)
