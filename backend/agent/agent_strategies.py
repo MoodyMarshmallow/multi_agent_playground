@@ -1,28 +1,16 @@
 """
-Multi-Agent Playground - Agent Manager
-=====================================
-Manages the connection between Characters and their AI strategies using the 
-text adventure games framework with Kani-based LLM agents.
-
-This implements the agent management system described in REFACTOR.md:
-- AgentStrategy protocol for different agent types
-- KaniAgent for LLM-powered decision making
-- AgentManager to coordinate agents with the game
+KaniAgent - LLM-powered agent implementation
+============================================
+Contains the KaniAgent class and AgentStrategy protocol for LLM-based
+decision making in the text adventure game framework.
 """
 
 import os
-from typing import Protocol, Optional, Dict, List
+from typing import Protocol, Optional
 
 # Kani imports
 from kani import Kani, ChatMessage, ai_function
 from kani.engines.openai import OpenAIEngine
-
-# Text adventure games imports
-from .text_adventure_games.things import Character
-from .text_adventure_games.games import Game
-
-# Schema imports  
-from .config.schema import AgentActionOutput
 
 
 class AgentStrategy(Protocol):
@@ -33,9 +21,6 @@ class AgentStrategy(Protocol):
     async def select_action(self, world_state: dict) -> str:
         """Given world state, return a command string"""
         ...
-
-
-
 
 
 class KaniAgent(Kani):
@@ -259,169 +244,102 @@ Remember: You can only choose from the available actions provided. If unsure, su
         return '\n'.join(lines)
 
 
-
-class AgentManager:
+class ManualAgent:
     """
-    Manages the connection between Characters and their AI strategies.
+    Manual agent implementation that prompts the developer to select actions.
+    Implements the AgentStrategy protocol for debugging and testing purposes.
     """
-    def __init__(self, game: Game):
-        self.game = game
-        self.agent_strategies: Dict[str, AgentStrategy] = {}
-        
-        # Add turn management
-        self.active_agents: List[str] = []
-        self.current_agent_index = 0
-        
-    def register_agent_strategy(self, character_name: str, strategy: AgentStrategy):
-        """
-        Connect an AI strategy to a character.
-        
-        Args:
-            character_name: Name of the character
-            strategy: Object implementing AgentStrategy (e.g., kani agent)
-        """
-        if character_name not in self.game.characters:
-            raise ValueError(f"Character {character_name} not found")
-        
-        self.agent_strategies[character_name] = strategy
-        
-        # Add to active agents list if not already there
-        if character_name not in self.active_agents:
-            self.active_agents.append(character_name)
     
-    async def execute_agent_turn(self, agent: Character) -> Optional[AgentActionOutput]:
-        """
-        Have an agent take their turn using their strategy.
+    def __init__(self, character_name: str, persona: Optional[str] = None):
+        self.character_name = character_name
+        self.persona = persona or f"Manual control for {character_name}"
         
-        Returns:
-            AgentActionOutput schema if an action was executed, None if no strategy or error.
+    async def select_action(self, world_state: dict) -> str:
         """
-        if agent.name not in self.agent_strategies:
-            return None
-            
-        try:
-            # Get world state from agent's perspective
-            world_state = self.get_world_state_for_agent(agent)
-            
-            # Let the strategy decide
-            strategy = self.agent_strategies[agent.name]
-            command = await strategy.select_action(world_state)
-            
-            # Execute the command
-            print(f"\n{agent.name}: {command}")
-            result = self.game.parser.parse_command(command, character=agent)
-            
-            # Format result for readable output
-            if isinstance(result, tuple) and len(result) >= 1:
-                description = result[0]
-                print(f"Result:")
-                print("─" * 50)
-                print(description)
-                print("─" * 50)
-            else:
-                print(f"Result: {result}")
-            
-            # Get the schema immediately after execution
-            action_schema = self.game.get_schema()
-            return action_schema
-            
-        except Exception as e:
-            print(f"Error in execute_agent_turn for {agent.name}: {e}")
-            return None
+        Prompt the developer to manually select an action based on world state.
+        """
+        print(f"\n{'='*60}")
+        print(f"MANUAL CONTROL - {self.character_name}")
+        print(f"{'='*60}")
+        
+        # Display current world state
+        self._display_world_state(world_state)
+        
+        # Display available actions
+        available_actions = world_state.get('available_actions', [])
+        if not available_actions:
+            print("No actions available!")
+            return "look"
+        
+        print(f"\nAvailable Actions ({len(available_actions)} options):")
+        print("-" * 40)
+        
+        for i, action in enumerate(available_actions, 1):
+            command = action.get('command', 'unknown')
+            description = action.get('description', 'No description')
+            print(f"{i:2}. {command:<20} - {description}")
+        
+        # Prompt for selection
+        while True:
+            try:
+                print(f"\nSelect action for {self.character_name} (1-{len(available_actions)}, 'q' to quit, 's' to skip):")
+                user_input = input("> ").strip().lower()
+                
+                if user_input == 'q':
+                    return "quit"
+                elif user_input == 's':
+                    return "look"  # Safe default action
+                
+                choice = int(user_input)
+                if 1 <= choice <= len(available_actions):
+                    selected_action = available_actions[choice - 1]
+                    command = selected_action.get('command', 'look')
+                    print(f"Selected: {command}")
+                    return command
+                else:
+                    print(f"Invalid choice. Please enter 1-{len(available_actions)}")
+                    
+            except ValueError:
+                print("Invalid input. Please enter a number, 'q' to quit, or 's' to skip.")
+            except KeyboardInterrupt:
+                print("\nInterrupted. Skipping turn.")
+                return "look"
     
-    def get_world_state_for_agent(self, agent: Character) -> dict:
-        """
-        Get the observable world state for an agent.
+    def _display_world_state(self, state: dict):
+        """Display the current world state in a readable format."""
         
-        Returns:
-            Dict containing location info, inventory, and available actions
-        """
-        location = agent.location
+        # Location information
+        location_info = state.get('location', {})
+        print(f"\nLocation: {location_info.get('name', 'Unknown')}")
+        if location_info.get('description'):
+            print(f"Description: {location_info['description']}")
         
-        state = {
-            'agent_name': agent.name,
-            'location': {
-                'name': location.name,
-                'description': location.description
-            },
-            'inventory': list(agent.inventory.keys()),
-            'visible_items': [
-                {'name': item.name, 'description': item.description}
-                for item in location.items.values()
-            ],
-            'visible_characters': [
-                {'name': char.name, 'description': char.description}
-                for char in location.characters.values()
-                if char.name != agent.name
-            ],
-            'available_exits': list(location.connections.keys()),
-            'available_actions': self.get_available_actions_for_agent(agent)
-        }
+        # Inventory
+        inventory = state.get('inventory', [])
+        if inventory:
+            print(f"\nInventory: {', '.join(inventory)}")
+        else:
+            print("\nInventory: Empty")
         
-        return state
-    
-    def get_available_actions_for_agent(self, agent: Character) -> List[dict]:
-        """
-        Return all actions currently available to a character.
+        # Visible items
+        visible_items = state.get('visible_items', [])
+        if visible_items:
+            print(f"\nVisible Items:")
+            for item in visible_items:
+                name = item.get('name', 'unknown item')
+                description = item.get('description', 'no description')
+                print(f"  - {name}: {description}")
         
-        Returns:
-            List of dicts with 'command' and 'description' keys
-        """
-        available = []
-        location = agent.location
+        # Other characters
+        visible_characters = state.get('visible_characters', [])
+        if visible_characters:
+            print(f"\nOther Characters:")
+            for char in visible_characters:
+                name = char.get('name', 'unknown character')
+                description = char.get('description', 'no description')
+                print(f"  - {name}: {description}")
         
-        # Movement actions
-        for direction, connected_loc in location.connections.items():
-            # Check if the connection is blocked (we'll add this check later)
-            available.append({
-                'command': f"go {direction}",
-                'description': f"Move {direction} to {connected_loc.name}"
-            })
-        
-        # Item actions
-        for item_name, item in location.items.items():
-            if item.get_property("gettable") is not False:  # Default to gettable
-                available.append({
-                    'command': f"get {item_name}",
-                    'description': f"Pick up the {item.description}"
-                })
-        
-        # Inventory actions
-        for item_name, item in agent.inventory.items():
-            available.append({
-                'command': f"drop {item_name}",
-                'description': f"Drop the {item.description}"
-            })
-        
-        # Character interaction actions
-        for other_name, other_char in location.characters.items():
-            if other_name != agent.name:
-                # Give actions
-                for item_name in agent.inventory:
-                    available.append({
-                        'command': f"give {item_name} to {other_name}",
-                        'description': f"Give {item_name} to {other_char.description}"
-                    })
-        
-        # Always available actions
-        available.extend([
-            {'command': 'look', 'description': 'Examine your surroundings'},
-            {'command': 'inventory', 'description': 'Check what you are carrying'}
-        ])
-        
-        return available
-    
-    def get_next_agent(self) -> Optional[Character]:
-        """Get the next agent in turn order."""
-        if not self.active_agents:
-            return None
-            
-        agent_name = self.active_agents[self.current_agent_index]
-        return self.game.characters.get(agent_name)
-    
-    def advance_turn(self):
-        """Move to the next agent's turn."""
-        if self.active_agents:
-            self.current_agent_index = (self.current_agent_index + 1) % len(self.active_agents)
-    
-     
+        # Available exits
+        available_exits = state.get('available_exits', [])
+        if available_exits:
+            print(f"\nExits: {', '.join(available_exits)}")

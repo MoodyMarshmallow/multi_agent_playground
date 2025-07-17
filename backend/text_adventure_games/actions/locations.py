@@ -1,5 +1,5 @@
 from . import base
-from backend.config.schema import HouseActionSimple, MoveAction
+from backend.config.schema import MoveAction
 
 # from . import preconditions as P
 
@@ -98,8 +98,16 @@ class Go(base.Action):
             house_action = MoveAction(action_type="move", target=self.direction)
             return narration, base.ActionResult(description=to_loc.description, house_action=house_action, object_id=to_loc.name)
         else:
+            # Create proper MoveAction schema
+            move_action = MoveAction(action_type="move", direction=self.direction)
+            
+            # Get description from Describe action
             action = base.Describe(self.game, command=self.command)
-            narration, schema = action()
-            # Use MoveAction for structured movement
-            house_action = MoveAction(action_type="move", target=self.direction)
-            return narration, base.ActionResult(description=schema.description, house_action=house_action, object_id=to_loc.name)
+            narration, _ = action()
+            
+            # Return ActionResult with proper schema
+            return narration, base.ActionResult(
+                description=narration,
+                house_action=move_action,
+                object_id=to_loc.name
+            )

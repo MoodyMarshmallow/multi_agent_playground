@@ -1,6 +1,6 @@
 from ..things import Thing, Character, Item, Location
 import re
-from backend.config.schema import HouseAction, NoOpAction
+from backend.config.schema import HouseAction, NoOpAction, LookAction
 from typing import Optional, Any
 
 class ActionResult:
@@ -335,6 +335,24 @@ class Describe(Action):
         return True
 
     def apply_effects(self):
-        narration = self.parser.ok(self.game.describe())
-        schema = ActionResult(description="Described current location.")
+        # Get basic location description
+        base_description = self.game.describe()
+        
+        # Get available actions from parser
+        available_actions = self.parser.get_available_actions(self.game.player)
+        
+        # Create enhanced description with available actions
+        enhanced_description = base_description
+        if available_actions:
+            enhanced_description += "\n\nAvailable actions:"
+            for action in available_actions:
+                enhanced_description += f"\n• {action['command']}: {action['description']}"
+        
+        narration = self.parser.ok(enhanced_description)
+        look_action = LookAction(action_type="look")
+        schema = ActionResult(
+            description="Described current location.",
+            house_action=look_action,
+            object_id=self.game.player.location.name if self.game.player.location else None
+        )
         return narration, schema

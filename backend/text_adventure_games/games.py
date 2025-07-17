@@ -542,27 +542,31 @@ class Game:
         # 1. Always include the action type and affected object (if any)
         action_type = getattr(self._last_action_result.house_action, 'action_type', 'noop')
         affected_object = self._last_action_result.object_id
-        # 2. For NoOp, always use a technical, non-narrative reason/description
+        # 2. For NoOp, treat as non-fatal error with informative feedback
         if action_type == 'noop':
-            # Compose a presentable summary for the GUI chat
-            room_desc = f"You are in the {current_room}." if current_room else ""
-            visible_items = []
-            visible_characters = []
-            available_exits = []
+            # Get the actual reason from the action result
+            action_reason = getattr(self._last_action_result.house_action, 'reason', 'Unknown command or invalid action')
+            
+            # Create error-focused description for agents
+            description = f"ACTION FAILED: {action_reason}"
+            
+            # Add current context to help agent understand their situation
             if agent and agent.location:
                 visible_items = [item.name for item in agent.location.items.values()]
                 visible_characters = [char.name for char in agent.location.characters.values() if char.name != agent.name]
                 available_exits = list(agent.location.connections.keys())
-            lines = [room_desc]
-            if visible_items:
-                lines.append(f"You see: {', '.join(visible_items)}.")
-            if visible_characters:
-                lines.append(f"{', '.join(visible_characters)} {'is' if len(visible_characters)==1 else 'are'} here.")
-            if available_exits:
-                lines.append(f"Exits are {', '.join(available_exits)}.")
-            narrative_desc = " ".join([l for l in lines if l])
-            description = narrative_desc.strip()
-            reason = 'No backend state change for this command.'
+                
+                context_lines = [f"You are currently in {current_room}."]
+                if visible_items:
+                    context_lines.append(f"Available items: {', '.join(visible_items)}")
+                if visible_characters:
+                    context_lines.append(f"Other characters: {', '.join(visible_characters)}")
+                if available_exits:
+                    context_lines.append(f"Available exits: {', '.join(available_exits)}")
+                
+                description += f" {' '.join(context_lines)}"
+            
+            reason = action_reason
         else:
             # For real actions, use the action result's description (assumed user-facing)
             description = self._last_action_result.description
@@ -588,6 +592,5 @@ class Game:
             action=action_val,
             timestamp=datetime.now().isoformat(),
             current_room=current_room,
-            description=description,
-            current_object=self._last_action_result.object_id
+            description=description
         )

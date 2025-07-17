@@ -21,7 +21,8 @@ from .text_adventure_games.games import Game
 from .text_adventure_games.things import Character, Location, Item
 
 # Agent management
-from .agent_manager import AgentManager, KaniAgent
+from .agent import AgentManager
+from .agent.agent_strategies import KaniAgent, ManualAgent
 
 # --- Canonical world setup from canonical_demo.py ---
 from .text_adventure_games.house import build_house_game
@@ -34,11 +35,14 @@ class GameLoop:
     Also enqueues events for the frontend to consume.
     """
     
-    def __init__(self):
+    def __init__(self, agent_config: Optional[Dict[str, str]] = None):
         self.game: Optional[Game] = None
         self.agent_manager: Optional[AgentManager] = None
         self.is_running = False
         self.task: Optional[asyncio.Task] = None
+        
+        # Agent configuration: maps agent_name -> agent_type ("ai" or "manual")
+        self.agent_config = agent_config or {}
         
         # Event system for frontend (only AgentActionOutput objects)
         self.event_queue: List[AgentActionOutput] = []
@@ -51,8 +55,8 @@ class GameLoop:
         # Objects registry for frontend
         self.objects_registry: Dict[str, Dict] = {}
         
-        # Latest agent actions for polling
-        self.latest_agent_actions: Dict[str, AgentActionOutput] = {}
+        # Track served events for polling endpoint
+        self.last_served_event_index = 0
     
     async def start(self):
         """Initialize and start the game loop in the background."""
@@ -92,9 +96,6 @@ class GameLoop:
                     
                     # Add the action schema directly as an event
                     self._add_action_event(action_schema)
-                    
-                    # Store the structured action for polling
-                    self.latest_agent_actions[agent.name] = action_schema
                 
                 # Advance to the next agent (whether action succeeded or not)
                 self.agent_manager.advance_turn()
@@ -127,32 +128,63 @@ class GameLoop:
         return build_house_game()
     
     async def _setup_agents(self):
-        """Setup AI agents for the non-player characters."""
+        """Setup agents based on configuration (AI or manual)."""
         try:
-            # Create Kani agents for each NPC
-            alex_agent = KaniAgent(
-                character_name="alex_001",
-                persona="I am Alex, a friendly and social person who loves to chat with others. I enjoy reading books and might want to explore the house. I'm curious about what others are doing and like to help when I can."
-            )
+            # Define agent personas
+            agent_personas = {
+                "alex_001": "I am Alex, a friendly and social person who loves to chat with others. I enjoy reading books and might want to explore the house. I'm curious about what others are doing and like to help when I can.",
+                "alan_002": "I am Alan, a quiet and thoughtful person who likes to observe and think. I prefer to explore slowly and examine things carefully. I might be interested in food and practical items."
+            }
             
-            alan_agent = KaniAgent(
-                character_name="alan_002",
-                persona="I am Alan, a quiet and thoughtful person who likes to observe and think. I prefer to explore slowly and examine things carefully. I might be interested in food and practical items."
-            )
+            # Create agents based on configuration
+            for agent_name, persona in agent_personas.items():
+                agent_strategy = self._create_agent_strategy(agent_name, persona)
+                if agent_strategy:
+                    self.agent_manager.register_agent_strategy(agent_name, agent_strategy)
             
-            # Register agents with the agent manager
-            self.agent_manager.register_agent_strategy("alex_001", alex_agent)
-            self.agent_manager.register_agent_strategy("alan_002", alan_agent)
-            
-            print("AI agents set up successfully")
+            print("Agents set up successfully")
+            if self.agent_config:
+                manual_agents = [name for name, type_ in self.agent_config.items() if type_ == "manual"]
+                ai_agents = [name for name, type_ in self.agent_config.items() if type_ == "ai"]
+                print(f"Manual agents: {manual_agents}")
+                print(f"AI agents: {ai_agents}")
+            else:
+                print("All agents using AI (default)")
+                
         except Exception as e:
             import traceback
-            print(f"Warning: Could not set up AI agents: {e}")
+            print(f"Warning: Could not set up agents: {e}")
             print(f"Full error traceback:")
             traceback.print_exc()
-            print("The game will run without AI agents for NPCs")
-            # Just add the characters to active agents list without AI strategies
+            print("The game will run without agent strategies")
+            # Just add the characters to active agents list without strategies
             self.agent_manager.active_agents.extend(["alex_001", "alan_002"])
+    
+    def _create_agent_strategy(self, character_name: str, persona: str):
+        """Create either a manual or AI agent based on configuration."""
+        agent_type = self.agent_config.get(character_name, "ai")  # Default to AI
+        
+        if agent_type == "manual":
+            print(f"Creating manual agent for {character_name}")
+            return ManualAgent(character_name, persona)
+        else:  # agent_type == "ai" or any other value
+            try:
+                print(f"Creating AI agent for {character_name}")
+                return KaniAgent(character_name, persona)
+            except Exception as e:
+                print(f"Failed to create AI agent for {character_name}: {e}")
+                print(f"Falling back to manual agent for {character_name}")
+                return ManualAgent(character_name, persona)
+    
+    def set_agent_config(self, agent_config: Dict[str, str]):
+        """Update agent configuration and reinitialize agents."""
+        self.agent_config = agent_config
+        # Note: This would require stopping and restarting the game loop
+        # to take effect, or implementing hot-swapping of agent strategies
+    
+    def get_agent_config(self) -> Dict[str, str]:
+        """Get current agent configuration."""
+        return self.agent_config.copy()
     
     def _initialize_objects_registry(self):
         """Initialize the objects registry for frontend communication."""
@@ -214,10 +246,6 @@ class GameLoop:
         """Add an AgentActionOutput to the event queue."""
         self.event_id_counter += 1
         
-        # Add event metadata to the action output
-        action_output.event_id = self.event_id_counter
-        action_output.event_type = "agent_action"
-        
         # Print the AgentActionOutput in readable format
         self._print_action_output(action_output)
         
@@ -225,31 +253,54 @@ class GameLoop:
     
     def _print_action_output(self, action_output: AgentActionOutput):
         """Print AgentActionOutput in a readable format."""
-        print(f"\nEVENT #{action_output.event_id} ADDED TO QUEUE:")
-        print("═" * 60)
-        print(f"Agent: {action_output.agent_id}")
-        print(f"Location: {action_output.current_room or 'Unknown'}")
-        print(f"Action Type: {action_output.action.action_type}")
+        # Check if this is a noop action (non-fatal error)
+        is_noop = action_output.action.action_type == "noop"
         
-        # Print all action fields dynamically (excluding action_type which we already showed)
-        action_fields = self._get_action_fields(action_output.action)
-        if action_fields:
-            for field_name, field_value in action_fields.items():
-                if field_value is not None:  # Only show fields with values
-                    print(f"{field_name.title()}: {field_value}")
-        
-        if action_output.current_object:
-            print(f"Current Object: {action_output.current_object}")
-        
-        print(f"Timestamp: {action_output.timestamp}")
-        
-        if action_output.description:
-            print(f"Description:")
-            print("─" * 40)
-            print(action_output.description)
-            print("─" * 40)
-        
-        print("═" * 60)
+        if is_noop:
+            print(f"\n ACTION ERROR - Agent: {action_output.agent_id}")
+            print("─" * 60)
+            print(f"Location: {action_output.current_room or 'Unknown'}")
+            print(f"Error Type: Invalid Action (noop)")
+            
+            # Print action fields for debugging
+            action_fields = self._get_action_fields(action_output.action)
+            if action_fields:
+                for field_name, field_value in action_fields.items():
+                    if field_value is not None:
+                        print(f"{field_name.title()}: {field_value}")
+            
+            print(f"Timestamp: {action_output.timestamp}")
+            
+            if action_output.description:
+                print(f"Error Details:")
+                print("─" * 40)
+                print(action_output.description)
+                print("─" * 40)
+            
+            print("─" * 60)
+        else:
+            # Normal action output
+            print(f"\n✓ ACTION EXECUTED - Agent: {action_output.agent_id}")
+            print("═" * 60)
+            print(f"Location: {action_output.current_room or 'Unknown'}")
+            print(f"Action Type: {action_output.action.action_type}")
+            
+            # Print all action fields dynamically (excluding action_type which we already showed)
+            action_fields = self._get_action_fields(action_output.action)
+            if action_fields:
+                for field_name, field_value in action_fields.items():
+                    if field_value is not None:  # Only show fields with values
+                        print(f"{field_name.title()}: {field_value}")
+            
+            print(f"Timestamp: {action_output.timestamp}")
+            
+            if action_output.description:
+                print(f"Result:")
+                print("─" * 40)
+                print(action_output.description)
+                print("─" * 40)
+            
+            print("═" * 60)
     
     def _get_action_fields(self, action) -> dict:
         """Extract all fields from an action object, excluding action_type."""
@@ -280,9 +331,18 @@ class GameLoop:
         """Get current timestamp as ISO format string."""
         return datetime.now().isoformat()
     
-    def get_events_since(self, last_event_id: int) -> List[AgentActionOutput]:
-        """Get events since the specified ID."""
-        return [event for event in self.event_queue if event.event_id > last_event_id]
+    def get_events_since(self, last_timestamp: str) -> List[AgentActionOutput]:
+        """Get events since the specified timestamp."""
+        if not last_timestamp:
+            return self.event_queue
+        return [event for event in self.event_queue if event.timestamp and event.timestamp > last_timestamp]
+    
+    def get_unserved_events(self) -> List[AgentActionOutput]:
+        """Get events that haven't been served to the polling endpoint yet."""
+        unserved_events = self.event_queue[self.last_served_event_index:]
+        # Update the index to mark these as served
+        self.last_served_event_index = len(self.event_queue)
+        return unserved_events
     
     
     
