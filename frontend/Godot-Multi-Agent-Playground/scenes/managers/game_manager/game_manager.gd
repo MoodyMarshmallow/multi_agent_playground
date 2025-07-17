@@ -3,7 +3,7 @@ extends Node2D
 @onready var debugging_input: LineEdit = $UIManager/DebuggingInput
 @onready var ui_manager: CanvasLayer = $UIManager
 
-@onready var http_manager: HttpManager = $HttpManager
+@onready var http_manager: HTTPManager = $HttpManager
 @onready var text_input_manager: TextInputManager = $TextInputManager
 @onready var action_manager: ActionManager = $ActionManager
 
@@ -33,13 +33,14 @@ func on_general_action_received(action: Dictionary):
 
 	# Set move_to for agent actions
 	var move_to: Vector2 = Vector2(-INF, -INF)
-	if action.has("recipient") and action["recipient"] != null:
-		move_to = object_manager.get_object_location(action["recipient"])
-	elif action.has("target") and action["target"] != null:
-		move_to = object_manager.get_object_location(action["target"])
-		if action.has("action_type") and action["action_type"] == "go_to":
-			move_to = object_manager.get_location(action["target"])
-
+	if action["action_type"] != "use":
+		if action.has("recipient") and action["recipient"] != null:
+			move_to = object_manager.get_object_location(action["recipient"])
+		elif action.has("target") and action["target"] != null:
+			move_to = object_manager.get_object_location(action["target"])
+			if action.has("action_type") and action["action_type"] == "go_to":
+				move_to = object_manager.get_location(action["target"])
+	
 	if move_to != Vector2(-INF, -INF):
 		action["move_to"] = move_to
 
@@ -48,3 +49,5 @@ func on_general_action_received(action: Dictionary):
 
 func _on_agent_action_completed(agent_id: String, action: Dictionary):
 	object_manager.handle_post_navigation_object_action(action)
+
+# Manage all inputs:
