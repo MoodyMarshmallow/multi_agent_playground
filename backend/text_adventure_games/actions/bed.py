@@ -1,6 +1,6 @@
 from backend.text_adventure_games.actions import base
 from backend.text_adventure_games.things import Item
-from backend.config import schema
+from ...agent.config import schema
 
 
 def get_bed_legend():

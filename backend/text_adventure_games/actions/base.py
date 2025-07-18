@@ -1,6 +1,6 @@
 from ..things import Thing, Character, Item, Location
 import re
-from backend.config.schema import HouseAction, NoOpAction, LookAction
+from ...agent.config.schema import HouseAction, NoOpAction, LookAction
 from typing import Optional, Any
 
 class ActionResult:

@@ -15,7 +15,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
 
 from backend.testing.agent_goal_test import AgentGoalTest
 from backend.testing.agent_test_runner import AgentTestRunner
-from backend.testing.goals import LocationGoal, InventoryGoal
 from backend.testing.criteria import LocationCriterion, InventoryCriterion
 from backend.testing.config import WorldStateConfig, AgentConfig
 
@@ -33,10 +32,6 @@ async def run_simple_test():
         agent_config=AgentConfig(
             persona="I am hungry and want to go to the kitchen.",
             name="nav_test_agent"
-        ),
-        goal=LocationGoal(
-            target_location="Kitchen",
-            description="Move to the kitchen"
         ),
         success_criteria=[
             LocationCriterion(location="Kitchen")
@@ -74,10 +69,6 @@ async def run_collection_test():
             persona="You want should find and collect an apple.",
             name="collector_agent"
         ),
-        goal=InventoryGoal(
-            must_have=["apple"],
-            description="Collect an apple"
-        ),
         success_criteria=[
             InventoryCriterion(has_items=["apple"])
         ],
@@ -102,7 +93,7 @@ async def main():
     
     try:
         # Run simple tests
-        # await run_simple_test()
+        await run_simple_test()
         await run_collection_test()
         
         print(f"\nOverall Results:")

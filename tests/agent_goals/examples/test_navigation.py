@@ -9,7 +9,6 @@ import pytest
 import asyncio
 from backend.testing.agent_goal_test import AgentGoalTest
 from backend.testing.agent_test_runner import AgentTestRunner
-from backend.testing.goals import LocationGoal, InventoryGoal
 from backend.testing.criteria import LocationCriterion, InventoryCriterion
 from backend.testing.config import WorldStateConfig, AgentConfig
 
@@ -24,12 +23,8 @@ async def test_agent_basic_navigation():
             agent_location="Bedroom"
         ),
         agent_config=AgentConfig(
-            persona="I am helpful and follow directions to move around.",
+            persona="I'm hungry and want to go to the kitchen.",
             name="nav_test_agent"
-        ),
-        goal=LocationGoal(
-            target_location="Kitchen",
-            description="Move to the kitchen"
         ),
         success_criteria=[
             LocationCriterion(location="Kitchen")
@@ -57,10 +52,6 @@ async def test_agent_multi_room_navigation():
         agent_config=AgentConfig(
             persona="I am an explorer who navigates efficiently.",
             name="multi_nav_agent"
-        ),
-        goal=LocationGoal(
-            target_location="Game Room",
-            description="Navigate to the game room"
         ),
         success_criteria=[
             LocationCriterion(location="Game Room")
@@ -93,10 +84,6 @@ async def test_agent_item_collection():
             persona="I am helpful and collect items when asked.",
             name="collector_agent"
         ),
-        goal=InventoryGoal(
-            must_have=["apple"],
-            description="Collect an apple"
-        ),
         success_criteria=[
             InventoryCriterion(has_items=["apple"])
         ],
@@ -128,10 +115,6 @@ async def test_agent_exploration():
             persona="I am a curious explorer who searches thoroughly.",
             name="explorer_agent"
         ),
-        goal=InventoryGoal(
-            must_have=["key"],
-            description="Find and collect the key"
-        ),
         success_criteria=[
             InventoryCriterion(has_items=["key"])
         ],
@@ -158,10 +141,6 @@ async def test_navigation_efficiency():
             persona="I am efficient and take the shortest path.",
             name="efficient_agent"
         ),
-        goal=LocationGoal(
-            target_location="Bathroom",
-            description="Navigate to bathroom efficiently"
-        ),
         success_criteria=[
             LocationCriterion(location="Bathroom")
         ],
@@ -184,7 +163,6 @@ if __name__ == "__main__":
             description="Simple navigation test",
             initial_world_state=WorldStateConfig(agent_location="Bedroom"),
             agent_config=AgentConfig(name="test_agent"),
-            goal=LocationGoal(target_location="Kitchen"),
             success_criteria=[LocationCriterion(location="Kitchen")],
             max_turns=10
         )

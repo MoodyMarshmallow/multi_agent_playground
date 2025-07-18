@@ -9,7 +9,7 @@ def verify_tile_removal():
     
     # Test 1: Schema verification
     try:
-        from backend.config.schema import AgentSummary, MoveBackendAction, MoveFrontendAction
+        from backend.agent.config.schema import AgentSummary, MoveBackendAction, MoveFrontendAction
         
         # Test AgentSummary - should NOT have curr_tile
         summary = AgentSummary(agent_id="test", curr_room="Living Room")

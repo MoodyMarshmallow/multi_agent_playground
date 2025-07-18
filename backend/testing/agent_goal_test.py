@@ -10,10 +10,9 @@ from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from .goals import AgentGoal
 from .criteria import Criterion
 from .config import WorldStateConfig, AgentConfig, BehaviorAnalysis
-from ..config.schema import AgentActionOutput
+from ..agent.config.schema import AgentActionOutput
 
 
 @dataclass
@@ -60,7 +59,6 @@ class AgentGoalTest:
         description: str,
         initial_world_state: WorldStateConfig,
         agent_config: AgentConfig,
-        goal: AgentGoal,
         success_criteria: List[Criterion],
         failure_criteria: List[Criterion] = None,
         max_turns: int = 50,
@@ -70,7 +68,6 @@ class AgentGoalTest:
         self.description = description
         self.initial_world_state = initial_world_state
         self.agent_config = agent_config
-        self.goal = goal
         self.success_criteria = success_criteria
         self.failure_criteria = failure_criteria or []
         self.max_turns = max_turns
@@ -88,7 +85,7 @@ class AgentGoalTest:
         return f"AgentGoalTest({self.name}): {self.description}"
     
     def __repr__(self) -> str:
-        return f"AgentGoalTest(name='{self.name}', goal={self.goal})"
+        return f"AgentGoalTest(name='{self.name}', criteria={len(self.success_criteria)})"
     
     def get_initial_state(self) -> Dict[str, Any]:
         """Get the initial world state for this test."""
@@ -109,20 +106,15 @@ class AgentGoalTest:
         """
         met_criteria = []
         
-        # Check goal achievement
-        if self.goal.is_achieved(game_state):
-            met_criteria.append(f"Goal achieved: {self.goal.describe()}")
-        
         # Check success criteria
         for criterion in self.success_criteria:
             if criterion.check(game_state, action_history):
                 met_criteria.append(f"Success criterion met: {criterion.describe()}")
         
-        # Test succeeds if goal is achieved AND all success criteria are met
-        goal_achieved = self.goal.is_achieved(game_state)
+        # Test succeeds if all success criteria are met
         all_criteria_met = all(criterion.check(game_state, action_history) for criterion in self.success_criteria)
         
-        return goal_achieved and all_criteria_met, met_criteria
+        return all_criteria_met, met_criteria
     
     def check_failure(self, game_state: Dict[str, Any], action_history: List[AgentActionOutput]) -> tuple[bool, List[str]]:
         """

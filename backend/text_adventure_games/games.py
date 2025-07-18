@@ -4,7 +4,7 @@ from . import parsing, actions, blocks
 import json
 import inspect
 from collections import namedtuple
-from backend.config.schema import AgentActionOutput
+from ..agent.config.schema import AgentActionOutput
 from datetime import datetime
 
 

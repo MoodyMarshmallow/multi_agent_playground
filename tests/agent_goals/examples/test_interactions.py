@@ -15,7 +15,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
 from backend.testing.agent_goal_test import AgentGoalTest
 from backend.testing.agent_test_runner import AgentTestRunner
-from backend.testing.goals import InteractionGoal, InventoryGoal, LocationGoal
 from backend.testing.criteria import ActionCriterion, InventoryCriterion, LocationCriterion
 from backend.testing.config import WorldStateConfig, AgentConfig
 
@@ -40,12 +39,6 @@ async def test_agent_item_delivery():
         agent_config=AgentConfig(
             persona="I am helpful and deliver items to others.",
             name="delivery_agent"
-        ),
-        goal=InteractionGoal(
-            target="alex_001",
-            interaction_type="give_item",
-            item="apple",
-            description="Give apple to Alex"
         ),
         success_criteria=[
             ActionCriterion(action_type="give_item", target="alex_001", item="apple")
@@ -76,11 +69,6 @@ async def test_agent_object_interaction():
             persona="I am curious and examine objects carefully.",
             name="interaction_agent"
         ),
-        goal=InteractionGoal(
-            target="closet",
-            interaction_type="open_item",
-            description="Open the closet to examine contents"
-        ),
         success_criteria=[
             ActionCriterion(action_type="open_item", target="closet")
         ],
@@ -109,10 +97,6 @@ async def test_agent_complex_task():
         agent_config=AgentConfig(
             persona="I am organized and complete tasks step by step.",
             name="complex_agent"
-        ),
-        goal=InventoryGoal(
-            must_have=["jacket"],
-            description="Get jacket from closet"
         ),
         success_criteria=[
             InventoryCriterion(has_items=["jacket"]),
@@ -145,10 +129,6 @@ async def test_agent_social_interaction():
             persona="I am social and enjoy talking with others.",
             name="social_agent"
         ),
-        goal=LocationGoal(
-            target_location="Living Room",
-            description="Find Alan in the living room"
-        ),
         success_criteria=[
             LocationCriterion(location="Living Room")
         ],
@@ -175,10 +155,6 @@ async def test_agent_problem_solving():
         agent_config=AgentConfig(
             persona="I am persistent and solve problems step by step.",
             name="problem_solver"
-        ),
-        goal=InventoryGoal(
-            must_have=["apple"],
-            description="Get apple from somewhere in the kitchen"
         ),
         success_criteria=[
             InventoryCriterion(has_items=["apple"])
@@ -207,7 +183,6 @@ if __name__ == "__main__":
             description="Simple interaction test",
             initial_world_state=WorldStateConfig(agent_location="Bedroom"),
             agent_config=AgentConfig(name="test_agent"),
-            goal=InteractionGoal(target="closet", interaction_type="open_item"),
             success_criteria=[ActionCriterion(action_type="open_item", target="closet")],
             max_turns=15
         )

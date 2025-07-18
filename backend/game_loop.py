@@ -27,7 +27,7 @@ from .agent.agent_strategies import KaniAgent, ManualAgent
 # --- Canonical world setup from canonical_demo.py ---
 from .text_adventure_games.house import build_house_game
 
-from .config.schema import AgentActionOutput
+from .agent.config.schema import AgentActionOutput
 
 class GameLoop:
     """

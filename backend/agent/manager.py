@@ -12,7 +12,7 @@ from ..text_adventure_games.things import Character
 from ..text_adventure_games.games import Game
 
 # Schema imports  
-from ..config.schema import AgentActionOutput
+from .config.schema import AgentActionOutput
 
 # Local imports
 from .agent_strategies import AgentStrategy

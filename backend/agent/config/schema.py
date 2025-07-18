@@ -83,7 +83,7 @@ class CleanItemAction(TargetedAction):
     """Clean a specific item (bed, sink, table, etc.)"""
     action_type: Literal["clean_item"]
 
-# --- Container Actions ---
+# Container Actions
 class ToggleContainerAction(TargetedAction):
     """Open or close containers (drawer, cabinet, fridge, etc.)"""
     action_type: Literal["open_item", "close_item"]

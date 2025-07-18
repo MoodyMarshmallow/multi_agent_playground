@@ -1,6 +1,6 @@
 from backend.text_adventure_games.actions import base
 from backend.text_adventure_games.things.containers import Container
-from backend.config import schema
+from ...agent.config import schema
 
 def match_container_in_scope(parser, command, character):
     items_in_scope = parser.get_items_in_scope(character)

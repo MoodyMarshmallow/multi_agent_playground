@@ -13,6 +13,7 @@ import re
 
 from .things import Character, Item, Location
 from . import actions, blocks
+from .actions.containers import OpenContainer, CloseContainer, TakeFromContainer, ViewContainer, PutInContainer
 
 
 class Parser:
@@ -325,6 +326,30 @@ class Parser:
                     return exit
         return None
 
+    def test_action_preconditions(self, action_class, command: str, character: Character = None) -> bool:
+        """
+        Test if an action's preconditions would be satisfied without executing the action.
+        
+        Args:
+            action_class: The action class to test
+            command: The command string that would trigger this action
+            character: The character attempting the action (defaults to game player)
+            
+        Returns:
+            bool: True if the action's preconditions would be satisfied
+        """
+        if character is None:
+            character = self.game.player
+        
+        try:
+            # Create a temporary instance of the action
+            action_instance = action_class(self.game, command)
+            # Test its preconditions
+            return action_instance.check_preconditions()
+        except Exception:
+            # If instantiation or precondition check fails, action is not available
+            return False
+
     def get_available_actions(self, character: Character) -> list[dict]:
         """
         Return all actions currently available to a character.
@@ -354,10 +379,11 @@ class Parser:
                     'command': f"get {item_name}",
                     'description': f"Pick up the {item.description}"
                 })
-                available.append({
-                    'command': f"take {item_name}",
-                    'description': f"Take the {item.description}"
-                })
+                # NOTE: Temporarily disabled container actions
+                # available.append({
+                #     'command': f"take {item_name}",
+                #     'description': f"Take the {item.description}"
+                # })
             
             # Examine actions for items in location
             available.append({

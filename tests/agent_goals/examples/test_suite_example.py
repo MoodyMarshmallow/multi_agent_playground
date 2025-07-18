@@ -8,8 +8,7 @@ Example of running a comprehensive test suite for agent capabilities.
 import asyncio
 from backend.testing.agent_goal_test import AgentGoalTest
 from backend.testing.agent_test_runner import AgentTestRunner
-from backend.testing.goals import LocationGoal, InventoryGoal, InteractionGoal, ActionSequenceGoal
-from backend.testing.criteria import LocationCriterion, InventoryCriterion, ActionCriterion
+from backend.testing.criteria import LocationCriterion, InventoryCriterion, ActionCriterion, ActionSequenceCriterion
 from backend.testing.config import WorldStateConfig, AgentConfig
 
 
@@ -26,7 +25,6 @@ def create_navigation_tests():
             persona="I am efficient at navigation and follow directions.",
             name="nav_agent"
         ),
-        goal=LocationGoal(target_location="Kitchen"),
         success_criteria=[LocationCriterion(location="Kitchen")],
         max_turns=10
     ))
@@ -40,7 +38,6 @@ def create_navigation_tests():
             persona="I am an explorer who navigates efficiently.",
             name="explorer_agent"
         ),
-        goal=LocationGoal(target_location="Game Room"),
         success_criteria=[LocationCriterion(location="Game Room")],
         max_turns=15
     ))
@@ -54,7 +51,6 @@ def create_navigation_tests():
             persona="I take the shortest path and am very efficient.",
             name="efficient_agent"
         ),
-        goal=LocationGoal(target_location="Bathroom"),
         success_criteria=[LocationCriterion(location="Bathroom")],
         max_turns=8
     ))
@@ -78,7 +74,6 @@ def create_item_interaction_tests():
             persona="I am helpful and collect items when needed.",
             name="collector_agent"
         ),
-        goal=InventoryGoal(must_have=["apple"]),
         success_criteria=[InventoryCriterion(has_items=["apple"])],
         max_turns=20
     ))
@@ -92,7 +87,6 @@ def create_item_interaction_tests():
             persona="I am thorough and check containers for items.",
             name="container_agent"
         ),
-        goal=InventoryGoal(must_have=["jacket"]),
         success_criteria=[InventoryCriterion(has_items=["jacket"])],
         max_turns=15
     ))
@@ -112,7 +106,6 @@ def create_item_interaction_tests():
             persona="I am organized and collect items systematically.",
             name="multi_collector"
         ),
-        goal=InventoryGoal(must_have=["apple", "book"]),
         success_criteria=[InventoryCriterion(has_items=["apple", "book"])],
         max_turns=30
     ))
@@ -136,7 +129,6 @@ def create_social_interaction_tests():
             persona="I am social and enjoy finding and talking to others.",
             name="social_agent"
         ),
-        goal=LocationGoal(target_location="Living Room"),
         success_criteria=[LocationCriterion(location="Living Room")],
         max_turns=20
     ))
@@ -154,7 +146,6 @@ def create_social_interaction_tests():
             persona="I am helpful and deliver items to others.",
             name="delivery_agent"
         ),
-        goal=InteractionGoal(target="alex_001", interaction_type="give_item", item="apple"),
         success_criteria=[ActionCriterion(action_type="give_item", target="alex_001", item="apple")],
         max_turns=25
     ))
@@ -175,7 +166,6 @@ def create_complex_task_tests():
             persona="I am organized and complete complex tasks step by step.",
             name="complex_agent"
         ),
-        goal=InventoryGoal(must_have=["jacket"]),
         success_criteria=[
             InventoryCriterion(has_items=["jacket"]),
             LocationCriterion(location="Kitchen")
@@ -192,11 +182,13 @@ def create_complex_task_tests():
             persona="I follow instructions precisely and in order.",
             name="sequence_agent"
         ),
-        goal=ActionSequenceGoal(
-            actions=["go north", "look", "go east"],
-            strict_order=True
-        ),
-        success_criteria=[LocationCriterion(location="Dining Room")],
+        success_criteria=[
+            ActionSequenceCriterion(
+                actions=["go north", "look", "go east"],
+                strict_order=True
+            ),
+            LocationCriterion(location="Dining Room")
+        ],
         max_turns=15
     ))
     
@@ -240,7 +232,6 @@ async def run_quick_test_suite():
             description="Quick navigation test",
             initial_world_state=WorldStateConfig(agent_location="Bedroom"),
             agent_config=AgentConfig(name="quick_agent"),
-            goal=LocationGoal(target_location="Kitchen"),
             success_criteria=[LocationCriterion(location="Kitchen")],
             max_turns=10
         ),
@@ -254,7 +245,6 @@ async def run_quick_test_suite():
                 world_items={"Kitchen": [{"name": "apple", "description": "A red apple"}]}
             ),
             agent_config=AgentConfig(name="quick_collector"),
-            goal=InventoryGoal(must_have=["apple"]),
             success_criteria=[InventoryCriterion(has_items=["apple"])],
             max_turns=15
         )

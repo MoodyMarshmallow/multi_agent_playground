@@ -195,3 +195,58 @@ class LoopCriterion(Criterion):
     
     def describe(self) -> str:
         return f"Agent repeats action pattern {self.max_repeats} times"
+
+
+@dataclass
+class ActionSequenceCriterion(Criterion):
+    """Criterion based on performing a sequence of actions."""
+    actions: List[str]
+    strict_order: bool = True
+    description: str = ""
+    
+    def check(self, game_state: Dict[str, Any], action_history: List[Any]) -> bool:
+        if not action_history:
+            return False
+            
+        # Extract action types from history
+        action_types = []
+        for action_output in action_history:
+            if hasattr(action_output, 'action') and hasattr(action_output.action, 'action_type'):
+                action_types.append(action_output.action.action_type)
+        
+        if self.strict_order:
+            return self._check_strict_order(action_types)
+        else:
+            return self._check_any_order(action_types)
+    
+    def _check_strict_order(self, action_types: List[str]) -> bool:
+        """Check if actions appear in the specified order."""
+        if not self.actions:
+            return True
+            
+        required_actions = self.actions.copy()
+        
+        for action_type in action_types:
+            if required_actions and action_type == required_actions[0]:
+                required_actions.pop(0)
+                if not required_actions:
+                    return True
+        
+        return False
+    
+    def _check_any_order(self, action_types: List[str]) -> bool:
+        """Check if all actions appear in any order."""
+        if not self.actions:
+            return True
+            
+        required_actions = set(self.actions)
+        performed_actions = set(action_types)
+        
+        return required_actions.issubset(performed_actions)
+    
+    def describe(self) -> str:
+        if self.description:
+            return self.description
+        
+        order_desc = "in order" if self.strict_order else "in any order"
+        return f"Perform actions {order_desc}: {', '.join(self.actions)}"
