@@ -11,12 +11,11 @@ from typing import Dict, List, Any, Callable, Optional
 from copy import deepcopy
 
 from .agent_goal_test import AgentGoalTest, TestResult, TestSuiteResult
-from .goals import InteractionGoal, ActionSequenceGoal
 from ..text_adventure_games.games import Game
 from ..text_adventure_games.house import build_house_game
 from ..text_adventure_games.things import Character, Item, Location
 from ..agent import AgentManager, KaniAgent
-from ..config.schema import AgentActionOutput
+from ..agent.config.schema import AgentActionOutput
 
 
 class AgentTestRunner:
@@ -41,7 +40,7 @@ class AgentTestRunner:
         print(f"RUNNING TEST: {test.name}")
         print(f"{'='*60}")
         print(f"Description: {test.description}")
-        print(f"Goal: {test.goal.describe()}")
+        print(f"Success criteria: {len(test.success_criteria)}")
         print(f"Max turns: {test.max_turns}")
         print(f"{'='*60}")
         
@@ -68,23 +67,7 @@ class AgentTestRunner:
             agent_manager = AgentManager(game)
             agent_manager.register_agent_strategy(agent_char.name, kani_agent)
             
-            # Track special goals
-            interaction_targets = {}
-            action_sequence_progress = {}
-            
-            if isinstance(test.goal, InteractionGoal):
-                interaction_targets[test.goal.target] = {
-                    'interaction_type': test.goal.interaction_type,
-                    'item': test.goal.item,
-                    'completed': False
-                }
-            
-            if isinstance(test.goal, ActionSequenceGoal):
-                action_sequence_progress = {
-                    'actions': test.goal.actions,
-                    'completed': [],
-                    'strict_order': test.goal.strict_order
-                }
+            # No special goal tracking needed - criteria handle everything
             
             # Main test loop
             for turn in range(test.max_turns):
@@ -92,11 +75,6 @@ class AgentTestRunner:
                 
                 # Get current game state
                 current_state = self._get_current_state(agent_char, game)
-                
-                # Update state for special goals
-                current_state = self._update_special_goal_state(
-                    current_state, action_history, interaction_targets, action_sequence_progress
-                )
                 
                 # Check for success
                 success, success_reasons = test.check_success(current_state, action_history)
@@ -138,9 +116,6 @@ class AgentTestRunner:
             
             # Final state check
             final_state = self._get_current_state(agent_char, game)
-            final_state = self._update_special_goal_state(
-                final_state, action_history, interaction_targets, action_sequence_progress
-            )
             
             # Determine final result
             success, success_reasons = test.check_success(final_state, action_history)
@@ -371,53 +346,3 @@ class AgentTestRunner:
             "available_exits": list(agent.location.connections.keys()) if agent.location else []
         }
     
-    def _update_special_goal_state(self, state: Dict[str, Any], action_history: List[AgentActionOutput], 
-                                 interaction_targets: Dict, action_sequence_progress: Dict) -> Dict[str, Any]:
-        """Update state for special goal types."""
-        # Check interaction goals
-        for target, target_info in interaction_targets.items():
-            if not target_info['completed']:
-                for action_output in action_history:
-                    if (hasattr(action_output.action, 'action_type') and 
-                        action_output.action.action_type == target_info['interaction_type']):
-                        # Additional checks for target and item if specified
-                        if target_info.get('item'):
-                            if (hasattr(action_output.action, 'item') and 
-                                action_output.action.item == target_info['item']):
-                                target_info['completed'] = True
-                        else:
-                            target_info['completed'] = True
-        
-        state["interaction_completed"] = any(info['completed'] for info in interaction_targets.values())
-        
-        # Check action sequence goals
-        if action_sequence_progress:
-            actions = action_sequence_progress['actions']
-            completed = action_sequence_progress['completed']
-            strict_order = action_sequence_progress['strict_order']
-            
-            if strict_order:
-                # Check if actions are completed in order
-                next_action_index = len(completed)
-                if next_action_index < len(actions):
-                    next_action = actions[next_action_index]
-                    for action_output in action_history:
-                        if (hasattr(action_output.action, 'action_type') and 
-                            action_output.action.action_type == next_action and
-                            next_action not in completed):
-                            completed.append(next_action)
-                            break
-            else:
-                # Check if all actions are completed in any order
-                for action in actions:
-                    if action not in completed:
-                        for action_output in action_history:
-                            if (hasattr(action_output.action, 'action_type') and 
-                                action_output.action.action_type == action):
-                                completed.append(action)
-                                break
-        
-        state["sequence_completed"] = (action_sequence_progress and 
-                                     len(action_sequence_progress['completed']) == len(action_sequence_progress['actions']))
-        
-        return state

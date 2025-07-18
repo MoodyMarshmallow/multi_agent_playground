@@ -1,7 +1,6 @@
 from backend.text_adventure_games.actions import base
 from backend.text_adventure_games.things import Item
-from backend.config import schema
-from backend.config.schema import HouseActionSimple  # Only use new schema
+from ...agent.config import schema
 
 
 def get_bed_legend():
@@ -58,8 +57,8 @@ class Sleep(base.Action):
         if bed_became_unclean:
             msg += " The bed is getting dirty."
         narration = self.parser.ok(msg)
-        house_action = HouseActionSimple(action_type="use", target="bed")
-        schema = base.ActionResult(description="Slept in bed.", house_action=house_action, object_id=self.bed.name)
+        # No HouseAction for sleep in schema
+        schema = base.ActionResult(description="Slept in bed.", house_action=None, object_id=self.bed.name)
         return narration, schema
 
 
@@ -84,8 +83,8 @@ class MakeBed(base.Action):
     def apply_effects(self):
         self.bed.set_property("is_made", True)
         narration = self.parser.ok("You make the bed. It looks tidy now.")
-        house_action = HouseActionSimple(action_type="tidy_bed", target="bed")
-        schema = base.ActionResult(description="Made the bed.", house_action=house_action, object_id=self.bed.name)
+        # No HouseAction for make bed in schema
+        schema = base.ActionResult(description="Made the bed.", house_action=None, object_id=self.bed.name)
         return narration, schema
 
 
@@ -111,7 +110,7 @@ class CleanBed(base.Action):
     def apply_effects(self):
         self.bed.set_property("cleanliness", 100)
         narration = self.parser.ok("You clean the bed. It's spotless now.")
-        house_action = HouseActionSimple(action_type="tidy_bed", target="bed")
+        house_action = schema.CleanItemAction(action_type="clean_item", target=self.bed.name)
         schema_result = base.ActionResult(description="Cleaned the bed.", house_action=house_action, object_id=self.bed.name)
         return narration, schema_result
 
@@ -168,10 +167,8 @@ class ChangeQuilt(base.Action):
                 closet.add_item(old_quilt_item)
         self.bed.set_property("quilt_color", self.new_quilt)
         narration = self.parser.ok(f"You change the quilt to {self.new_quilt}.")
-        # Use the actual object name from the Item instance if possible
-        target_name = getattr(self.new_quilt, 'name', None) or quilt_item_name
-        house_action = HouseActionSimple(action_type="place_on", target=target_name, recipient="bed")
-        schema = base.ActionResult(description=f"Changed quilt to {self.new_quilt}.", house_action=house_action, object_id=self.bed.name)
+        # No HouseAction for change quilt in schema
+        schema = base.ActionResult(description=f"Changed quilt to {self.new_quilt}.", house_action=None, object_id=self.bed.name)
         return narration, schema
 
 

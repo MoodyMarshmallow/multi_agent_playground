@@ -1,6 +1,5 @@
 from . import base
 from . import preconditions as P
-from backend.config.schema import HouseActionSimple  # Only use new schema
 
 # from ..things import Character  # , Item
 
@@ -59,8 +58,7 @@ class Eat(base.Action):
             description += " The {food} is poisonous. {name} died.".format(
                 food=self.item.name, name=self.character.name.capitalize()
             )
-        house_action = HouseActionSimple(action_type="use", target=self.item.name)
-        return self.parser.ok(description), base.ActionResult(description=description, house_action=house_action, object_id=self.item.name)
+        self.parser.ok(description)
 
 
 class Drink(base.Action):
@@ -106,7 +104,6 @@ class Drink(base.Action):
         description = "{name} drinks the {drink}.".format(
             name=self.character.name.capitalize(), drink=self.item.name
         )
-        house_action = HouseActionSimple(action_type="use", target=self.item.name)
         self.parser.ok(description)
 
         if self.item.get_property("taste"):
@@ -128,7 +125,6 @@ class Drink(base.Action):
                 drink=self.item.name, name=self.character.name.capitalize()
             )
             self.parser.ok(description)
-        return self.parser.ok(description), base.ActionResult(description=description, house_action=house_action, object_id=self.item.name)
 
 
 class Light(base.Action):

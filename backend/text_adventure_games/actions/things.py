@@ -2,7 +2,7 @@ from . import base
 from . import preconditions as P
 from .consume import Drink, Eat
 from .rose import Smell_Rose
-from backend.config.schema import HouseActionSimple
+from ...agent.config.schema import GetItemAction, DropItemAction
 
 
 class Get(base.Action):
@@ -54,8 +54,14 @@ class Get(base.Action):
         description = "{character_name} got the {item_name}.".format(
             character_name=self.character.name, item_name=self.item.name
         )
-        house_action = HouseActionSimple(action_type="take", target=self.item.name)
-        return self.parser.ok(description), base.ActionResult(description=description, house_action=house_action, object_id=self.item.name)
+        narration = self.parser.ok(description)
+        get_action = GetItemAction(action_type="get_item", item=self.item.name)
+        schema = base.ActionResult(
+            description=f"Got {self.item.name}.",
+            house_action=get_action,
+            object_id=self.item.name
+        )
+        return narration, schema
 
 
 class Drop(base.Action):
@@ -103,8 +109,14 @@ class Drop(base.Action):
             item_name=self.item.name,
             location=self.location.name,
         )
-        house_action = HouseActionSimple(action_type="place", target=self.item.name)
-        return self.parser.ok(description), base.ActionResult(description=description, house_action=house_action, object_id=self.item.name)
+        narration = self.parser.ok(description)
+        drop_action = DropItemAction(action_type="drop_item", item=self.item.name)
+        schema = base.ActionResult(
+            description=f"Dropped {self.item.name}.",
+            house_action=drop_action,
+            object_id=self.item.name
+        )
+        return narration, schema
 
 
 class Inventory(base.Action):

@@ -30,6 +30,7 @@ class Character(Thing):
         self.persona = persona
         self.inventory = {}
         self.location = None
+        self.current_container = None  # Track if character is inside a container
 
     def to_primitive(self):
         """

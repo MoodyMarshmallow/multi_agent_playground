@@ -9,10 +9,9 @@ from typing import Optional, Dict, List
 
 # Text adventure games imports
 from ..text_adventure_games.things import Character
-from ..text_adventure_games.games import Game
 
 # Schema imports  
-from ..config.schema import AgentActionOutput
+from .config.schema import AgentActionOutput
 
 # Local imports
 from .agent_strategies import AgentStrategy
@@ -22,7 +21,9 @@ class AgentManager:
     """
     Manages the connection between Characters and their AI strategies.
     """
-    def __init__(self, game: Game):
+    def __init__(self, game):
+        # Import here to avoid circular import
+        from ..text_adventure_games.games import Game
         self.game = game
         self.agent_strategies: Dict[str, AgentStrategy] = {}
         
