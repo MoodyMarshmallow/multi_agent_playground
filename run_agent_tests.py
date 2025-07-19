@@ -9,9 +9,44 @@ Simple script to run agent goal tests and see the results.
 import asyncio
 import sys
 import os
+import logging
+
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    print("Warning: python-dotenv not installed. Environment variables from .env file won't be loaded.")
 
 # Add the backend directory to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
+
+# Configure logging
+def setup_logging(debug=False):
+    """Setup logging configuration.
+    
+    Args:
+        debug: If True, enable debug level logging for action debugging
+    """
+    if debug:
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format='[%(name)s] %(levelname)s: %(message)s',
+            handlers=[logging.StreamHandler()]
+        )
+        # Set specific loggers for action debugging
+        parsing_logger = logging.getLogger('backend.text_adventure_games.parsing')
+        parsing_logger.setLevel(logging.DEBUG)
+        
+        # Make sure the parsing logger uses the console handler
+        if not parsing_logger.handlers:
+            console_handler = logging.StreamHandler()
+            console_handler.setFormatter(logging.Formatter('[%(name)s] %(levelname)s: %(message)s'))
+            parsing_logger.addHandler(console_handler)
+        print("Debug logging enabled for action parsing")
+    else:
+        # Default logging level
+        logging.basicConfig(level=logging.WARNING)
 
 from backend.testing.agent_goal_test import AgentGoalTest
 from backend.testing.agent_test_runner import AgentTestRunner
@@ -88,12 +123,16 @@ async def run_collection_test():
 
 async def main():
     """Main function to run various test scenarios."""
+    # Check for debug flag in command line arguments
+    debug_mode = '--debug' in sys.argv or '-d' in sys.argv
+    setup_logging(debug=debug_mode)
+    
     print("Agent Goal-Based Testing System")
     print("="*50)
     
     try:
         # Run simple tests
-        await run_simple_test()
+        # await run_simple_test()
         await run_collection_test()
         
         print(f"\nOverall Results:")

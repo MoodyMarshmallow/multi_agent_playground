@@ -23,7 +23,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # Import the game controller
 from .game_loop import GameLoop
-from .agent.config.schema import WorldStateResponse, GameEvent, GameEventList, StatusMsg, GameStatus, AgentStateResponse, GameObject, AgentActionOutput
+from .config.schema import WorldStateResponse, GameEvent, GameEventList, StatusMsg, GameStatus, AgentStateResponse, GameObject, AgentActionOutput
 
 # Global game controller instance
 game_controller: Optional[GameLoop] = None

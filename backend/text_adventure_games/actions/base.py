@@ -1,6 +1,6 @@
 from ..things import Thing, Character, Item, Location
 import re
-from ...agent.config.schema import HouseAction, NoOpAction, LookAction
+from ...config.schema import HouseAction, NoOpAction, LookAction
 from typing import Optional, Any
 
 class ActionResult:
@@ -30,6 +30,7 @@ class Action:
     ACTION_NAME: str = None
     ACTION_DESCRIPTION: str = None
     ACTION_ALIASES: list[str] = None
+    COMMAND_PATTERNS: list[str] = None  # New: defines what commands this action can handle
 
     def __init__(self, game):
         self.game = game
@@ -257,6 +258,125 @@ class Action:
         else:
             return True
 
+    @classmethod
+    def get_applicable_combinations(cls, character, parser):
+        """
+        Return all valid item/object combinations that this action could apply to.
+        
+        Args:
+            character: The character who would perform the action
+            parser: The game parser for accessing items in scope
+            
+        Yields:
+            dict: Variable substitutions for command patterns (e.g., {"item": "apple"})
+        """
+        # Default implementation - subclasses should override for complex actions
+        return []
+
+    @classmethod
+    def get_command_patterns(cls):
+        """
+        Return the command patterns this action can handle.
+        
+        Returns:
+            list[str]: Command patterns with placeholders like "get {item}"
+        """
+        return cls.COMMAND_PATTERNS or []
+
+    # === Helper methods for common action discovery patterns ===
+    
+    @classmethod
+    def _get_all_items_in_scope(cls, character, parser):
+        """Yield all items visible to character."""
+        for item_name, item in parser.get_items_in_scope(character).items():
+            yield {"item": item_name}
+
+    @classmethod  
+    def _get_items_with_property(cls, character, parser, property_name, default_value=False):
+        """Yield items that have a specific property."""
+        for item_name, item in parser.get_items_in_scope(character).items():
+            if item.get_property(property_name, default_value):
+                yield {"item": item_name}
+
+    @classmethod
+    def _get_location_items(cls, character):
+        """Yield items in character's current location only."""
+        for item_name, item in character.location.items.items():
+            yield {"item": item_name}
+
+    @classmethod
+    def _get_inventory_items(cls, character):
+        """Yield items in character's inventory."""
+        for item_name, item in character.inventory.items():
+            yield {"item": item_name}
+
+    @classmethod
+    def _get_other_characters(cls, character):
+        """Yield other characters in the same location."""
+        for char_name, char in character.location.characters.items():
+            if char_name != character.name:
+                yield {"character": char_name}
+
+    @classmethod
+    def _get_combinations(cls, character, parser, **param_specs):
+        """
+        General combination generator for N parameters.
+        
+        Args:
+            character: Acting character
+            parser: Game parser
+            **param_specs: Parameter specifications, e.g.:
+                item={"source": "inventory", "filter": lambda x: x.get_property("is_food")},
+                character={"source": "location_characters", "exclude_self": True}
+        
+        Yields:
+            dict: Parameter combinations like {"item": "apple", "character": "bob"}
+        """
+        from itertools import product
+        
+        # Collect all parameter values for each parameter
+        param_values = {}
+        
+        for param_name, spec in param_specs.items():
+            source = spec.get("source", "")
+            param_filter = spec.get("filter", None)
+            exclude_self = spec.get("exclude_self", False)
+            
+            values = []
+            
+            if source == "inventory":
+                for item_name, item in character.inventory.items():
+                    if not param_filter or param_filter(item):
+                        values.append(item_name)
+            elif source == "location_items":
+                for item_name, item in character.location.items.items():
+                    if not param_filter or param_filter(item):
+                        values.append(item_name)
+            elif source == "all_items_in_scope":
+                for item_name, item in parser.get_items_in_scope(character).items():
+                    if not param_filter or param_filter(item):
+                        values.append(item_name)
+            elif source == "location_characters":
+                for char_name, char in character.location.characters.items():
+                    if exclude_self and char_name == character.name:
+                        continue
+                    if not param_filter or param_filter(char):
+                        values.append(char_name)
+            elif source == "connected_locations":
+                for direction, location in character.location.connections.items():
+                    if not param_filter or param_filter(location):
+                        values.append(location.name)
+            
+            param_values[param_name] = values
+        
+        # Generate all combinations using itertools.product
+        if param_values:
+            param_names = list(param_values.keys())
+            value_lists = [param_values[name] for name in param_names]
+            
+            for combination in product(*value_lists):
+                yield dict(zip(param_names, combination))
+
 
 class ActionSequence(Action):
     """
@@ -293,6 +413,7 @@ class Quit(Action):
     ACTION_NAME = "quit"
     ACTION_DESCRIPTION = "Quit the game"
     ACTION_ALIASES = ["q"]
+    COMMAND_PATTERNS = ["quit"]
 
     def __init__(
         self,
@@ -322,6 +443,7 @@ class Describe(Action):
     ACTION_NAME = "describe"
     ACTION_DESCRIPTION = "Describe the current location"
     ACTION_ALIASES = ["look", "l"]
+    COMMAND_PATTERNS = ["describe", "look"]
 
     def __init__(
         self,

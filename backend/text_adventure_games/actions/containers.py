@@ -1,6 +1,6 @@
 from backend.text_adventure_games.actions import base
 from backend.text_adventure_games.things.containers import Container
-from ...agent.config import schema
+from ...config import schema
 
 def match_container_in_scope(parser, command, character):
     items_in_scope = parser.get_items_in_scope(character)
@@ -20,6 +20,7 @@ class OpenContainer(base.Action):
     ACTION_NAME = "open"
     ACTION_DESCRIPTION = "Open a container."
     ACTION_ALIASES = ["unseal", "unlock"]
+    COMMAND_PATTERNS = ["open {item}"]
 
     def __init__(self, game, command):
         super().__init__(game)
@@ -54,10 +55,18 @@ class OpenContainer(base.Action):
         schema_result = base.ActionResult(description=f"Opened {self.container.name}.", house_action=house_action, object_id=self.container.name)
         return narration, schema_result
 
+    @classmethod
+    def get_applicable_combinations(cls, character, parser):
+        """Return containers that could potentially be opened."""
+        for item_name, item in character.location.items.items():
+            if item.get_property("is_container", False):
+                yield {"item": item_name}
+
 class CloseContainer(base.Action):
     ACTION_NAME = "close"
     ACTION_DESCRIPTION = "Close a container."
     ACTION_ALIASES = ["seal", "shut"]
+    COMMAND_PATTERNS = ["close {item}"]
 
     def __init__(self, game, command):
         super().__init__(game)
@@ -83,10 +92,18 @@ class CloseContainer(base.Action):
         schema_result = base.ActionResult(description=f"Closed {self.container.name}.", house_action=house_action, object_id=self.container.name)
         return narration, schema_result
 
+    @classmethod
+    def get_applicable_combinations(cls, character, parser):
+        """Return containers that could potentially be closed."""
+        for item_name, item in character.location.items.items():
+            if item.get_property("is_container", False):
+                yield {"item": item_name}
+
 class TakeFromContainer(base.Action):
     ACTION_NAME = "take"
     ACTION_DESCRIPTION = "Take an item from a container."
     ACTION_ALIASES = ["retrieve", "fetch", "get"]
+    COMMAND_PATTERNS = ["take {item} from {container}"]
 
     def __init__(self, game, command):
         super().__init__(game)
@@ -114,10 +131,21 @@ class TakeFromContainer(base.Action):
         schema_result = base.ActionResult(description=f"Took {self.target.name} from {self.container.name}.", house_action=house_action, object_id=self.target.name)
         return narration, schema_result
 
+    @classmethod
+    def get_applicable_combinations(cls, character, parser):
+        """Return all container-item combinations that could be taken."""
+        for container_name, container in character.location.items.items():
+            if container.get_property("is_container", False):
+                # Check if container has items (whether open or not - preconditions will filter)
+                if hasattr(container, 'inventory'):
+                    for item_name, item in container.inventory.items():
+                        yield {"item": item_name, "container": container_name}
+
 class ViewContainer(base.Action):
     ACTION_NAME = "view container"
     ACTION_DESCRIPTION = "View the contents of a container if it is open."
     ACTION_ALIASES = ["view"]
+    COMMAND_PATTERNS = ["view {item}"]
 
     def __init__(self, game, command):
         super().__init__(game)
@@ -144,10 +172,18 @@ class ViewContainer(base.Action):
         schema_result = base.ActionResult(description=f"Viewed contents of {self.container.name}.", house_action=None, object_id=self.container.name)
         return narration, schema_result
 
+    @classmethod
+    def get_applicable_combinations(cls, character, parser):
+        """Return containers that could potentially be viewed."""
+        for item_name, item in character.location.items.items():
+            if item.get_property("is_container", False):
+                yield {"item": item_name}
+
 class PutInContainer(base.Action):
     ACTION_NAME = "put in"
     ACTION_DESCRIPTION = "Put an item from inventory into a container."
-    ACTION_ALIASES = ["put", "place", "insert"]
+    ACTION_ALIASES = ["place", "insert"]
+    COMMAND_PATTERNS = ["put {item} in {container}"]
 
     def __init__(self, game, command):
         super().__init__(game)
@@ -176,3 +212,11 @@ class PutInContainer(base.Action):
         narration = self.parser.ok(f"You put the {self.target.name} in the {self.container.name}.")
         schema_result = base.ActionResult(description=f"Put {self.target.name} in {self.container.name}.", house_action=None, object_id=self.target.name)
         return narration, schema_result
+
+    @classmethod
+    def get_applicable_combinations(cls, character, parser):
+        """Return all inventory-item + container combinations that could be put."""
+        for inv_item_name, inv_item in character.inventory.items():
+            for container_name, container in character.location.items.items():
+                if container.get_property("is_container", False):
+                    yield {"item": inv_item_name, "container": container_name}

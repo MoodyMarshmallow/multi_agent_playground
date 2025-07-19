@@ -6,7 +6,8 @@ from . import preconditions as P
 class Attack(base.Action):
     ACTION_NAME = "attack"
     ACTION_DESCRIPTION = "Attack someone with a weapon"
-    ACTION_ALIASES = ["hit"]
+    ACTION_ALIASES = ["hit", "hits"]
+    COMMAND_PATTERNS = ["attack {character}"]
 
     def __init__(
         self,
@@ -119,3 +120,8 @@ class Attack(base.Action):
                 drop = Drop(self.game, command)
                 if drop.check_preconditions():
                     drop.apply_effects()
+
+    @classmethod
+    def get_applicable_combinations(cls, character, parser):
+        """Return characters that could potentially be attacked."""
+        return cls._get_other_characters(character)

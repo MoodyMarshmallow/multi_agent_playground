@@ -4,7 +4,7 @@ from . import parsing, actions, blocks
 import json
 import inspect
 from collections import namedtuple
-from ..agent.config.schema import AgentActionOutput
+from ..config.schema import AgentActionOutput
 from datetime import datetime
 
 
@@ -80,14 +80,7 @@ class Game:
         # Parser
         self.parser = parsing.Parser(self)
 
-        # Add custom actions to parser
-        if custom_actions:
-            for ca in custom_actions:
-                if inspect.isclass(ca) and issubclass(ca, actions.Action):
-                    self.parser.add_action(ca)
-                else:
-                    err_msg = f"ERROR: invalid custom action ({ca})"
-                    raise Exception(err_msg)
+        # NOTE: Custom actions are no longer added to parser - using pattern-based discovery only
 
         # Visit each location and add any blocks found to parser
         seen_before = {}
@@ -317,7 +310,6 @@ class Game:
             "game_over_description": self.game_over_description,
             "characters": [c.to_primitive() for c in self.characters.values()],
             "locations": [l.to_primitive() for l in self.locations.values()],
-            "actions": sorted([a for a in self.parser.actions]),
         }
         return data
 
@@ -435,17 +427,7 @@ class Game:
                     err_msg = f"ERROR: invalid custom action ({ca})"
                     raise Exception(err_msg)
 
-        # verify all commands from primitive data have an associated action
-        action_names = list(action_map.keys())
-        for action_name in data["actions"]:
-            if action_name not in action_names:
-                err_msg = "".join(
-                    [
-                        f"ERROR: unmapped action ({action_name}) found in ",
-                        "primitive data",
-                    ]
-                )
-                raise Exception(err_msg)
+        # NOTE: No longer validating actions from primitive data - using pattern discovery
 
         # Blocks
         block_map = cls.default_blocks()
