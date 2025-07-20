@@ -1,5 +1,4 @@
 from . import base
-from . import preconditions as P
 from .consume import Drink, Eat
 from .rose import Smell_Rose
 from ...config.schema import GetItemAction, DropItemAction

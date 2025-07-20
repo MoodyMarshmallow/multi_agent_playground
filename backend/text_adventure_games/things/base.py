@@ -1,5 +1,4 @@
 from collections import defaultdict
-import json
 
 
 class Thing:
@@ -25,41 +24,6 @@ class Thing:
         # implemented in the Parser.
         self.commands = set()
 
-    def to_primitive(self):
-        """
-        Puts the main fields of this base class into a dictionary
-        representation that can safely be converted to JSON
-        """
-        thing_data = {
-            "name": self.name,
-            "description": self.description,
-            "commands": list(self.commands),
-            "properties": self.properties,
-        }
-        return thing_data
-
-    @classmethod
-    def from_primitive(cls, data, instance=None):
-        """
-        Converts a dictionary of values into an instance.
-        """
-        if not instance:
-            instance = cls(data["name"], data["description"])
-        for c in data["commands"]:
-            instance.add_command_hint(c)
-        for k, v in data["properties"].items():
-            instance.set_property(k, v)
-
-    def to_json(self):
-        data = self.to_primitive()
-        data_json = json.dumps(data)
-        return data_json
-
-    @classmethod
-    def from_json(cls, data_json):
-        data = json.loads(data_json)
-        instance = cls.from_primitive(data)
-        return instance
 
     def set_property(self, property_name: str, property):
         """
@@ -85,8 +49,3 @@ class Thing:
         """
         return self.commands
 
-    def remove_command_hint(self, command: str):
-        """
-        Returns a list of special commands associated with this object
-        """
-        return self.commands.discard(command)

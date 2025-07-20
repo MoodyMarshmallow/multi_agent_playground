@@ -8,7 +8,6 @@ The implementation that I have given below only uses simple keyword matching.
 """
 
 import inspect
-import textwrap
 import re
 import logging
 
@@ -26,12 +25,8 @@ class Parser:
     """
 
     def __init__(self, game):
-        # A list of the commands that the player has issued,
-        # and the respones given to the player.
-        self.command_history = []
-
-        # Build default scope of blocks
-        self.blocks = game.default_blocks()
+        # Build default scope of blocks (empty since blocks are not used)
+        self.blocks = {}
 
         # A pointer to the game.
         self.game = game
@@ -43,7 +38,6 @@ class Parser:
         In the next homework, we'll replace this with a call to the OpenAI API
         in order to create more evocative descriptions.
         """
-        self.add_description_to_history(description)
         self.last_error_message = None
         return description
 
@@ -55,24 +49,6 @@ class Parser:
         self.last_error_message = description
         return description
 
-    @staticmethod
-    def wrap_text(text: str, width: int = 80) -> str:
-        """
-        Keeps text output narrow enough to easily be read
-        """
-        lines = text.split("\n")
-        wrapped_lines = [textwrap.fill(line, width) for line in lines]
-        return "\n".join(wrapped_lines)
-
-    def add_command_to_history(self, command: str):
-        message = {"role": "user", "content": command}
-        self.command_history.append(message)
-        # CCB - todo - manage command_history size
-
-    def add_description_to_history(self, description: str):
-        message = {"role": "assistant", "content": description}
-        self.command_history.append(message)
-        # CCB - todo - manage command_history size
 
 
     def add_block(self, block):
@@ -147,8 +123,6 @@ class Parser:
             (narration, schema) tuple: narration is user-facing, schema is ActionResult
         """
         # print("\n>", command, "\n", flush=True)
-        # add this command to the history
-        self.add_command_to_history(command)
         
         # Set the acting character for this command
         original_player = self.game.player
@@ -491,13 +465,3 @@ class Parser:
             # Generic fallback
             return action_desc
 
-    def print_narration(self, narration):
-        # Always print a blank line before narration for consistent output
-        print("")
-        if narration and narration.lower() != "none":
-            print(narration)
-            if narration == self.last_error_message:
-                print("I'm not sure what you want to do.\n")
-        else:
-            print("I'm not sure what you want to do.\n")
-        print("")

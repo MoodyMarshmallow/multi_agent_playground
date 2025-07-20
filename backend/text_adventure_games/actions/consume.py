@@ -1,5 +1,4 @@
 from . import base
-from . import preconditions as P
 
 # from ..things import Character  # , Item
 

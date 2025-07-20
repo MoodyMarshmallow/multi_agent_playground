@@ -1,6 +1,5 @@
 from . import base
 from .things import Drop
-from . import preconditions as P
 
 
 class Attack(base.Action):

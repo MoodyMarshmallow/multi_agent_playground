@@ -1,5 +1,4 @@
 from ..things import Thing, Character, Item, Location
-import re
 from ...config.schema import HouseAction, NoOpAction, LookAction
 from typing import Optional, Any
 
@@ -76,20 +75,6 @@ class Action:
                 self.game._last_action_result = schema
             return narration, schema
 
-    @classmethod
-    def action_name(cls):
-        """
-        This method plays a crucial role in how command strings are routed to
-        actual action names. This method provides the key used in the game's
-        dict of actions.
-        """
-        if cls.ACTION_NAME and isinstance(cls.ACTION_NAME, str):
-            return cls.ACTION_NAME.lower()
-        cls_name = cls.__name__
-        cls_name = cls_name.replace("_", "")
-        words = re.sub(r"([A-Z])", r" \1", cls_name).split()
-        action_name = " ".join([w.lower() for w in words])
-        return action_name
 
     ###
     # Preconditions - these functions are common preconditions.
