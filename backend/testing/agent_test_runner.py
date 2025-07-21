@@ -15,7 +15,7 @@ from ..text_adventure_games.games import Game
 from ..text_adventure_games.house import build_house_game
 from ..text_adventure_games.things import Character, Item, Location
 from ..agent import AgentManager, KaniAgent
-from ..agent.config.schema import AgentActionOutput
+from ..config.schema import AgentActionOutput
 
 
 class AgentTestRunner:
