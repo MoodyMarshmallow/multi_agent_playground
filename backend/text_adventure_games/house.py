@@ -96,6 +96,22 @@ def build_house_game() -> games.Game:
     closet.add_command_hint("view")
     bedroom.add_item(closet)
 
+    # Add apple to the kitchen
+    apple: Item = things.Item("apple", "A red apple", "A juicy red apple that looks delicious.")
+    apple.set_property("is_food", True)
+    apple.set_property("gettable", True)
+    apple.add_command_hint("get")
+    apple.add_command_hint("eat")
+    kitchen.add_item(apple)
+
+    # Add apple to the kitchen
+    apple: Item = things.Item("apple", "A red apple", "A juicy red apple that looks delicious.")
+    apple.set_property("is_food", True)
+    apple.set_property("gettable", True)
+    apple.add_command_hint("get")
+    apple.add_command_hint("eat")
+    kitchen.add_item(apple)
+
     # Add apple to the kitchen\n    apple: Item = things.Item(\"apple\", \"A red apple\", \"A juicy red apple that looks delicious.\")\n    apple.set_property(\"is_food\", True)\n    apple.set_property(\"gettable\", True)\n    apple.add_command_hint(\"get\")\n    apple.add_command_hint(\"eat\")\n    kitchen.add_item(apple)\n\n    # ... (continue porting all items, containers, and their properties as in canonical_world.py) ...
     # --- Player character ---
     player: things.Character = things.Character(

@@ -1,14 +1,14 @@
 from . import base
-from . import preconditions as P
 from .consume import Drink, Eat
 from .rose import Smell_Rose
-from ...agent.config.schema import GetItemAction, DropItemAction
+from ...config.schema import GetItemAction, DropItemAction
 
 
 class Get(base.Action):
     ACTION_NAME = "get"
     ACTION_DESCRIPTION = "Get something and add it to the inventory"
     ACTION_ALIASES = ["take"]
+    COMMAND_PATTERNS = ["get {item}"]
 
     def __init__(self, game, command: str):
         super().__init__(game)
@@ -63,11 +63,17 @@ class Get(base.Action):
         )
         return narration, schema
 
+    @classmethod
+    def get_applicable_combinations(cls, character, parser):
+        """Return items that could potentially be gotten."""
+        return cls._get_location_items(character)
+
 
 class Drop(base.Action):
     ACTION_NAME = "drop"
     ACTION_DESCRIPTION = "Drop something from the character's inventory"
     ACTION_ALIASES = ["toss", "get rid of"]
+    COMMAND_PATTERNS = ["drop {item}"]
 
     def __init__(
         self,
@@ -118,11 +124,17 @@ class Drop(base.Action):
         )
         return narration, schema
 
+    @classmethod
+    def get_applicable_combinations(cls, character, parser):
+        """Return items that could potentially be dropped."""
+        return cls._get_inventory_items(character)
+
 
 class Inventory(base.Action):
     ACTION_NAME = "inventory"
     ACTION_DESCRIPTION = "Check the character's inventory"
     ACTION_ALIASES = ["i"]
+    COMMAND_PATTERNS = ["inventory"]
 
     def __init__(
         self,
@@ -156,6 +168,7 @@ class Examine(base.Action):
     ACTION_NAME = "examine"
     ACTION_DESCRIPTION = "Examine an item"
     ACTION_ALIASES = ["look at", "x"]
+    COMMAND_PATTERNS = ["examine {item}"]
 
     def __init__(
         self,
@@ -185,11 +198,17 @@ class Examine(base.Action):
         else:
             return self.parser.ok("You don't see anything special.")
 
+    @classmethod
+    def get_applicable_combinations(cls, character, parser):
+        """Return items that could potentially be examined."""
+        return cls._get_all_items_in_scope(character, parser)
+
 
 class Give(base.Action):
     ACTION_NAME = "give"
     ACTION_DESCRIPTION = "Give something to someone"
     ACTION_ALIASES = ["hand"]
+    COMMAND_PATTERNS = ["give {item} to {character}"]
 
     def __init__(self, game, command: str):
         super().__init__(game)
@@ -262,6 +281,15 @@ class Give(base.Action):
             )
             smell = Smell_Rose(self.game, command)
             smell()
+
+    @classmethod
+    def get_applicable_combinations(cls, character, parser):
+        """Return item and character combinations for giving."""
+        return cls._get_combinations(
+            character, parser,
+            item={"source": "inventory"},
+            character={"source": "location_characters", "exclude_self": True}
+        )
 
 
 class Unlock_Door(base.Action):

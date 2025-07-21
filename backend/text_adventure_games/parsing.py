@@ -8,8 +8,8 @@ The implementation that I have given below only uses simple keyword matching.
 """
 
 import inspect
-import textwrap
 import re
+import logging
 
 from .things import Character, Item, Location
 from . import actions, blocks
@@ -25,15 +25,8 @@ class Parser:
     """
 
     def __init__(self, game):
-        # A list of the commands that the player has issued,
-        # and the respones given to the player.
-        self.command_history = []
-
-        # Build default scope of actions
-        self.actions = game.default_actions()
-
-        # Build default scope of blocks
-        self.blocks = game.default_blocks()
+        # Build default scope of blocks (empty since blocks are not used)
+        self.blocks = {}
 
         # A pointer to the game.
         self.game = game
@@ -45,7 +38,6 @@ class Parser:
         In the next homework, we'll replace this with a call to the OpenAI API
         in order to create more evocative descriptions.
         """
-        self.add_description_to_history(description)
         self.last_error_message = None
         return description
 
@@ -57,30 +49,7 @@ class Parser:
         self.last_error_message = description
         return description
 
-    @staticmethod
-    def wrap_text(text: str, width: int = 80) -> str:
-        """
-        Keeps text output narrow enough to easily be read
-        """
-        lines = text.split("\n")
-        wrapped_lines = [textwrap.fill(line, width) for line in lines]
-        return "\n".join(wrapped_lines)
 
-    def add_command_to_history(self, command: str):
-        message = {"role": "user", "content": command}
-        self.command_history.append(message)
-        # CCB - todo - manage command_history size
-
-    def add_description_to_history(self, description: str):
-        message = {"role": "assistant", "content": description}
-        self.command_history.append(message)
-        # CCB - todo - manage command_history size
-
-    def add_action(self, action: actions.Action):
-        """
-        Add an Action class to the list of actions a parser can use
-        """
-        self.actions[action.action_name()] = action
 
     def add_block(self, block):
         """
@@ -89,20 +58,11 @@ class Parser:
         """
         self.blocks[block.__class__.__name__] = block
 
-    def init_actions(self):
-        self.actions = {}
-        for member in dir(actions):
-            attr = getattr(actions, member)
-            if inspect.isclass(attr) and issubclass(attr, actions.Action):
-                # dont include base class
-                if not attr == actions.Action:
-                    self.add_action(attr)
 
     def determine_intent(self, command: str):
         """
         This function determines what command the player wants to do.
-        Here we have implemented it with a simple keyword match. Later
-        we will use AI to do more flexible matching.
+        Only handles sequences and directions - all other actions use pattern-based discovery.
         """
         # check which character is acting (defaults to the player)
         character = self.get_character(command)
@@ -113,61 +73,41 @@ class Parser:
         elif self.get_direction(command, character.location):
             # Check for the direction intent
             return "direction"
-        elif command == "look" or command == "l":
-            # when the user issues a "look" command, re-describe what they see
-            return "describe"
-        elif "examine " in command or command.startswith("x "):
-            return "examine"
-        elif "take " in command or "get " in command:
-            return "take"
-        elif "light" in command:
-            return "light"
-        elif "drop " in command:
-            return "drop"
-        elif (
-            "eat " in command
-            or "eats " in command
-            or "ate " in command
-            or "eating " in command
-        ):
-            return "eat"
-        elif "drink" in command:
-            return "drink"
-        elif "give" in command:
-            return "give"
-        elif "attack" in command or "hit " in command or "hits " in command:
-            return "attack"
-        elif "inventory" in command or command == "i":
-            return "inventory"
-        elif "quit" in command:
-            return "quit"
-        else:
-            for _, action in self.actions.items():
-                aliases = [action.action_name()]
-                if getattr(action, "ACTION_ALIASES", None):
-                    aliases += action.ACTION_ALIASES
-                for alias in aliases:
-                    # Match if command is exactly alias or starts with alias + space
-                    if command == alias or command.startswith(alias + " "):
-                        return action.action_name()
         return None
 
     def parse_action(self, command: str) -> actions.Action:
         """
         Routes an action described in a command to the right action class for
-        performing the action.
+        performing the action. Uses only pattern-based discovery.
         """
         command = command.lower().strip()
         if command == "":
             return None
         intent = self.determine_intent(command)
-        if intent in self.actions:
-            action = self.actions[intent]
-            return action(self.game, command)
+        if intent == "sequence":
+            return actions.ActionSequence(self.game, command)
         elif intent == "direction":
             return actions.Go(self.game, command)
-        elif intent == "take":
-            return actions.Get(self.game, command)
+        else:
+            # Use pattern-based discovery for all other actions
+            action_classes = self.discover_action_classes()
+            for action_class in action_classes:
+                patterns = action_class.get_command_patterns()
+                for pattern in patterns:
+                    # Check if command matches pattern (basic word matching)
+                    pattern_words = pattern.lower().split()
+                    command_words = command.split()
+                    if len(command_words) >= len(pattern_words):
+                        # Check if non-placeholder words match
+                        matches = True
+                        for i, pattern_word in enumerate(pattern_words):
+                            if not pattern_word.startswith('{') and not pattern_word.endswith('}'):
+                                if i >= len(command_words) or command_words[i] != pattern_word:
+                                    matches = False
+                                    break
+                        if matches:
+                            return action_class(self.game, command)
+            
         self.fail(f"No action found for {command}")
         return None
 
@@ -183,8 +123,6 @@ class Parser:
             (narration, schema) tuple: narration is user-facing, schema is ActionResult
         """
         # print("\n>", command, "\n", flush=True)
-        # add this command to the history
-        self.add_command_to_history(command)
         
         # Set the acting character for this command
         original_player = self.game.player
@@ -342,17 +280,81 @@ class Parser:
             character = self.game.player
         
         try:
-            # Create a temporary instance of the action
-            action_instance = action_class(self.game, command)
-            # Test its preconditions
-            return action_instance.check_preconditions()
-        except Exception:
+            # Temporarily set the game player to the specified character for action instantiation
+            original_player = self.game.player
+            self.game.player = character
+            
+            try:
+                # Create a temporary instance of the action
+                action_instance = action_class(self.game, command)
+                # Test its preconditions
+                result = action_instance.check_preconditions()
+            finally:
+                # Always restore the original player
+                self.game.player = original_player
+            
+            # Debug logging for Get action failures
+            logger = logging.getLogger(__name__)
+            
+            if action_class.__name__ == 'Get' and not result:
+                logger.debug(f"Get action precondition FAILED for command '{command}'")
+                logger.debug(f"Character: {character.name} at {character.location.name}")
+                logger.debug(f"Parser last error: {self.last_error_message}")
+                
+                # Try to understand what failed by checking each condition manually
+                if hasattr(action_instance, 'item'):
+                    if action_instance.item is None:
+                        logger.debug("- Item not matched/found")
+                    else:
+                        logger.debug(f"- Item found: {action_instance.item.name}")
+                        logger.debug(f"- Item location: {getattr(action_instance.item, 'location', 'No location')}")
+                        logger.debug(f"- Item gettable: {action_instance.item.get_property('gettable', 'No gettable property')}")
+                        
+                        # Check if item is in location
+                        if action_instance.item.name in character.location.items:
+                            logger.debug("- Item IS in character location")
+                        else:
+                            logger.debug("- Item NOT in character location")
+                            logger.debug(f"- Location items: {list(character.location.items.keys())}")
+            
+            return result
+        except Exception as e:
             # If instantiation or precondition check fails, action is not available
+            logger = logging.getLogger(__name__)
+            if action_class.__name__ == 'Get':
+                logger.debug(f"Get action instantiation FAILED for command '{command}': {e}")
             return False
+
+    def discover_action_classes(self):
+        """
+        Discover all available action classes with command patterns.
+        
+        Returns:
+            list: Action classes that have COMMAND_PATTERNS defined
+        """
+        action_classes = []
+        
+        # Get action classes from the actions module
+        for member_name in dir(actions):
+            member = getattr(actions, member_name)
+            if (inspect.isclass(member) and 
+                issubclass(member, actions.Action) and 
+                member != actions.Action and
+                hasattr(member, 'COMMAND_PATTERNS') and 
+                member.COMMAND_PATTERNS):
+                action_classes.append(member)
+        
+        # Also include container actions
+        container_actions = [OpenContainer, CloseContainer, TakeFromContainer, ViewContainer, PutInContainer]
+        for action_class in container_actions:
+            if hasattr(action_class, 'COMMAND_PATTERNS') and action_class.COMMAND_PATTERNS:
+                action_classes.append(action_class)
+        
+        return action_classes
 
     def get_available_actions(self, character: Character) -> list[dict]:
         """
-        Return all actions currently available to a character.
+        Return all actions currently available to a character using auto-discovery.
         
         Returns:
             List of dicts with 'command' and 'description' keys
@@ -363,7 +365,7 @@ class Parser:
         if not location:
             return available
         
-        # Movement actions
+        # Movement actions (still hardcoded as they're not pattern-based actions)
         for direction, connected_loc in location.connections.items():
             # Check if the connection is blocked
             if not location.is_blocked(direction):
@@ -372,203 +374,46 @@ class Parser:
                     'description': f"Move {direction} to {connected_loc.name}"
                 })
         
-        # Item actions - Get/Take items in location
-        for item_name, item in location.items.items():
-            if item.get_property("gettable") is True:  # Default to not gettable
-                available.append({
-                    'command': f"get {item_name}",
-                    'description': f"Pick up the {item.description}"
-                })
-                # NOTE: Temporarily disabled container actions
-                # available.append({
-                #     'command': f"take {item_name}",
-                #     'description': f"Take the {item.description}"
-                # })
-            
-            # Examine actions for items in location
-            available.append({
-                'command': f"examine {item_name}",
-                'description': f"Examine the {item.description}"
-            })
-            available.append({
-                'command': f"look at {item_name}",
-                'description': f"Look at the {item.description}"
-            })
-            
-            # Container-specific actions
-            if item.get_property("is_container", False):
-                if item.get_property("is_openable", False):
-                    if not item.get_property("is_open", False):
-                        available.append({
-                            'command': f"open {item_name}",
-                            'description': f"Open the {item.description}"
-                        })
-                    else:
-                        available.append({
-                            'command': f"close {item_name}",
-                            'description': f"Close the {item.description}"
-                        })
-                        available.append({
-                            'command': f"view {item_name}",
-                            'description': f"View contents of the {item.description}"
-                        })
-                        # Show items that can be taken from container
-                        if hasattr(item, 'inventory'):
-                            for container_item_name in item.inventory.keys():
-                                available.append({
-                                    'command': f"take {container_item_name} from {item_name}",
-                                    'description': f"Take {container_item_name} from {item.description}"
-                                })
-            
-            # Bed-specific actions
-            if item.get_property("is_sleepable", False):
-                available.append({
-                    'command': "sleep",
-                    'description': f"Sleep in the {item.description}"
-                })
-                if not item.get_property("is_made", True):
-                    available.append({
-                        'command': "make bed",
-                        'description': f"Make the {item.description}"
-                    })
-                if item.get_property("cleanliness", 100) < 100:
-                    available.append({
-                        'command': "clean bed",
-                        'description': f"Clean the {item.description}"
-                    })
-                available.append({
-                    'command': "examine bed",
-                    'description': f"Examine the {item.description} closely"
-                })
-            
-            # Food/drink actions for items with those properties
-            if item.get_property("is_food", False):
-                available.append({
-                    'command': f"eat {item_name}",
-                    'description': f"Eat the {item.description}"
-                })
-            
-            if item.get_property("is_drink", False):
-                available.append({
-                    'command': f"drink {item_name}",
-                    'description': f"Drink the {item.description}"
-                })
-            
-            # Lightable items
-            if item.get_property("is_lightable", False) and not item.get_property("is_lit", False):
-                available.append({
-                    'command': f"light {item_name}",
-                    'description': f"Light the {item.description}"
-                })
-            
-            # Rose-specific actions
-            if item_name == "rosebush" and item.get_property("has_rose", False):
-                available.append({
-                    'command': "pick rose",
-                    'description': "Pick a rose from the rosebush"
-                })
-            
-            # Weapon actions if other characters present
-            if item.get_property("is_weapon", False) and len(location.characters) > 1:
-                for other_name, other_char in location.characters.items():
-                    if other_name != character.name and not other_char.get_property("is_dead", False):
-                        available.append({
-                            'command': f"attack {other_name} with {item_name}",
-                            'description': f"Attack {other_char.description} with {item.description}"
-                        })
+        # Auto-discover actions using the pattern system
+        action_classes = self.discover_action_classes()
         
-        # Inventory actions
-        for item_name, item in character.inventory.items():
-            # Drop actions
-            available.append({
-                'command': f"drop {item_name}",
-                'description': f"Drop the {item.description}"
-            })
+        for action_class in action_classes:
+            # Get all possible command patterns for this action
+            patterns = action_class.get_command_patterns()
             
-            # Examine actions for inventory items
-            available.append({
-                'command': f"examine {item_name}",
-                'description': f"Examine the {item.description}"
-            })
+            # Get all applicable combinations for this action 
+            try:
+                combinations = list(action_class.get_applicable_combinations(character, self))
+            except Exception:
+                # If get_applicable_combinations fails, skip this action
+                combinations = []
             
-            # Container actions for items in inventory
-            for location_item_name, location_item in location.items.items():
-                if location_item.get_property("is_container", False) and location_item.get_property("is_open", False):
-                    available.append({
-                        'command': f"put {item_name} in {location_item_name}",
-                        'description': f"Put {item.description} in {location_item.description}"
-                    })
-            
-            # Food/drink actions for inventory items
-            if item.get_property("is_food", False):
-                available.append({
-                    'command': f"eat {item_name}",
-                    'description': f"Eat the {item.description}"
-                })
-            
-            if item.get_property("is_drink", False):
-                available.append({
-                    'command': f"drink {item_name}",
-                    'description': f"Drink the {item.description}"
-                })
-            
-            # Light actions for inventory items
-            if item.get_property("is_lightable", False) and not item.get_property("is_lit", False):
-                available.append({
-                    'command': f"light {item_name}",
-                    'description': f"Light the {item.description}"
-                })
-            
-            # Rose smell action
-            if item_name == "rose":
-                available.append({
-                    'command': "smell rose",
-                    'description': "Smell the rose"
-                })
-            
-            # Weapon actions against other characters
-            if item.get_property("is_weapon", False):
-                for other_name, other_char in location.characters.items():
-                    if other_name != character.name and not other_char.get_property("is_dead", False):
-                        available.append({
-                            'command': f"attack {other_name} with {item_name}",
-                            'description': f"Attack {other_char.description} with {item.description}"
-                        })
+            # Generate commands and test them
+            for pattern in patterns:
+                for combination in combinations:
+                    try:
+                        # Fill in the pattern with the combination
+                        command = pattern.format(**combination)
+                        
+                        # Test if this command would work
+                        precondition_result = self.test_action_preconditions(action_class, command, character)
+                        if precondition_result:
+                            # Generate a description based on the action and items
+                            description = self.generate_action_description(action_class, combination)
+                            
+                            available.append({
+                                'command': command,
+                                'description': description
+                            })
+                        elif action_class.__name__ == 'Get':
+                            # Debug: Get action was filtered out
+                            logger = logging.getLogger(__name__)
+                            logger.debug(f"Get command '{command}' filtered out due to failed preconditions")
+                    except (KeyError, ValueError):
+                        # Pattern couldn't be filled with this combination, skip
+                        continue
         
-        # Character interaction actions
-        for other_name, other_char in location.characters.items():
-            if other_name != character.name:
-                # Give actions
-                for item_name in character.inventory:
-                    available.append({
-                        'command': f"give {item_name} to {other_name}",
-                        'description': f"Give {item_name} to {other_char.description}"
-                    })
-        
-        # Fishing actions if at pond location
-        if hasattr(location, 'get_property') and location.get_property("has_fish", False):
-            # Check if character has a pole
-            if "pole" in character.inventory:
-                available.append({
-                    'command': "catch fish with pole",
-                    'description': "Catch fish using the fishing pole"
-                })
-            else:
-                available.append({
-                    'command': "catch fish",
-                    'description': "Try to catch fish with hands"
-                })
-        
-        # Door unlocking if key and locked door present
-        if "key" in character.inventory:
-            for item_name, item in location.items.items():
-                if item_name == "door" and item.get_property("is_locked", False):
-                    available.append({
-                        'command': "unlock door",
-                        'description': "Unlock the door with the key"
-                    })
-        
-        # Always available actions
+        # Add basic non-pattern actions
         available.extend([
             {'command': 'look', 'description': 'Examine your surroundings'},
             {'command': 'describe', 'description': 'Describe the current location'},
@@ -578,13 +423,45 @@ class Parser:
         
         return available
 
-    def print_narration(self, narration):
-        # Always print a blank line before narration for consistent output
-        print("")
-        if narration and narration.lower() != "none":
-            print(narration)
-            if narration == self.last_error_message:
-                print("I'm not sure what you want to do.\n")
+    def generate_action_description(self, action_class, combination):
+        """
+        Generate a human-readable description for an action with given item combination.
+        
+        Args:
+            action_class: The action class
+            combination: Dict with item names (e.g., {"item": "apple"})
+            
+        Returns:
+            str: Human-readable description of the action
+        """
+        # Get the action's description template
+        action_desc = getattr(action_class, 'ACTION_DESCRIPTION', 'Perform action')
+        
+        # Try to create meaningful descriptions based on action type
+        if action_class.__name__ == 'Get':
+            item_name = combination.get('item', 'item')
+            return f"Pick up the {item_name}"
+        elif action_class.__name__ == 'Drop':
+            item_name = combination.get('item', 'item')
+            return f"Drop the {item_name}"
+        elif action_class.__name__ == 'OpenContainer':
+            item_name = combination.get('item', 'container')
+            return f"Open the {item_name}"
+        elif action_class.__name__ == 'CloseContainer':
+            item_name = combination.get('item', 'container')
+            return f"Close the {item_name}"
+        elif action_class.__name__ == 'ViewContainer':
+            item_name = combination.get('item', 'container')
+            return f"View contents of the {item_name}"
+        elif action_class.__name__ == 'TakeFromContainer':
+            item_name = combination.get('item', 'item')
+            container_name = combination.get('container', 'container')
+            return f"Take {item_name} from {container_name}"
+        elif action_class.__name__ == 'PutInContainer':
+            item_name = combination.get('item', 'item')
+            container_name = combination.get('container', 'container')
+            return f"Put {item_name} in {container_name}"
         else:
-            print("I'm not sure what you want to do.\n")
-        print("")
+            # Generic fallback
+            return action_desc
+

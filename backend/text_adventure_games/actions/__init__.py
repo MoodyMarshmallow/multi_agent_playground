@@ -4,9 +4,6 @@ from .base import (
     Quit,
     Describe,
 )
-from .preconditions import (
-    was_matched,
-)
 from .consume import Eat, Drink, Light
 from .fight import Attack
 from .fish import Catch_Fish
@@ -20,7 +17,6 @@ __all__ = [
     ActionSequence,
     Quit,
     Describe,
-    was_matched,
     Go,
     Get,
     Drop,

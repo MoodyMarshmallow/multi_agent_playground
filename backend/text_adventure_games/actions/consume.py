@@ -1,5 +1,4 @@
 from . import base
-from . import preconditions as P
 
 # from ..things import Character  # , Item
 
@@ -7,6 +6,8 @@ from . import preconditions as P
 class Eat(base.Action):
     ACTION_NAME = "eat"
     ACTION_DESCRIPTION = "Eat something"
+    ACTION_ALIASES = ["eats", "ate", "eating"]
+    COMMAND_PATTERNS = ["eat {item}"]
 
     def __init__(self, game, command: str):
         super().__init__(game)
@@ -60,10 +61,16 @@ class Eat(base.Action):
             )
         self.parser.ok(description)
 
+    @classmethod
+    def get_applicable_combinations(cls, character, parser):
+        """Return food items that could potentially be eaten."""
+        return cls._get_items_with_property(character, parser, "is_food")
+
 
 class Drink(base.Action):
     ACTION_NAME = "drink"
     ACTION_DESCRIPTION = "Drink something"
+    COMMAND_PATTERNS = ["drink {item}"]
 
     def __init__(self, game, command: str):
         super().__init__(game)
@@ -126,10 +133,16 @@ class Drink(base.Action):
             )
             self.parser.ok(description)
 
+    @classmethod
+    def get_applicable_combinations(cls, character, parser):
+        """Return drink items that could potentially be drunk."""
+        return cls._get_items_with_property(character, parser, "is_drink")
+
 
 class Light(base.Action):
     ACTION_NAME = "light"
     ACTION_DESCRIPTION = "Light something flammable like a lamp or a candle"
+    COMMAND_PATTERNS = ["light {item}"]
 
     def __init__(self, game, command: str):
         super().__init__(game)
@@ -169,3 +182,8 @@ class Light(base.Action):
             name=self.character.name, item=self.item.name
         )
         self.parser.ok(description)
+
+    @classmethod
+    def get_applicable_combinations(cls, character, parser):
+        """Return lightable items that could potentially be lit."""
+        return cls._get_items_with_property(character, parser, "is_lightable")

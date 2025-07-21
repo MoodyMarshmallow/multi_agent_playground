@@ -1,5 +1,5 @@
 from . import base
-from ...agent.config.schema import MoveAction
+from ...config.schema import MoveAction
 
 # from . import preconditions as P
 

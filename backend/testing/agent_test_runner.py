@@ -293,6 +293,8 @@ class AgentTestRunner:
                         description=item_data["description"],
                         examine_text=item_data.get("long_description", item_data["description"])
                     )
+                    # Set default properties for items created in tests
+                    item.set_property("gettable", True)
                     location.add_item(item)
         
         # Set character locations

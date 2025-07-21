@@ -5,5 +5,8 @@
       "mcp__sequential-thinking__sequentialthinking"
     ],
     "deny": []
+  },
+  "env" : {
+    "BASH_MAX_TIMEOUT_MS": "120000"
   }
 }
