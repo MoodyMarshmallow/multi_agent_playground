@@ -35,7 +35,9 @@ func handle_post_navigation_object_action(action: Dictionary):
 func _do_object_action(action: Dictionary) -> void:
 	var action_type = action.get("action_type", "")
 	var target = action.get("target", "")
+	var recipient = action.get("recipient", null)
 	var place_location = action.get("place_location", null)
+	var state = action.get("state", null)
 	var obj = get_object_by_name(target)
 	if obj == null:
 		return
@@ -44,38 +46,57 @@ func _do_object_action(action: Dictionary) -> void:
 			obj.take_object()
 		else:
 			print("ObjectManager: Object does not have take_object method:", target)
-	elif action_type == "use":
-		if obj.has_method("use"):
-			obj.use()
+	elif action_type == "drop":
+		if obj.has_method("place_object_at") and place_location != null:
+			obj.place_object_at(place_location)
 		else:
-			print("ObjectManager: Object does not have use method:", target)
-	elif action_type in ["place", "place_on"]:
+			print("ObjectManager: Object does not have place_object_at method in order to drop or place_location missing:", target)
+	elif action_type == "examine":
+		if obj.has_method("examine_object"):
+			obj.examine_object()
+		else:
+			print("ObjectManager: Object does not have examine_object method:", target)
+	elif action_type == "place":
 		if obj.has_method("place_object_at") and place_location != null:
 			obj.place_object_at(place_location)
 		else:
 			print("ObjectManager: Object does not have place_object_at method or place_location missing:", target)
-	elif action_type in ["open", "close"]:
-		var interactive_targets = ["toy_bin", "oven", "fridge", "medicine_cabinet", "bathroom_door", "entry_door"]
-		if to_snake_case(target) in interactive_targets:
-			var component = obj.get_node_or_null("InteractableComponent")
-			if component:
-				if action_type == "open":
-					component.interactable_activated.emit()
-				elif action_type == "close":
-					component.interactable_deactivated.emit()
-			else:
-				print("ObjectManager: No InteractableComponent found on object:", target)
-	elif action_type in ["turn_on", "turn_off"]:
-		var interactive_targets = ["coffee_maker", "faucet", "bathtub"]
-		if to_snake_case(target) in interactive_targets:
-			var component = obj.get_node_or_null("InteractableComponent")
-			if component:
-				if action_type == "turn_on":
-					component.interactable_activated.emit()
-				elif action_type == "turn_off":
-					component.interactable_deactivated.emit()
-			else:
-				print("ObjectManager: No InteractableComponent found on object:", target)
+	elif action_type == "consume":
+		if obj.has_method("consume_object"):
+			obj.consume_object()
+		elif obj.has_method("use"):
+			obj.use()
+		else:
+			print("ObjectManager: Object does not have consume_object or use method:", target)
+	elif action_type == "set_to_state":
+		if obj.has_method("set_to_state"):
+			obj.set_to_state(state)
+		else:
+			# Fallback: emit signals for known objects/states
+			var interactive_targets = ["fridge", "oven", "medicine_cabinet", "toy_bin", "bathroom_door", "entry_door", "coffee_maker", "faucet", "bathtub"]
+			if to_snake_case(target) in interactive_targets:
+				var component = obj.get_node_or_null("InteractableComponent")
+				if component:
+					if state in ["open", "on"]:
+						component.interactable_activated.emit()
+					elif state in ["closed", "off"]:
+						component.interactable_deactivated.emit()
+				else:
+					print("ObjectManager: No InteractableComponent found on object:", target)
+	elif action_type == "start_using":
+		if obj.has_method("start_using"):
+			obj.start_using()
+		else:
+			print("ObjectManager: Object does not have start_using method:", target)
+	elif action_type == "stop_using":
+		if obj.has_method("stop_using"):
+			obj.stop_using()
+		else:
+			print("ObjectManager: Object does not have stop_using method:", target)
+	elif action_type == "look":
+		print("Look action received. (No-op)")
+	elif action_type == "go_to":
+		pass # Navigation only
 
 func to_snake_case(name: String) -> String:
 	var snake = ""

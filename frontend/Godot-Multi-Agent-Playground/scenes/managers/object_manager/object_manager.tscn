@@ -330,10 +330,10 @@ position = Vector2(-47, -88)
 [node name="Sprite2D" type="Sprite2D" parent="LivingRoom/Bookshelf"]
 texture = SubResource("AtlasTexture_wuhae")
 
-[node name="TV" type="Node2D" parent="LivingRoom"]
+[node name="Tv" type="Node2D" parent="LivingRoom"]
 position = Vector2(10, -93)
 
-[node name="Sprite2D" type="Sprite2D" parent="LivingRoom/TV"]
+[node name="Sprite2D" type="Sprite2D" parent="LivingRoom/Tv"]
 texture = SubResource("AtlasTexture_07u5e")
 
 [node name="GameTable" type="Node2D" parent="LivingRoom"]

@@ -10,6 +10,7 @@ var speed: float = 50.0
 var last_direction: String = "down"
 var using_navigation := false
 var inventory: Array[String] = []
+var inventory_objects: Array = []
 
 signal reached_destination(action: Dictionary)
 
@@ -79,6 +80,11 @@ func _physics_process(delta: float) -> void:
 			animated_sprite_2d.play("idle_" + last_direction)
 	move_and_slide()
 
+	# Update inventory object positions to follow the agent
+	for obj in inventory_objects:
+		if obj:
+			obj.global_position = global_position
+
 # Set navigation using global position
 func navigate_to(target_position: Vector2) -> void:
 	var nav_map = navigation_agent_2d.get_navigation_map()
@@ -111,12 +117,27 @@ func add_to_inventory(item: String) -> void:
 	var key = to_snake_case(item)
 	if key not in inventory:
 		inventory.append(key)
+		# Add the object reference to inventory_objects
+		# possiby problamatic parent calling note
+		var object_manager = get_parent().get_parent().get_node("ObjectManager")
+		if object_manager:
+			var obj = object_manager.get_object_by_name(item)
+			if obj and obj not in inventory_objects:
+				inventory_objects.append(obj)
+				obj.global_position = global_position
+				obj.visible = false # Optionally hide the object
 
 # Removes an item from the inventory by name (standardized to snake_case)
 func remove_from_inventory(item: String) -> void:
 	var key = to_snake_case(item)
 	if key in inventory:
 		inventory.erase(key)
+		# Remove the object reference from inventory_objects
+		var object_manager = get_parent().get_parent().get_node("ObjectManager")
+		if object_manager:
+			var obj = object_manager.get_object_by_name(item)
+			if obj and obj in inventory_objects:
+				inventory_objects.erase(obj)
 
 # Prints the inventory in the specified format (underscores replaced by spaces)
 func print_inventory() -> void:

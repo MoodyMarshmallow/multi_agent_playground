@@ -73,7 +73,7 @@ func _handle_post_navigation_action(action: Dictionary):
 	var target = action.get("target", "")
 	if action_type == "take":
 		agent.add_to_inventory(target)
-	elif action_type in ["place", "place_on", "use"]:
+	elif action_type in ["place", "drop", "consume"]:
 		agent.remove_from_inventory(target)
 	elif action_type == "print_inventory":
 		agent.print_inventory()

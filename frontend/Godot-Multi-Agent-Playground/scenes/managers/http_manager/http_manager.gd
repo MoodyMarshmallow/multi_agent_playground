@@ -17,6 +17,10 @@ var print_http_responses := true
 
 @onready var action_manager: ActionManager = get_node("../ActionManager")
 
+func _ready() -> void:
+	print("Press i to view controls")
+	_print_instructions()
+
 func _input(event):
 	if event.is_action_pressed("display_instructions"):
 		_print_instructions()
@@ -72,6 +76,6 @@ func _print_instructions():
 	print("6: http_reset")
 	print("7: http_status")
 	print("Q: print_action_queue")
-	print("P: toggle_print_http_requests (toggle HTTP response printing)")
-	print("E: toggle_automatic_polling (no functionality yet)")
-	print("R: play_next_action_in_queue (no functionality yet)")
+	print("P: toggle_print_http_requests")
+	print("E: toggle_automatic_polling (automatic polling not set up yet because need to debug individual actions first)")
+	print("R: play_next_action_in_queue (MUST PRESS FOR AGENT TO TAKE NEXT ACTION)")

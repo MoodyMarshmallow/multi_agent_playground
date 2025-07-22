@@ -17,7 +17,6 @@ signal action(action : Dictionary)
 # Parses any input submitted through the debugging input line edit object (displayed at the bottom 
 # of the game screen)
 func _on_debugging_input_submitted(text: String) -> void:
-	print("Received debugging input: ", text)
 	_parse_action(text)
 
 # Matches strings of the types: 
@@ -33,21 +32,21 @@ func _parse_action(text: String):
 	var regex = RegEx.new()
 	var result
 
-	# place {target} on {recipient}
-	regex.compile("^place\\s+(\\w+)\\s+on\\s+(\\w+)$")
+	# place {item} on/in {object}
+	regex.compile("^place\\s+(\\w+)\\s+(on|in)\\s+(\\w+)$")
 	result = regex.search(text.strip_edges())
 	if result:
 		var target = _to_snake_case(result.get_string(1))
-		var recipient = _to_snake_case(result.get_string(2))
+		var recipient = _to_snake_case(result.get_string(3))
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
-			"action_type": "place_on",
+			"action_type": "place",
 			"target": target,
 			"recipient": recipient
 		})
 		return
 
-	# take {object}
+	# take {item}
 	regex.compile("^take\\s+(\\w+)$")
 	result = regex.search(text.strip_edges())
 	if result:
@@ -58,91 +57,70 @@ func _parse_action(text: String):
 		})
 		return
 
-	# place {object}
-	regex.compile("^place\\s+(\\w+)$")
+	# drop {item}
+	regex.compile("^drop\\s+(\\w+)$")
 	result = regex.search(text.strip_edges())
 	if result:
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
-			"action_type": "place",
+			"action_type": "drop",
 			"target": _to_snake_case(result.get_string(1))
 		})
 		return
 
-	# use {object}
-	regex.compile("^use\\s+(\\w+)$")
+	# examine {item}
+	regex.compile("^examine\\s+(\\w+)$")
 	result = regex.search(text.strip_edges())
 	if result:
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
-			"action_type": "use",
+			"action_type": "examine",
 			"target": _to_snake_case(result.get_string(1))
 		})
 		return
 
-	# open {object}
-	regex.compile("^open\\s+(\\w+)$")
+	# consume {item}
+	regex.compile("^consume\\s+(\\w+)$")
 	result = regex.search(text.strip_edges())
 	if result:
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
-			"action_type": "open",
+			"action_type": "consume",
 			"target": _to_snake_case(result.get_string(1))
 		})
 		return
 
-	# close {object}
-	regex.compile("^close\\s+(\\w+)$")
+	# set {object} to {state}
+	regex.compile("^set\\s+(\\w+)\\s+to\\s+(\\w+)$")
 	result = regex.search(text.strip_edges())
 	if result:
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
-			"action_type": "close",
+			"action_type": "set_to_state",
+			"target": _to_snake_case(result.get_string(1)),
+			"state": _to_snake_case(result.get_string(2))
+		})
+		return
+
+	# start_using {object}
+	regex.compile("^start_using\\s+(\\w+)$")
+	result = regex.search(text.strip_edges())
+	if result:
+		emit_signal("action", {
+			"agent_id": "DebugAgent",
+			"action_type": "start_using",
 			"target": _to_snake_case(result.get_string(1))
 		})
 		return
 
-	# turn_on {object}
-	regex.compile("^turn[_ ]on\\s+(\\w+)$")
+	# stop_using {object}
+	regex.compile("^stop_using\\s+(\\w+)$")
 	result = regex.search(text.strip_edges())
 	if result:
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
-			"action_type": "turn_on",
+			"action_type": "stop_using",
 			"target": _to_snake_case(result.get_string(1))
-		})
-		return
-
-	# turn_off {object}
-	regex.compile("^turn[_ ]off\\s+(\\w+)$")
-	result = regex.search(text.strip_edges())
-	if result:
-		emit_signal("action", {
-			"agent_id": "DebugAgent",
-			"action_type": "turn_off",
-			"target": _to_snake_case(result.get_string(1))
-		})
-		return
-
-	# clean {object}
-	regex.compile("^clean\\s+(\\w+)$")
-	result = regex.search(text.strip_edges())
-	if result:
-		emit_signal("action", {
-			"agent_id": "DebugAgent",
-			"action_type": "clean_item",
-			"target": _to_snake_case(result.get_string(1))
-		})
-		return
-
-	# tidy bed
-	regex.compile("^tidy\\s+bed$")
-	result = regex.search(text.strip_edges())
-	if result:
-		emit_signal("action", {
-			"agent_id": "DebugAgent",
-			"action_type": "tidy_bed",
-			"target": "bed"
 		})
 		return
 
@@ -155,6 +133,16 @@ func _parse_action(text: String):
 			"agent_id": "DebugAgent",
 			"action_type": "go_to",
 			"target": target
+		})
+		return
+
+	# look
+	regex.compile("^look$")
+	result = regex.search(text.strip_edges())
+	if result:
+		emit_signal("action", {
+			"agent_id": "DebugAgent",
+			"action_type": "look"
 		})
 		return
 

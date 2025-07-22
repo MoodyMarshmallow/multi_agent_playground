@@ -16,6 +16,7 @@ func add_actions_from_http(actions: Array) -> void:
 func play_next_action_in_queue() -> void:
 	if action_queue.size() > 0:
 		var next_action = action_queue.pop_front()
+		print("playing action: ", next_action)
 		general_action.emit(next_action)
 	else:
 		print("[ActionManager] Action queue is empty.")
@@ -36,8 +37,12 @@ func print_action_queue() -> void:
 	# "open", "close", "turn_on", "turn_off", "clean_item", "tidy_bed",
 	# "go_to"
 # ]
-# target: str
+# (Here are the updated action types)
+# action_type: Literal[look, go_to, take, drop, examine, place, consume, set_to_state, start_using, stop_using]
+# target: str (Not for look action)
 # recipient: Optional[str] = None  # Only for place_on
+# state: (for setting objects to a new state)
 
 func _on_action_received(action: Dictionary):
-	general_action.emit(action)
+	action_queue.append(action)
+	#general_action.emit(action)
