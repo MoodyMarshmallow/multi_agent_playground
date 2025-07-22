@@ -68,6 +68,9 @@ func _on_http_request_completed(result, response_code, headers, body, action_nam
 func _print_instructions():
 	print("--- Controls ---")
 	print("i: Display instructions")
+	print("arrow keys: Move camera")
+	print("cmd +, cmd - : Zoom camera")
+	print("shift - (_): Reset camera")
 	print("1: http_next")
 	print("2: http_states")
 	print("3: http_objects")

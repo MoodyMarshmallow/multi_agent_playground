@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://d2w7jnxghravp"]
+
+[ext_resource type="Script" path="res://scenes/houses/objects/base_object/base_object.gd" id="1_7mpif"]
+[ext_resource type="Texture2D" uid="uid://d0chwjabiavh6" path="res://assets/game/food/mega_food_pack/red-apple.png" id="2_gmxru"]
+
+[node name="Apple" type="Node2D"]
+visible = false
+position = Vector2(-58, -23)
+script = ExtResource("1_7mpif")
+start_visible = false
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-9.83477e-07, -7)
+scale = Vector2(1.375, 1.375)
+texture = ExtResource("2_gmxru")

@@ -42,7 +42,8 @@ func _parse_action(text: String):
 			"agent_id": "DebugAgent",
 			"action_type": "place",
 			"target": target,
-			"recipient": recipient
+			"recipient": recipient,
+			"description": "debugging place action"
 		})
 		return
 
@@ -53,7 +54,8 @@ func _parse_action(text: String):
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
 			"action_type": "take",
-			"target": _to_snake_case(result.get_string(1))
+			"target": _to_snake_case(result.get_string(1)),
+			"description": "debugging take action"
 		})
 		return
 
@@ -64,7 +66,8 @@ func _parse_action(text: String):
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
 			"action_type": "drop",
-			"target": _to_snake_case(result.get_string(1))
+			"target": _to_snake_case(result.get_string(1)),
+			"description": "debugging drop action"
 		})
 		return
 
@@ -75,7 +78,8 @@ func _parse_action(text: String):
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
 			"action_type": "examine",
-			"target": _to_snake_case(result.get_string(1))
+			"target": _to_snake_case(result.get_string(1)),
+			"description": "debugging examine action"
 		})
 		return
 
@@ -86,7 +90,8 @@ func _parse_action(text: String):
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
 			"action_type": "consume",
-			"target": _to_snake_case(result.get_string(1))
+			"target": _to_snake_case(result.get_string(1)),
+			"description": "debugging consume action"
 		})
 		return
 
@@ -98,7 +103,8 @@ func _parse_action(text: String):
 			"agent_id": "DebugAgent",
 			"action_type": "set_to_state",
 			"target": _to_snake_case(result.get_string(1)),
-			"state": _to_snake_case(result.get_string(2))
+			"state": _to_snake_case(result.get_string(2)),
+			"description": "debugging set_to_state action"
 		})
 		return
 
@@ -109,7 +115,8 @@ func _parse_action(text: String):
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
 			"action_type": "start_using",
-			"target": _to_snake_case(result.get_string(1))
+			"target": _to_snake_case(result.get_string(1)),
+			"description": "debugging start_using action"
 		})
 		return
 
@@ -120,7 +127,8 @@ func _parse_action(text: String):
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
 			"action_type": "stop_using",
-			"target": _to_snake_case(result.get_string(1))
+			"target": _to_snake_case(result.get_string(1)),
+			"description": "debugging stop_using action"
 		})
 		return
 
@@ -132,7 +140,8 @@ func _parse_action(text: String):
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
 			"action_type": "go_to",
-			"target": target
+			"target": target,
+			"description": "debugging go_to action"
 		})
 		return
 
@@ -142,7 +151,8 @@ func _parse_action(text: String):
 	if result:
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
-			"action_type": "look"
+			"action_type": "look",
+			"description": "debugging look action"
 		})
 		return
 
@@ -152,7 +162,8 @@ func _parse_action(text: String):
 	if result:
 		emit_signal("action", {
 			"agent_id": "DebugAgent",
-			"action_type": "print_inventory"
+			"action_type": "print_inventory",
+			"description": "debugging print_inventory action"
 		})
 		return
 

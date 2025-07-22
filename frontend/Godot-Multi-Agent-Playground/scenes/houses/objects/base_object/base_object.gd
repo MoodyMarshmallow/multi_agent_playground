@@ -16,5 +16,11 @@ func place_object_at(pos: Vector2) -> void:
 	visible = true
 
 # Destroys the object (e.g., when used)
+func consume() -> void:
+	queue_free()
+	
 func use() -> void:
 	queue_free()
+
+func examine_object() -> void:
+	print("Examining ", self.name.to_lower())

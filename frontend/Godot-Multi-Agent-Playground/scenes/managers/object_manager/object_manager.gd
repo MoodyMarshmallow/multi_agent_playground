@@ -115,7 +115,12 @@ func get_room_by_name(room_name: String) -> Node2D:
 # Returns a Node2D corresponding to the object with the provided object_name
 func get_object_by_name(object_name: String) -> Node2D:
 	var key = to_snake_case(object_name)
-	return objects.get(key, null)
+	var obj = objects.get(key, null)
+	if obj == null or not is_instance_valid(obj):
+		# Clean dictionary
+		objects.erase(key)
+		return null
+	return obj
 
 # Returns the global position of a room (usually around the center of the room)
 func get_room_location(room: String) -> Vector2:
@@ -142,3 +147,7 @@ func get_location(name: String) -> Vector2:
 	if room_node:
 		return room_node.global_position
 	return Vector2(-INF, -INF)
+
+func remove_object_by_name(object_name: String) -> void:
+	var key = to_snake_case(object_name)
+	objects.erase(key)

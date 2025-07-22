@@ -16,7 +16,8 @@ func add_actions_from_http(actions: Array) -> void:
 func play_next_action_in_queue() -> void:
 	if action_queue.size() > 0:
 		var next_action = action_queue.pop_front()
-		print("playing action: ", next_action)
+		print("Playing action: ", next_action)
+		print("Description: ", next_action.description)
 		general_action.emit(next_action)
 	else:
 		print("[ActionManager] Action queue is empty.")
@@ -44,5 +45,6 @@ func print_action_queue() -> void:
 # state: (for setting objects to a new state)
 
 func _on_action_received(action: Dictionary):
-	action_queue.append(action)
-	#general_action.emit(action)
+	#action_queue.append(action)
+	print("Playing action: ", action)
+	general_action.emit(action)

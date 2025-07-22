@@ -115,17 +115,19 @@ func to_snake_case(name: String) -> String:
 # Adds an item to the inventory by name (standardized to snake_case)
 func add_to_inventory(item: String) -> void:
 	var key = to_snake_case(item)
-	if key not in inventory:
-		inventory.append(key)
-		# Add the object reference to inventory_objects
-		# possiby problamatic parent calling note
-		var object_manager = get_parent().get_parent().get_node("ObjectManager")
-		if object_manager:
-			var obj = object_manager.get_object_by_name(item)
-			if obj and obj not in inventory_objects:
-				inventory_objects.append(obj)
-				obj.global_position = global_position
-				obj.visible = false # Optionally hide the object
+	# Only add if the object exists in the object manager
+	var object_manager = get_parent().get_parent().get_node("ObjectManager")
+	if object_manager:
+		var obj = object_manager.get_object_by_name(item)
+		if obj and is_instance_valid(obj):
+			if key not in inventory:
+				inventory.append(key)
+				if obj not in inventory_objects:
+					inventory_objects.append(obj)
+					obj.global_position = global_position
+					obj.visible = false # Optionally hide the object
+		else:
+			print("[BaseAgent] Tried to add invalid or non-existent item to inventory: ", item)
 
 # Removes an item from the inventory by name (standardized to snake_case)
 func remove_from_inventory(item: String) -> void:
