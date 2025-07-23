@@ -17,14 +17,17 @@ func play_next_action_in_queue() -> void:
 	if action_queue.size() > 0:
 		var next_action = action_queue.pop_front()
 		print("Playing action: ", next_action)
-		print("Description: ", next_action.description)
+		if next_action.has("description"):
+			print("Description: ", next_action.description)
+		else:
+			print("Description: No description")
 		general_action.emit(next_action)
 	else:
 		print("[ActionManager] Action queue is empty.")
 
 # Print the current action queue for debugging
 func print_action_queue() -> void:
-	print("[ActionManager] Current action queue:")
+	print("\n\n[ActionManager] Current action queue:")
 	for i in range(action_queue.size()):
 		print(str(i) + ": ", action_queue[i])
 

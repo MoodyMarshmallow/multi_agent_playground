@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=4 uid="uid://bj0a80truw774"]
+[gd_scene load_steps=20 format=4 uid="uid://bj0a80truw774"]
 
 [ext_resource type="Script" path="res://scenes/managers/game_manager/game_manager.gd" id="1_t3e5b"]
 [ext_resource type="Script" path="res://scripts/camera/camera_2d.gd" id="2_qed10"]
@@ -7,7 +7,9 @@
 [ext_resource type="PackedScene" uid="uid://dsv32w5f65vpb" path="res://scenes/managers/http_manager/http_manager.tscn" id="6_fqhw5"]
 [ext_resource type="Script" path="res://scenes/managers/http_manager/http_manager.gd" id="7_tgdes"]
 [ext_resource type="PackedScene" uid="uid://87lmxewh1kml" path="res://scenes/managers/object_manager/object_manager.tscn" id="9_baa1i"]
+[ext_resource type="PackedScene" uid="uid://deei71h1kowkb" path="res://scenes/characters/agents/base_agent/base_agent.tscn" id="15_1bxtn"]
 [ext_resource type="PackedScene" uid="uid://cllfcrk1gqj8i" path="res://scenes/characters/agents/debug_agent/debug_agent.tscn" id="15_k8cdm"]
+[ext_resource type="PackedScene" uid="uid://drn0vi7trcfn8" path="res://scenes/characters/agents/alex_001/alex_001.tscn" id="16_4bjji"]
 [ext_resource type="PackedScene" uid="uid://mgbup0ujo054" path="res://scenes/managers/text_input_manager/text_input_manager.tscn" id="30_jlvj1"]
 [ext_resource type="PackedScene" uid="uid://d1gdbqhr6vn37" path="res://scenes/ui/user_input/debugging_input/debugging_input.tscn" id="31_lybr2"]
 [ext_resource type="PackedScene" uid="uid://d0q8ov4ixqehc" path="res://scenes/managers/action_manager/action_manager.tscn" id="32_phh36"]
@@ -82,5 +84,14 @@ script = ExtResource("33_vjvrh")
 script = ExtResource("33_2j1pe")
 
 [node name="DebugAgent" parent="AgentManager" instance=ExtResource("15_k8cdm")]
+visible = false
 position = Vector2(103, 280)
 agent_id = "DebugAgent"
+
+[node name="alan_002" parent="AgentManager" instance=ExtResource("15_1bxtn")]
+position = Vector2(166, 236)
+agent_id = "alan_002"
+
+[node name="alex_001" parent="AgentManager" instance=ExtResource("16_4bjji")]
+position = Vector2(177, 83)
+agent_id = "alex_001"

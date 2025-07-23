@@ -28,9 +28,19 @@ func _on_debugging_input_submitted(text: String) -> void:
 # type tidy_bed and target bed. For go_to {room} the target will be the room to 
 # go to instead of an object
 
+var current_agent_id: String = "DebugAgent"
+
 func _parse_action(text: String):
 	var regex = RegEx.new()
 	var result
+
+	# agent_id: {agent_id}
+	regex.compile("^agent_id:\\s*(\\w+)$")
+	result = regex.search(text.strip_edges())
+	if result:
+		current_agent_id = result.get_string(1)
+		print("[TextInputManager] Set current_agent_id to: ", current_agent_id)
+		return
 
 	# place {item} on/in {object}
 	regex.compile("^place\\s+(\\w+)\\s+(on|in)\\s+(\\w+)$")
@@ -39,7 +49,7 @@ func _parse_action(text: String):
 		var target = _to_snake_case(result.get_string(1))
 		var recipient = _to_snake_case(result.get_string(3))
 		emit_signal("action", {
-			"agent_id": "DebugAgent",
+			"agent_id": current_agent_id,
 			"action_type": "place",
 			"target": target,
 			"recipient": recipient,
@@ -52,7 +62,7 @@ func _parse_action(text: String):
 	result = regex.search(text.strip_edges())
 	if result:
 		emit_signal("action", {
-			"agent_id": "DebugAgent",
+			"agent_id": current_agent_id,
 			"action_type": "take",
 			"target": _to_snake_case(result.get_string(1)),
 			"description": "debugging take action"
@@ -64,7 +74,7 @@ func _parse_action(text: String):
 	result = regex.search(text.strip_edges())
 	if result:
 		emit_signal("action", {
-			"agent_id": "DebugAgent",
+			"agent_id": current_agent_id,
 			"action_type": "drop",
 			"target": _to_snake_case(result.get_string(1)),
 			"description": "debugging drop action"
@@ -76,7 +86,7 @@ func _parse_action(text: String):
 	result = regex.search(text.strip_edges())
 	if result:
 		emit_signal("action", {
-			"agent_id": "DebugAgent",
+			"agent_id": current_agent_id,
 			"action_type": "examine",
 			"target": _to_snake_case(result.get_string(1)),
 			"description": "debugging examine action"
@@ -88,7 +98,7 @@ func _parse_action(text: String):
 	result = regex.search(text.strip_edges())
 	if result:
 		emit_signal("action", {
-			"agent_id": "DebugAgent",
+			"agent_id": current_agent_id,
 			"action_type": "consume",
 			"target": _to_snake_case(result.get_string(1)),
 			"description": "debugging consume action"
@@ -100,7 +110,7 @@ func _parse_action(text: String):
 	result = regex.search(text.strip_edges())
 	if result:
 		emit_signal("action", {
-			"agent_id": "DebugAgent",
+			"agent_id": current_agent_id,
 			"action_type": "set_to_state",
 			"target": _to_snake_case(result.get_string(1)),
 			"state": _to_snake_case(result.get_string(2)),
@@ -113,7 +123,7 @@ func _parse_action(text: String):
 	result = regex.search(text.strip_edges())
 	if result:
 		emit_signal("action", {
-			"agent_id": "DebugAgent",
+			"agent_id": current_agent_id,
 			"action_type": "start_using",
 			"target": _to_snake_case(result.get_string(1)),
 			"description": "debugging start_using action"
@@ -125,7 +135,7 @@ func _parse_action(text: String):
 	result = regex.search(text.strip_edges())
 	if result:
 		emit_signal("action", {
-			"agent_id": "DebugAgent",
+			"agent_id": current_agent_id,
 			"action_type": "stop_using",
 			"target": _to_snake_case(result.get_string(1)),
 			"description": "debugging stop_using action"
@@ -138,7 +148,7 @@ func _parse_action(text: String):
 	if result:
 		var target = _to_snake_case(result.get_string(2))
 		emit_signal("action", {
-			"agent_id": "DebugAgent",
+			"agent_id": current_agent_id,
 			"action_type": "go_to",
 			"target": target,
 			"description": "debugging go_to action"
@@ -150,7 +160,7 @@ func _parse_action(text: String):
 	result = regex.search(text.strip_edges())
 	if result:
 		emit_signal("action", {
-			"agent_id": "DebugAgent",
+			"agent_id": current_agent_id,
 			"action_type": "look",
 			"description": "debugging look action"
 		})
@@ -161,7 +171,7 @@ func _parse_action(text: String):
 	result = regex.search(text.strip_edges())
 	if result:
 		emit_signal("action", {
-			"agent_id": "DebugAgent",
+			"agent_id": current_agent_id,
 			"action_type": "print_inventory",
 			"description": "debugging print_inventory action"
 		})

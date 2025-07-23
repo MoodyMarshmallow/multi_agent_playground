@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://drn0vi7trcfn8"]
+
+[ext_resource type="Script" path="res://scenes/characters/agents/base_agent/base_agent.gd" id="1_a1q4m"]
+[ext_resource type="SpriteFrames" uid="uid://3tn4pbylja6i" path="res://assets/game/characters/agents/sprite_frames/amelia_003_sprite_frames.tres" id="2_qakal"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_8b2b5"]
+radius = 1.0
+
+[node name="alex_001" type="CharacterBody2D"]
+script = ExtResource("1_a1q4m")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = ExtResource("2_qakal")
+animation = &"idle_down"
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_8b2b5")

@@ -9,7 +9,6 @@ extends Node2D
 
 @onready var object_manager: ObjectManager = $ObjectManager
 @onready var agent_manager: AgentManager = $AgentManager
-@onready var debug_player: DebugPlayer = $DebugPlayer
 
 func _ready():
 	debugging_input.connect("debugging_input_submitted", Callable(text_input_manager, "_on_debugging_input_submitted"))
