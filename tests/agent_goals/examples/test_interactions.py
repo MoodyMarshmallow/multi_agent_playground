@@ -41,7 +41,7 @@ async def test_agent_item_delivery():
             name="delivery_agent"
         ),
         success_criteria=[
-            ActionCriterion(action_type="give_item", target="alex_001", item="apple")
+            ActionCriterion(action_type="place", target="apple")
         ],
         max_turns=30
     )
@@ -50,10 +50,10 @@ async def test_agent_item_delivery():
     result = await runner.run_test(test)
     
     assert result.success
-    # Check that the give action was performed
-    give_actions = [action for action in result.action_sequence 
-                   if hasattr(action.action, 'action_type') and action.action.action_type == "give_item"]
-    assert len(give_actions) > 0
+    # Check that the place action was performed
+    place_actions = [action for action in result.action_sequence 
+                    if hasattr(action.action, 'action_type') and action.action.action_type == "place"]
+    assert len(place_actions) > 0
 
 
 @pytest.mark.asyncio
@@ -70,7 +70,7 @@ async def test_agent_object_interaction():
             name="interaction_agent"
         ),
         success_criteria=[
-            ActionCriterion(action_type="open_item", target="closet")
+            ActionCriterion(action_type="set_to_state", target="closet")
         ],
         max_turns=15
     )
@@ -79,10 +79,10 @@ async def test_agent_object_interaction():
     result = await runner.run_test(test)
     
     assert result.success
-    # Check that the open action was performed
-    open_actions = [action for action in result.action_sequence 
-                   if hasattr(action.action, 'action_type') and action.action.action_type == "open_item"]
-    assert len(open_actions) > 0
+    # Check that the set_to_state action was performed
+    state_actions = [action for action in result.action_sequence 
+                    if hasattr(action.action, 'action_type') and action.action.action_type == "set_to_state"]
+    assert len(state_actions) > 0
 
 
 @pytest.mark.asyncio
@@ -183,7 +183,7 @@ if __name__ == "__main__":
             description="Simple interaction test",
             initial_world_state=WorldStateConfig(agent_location="Bedroom"),
             agent_config=AgentConfig(name="test_agent"),
-            success_criteria=[ActionCriterion(action_type="open_item", target="closet")],
+            success_criteria=[ActionCriterion(action_type="set_to_state", target="closet")],
             max_turns=15
         )
         

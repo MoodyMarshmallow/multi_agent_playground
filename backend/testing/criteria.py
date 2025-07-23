@@ -250,3 +250,207 @@ class ActionSequenceCriterion(Criterion):
         
         order_desc = "in order" if self.strict_order else "in any order"
         return f"Perform actions {order_desc}: {', '.join(self.actions)}"
+
+
+# Object-Centric Architecture Criteria
+
+@dataclass
+class ObjectStateCriterion(Criterion):
+    """Criterion based on smart object state (on/off, open/closed, etc.)"""
+    object_name: str
+    state_property: str  # e.g., "is_active", "is_open" 
+    expected_value: Any  # e.g., True, False, "open"
+    
+    def check(self, game_state: Dict[str, Any], action_history: List[Any]) -> bool:
+        # Get object state from game state
+        objects = game_state.get("world_objects", {})
+        for location_objects in objects.values():
+            if self.object_name in location_objects:
+                obj = location_objects[self.object_name]
+                if hasattr(obj, self.state_property):
+                    actual_value = getattr(obj, self.state_property)
+                    # Handle callable properties like is_active()
+                    if callable(actual_value):
+                        actual_value = actual_value()
+                    return actual_value == self.expected_value
+        return False
+    
+    def describe(self) -> str:
+        return f"Object {self.object_name}.{self.state_property} should be {self.expected_value}"
+
+
+@dataclass
+class CapabilityUsageCriterion(Criterion):
+    """Criterion based on successful use of object capabilities"""
+    object_name: str
+    capability_type: str  # e.g., "Activatable", "Usable", "Container"
+    
+    def check(self, game_state: Dict[str, Any], action_history: List[Any]) -> bool:
+        # Check if agent successfully used capability
+        capability_actions = {
+            "Activatable": ["set_to_state"],
+            "Usable": ["start_using", "stop_using"],  
+            "Container": ["place", "set_to_state"],
+            "Openable": ["set_to_state"],
+            "Consumable": ["consume"],
+            "Examinable": ["examine"]
+        }
+        
+        required_actions = capability_actions.get(self.capability_type, [])
+        
+        for action_output in action_history:
+            if hasattr(action_output, 'action') and hasattr(action_output.action, 'action_type'):
+                if (action_output.action.action_type in required_actions and 
+                    hasattr(action_output.action, 'target') and 
+                    action_output.action.target == self.object_name):
+                    return True
+        return False
+    
+    def describe(self) -> str:
+        return f"Agent should use {self.capability_type} capability on {self.object_name}"
+
+
+@dataclass
+class SmartObjectInteractionCriterion(Criterion):
+    """Criterion for specific smart object interactions"""
+    object_name: str
+    interaction_type: str  # e.g., "activate", "open", "use", "place_item"
+    success_required: bool = True
+    
+    def check(self, game_state: Dict[str, Any], action_history: List[Any]) -> bool:
+        interaction_map = {
+            "activate": "set_to_state",
+            "open": "set_to_state", 
+            "close": "set_to_state",
+            "use": "start_using",
+            "stop_use": "stop_using",
+            "place_item": "place",
+            "consume": "consume",
+            "examine": "examine"
+        }
+        
+        target_action = interaction_map.get(self.interaction_type)
+        if not target_action:
+            return False
+            
+        for action_output in action_history:
+            if (hasattr(action_output, 'action') and 
+                hasattr(action_output.action, 'action_type') and
+                action_output.action.action_type == target_action):
+                
+                if hasattr(action_output.action, 'target'):
+                    if action_output.action.target == self.object_name:
+                        # Check if success is required
+                        if self.success_required:
+                            return not hasattr(action_output, 'success') or action_output.success
+                        return True
+        return False
+    
+    def describe(self) -> str:
+        success_desc = " successfully" if self.success_required else ""
+        return f"Agent should{success_desc} {self.interaction_type} {self.object_name}"
+
+
+@dataclass  
+class ContainerOperationCriterion(Criterion):
+    """Criterion for container operations (open, place, remove)"""
+    container_name: str
+    operations: List[str]  # e.g., ["open", "place_item", "close"]
+    strict_order: bool = False
+    
+    def check(self, game_state: Dict[str, Any], action_history: List[Any]) -> bool:
+        operation_map = {
+            "open": "set_to_state",
+            "close": "set_to_state", 
+            "place_item": "place",
+            "remove_item": "take",  # taking from container
+        }
+        
+        # Extract actions targeting this container
+        container_actions = []
+        for action_output in action_history:
+            if (hasattr(action_output, 'action') and 
+                hasattr(action_output.action, 'action_type')):
+                
+                action = action_output.action
+                # Check if action targets this container
+                if (hasattr(action, 'target') and action.target == self.container_name) or \
+                   (hasattr(action, 'recipient') and action.recipient == self.container_name):
+                    container_actions.append(action.action_type)
+        
+        # Check if required operations were performed
+        required_action_types = [operation_map[op] for op in self.operations if op in operation_map]
+        
+        if self.strict_order:
+            # Check if actions appear in required order
+            required_index = 0
+            for action_type in container_actions:
+                if (required_index < len(required_action_types) and 
+                    action_type == required_action_types[required_index]):
+                    required_index += 1
+            return required_index == len(required_action_types)
+        else:
+            # Check if all required actions were performed
+            return all(action_type in container_actions for action_type in required_action_types)
+    
+    def describe(self) -> str:
+        order_desc = " in order" if self.strict_order else ""
+        return f"Perform operations on {self.container_name}{order_desc}: {', '.join(self.operations)}"
+
+
+@dataclass
+class FurnitureUsageCriterion(Criterion):
+    """Criterion for furniture usage (sitting, sleeping, etc.)"""
+    furniture_name: str
+    usage_type: str  # e.g., "sit", "sleep", "use"
+    
+    def check(self, game_state: Dict[str, Any], action_history: List[Any]) -> bool:
+        for action_output in action_history:
+            if (hasattr(action_output, 'action') and 
+                hasattr(action_output.action, 'action_type') and
+                action_output.action.action_type == "start_using"):
+                
+                if (hasattr(action_output.action, 'target') and 
+                    action_output.action.target == self.furniture_name):
+                    return True
+        return False
+    
+    def describe(self) -> str:
+        return f"Agent should {self.usage_type} on {self.furniture_name}"
+
+
+@dataclass
+class CapabilityDiscoveryCriterion(Criterion):
+    """Criterion for testing capability discovery and usage"""
+    object_name: str
+    expected_capabilities: List[str]  # e.g., ["Activatable", "Examinable"]
+    
+    def check(self, game_state: Dict[str, Any], action_history: List[Any]) -> bool:
+        # Check if agent discovered and used the expected capabilities
+        capability_actions = {
+            "Activatable": ["set_to_state"],
+            "Usable": ["start_using", "stop_using"],
+            "Container": ["place"],
+            "Openable": ["set_to_state"], 
+            "Consumable": ["consume"],
+            "Examinable": ["examine"]
+        }
+        
+        used_capabilities = set()
+        
+        for action_output in action_history:
+            if (hasattr(action_output, 'action') and 
+                hasattr(action_output.action, 'action_type')):
+                
+                action = action_output.action
+                if hasattr(action, 'target') and action.target == self.object_name:
+                    # Check which capability was used
+                    for capability, actions in capability_actions.items():
+                        if action.action_type in actions:
+                            used_capabilities.add(capability)
+        
+        # Check if all expected capabilities were used
+        return all(cap in used_capabilities for cap in self.expected_capabilities)
+    
+    def describe(self) -> str:
+        return f"Agent should discover and use capabilities on {self.object_name}: {', '.join(self.expected_capabilities)}"

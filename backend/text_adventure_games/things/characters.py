@@ -1,9 +1,11 @@
 from .base import Thing
 from .items import Item
 from .locations import Location
+from backend.text_adventure_games.capabilities import ActionResult, Recipient, Giver, Conversational, Examinable
+from typing import Dict, Any
 
 
-class Character(Thing):
+class Character(Thing, Recipient, Giver, Conversational, Examinable):
     """
     This class represents the player and non-player characters (NPC).
     Characters have:
@@ -22,15 +24,23 @@ class Character(Thing):
     """
 
     def __init__(
-        self, name: str, description: str, persona: str,
+        self, name: str, description: str, persona: str = "",
     ):
         super().__init__(name, description)
+        
+        # Existing character properties (maintain compatibility with current agent system)
+        self.persona = persona  # Used by Kani agents for AI personality
+        self.inventory = {}     # Dict mapping item_name -> Item (existing pattern)
+        self.location = None    # Current Location object
+        self.current_container = None  # Track if character is inside a container
+        
+        # Existing properties (maintain compatibility)
         self.set_property("character_type", "notset")
         self.set_property("is_dead", False)
-        self.persona = persona
-        self.inventory = {}
-        self.location = None
-        self.current_container = None  # Track if character is inside a container
+        self.gettable = False
+        
+        # Character limits for gameplay balance
+        self.max_inventory = 10
 
     def to_primitive(self):
         """
@@ -95,3 +105,120 @@ class Character(Thing):
         """
         item.owner = None
         self.inventory.pop(item.name)
+    
+    # === CAPABILITY IMPLEMENTATIONS ===
+    
+    # Recipient capability - for PlaceAction (giving items to characters)
+    def receive_item(self, item, giver) -> ActionResult:
+        """
+        Handle receiving items from other characters or containers.
+        This enables PlaceAction to work with characters as recipients.
+        """
+        if len(self.inventory) >= self.max_inventory:
+            return ActionResult(f"{self.name}'s hands are full", success=False)
+        
+        if item.name in self.inventory:
+            return ActionResult(f"{self.name} already has a {item.name}", success=False)
+        
+        # Use existing method to maintain compatibility
+        self.add_to_inventory(item)
+        
+        # Remove from giver's inventory if they have one
+        if hasattr(giver, 'inventory') and item.name in giver.inventory:
+            giver.remove_from_inventory(item)
+        
+        return ActionResult(f"{giver.name} gives the {item.name} to {self.name}")
+    
+    def can_receive(self, item) -> bool:
+        """Check if character can receive an item"""
+        return len(self.inventory) < self.max_inventory and item.name not in self.inventory
+    
+    # Giver capability - for characters giving items to others
+    def give_item(self, item_name: str, recipient) -> ActionResult:
+        """
+        Handle giving items to other characters or containers.
+        This enables enhanced giving mechanics.
+        """
+        if not self.has_item(item_name):
+            return ActionResult(f"{self.name} doesn't have a {item_name}", success=False)
+        
+        if not hasattr(recipient, 'can_receive') or not recipient.can_receive(self.inventory[item_name]):
+            return ActionResult(f"{recipient.name} can't take the {item_name}", success=False)
+        
+        item = self.inventory[item_name]
+        return recipient.receive_item(item, self)
+    
+    def has_item(self, item_name: str) -> bool:
+        """Check if character has specific item"""
+        return item_name in self.inventory
+    
+    # Conversational capability - for talk actions
+    def talk_to(self, speaker, message: str = "") -> ActionResult:
+        """
+        Handle conversations with this character.
+        For AI-controlled characters, this could integrate with their persona.
+        """
+        if speaker == self:
+            return ActionResult("You can't talk to yourself", success=False)
+        
+        if message:
+            response = f"{speaker.name} says to {self.name}: '{message}'"
+        else:
+            response = f"{speaker.name} talks to {self.name}"
+        
+        # For AI agents, could generate persona-based responses
+        # This doesn't interfere with Kani agents - they still use submit_command()
+        if self.persona and len(self.persona) > 0:
+            # Simple acknowledgment that shows persona awareness
+            response += f"\n{self.name} listens thoughtfully"
+        
+        return ActionResult(response)
+    
+    def can_talk(self) -> bool:
+        """Characters can always be talked to"""
+        return True
+    
+    # Examinable capability - for examine actions
+    def examine(self, examiner) -> ActionResult:
+        """
+        Provide detailed character examination.
+        Shows description, persona hints, and visible inventory.
+        """
+        desc = f"{self.description}"
+        
+        # Add persona hints without revealing the full prompt (keeps AI agent privacy)
+        if self.persona and len(self.persona) > 0:
+            desc += f" {self.name} has a thoughtful demeanor."
+        
+        # Show visible inventory items
+        if self.inventory:
+            visible_items = [name for name, item in self.inventory.items() 
+                           if not item.get_property("hidden", False)]
+            if visible_items:
+                items_list = ", ".join(visible_items)
+                desc += f" {self.name} is carrying: {items_list}."
+        else:
+            desc += f" {self.name} doesn't appear to be carrying anything."
+        
+        return ActionResult(desc)
+    
+    # === AGENT SYSTEM INTEGRATION HELPERS ===
+    
+    def get_agent_state(self) -> Dict[str, Any]:
+        """
+        Helper method for game loop integration.
+        Returns agent state in format expected by current system.
+        """
+        return {
+            "agent_id": self.name,
+            "location": self.location.name if self.location else None,
+            "inventory": list(self.inventory.keys()),
+            "properties": self.properties
+        }
+    
+    def is_ai_controlled(self) -> bool:
+        """
+        Helper to check if this character is controlled by a Kani agent.
+        Can be used to determine if character should respond automatically.
+        """
+        return self.get_property("character_type") == "ai_agent"
