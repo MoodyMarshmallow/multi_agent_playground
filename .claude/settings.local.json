@@ -1,10 +1,39 @@
 {
   "permissions": {
-    "allow": [
+    "deny": [
+      "Read(.env)",
+      "Read(**/.env*)",
+      "Read(**/env*)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(**/*.crt)",
+      "Read(**/*.cert)",
+      "Read(**/secrets/**)",
+      "Read(**/credentials/**)",
       "WebFetch(domain:kani.readthedocs.io)",
       "mcp__sequential-thinking__sequentialthinking"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Edit|MultiEdit|Write",
+        "hooks": [
+
+        ]
+      }
     ],
-    "deny": []
+    "PostToolUse": [
+      {
+        "matcher": "Read|Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/python_check.py"
+          }
+        ]
+      }
+    ]
   },
   "env" : {
     "BASH_MAX_TIMEOUT_MS": "120000"

@@ -7,7 +7,10 @@ through various capabilities.
 
 from backend.text_adventure_games.things.base import Thing
 from backend.text_adventure_games.capabilities import ActionResult, Activatable, Usable, Examinable, Openable, Container as ContainerCapability
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from backend.text_adventure_games.things.characters import Character
 
 
 class Object(Thing):
