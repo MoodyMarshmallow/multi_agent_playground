@@ -17,11 +17,6 @@ class Direction(str, Enum):
     EAST = "east"
     WEST = "west"
 
-class ToggleState(str, Enum):
-    """Common toggle states"""
-    ON = "on"
-    OFF = "off"
-
 class BaseAction(BaseModel):
     """Base class for all actions"""
     action_type: str
@@ -34,10 +29,6 @@ class ItemAction(BaseAction):
     """Actions that involve an item"""
     item: str
 
-class ValueAction(BaseAction):
-    """Actions that set a numeric value"""
-    target: str
-    value: int
 # ------------------------------
 # AGENT AND WORLD MODELS (optional) - we can remove this if we don't need it
 # ------------------------------
@@ -61,110 +52,54 @@ class AgentPerception(BaseModel):
 # HOUSE ACTIONS
 # ------------------------------
 
-# --- Appliance Actions ---
-class ToggleSinkAction(BaseAction):
-    """Turn sink on or off"""
-    action_type: Literal["turn_on_sink", "turn_off_sink"]
+# --- GENERIC OBJECT-CENTRIC ACTIONS (Following Schema_planning_final.md) ---
 
-class FillCupAction(BaseAction):
-    """Fill a cup with water"""
-    action_type: Literal["fill_cup"]
+class SetToStateAction(TargetedAction):
+    """Change object state (on/off, open/close, lock/unlock)"""
+    action_type: Literal["set_to_state"]
+    state: str  # "on", "off", "open", "close", "lock", "unlock"
 
-class FillBathtubAction(BaseAction):
-    """Fill the bathtub with water"""
-    action_type: Literal["fill_bathtub"]
+class StartUsingAction(TargetedAction):
+    """Start using an object (using restricts agent to be at the object)"""
+    action_type: Literal["start_using"]
 
-class UseWashingMachineAction(BaseAction):
-    """Use the washing machine"""
-    action_type: Literal["use_washing_machine"]
+class StopUsingAction(TargetedAction):
+    """Stop using an object (frees agent from being restricted to the object)"""
+    action_type: Literal["stop_using"]
 
-# --- Cleaning Actions ---
-class CleanItemAction(TargetedAction):
-    """Clean a specific item (bed, sink, table, etc.)"""
-    action_type: Literal["clean_item"]
 
-# Container Actions
-class ToggleContainerAction(TargetedAction):
-    """Open or close containers (drawer, cabinet, fridge, etc.)"""
-    action_type: Literal["open_item", "close_item"]
-
-class TakeFromContainerAction(BaseAction):
-    """Take an item from a container"""
-    action_type: Literal["take_from_container"]
-    item: str         # What to take (e.g., "apple", "note")
-    container: str    # From which container (e.g., "fridge", "drawer")
-
-# --- Door Actions ---
-class ToggleDoorLockAction(TargetedAction):
-    """Lock or unlock doors"""
-    action_type: Literal["unlock_door", "lock_door"]
-    target: str = "entry door"
-
-# --- Entertainment Actions ---
-class WatchTVAction(BaseAction):
-    """Watch television"""
-    action_type: Literal["watch_tv"]
-
-class PlayPoolAction(BaseAction):
-    """Play pool/billiards"""
-    action_type: Literal["play_pool"]
-
-class TakeBathAction(BaseAction):
-    """Take a bath"""
-    action_type: Literal["take_bath"]
-
-class UseComputerAction(BaseAction):
-    """Use the computer"""
-    action_type: Literal["use_computer"]
-
-# --- Power/Electronics Actions ---
-class ToggleItemAction(TargetedAction):
-    """Turn items on or off (lamp, oven, tv, computer, etc.)"""
-    action_type: Literal["turn_on_item", "turn_off_item"]
-
-class SetTemperatureAction(ValueAction):
-    """Set temperature for appliances (oven, fridge, grill, thermostat)"""
-    action_type: Literal["set_temperature"]
-
-class AdjustBrightnessAction(ValueAction):
-    """Adjust brightness of lights"""
-    action_type: Literal["adjust_brightness"]
-
-class AdjustVolumeAction(ValueAction):
-    """Adjust volume of devices (tv, alarm clock)"""
-    action_type: Literal["adjust_volume"]
-
-# --- Movement Actions ---
-class MoveAction(BaseAction):
-    """Move in a specific direction"""
-    action_type: Literal["move"]
-    direction: Direction
+# --- NAVIGATION ACTIONS ---
+class GoToAction(TargetedAction):
+    """Navigate to a specific room or object"""
+    action_type: Literal["go_to"]
 
 # --- Basic Game Actions ---
 class LookAction(BaseAction):
     """Look around current location"""
     action_type: Literal["look"]
 
-class InventoryAction(BaseAction):
-    """Check inventory contents"""
-    action_type: Literal["inventory"]
+# --- ITEM ACTIONS ---
+class TakeAction(TargetedAction):
+    """Take an item and add it to inventory"""
+    action_type: Literal["take"]
 
-class GetItemAction(ItemAction):
-    """Pick up an item"""
-    action_type: Literal["get_item"]
-
-class DropItemAction(ItemAction):
+class DropAction(TargetedAction):
     """Drop an item from inventory"""
-    action_type: Literal["drop_item"]
-
-class GiveItemAction(ItemAction):
-    """Give an item to another character"""
-    action_type: Literal["give_item"]
-    target: str   # character to give item to
+    action_type: Literal["drop"]
 
 class ExamineAction(TargetedAction):
     """Examine an item or object closely"""
     action_type: Literal["examine"]
+
+class PlaceAction(BaseAction):
+    """Place item in/on container or give to character"""
+    action_type: Literal["place"]
+    target: str      # item to place
+    recipient: str   # object to place it on/in or character to give to
+
+class ConsumeAction(TargetedAction):
+    """Consume an item (removes item from inventory)"""
+    action_type: Literal["consume"]
 
 # --- Fallback Action ---
 class NoOpAction(BaseAction):
@@ -173,39 +108,23 @@ class NoOpAction(BaseAction):
     reason: Optional[str] = "Command not recognized or invalid"
 
 # --- UNIFIED ACTION TYPE ---
+# --- UNIFIED ACTION TYPE (Generic Object-Centric Actions) ---
 HouseAction = Annotated[
     Union[
         # Basic Game Actions
         LookAction,
-        InventoryAction,
-        GetItemAction,
-        DropItemAction,
-        GiveItemAction,
+        # Navigation Actions
+        GoToAction,
+        # Object Actions
+        SetToStateAction,
+        StartUsingAction,
+        StopUsingAction,
+        # Item Actions
+        TakeAction,
+        DropAction,
         ExamineAction,
-        # Movement
-        MoveAction,
-        # Appliance Actions
-        ToggleSinkAction,
-        FillCupAction,
-        FillBathtubAction,
-        UseWashingMachineAction,
-        # Cleaning Actions
-        CleanItemAction,
-        # Container Actions
-        ToggleContainerAction,
-        TakeFromContainerAction,
-        # Door Actions
-        ToggleDoorLockAction,
-        # Entertainment Actions
-        WatchTVAction,
-        PlayPoolAction,
-        TakeBathAction,
-        UseComputerAction,
-        # Power/Electronics Actions
-        ToggleItemAction,
-        SetTemperatureAction,
-        AdjustBrightnessAction,
-        AdjustVolumeAction,
+        PlaceAction,
+        ConsumeAction,
         # Fallback
         NoOpAction,
     ],

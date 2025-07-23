@@ -13,7 +13,11 @@ import logging
 
 from .things import Character, Item, Location
 from . import actions, blocks
-from .actions.containers import OpenContainer, CloseContainer, TakeFromContainer, ViewContainer, PutInContainer
+from .actions.generic import (
+    GenericSetToStateAction, GenericStartUsingAction, GenericStopUsingAction,
+    GenericTakeAction, GenericDropAction, GenericPlaceAction, 
+    GenericConsumeAction, GenericExamineAction, GenericGoToAction, EnhancedLookAction
+)
 
 
 class Parser:
@@ -327,30 +331,32 @@ class Parser:
 
     def discover_action_classes(self):
         """
-        Discover all available action classes with command patterns.
+        Discover all available generic action classes.
         
         Returns:
-            list: Action classes that have COMMAND_PATTERNS defined
+            list: Generic action classes that delegate to object capabilities
         """
-        action_classes = []
+        # Import and use ALL 10 generic action classes
+        from .actions.generic import (
+            EnhancedLookAction, GenericSetToStateAction, GenericStartUsingAction, GenericStopUsingAction,
+            GenericTakeAction, GenericDropAction, GenericPlaceAction, GenericConsumeAction, 
+            GenericExamineAction, GenericGoToAction
+        )
         
-        # Get action classes from the actions module
-        for member_name in dir(actions):
-            member = getattr(actions, member_name)
-            if (inspect.isclass(member) and 
-                issubclass(member, actions.Action) and 
-                member != actions.Action and
-                hasattr(member, 'COMMAND_PATTERNS') and 
-                member.COMMAND_PATTERNS):
-                action_classes.append(member)
+        generic_actions = [
+            EnhancedLookAction,
+            GenericSetToStateAction,
+            GenericStartUsingAction, 
+            GenericStopUsingAction,
+            GenericTakeAction,
+            GenericDropAction,
+            GenericPlaceAction,
+            GenericConsumeAction,
+            GenericExamineAction,
+            GenericGoToAction
+        ]
         
-        # Also include container actions
-        container_actions = [OpenContainer, CloseContainer, TakeFromContainer, ViewContainer, PutInContainer]
-        for action_class in container_actions:
-            if hasattr(action_class, 'COMMAND_PATTERNS') and action_class.COMMAND_PATTERNS:
-                action_classes.append(action_class)
-        
-        return action_classes
+        return generic_actions
 
     def get_available_actions(self, character: Character) -> list[dict]:
         """

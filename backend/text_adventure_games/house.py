@@ -4,13 +4,11 @@ Builds and returns a fully populated Game object with all rooms, items, and acti
 """
 
 from backend.text_adventure_games import games, things
-from backend.text_adventure_games.actions.bed import Sleep, MakeBed, CleanBed, ChangeQuilt, ExamineBed
-from backend.text_adventure_games.things.containers import Container
-from backend.text_adventure_games.things.items import Item
-from backend.text_adventure_games.actions.containers import (
-    OpenContainer, CloseContainer, TakeFromContainer, ViewContainer, PutInContainer
+from backend.text_adventure_games.things import (
+    Item, EdibleItem, DrinkableItem, Container, Bed, Television, Sink,
+    ClothingItem, UtilityItem, BookItem, BeddingItem, Chair, Table, Cabinet, Bookshelf, Toilet
 )
-# from backend.text_adventure_games.actions import ... (add custom actions as needed)
+# Note: Smart objects replace the need for custom action classes
 
 def build_house_game() -> games.Game:
     """
@@ -45,66 +43,90 @@ def build_house_game() -> games.Game:
     dining.add_connection("west", kitchen)
     dining.add_connection("east", living)
     dining.add_connection("north", bedroom)
-    # --- Add Items, Characters, etc. (verbatim from canonical_world.py) ---
-    bed: Item = things.Item("bed", "a comfortable bed", "A soft bed for sleeping.")
-    bed.set_property("is_interactable", True)
-    bed.set_property("is_sleepable", True)
-    bed.set_property("is_made", True)
-    bed.set_property("cleanliness", 90)  # numeric 0-100
+    # --- Add Smart Objects with Capabilities ---
+    bed = Bed("bed", "A comfortable bed with soft pillows and a blue quilt")
     bed.set_property("color", "blue")
     bed.set_property("quilt_color", "blue")
-    bed.set_property("gettable", False)
-    bed.add_command_hint("sleep")
-    bed.add_command_hint("make bed")
-    bed.add_command_hint("clean bed")
-    bed.add_command_hint("change quilt to <color>")
+    bed.is_made = True
     bedroom.add_item(bed)
 
-    # Add a closet container to the bedroom (canonical Container class)
-    closet: Container = Container("closet", "A large wooden closet.", is_openable=True, is_open=False)
-    closet.set_property("is_interactable", True)
-    closet.set_property("fullness", 50)  # numeric 0-100
+    # Add a closet container to the bedroom (smart Container class)
+    closet = Container("closet", "A large wooden closet", is_openable=True, is_open=False)
     closet.set_property("material", "wood")
-    closet.add_command_hint("open")
-    closet.add_command_hint("close")
-    closet.add_command_hint("take")
-    closet.add_command_hint("view")
-    # Add multiple objects to the closet
-    jacket: Item = Item("jacket", "a warm jacket", "A warm, cozy jacket.")
-    jacket.add_command_hint("wear")
-    jacket.add_command_hint("examine")
-    boots: Item = Item("boots", "a pair of boots", "Sturdy leather boots.")
-    boots.add_command_hint("wear")
-    boots.add_command_hint("examine")
-    hat: Item = Item("hat", "a sun hat", "A wide-brimmed sun hat.")
-    hat.add_command_hint("wear")
-    hat.add_command_hint("examine")
-    scarf: Item = Item("scarf", "a wool scarf", "A long, woolen scarf.")
-    scarf.add_command_hint("wear")
-    scarf.add_command_hint("examine")
+    # Add multiple items to the closet
+    jacket = ClothingItem("jacket", "a warm jacket", "A warm, cozy jacket.", clothing_type="jacket", material="wool")
+    boots = ClothingItem("boots", "a pair of boots", "Sturdy leather boots.", clothing_type="boots", material="leather")
+    hat = ClothingItem("hat", "a sun hat", "A wide-brimmed sun hat.", clothing_type="hat", material="straw")
+    scarf = ClothingItem("scarf", "a wool scarf", "A long, woolen scarf.", clothing_type="scarf", material="wool")
     closet.add_item(jacket)
     closet.add_item(boots)
     closet.add_item(hat)
     closet.add_item(scarf)
     # Add quilt items to the closet
     for color in ["red", "blue", "green", "yellow", "white", "black"]:
-        quilt = Item(f"{color} quilt", f"a {color} quilt", f"A soft, {color} quilt for the bed.")
-        quilt.set_property("quilt_color", color)
-        quilt.add_command_hint("take")
-        quilt.add_command_hint("examine")
+        quilt = BeddingItem(f"{color} quilt", f"a {color} quilt", f"A soft, {color} quilt for the bed.", 
+                           bedding_type="quilt", material="cotton", color=color)
         closet.add_item(quilt)
-    closet.add_command_hint("view")
     bedroom.add_item(closet)
 
-    # Add apple to the kitchen
-    apple: Item = things.Item("apple", "A red apple", "A juicy red apple that looks delicious.")
-    apple.set_property("is_food", True)
-    apple.set_property("gettable", True)
-    apple.add_command_hint("get")
-    apple.add_command_hint("eat")
+    # Add apple to the kitchen (smart consumable item)
+    apple = EdibleItem("apple", "A red apple", "A juicy red apple that looks delicious.")
     kitchen.add_item(apple)
-
-    # ... (continue porting all items, containers, and their properties as in canonical_world.py) ...
+    
+    # Add more smart objects to other rooms
+    # Kitchen sink
+    sink = Sink("sink", "A stainless steel kitchen sink with modern fixtures")
+    kitchen.add_item(sink)
+    
+    # Living room TV and furniture
+    tv = Television("tv", "A large flat-screen television mounted on the wall")
+    living.add_item(tv)
+    
+    # Living room furniture
+    couch = Chair("couch", "A comfortable leather couch perfect for watching TV")
+    couch.material = "leather"
+    couch.comfort_level = "very comfortable"
+    living.add_item(couch)
+    
+    coffee_table = Table("coffee table", "A glass coffee table in front of the couch")
+    coffee_table.material = "glass"
+    coffee_table.shape = "rectangular"
+    living.add_item(coffee_table)
+    
+    bookshelf = Bookshelf("bookshelf", "A tall wooden bookshelf filled with interesting books")
+    living.add_item(bookshelf)
+    
+    # Add some books to the bookshelf
+    novel = BookItem("novel", "A mystery novel", title="The Case of the Missing Code", author="Jane Developer")
+    cookbook = BookItem("cookbook", "A cookbook", title="Cooking for Coders", author="Chef Algorithm")
+    bookshelf.place_item(novel, None)
+    bookshelf.place_item(cookbook, None)
+    
+    # Dining room furniture
+    dining_table = Table("dining table", "A large wooden dining table")
+    dining_table.material = "oak"
+    dining_table.shape = "oval"
+    dining.add_item(dining_table)
+    
+    dining_chair = Chair("dining chair", "A wooden dining chair")
+    dining_chair.material = "oak"
+    dining.add_item(dining_chair)
+    
+    # Kitchen cabinet
+    kitchen_cabinet = Cabinet("kitchen cabinet", "A wooden cabinet for storing dishes and food")
+    kitchen.add_item(kitchen_cabinet)
+    
+    # Add some utensils to the kitchen cabinet
+    fork = UtilityItem("fork", "A metal dinner fork", utility_type="utensil")
+    knife = UtilityItem("knife", "A sharp kitchen knife", utility_type="utensil")
+    plate = UtilityItem("plate", "A ceramic dinner plate", utility_type="utensil")
+    kitchen_cabinet.place_item(fork, None)
+    kitchen_cabinet.place_item(knife, None)
+    kitchen_cabinet.place_item(plate, None)
+    
+    # Bathroom toilet
+    toilet = Toilet("toilet", "A standard white porcelain toilet")
+    bathroom.add_item(toilet)
     # --- Player character ---
     player: things.Character = things.Character(
         name="Player",
@@ -129,13 +151,8 @@ def build_house_game() -> games.Game:
     bedroom.add_character(alex)
     kitchen.add_character(alan)
     
-    # --- Custom actions (add as needed) ---
-    custom_actions = [
-        Sleep, MakeBed, CleanBed, ChangeQuilt, ExamineBed,
-        OpenContainer, CloseContainer, TakeFromContainer, ViewContainer, PutInContainer
-    ]
     # --- Build and return the game object ---
-    # Pass the NPCs to the Game constructor so they get registered
+    # Note: No custom actions needed - smart objects handle their own behavior through capabilities
     npcs = [alex, alan]
-    game_obj: games.Game = games.Game(entry, player, characters=npcs, custom_actions=custom_actions)
+    game_obj: games.Game = games.Game(entry, player, characters=npcs, custom_actions=[])
     return game_obj
