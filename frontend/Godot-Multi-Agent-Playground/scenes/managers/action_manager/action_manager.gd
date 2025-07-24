@@ -19,8 +19,8 @@ func play_next_action_in_queue() -> void:
 		print("Playing action: ", next_action)
 		if next_action.has("description"):
 			print("Description: ", next_action.description)
-		else:
-			print("Description: No description")
+		#else:
+			#print("Description: No description")
 		general_action.emit(next_action)
 	else:
 		print("[ActionManager] Action queue is empty.")
@@ -36,13 +36,10 @@ func print_action_queue() -> void:
 
 # Action is a dictionary with these fields
 # agent_id: str
-# action_type: Literal[
-	# "take", "place", "place_on", "use",
-	# "open", "close", "turn_on", "turn_off", "clean_item", "tidy_bed",
-	# "go_to"
+# action_type: Literal[look, go_to, take, 
+#		drop, examine, place, consume, 
+#		set_to_state, start_using, stop_using
 # ]
-# (Here are the updated action types)
-# action_type: Literal[look, go_to, take, drop, examine, place, consume, set_to_state, start_using, stop_using]
 # target: str (Not for look action)
 # recipient: Optional[str] = None  # Only for place_on
 # state: (for setting objects to a new state)

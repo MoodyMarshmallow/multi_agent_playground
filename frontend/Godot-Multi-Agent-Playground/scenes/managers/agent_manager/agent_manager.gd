@@ -32,13 +32,13 @@ func update_children_agents():
 # The starting point for handling all agent actions
 # Action is a dictionary with these fields
 # agent_id: str
-# action_type: Literal[
-	# "take", "place", "place_on", "use",
-	# "open", "close", "turn_on", "turn_off", "clean_item", "tidy_bed",
-	# "go_to", "print_inventory"
+# action_type: Literal[look, go_to, take, 
+#		drop, examine, place, consume, 
+#		set_to_state, start_using, stop_using
 # ]
-# target: str
+# target: str (Not for look action)
 # recipient: Optional[str] = None  # Only for place_on
+# state: (for setting objects to a new state)
 # move_to : Vector2
 
 # Handle agent action, start navigation if move_to, otherwise handle immediately

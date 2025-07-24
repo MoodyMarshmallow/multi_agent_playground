@@ -127,4 +127,4 @@ func _print_instructions():
 	print("P: toggle_print_http_requests")
 	print("E: toggle_automatic_polling")
 	print("F: toggle_automatic_playing")
-	print("R: play_next_action_in_queue (MUST PRESS FOR AGENT TO TAKE NEXT ACTION)")
+	print("R: play_next_action_in_queue (MUST PRESS FOR AGENT TO TAKE NEXT ACTION IF NOT ON AUTOMATIC PLAYING)")

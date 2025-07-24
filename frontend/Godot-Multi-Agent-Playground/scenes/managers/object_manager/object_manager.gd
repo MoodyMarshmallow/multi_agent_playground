@@ -40,6 +40,8 @@ func _do_object_action(action: Dictionary) -> void:
 	var state = action.get("state", null)
 	var obj = get_object_by_name(target)
 	if obj == null:
+		if target != "" and target not in rooms.keys():
+			print("[ObjectManager] Could not find object with name: ", target)
 		return
 	if action_type == "take":
 		if obj.has_method("take_object"):

@@ -2,17 +2,16 @@ class_name TextInputManager
 extends Node2D
 
 signal action(action : Dictionary)
-	# Action is a dictionary with these fields
-	# action_id: str (For all debug agent actions this id will be DebugAgent)
-		# For debug actions that don't affect an agent this will simply be Debug
-	# action_type: Literal[
-		# "take", "place", "place_on", "use",
-		# "open", "close", "turn_on", "turn_off", "clean_item", "tidy_bed"
-		# "go_to"
-	# ]
-	# target: str
-	# recipient: Optional[str] = None  # Only for place_on
-	
+#	Action is a dictionary with these fields
+#	action_id: str (For all debug agent actions this id will by default by DebugAgent. Can be changed with text input agent_id: {agent_id})
+#		For debug actions that don't affect an agent this will simply be Debug
+#	action_type: Literal[look, go_to, take, 
+#		drop, examine, place, consume, 
+#		set_to_state, start_using, stop_using
+# 	]
+# 	target: str (Not for look action)
+# 	recipient: Optional[str] = None  # Only for place_on
+# 	state: (for setting objects to a new state)
 
 # Parses any input submitted through the debugging input line edit object (displayed at the bottom 
 # of the game screen)

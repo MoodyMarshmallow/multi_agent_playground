@@ -43,7 +43,6 @@ func _physics_process(delta: float) -> void:
 				var dx = direction_vec.x
 				var dy = direction_vec.y
 				# Prefer up if the target is above, unless it's much more to the left/right
-				print("dx: ", dx, " dy: ", dy)
 				if dy < 0 and abs(dy) > 0.01 * abs(dx):
 					last_direction = "up"
 				elif abs(dx) > abs(dy):

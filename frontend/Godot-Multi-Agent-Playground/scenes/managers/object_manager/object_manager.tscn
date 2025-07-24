@@ -168,12 +168,15 @@ position = Vector2(200, 83)
 
 [node name="Bed" parent="Bedroom" instance=ExtResource("2_8d1d4")]
 position = Vector2(-87, -21)
+script = ExtResource("24_f5nuw")
 
 [node name="Dresser" parent="Bedroom" instance=ExtResource("3_qv13i")]
 position = Vector2(-119, -33)
+script = ExtResource("24_f5nuw")
 
 [node name="Closet" parent="Bedroom" instance=ExtResource("4_71i66")]
 position = Vector2(105, -25)
+script = ExtResource("24_f5nuw")
 
 [node name="ToyBin" parent="Bedroom" instance=ExtResource("5_bymom")]
 position = Vector2(-23, -23)
@@ -237,12 +240,14 @@ position = Vector2(448, 67)
 
 [node name="Toilet" parent="Bathroom" instance=ExtResource("6_x48w8")]
 position = Vector2(33, -16)
+script = ExtResource("24_f5nuw")
 
 [node name="Bathtub" parent="Bathroom" instance=ExtResource("7_vhv7d")]
 position = Vector2(65, -11)
 
 [node name="Shower" parent="Bathroom" instance=ExtResource("9_2mfam")]
 position = Vector2(64, -39)
+script = ExtResource("24_f5nuw")
 
 [node name="Faucet" parent="Bathroom" instance=ExtResource("8_irb6h")]
 position = Vector2(-63, -22)
@@ -269,14 +274,19 @@ position = Vector2(-58, -23)
 position = Vector2(22, -16)
 
 [node name="Sink" parent="Kitchen" instance=ExtResource("17_e5d6u")]
+script = ExtResource("24_f5nuw")
 
 [node name="KitchenCabinet" parent="Kitchen" instance=ExtResource("18_m2tgo")]
+script = ExtResource("24_f5nuw")
 
 [node name="Microwave" parent="Kitchen" instance=ExtResource("19_3afbn")]
+script = ExtResource("24_f5nuw")
 
 [node name="Toaster" parent="Kitchen" instance=ExtResource("20_ggome")]
+script = ExtResource("24_f5nuw")
 
 [node name="CoffeeMaker" parent="Kitchen" instance=ExtResource("21_q01qo")]
+script = ExtResource("24_f5nuw")
 
 [node name="Coffee" parent="Kitchen" instance=ExtResource("17_t66b7")]
 position = Vector2(70, -20)
@@ -291,6 +301,7 @@ position = Vector2(145, 351)
 [node name="EntryDoor" type="Node2D" parent="EntryRoom"]
 visible = false
 position = Vector2(2, 37)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="EntryRoom/EntryDoor"]
 texture = SubResource("AtlasTexture_i0bfg")
@@ -299,48 +310,56 @@ texture = SubResource("AtlasTexture_i0bfg")
 position = Vector2(0, 38)
 
 [node name="WelcomMat" parent="EntryRoom" instance=ExtResource("25_he3b4")]
+script = ExtResource("24_f5nuw")
 
 [node name="DiningRoom" type="Node2D" parent="."]
 position = Vector2(274, 179)
 
 [node name="UpperChair" type="Node2D" parent="DiningRoom"]
 position = Vector2(31, 16)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="DiningRoom/UpperChair"]
 texture = SubResource("AtlasTexture_wa31u")
 
 [node name="UpperLeftChair" type="Node2D" parent="DiningRoom"]
 position = Vector2(10, 50)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="DiningRoom/UpperLeftChair"]
 texture = SubResource("AtlasTexture_54pry")
 
 [node name="UpperRightChair" type="Node2D" parent="DiningRoom"]
 position = Vector2(52, 50)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="DiningRoom/UpperRightChair"]
 texture = SubResource("AtlasTexture_isisi")
 
 [node name="BottomLeftChair" type="Node2D" parent="DiningRoom"]
 position = Vector2(11, 82)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="DiningRoom/BottomLeftChair"]
 texture = SubResource("AtlasTexture_cmqgv")
 
 [node name="BottomRightChair" type="Node2D" parent="DiningRoom"]
 position = Vector2(68, 81)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="DiningRoom/BottomRightChair"]
 texture = SubResource("AtlasTexture_k1was")
 
 [node name="BottomChair" type="Node2D" parent="DiningRoom"]
 position = Vector2(31, 109)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="DiningRoom/BottomChair"]
 texture = SubResource("AtlasTexture_kn7y2")
 
 [node name="DiningTable" type="StaticBody2D" parent="DiningRoom"]
 position = Vector2(31, 32)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="DiningRoom/DiningTable"]
 position = Vector2(0, 52)
@@ -367,30 +386,35 @@ position = Vector2(416, 299)
 
 [node name="Couch" type="Node2D" parent="LivingRoom"]
 position = Vector2(1, -26)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="LivingRoom/Couch"]
 texture = SubResource("AtlasTexture_8s4mi")
 
 [node name="Bookshelf" type="Node2D" parent="LivingRoom"]
 position = Vector2(-47, -88)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="LivingRoom/Bookshelf"]
 texture = SubResource("AtlasTexture_wuhae")
 
 [node name="Tv" type="Node2D" parent="LivingRoom"]
 position = Vector2(10, -93)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="LivingRoom/Tv"]
 texture = SubResource("AtlasTexture_07u5e")
 
 [node name="GameTable" type="Node2D" parent="LivingRoom"]
 position = Vector2(1, -50)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="LivingRoom/GameTable"]
 texture = SubResource("AtlasTexture_msml3")
 
 [node name="TVShelf" type="Node2D" parent="LivingRoom"]
 position = Vector2(2, -85)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="LivingRoom/TVShelf"]
 texture = SubResource("AtlasTexture_gb18y")
@@ -400,6 +424,7 @@ position = Vector2(397, 157)
 
 [node name="Washer" type="Node2D" parent="LaundryRoom"]
 position = Vector2(-397, -157)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="LaundryRoom/Washer"]
 position = Vector2(417, 122)
@@ -407,6 +432,7 @@ texture = SubResource("AtlasTexture_dhbvh")
 
 [node name="Dryer" type="Node2D" parent="LaundryRoom"]
 position = Vector2(-397, -157)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="LaundryRoom/Dryer"]
 position = Vector2(417, 122)
@@ -414,11 +440,13 @@ texture = SubResource("AtlasTexture_xho8p")
 
 [node name="LaundryBasket" type="Node2D" parent="LaundryRoom"]
 position = Vector2(-397, -157)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="LaundryRoom/LaundryBasket"]
 
 [node name="Shelves" type="Node2D" parent="LaundryRoom"]
 position = Vector2(-12, -43)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="LaundryRoom/Shelves"]
 position = Vector2(0, -6)
@@ -430,11 +458,13 @@ texture = SubResource("AtlasTexture_1sb4p")
 
 [node name="DirtyClothesBasket" type="Node2D" parent="LaundryRoom"]
 position = Vector2(-397, -157)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="LaundryRoom/DirtyClothesBasket"]
 
 [node name="Detergent" type="Node2D" parent="LaundryRoom"]
 position = Vector2(-397, -157)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="LaundryRoom/Detergent"]
 position = Vector2(389, 104)
@@ -442,6 +472,7 @@ texture = SubResource("AtlasTexture_lr2cc")
 
 [node name="DirtyClothesBasket2" type="Node2D" parent="LaundryRoom"]
 position = Vector2(-397, -157)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="LaundryRoom/DirtyClothesBasket2"]
 position = Vector2(413, 107)
@@ -449,6 +480,7 @@ texture = SubResource("AtlasTexture_7h41j")
 
 [node name="LaundryBasket2" type="Node2D" parent="LaundryRoom"]
 position = Vector2(-397, -157)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="LaundryRoom/LaundryBasket2"]
 position = Vector2(426, 134)
@@ -459,30 +491,35 @@ position = Vector2(495, 217)
 
 [node name="Lamp" type="Node2D" parent="GameRoom"]
 position = Vector2(-14, -100)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="GameRoom/Lamp"]
 texture = SubResource("AtlasTexture_1ww05")
 
 [node name="TopArcadeMachine" type="Node2D" parent="GameRoom"]
 position = Vector2(33, -5)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="GameRoom/TopArcadeMachine"]
 texture = SubResource("AtlasTexture_syavb")
 
 [node name="BottomArcadeMachine" type="Node2D" parent="GameRoom"]
 position = Vector2(33, 27)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="GameRoom/BottomArcadeMachine"]
 texture = SubResource("AtlasTexture_7lvgn")
 
 [node name="PoolTable" type="Node2D" parent="GameRoom"]
 position = Vector2(2, -50)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="GameRoom/PoolTable"]
 texture = SubResource("AtlasTexture_u7nbf")
 
 [node name="PoolTriangle" type="Node2D" parent="GameRoom"]
 position = Vector2(2, -54)
+script = ExtResource("24_f5nuw")
 
 [node name="Sprite2D" type="Sprite2D" parent="GameRoom/PoolTriangle"]
 texture = SubResource("AtlasTexture_3ukm8")
