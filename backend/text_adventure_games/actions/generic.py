@@ -151,8 +151,7 @@ class GenericStartUsingAction(Action):
     ACTION_NAME = "start_using"
     ACTION_DESCRIPTION = "Start using an object"
     COMMAND_PATTERNS = [
-        "use {target}", "sleep on {target}", "watch {target}", "sit on {target}",
-        "play {target}", "take bath in {target}"
+        "use {target}"
     ]
     
     @classmethod
@@ -231,8 +230,7 @@ class GenericStopUsingAction(Action):
     ACTION_NAME = "stop_using"
     ACTION_DESCRIPTION = "Stop using an object"
     COMMAND_PATTERNS = [
-        "stop using {target}", "get up from {target}", "stop watching {target}",
-        "get out of {target}", "stop playing {target}"
+        "stop using {target}"
     ]
     
     @classmethod
@@ -315,7 +313,7 @@ class GenericTakeAction(Action):
     ACTION_NAME = "take"
     ACTION_DESCRIPTION = "Take an item"
     COMMAND_PATTERNS = [
-        "take {target}", "get {target}", "pick up {target}", "grab {target}"
+        "take {target}"
     ]
     
     @classmethod
@@ -407,7 +405,7 @@ class GenericDropAction(Action):
     ACTION_NAME = "drop"
     ACTION_DESCRIPTION = "Drop an item"
     COMMAND_PATTERNS = [
-        "drop {target}", "put down {target}", "leave {target}"
+        "drop {target}"
     ]
     
     @classmethod
@@ -476,8 +474,7 @@ class GenericPlaceAction(Action):
     ACTION_NAME = "place"
     ACTION_DESCRIPTION = "Place an item in/on something or give to someone"
     COMMAND_PATTERNS = [
-        "put {target} in {recipient}", "place {target} in {recipient}",
-        "give {target} to {recipient}", "put {target} on {recipient}"
+        "put {target} in {recipient}"
     ]
     
     @classmethod
@@ -583,7 +580,7 @@ class GenericConsumeAction(Action):
     ACTION_NAME = "consume"
     ACTION_DESCRIPTION = "Consume an item"
     COMMAND_PATTERNS = [
-        "eat {target}", "drink {target}", "consume {target}"
+        "consume {target}"
     ]
     
     @classmethod
@@ -655,7 +652,7 @@ class GenericExamineAction(Action):
     ACTION_NAME = "examine"
     ACTION_DESCRIPTION = "Examine something closely"
     COMMAND_PATTERNS = [
-        "examine {target}", "look at {target}", "inspect {target}", "check {target}"
+        "examine {target}"
     ]
     
     @classmethod
@@ -749,8 +746,7 @@ class MoveAction(Action):
     ACTION_NAME = "move"
     ACTION_DESCRIPTION = "Move in a direction"
     COMMAND_PATTERNS = [
-        "go {direction}", "move {direction}", "walk {direction}", "travel {direction}",
-        "{direction}", "n", "s", "e", "w", "north", "south", "east", "west"
+        "go {direction}"
     ]
     
     @classmethod
@@ -837,7 +833,7 @@ class EnhancedLookAction(Action):
     ACTION_NAME = "look"
     ACTION_DESCRIPTION = "Look around the current location"
     ACTION_ALIASES = ["l", "describe"]
-    COMMAND_PATTERNS = ["look", "describe", "l"]
+    COMMAND_PATTERNS = ["look"]
     
     @classmethod
     def get_command_patterns(cls):

@@ -98,5 +98,10 @@
     "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\criteria.py",
     "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\criteria.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\criteria.py:55:21 - error: Object of type \"None\" cannot be used as iterable value (reportOptionalIterable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\criteria.py:60:21 - error: Object of type \"None\" cannot be used as iterable value (reportOptionalIterable)\n2 errors, 0 warnings, 0 informations \n",
     "session_id": "19222611-2540-4958-b414-6d89488b59ca"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\test_actions.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\test_actions.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\test_actions.py:10:48 - error: \"HouseGameBuilder\" is unknown import symbol (reportAttributeAccessIssue)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "93ecf3b1-26a1-4f51-8ba5-99cf8d55fb7a"
   }
 ]
