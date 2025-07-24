@@ -84,7 +84,6 @@ script = ExtResource("33_vjvrh")
 script = ExtResource("33_2j1pe")
 
 [node name="DebugAgent" parent="AgentManager" instance=ExtResource("15_k8cdm")]
-visible = false
 position = Vector2(103, 280)
 agent_id = "DebugAgent"
 

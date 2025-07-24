@@ -92,7 +92,7 @@ size = Vector2(16, 28)
 script = ExtResource("1_tk54o")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(0, -14)
+position = Vector2(0, -9)
 sprite_frames = SubResource("SpriteFrames_apxl6")
 animation = &"close_oven"
 autoplay = "default"

@@ -36,7 +36,23 @@ func _physics_process(delta: float) -> void:
 		# NavigationAgent2D handles pathfinding
 		if navigation_agent_2d.is_navigation_finished():
 			using_navigation = false
-			animated_sprite_2d.play("idle_" + last_direction)
+			# Enhanced facing logic: prefer up, then left/right, then down
+			if pending_action.has("move_to"):
+				var target_pos = pending_action["move_to"]
+				var direction_vec = target_pos - global_position
+				var dx = direction_vec.x
+				var dy = direction_vec.y
+				# Prefer up if the target is above, unless it's much more to the left/right
+				print("dx: ", dx, " dy: ", dy)
+				if dy < 0 and abs(dy) > 0.01 * abs(dx):
+					last_direction = "up"
+				elif abs(dx) > abs(dy):
+					last_direction = "right" if dx > 0 else "left"
+				elif dy > 0:
+					last_direction = "down"
+				else:
+					last_direction = "up"
+				animated_sprite_2d.play("idle_" + last_direction)
 			if pending_action.size() > 0:
 				emit_signal("reached_destination", pending_action)
 				pending_action = {}

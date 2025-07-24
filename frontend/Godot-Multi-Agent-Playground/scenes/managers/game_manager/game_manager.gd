@@ -18,6 +18,8 @@ func _ready():
 	action_manager.connect("agent_action", Callable(self, "on_agent_action_received"))
 	action_manager.connect("general_action", Callable(self, "on_general_action_received"))
 
+	http_manager.connect("play_next_action", Callable(self, "_on_play_next_action"))
+
 	agent_manager.connect("agent_action_completed", Callable(self, "_on_agent_action_completed"))
 
 func on_general_action_received(action: Dictionary):
@@ -45,3 +47,6 @@ func _on_agent_action_completed(agent_id: String, action: Dictionary):
 	object_manager.handle_post_navigation_object_action(action)
 
 # Manage all inputs:
+
+func _on_play_next_action():
+	action_manager.play_next_action_in_queue()

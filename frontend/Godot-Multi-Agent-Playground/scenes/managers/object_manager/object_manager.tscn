@@ -266,11 +266,11 @@ position = Vector2(-58, -23)
 [node name="Milk" parent="Kitchen" instance=ExtResource("15_tm58k")]
 
 [node name="Oven" parent="Kitchen" instance=ExtResource("14_0cstq")]
-position = Vector2(22, -11)
+position = Vector2(22, -16)
 
 [node name="Sink" parent="Kitchen" instance=ExtResource("17_e5d6u")]
 
-[node name="Cabinets" parent="Kitchen" instance=ExtResource("18_m2tgo")]
+[node name="KitchenCabinet" parent="Kitchen" instance=ExtResource("18_m2tgo")]
 
 [node name="Microwave" parent="Kitchen" instance=ExtResource("19_3afbn")]
 
