@@ -44,7 +44,7 @@ class GenericSetToStateAction(Action):
         for item_name, item in location.items.items():
             # Check if object has state-changing capabilities
             if (isinstance(item, (Activatable, Openable, Lockable)) or
-                hasattr(item, 'get_available_actions')):
+                hasattr(item, 'get_object_capabilities')):
                 combinations.append({"target": item_name})
         return combinations
     
@@ -867,10 +867,11 @@ class EnhancedLookAction(Action):
             # Start with basic location description
             description_parts = [f"**{location.name}**", location.description]
             
-            # Show connections
+            # Show connections with destination names (using centralized formatting)
             if location.connections:
-                exits = list(location.connections.keys())
-                exits_text = "Exits: " + ", ".join(exits)
+                # Use the game's centralized exit formatting method
+                formatted_exits = self.game._get_formatted_exits(location)
+                exits_text = "Exits: " + ", ".join(formatted_exits)
                 description_parts.append(exits_text)
             
             # Show objects with their available capabilities

@@ -110,7 +110,7 @@ def _setup_kani_pretty_handlers():
                         args=(),
                         exc_info=None
                     )
-                    pretty_record.asctime = getattr(record, 'asctime', record.created)
+                    pretty_record.asctime = str(getattr(record, 'asctime', record.created))
                     # Let the root logger handle this record
                     logging.getLogger().handle(pretty_record)
                     return  # Don't let the original log through
@@ -148,7 +148,7 @@ def _setup_kani_pretty_handlers():
                             args=(),
                             exc_info=None
                         )
-                        pretty_record.asctime = getattr(record, 'asctime', record.created)
+                        pretty_record.asctime = str(getattr(record, 'asctime', record.created))
                         # Let the root logger handle this record
                         logging.getLogger().handle(pretty_record)
                         return  # Don't let the original log through
@@ -186,7 +186,7 @@ def _setup_kani_pretty_handlers():
                             args=(),
                             exc_info=None
                         )
-                        pretty_record.asctime = getattr(record, 'asctime', record.created)
+                        pretty_record.asctime = str(getattr(record, 'asctime', record.created))
                         # Let the root logger handle this record
                         logging.getLogger().handle(pretty_record)
                         return  # Don't let the original log through

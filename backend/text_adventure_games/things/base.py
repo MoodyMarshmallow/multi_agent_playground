@@ -134,7 +134,7 @@ class Thing(ABC):
         required_capability = capability_map.get(action_type)
         return required_capability in self.capabilities if required_capability else False
     
-    def get_available_actions(self) -> List[str]:
+    def get_object_capabilities(self) -> List[str]:
         """
         Return list of action types this object supports.
         Used for capability discovery and command suggestion.

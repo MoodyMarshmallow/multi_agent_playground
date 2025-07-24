@@ -39,8 +39,8 @@ class LocationCriterion(Criterion):
 @dataclass
 class InventoryCriterion(Criterion):
     """Criterion based on agent inventory."""
-    has_items: List[str] = None
-    lacks_items: List[str] = None
+    has_items: Optional[List[str]] = None
+    lacks_items: Optional[List[str]] = None
     
     def __post_init__(self):
         if self.has_items is None:
@@ -52,12 +52,12 @@ class InventoryCriterion(Criterion):
         inventory = set(game_state.get("agent_inventory", []))
         
         # Check has_items
-        for item in self.has_items:
+        for item in self.has_items or []:
             if item not in inventory:
                 return False
         
         # Check lacks_items
-        for item in self.lacks_items:
+        for item in self.lacks_items or []:
             if item in inventory:
                 return False
         

@@ -100,34 +100,13 @@ class AgentManager:
     
     def get_world_state_for_agent(self, agent: Character) -> dict:
         """
-        Get the observable world state for an agent.
+        DELEGATED TO GAME: Get the observable world state for an agent.
+        Uses the centralized method in Game class to avoid duplication.
         
         Returns:
             Dict containing location info, inventory, and available actions
         """
-        location = agent.location
-        
-        state = {
-            'agent_name': agent.name,
-            'location': {
-                'name': location.name,
-                'description': location.description
-            },
-            'inventory': list(agent.inventory.keys()),
-            'visible_items': [
-                {'name': item.name, 'description': item.description}
-                for item in location.items.values()
-            ],
-            'visible_characters': [
-                {'name': char.name, 'description': char.description}
-                for char in location.characters.values()
-                if char.name != agent.name
-            ],
-            'available_exits': list(location.connections.keys()),
-            'available_actions': self.game.parser.get_available_actions(agent)
-        }
-        
-        return state
+        return self.game.get_world_state_for_agent(agent)
     
     
     def get_next_agent(self) -> Optional[Character]:

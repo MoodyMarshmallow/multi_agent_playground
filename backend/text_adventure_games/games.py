@@ -162,37 +162,69 @@ class Game:
         """
         return [e for e in self.event_queue if e['id'] > last_event_id]
 
+    # ===== CENTRALIZED WORLD STATE UTILITIES =====
+    # Single source of truth for all world state building
+    
+    def _get_agent_inventory_names(self, agent: Character) -> list[str]:
+        """Get agent inventory as list of item names."""
+        return list(agent.inventory.keys())
+    
+    def _get_visible_items(self, location) -> list[dict]:
+        """Get visible items in location with name and description."""
+        return [
+            {'name': item.name, 'description': item.description}
+            for item in location.items.values()
+        ]
+    
+    def _get_visible_characters(self, location, exclude_agent: Character) -> list[dict]:
+        """Get visible characters in location excluding the specified agent."""
+        return [
+            {'name': char.name, 'description': char.description}
+            for char in location.characters.values()
+            if char.name != exclude_agent.name
+        ]
+    
+    def _get_formatted_exits(self, location) -> list[str]:
+        """Get exits formatted with destination names."""
+        return [f"{direction} to {destination.name}" 
+                for direction, destination in location.connections.items()]
+    
+    def _get_empty_world_state(self, agent_name: str) -> dict:
+        """Return empty world state for agents with no location."""
+        return {
+            'agent_name': agent_name,
+            'location': {'name': 'Nowhere', 'description': 'You are in a void.'},
+            'inventory': [],
+            'visible_items': [],
+            'visible_characters': [],
+            'available_exits': [],
+            'available_actions': []
+        }
+
     def get_world_state_for_agent(self, agent: Character) -> dict:
         """
-        Get the observable world state for an agent.
+        CENTRALIZED METHOD: Get the observable world state for an agent.
+        This is the single source of truth for world state building.
         
         Returns:
             Dict containing location info, inventory, and available actions
         """
+        if agent.location is None:
+            return self._get_empty_world_state(agent.name)
+            
         location = agent.location
-        if location is not None:
-            state = {
-                'agent_name': agent.name,
-                'location': {
-                    'name': location.name,
-                    'description': location.description
-                },
-                'inventory': list(agent.inventory.keys()),
-                'visible_items': [
-                    {'name': item.name, 'description': item.description}
-                    for item in location.items.values()
-                ],
-                'visible_characters': [
-                    {'name': char.name, 'description': char.description}
-                    for char in location.characters.values()
-                    if char.name != agent.name
-                ],
-                'available_exits': list(location.connections.keys()),
-                'available_actions': self.parser.get_available_actions(agent)
-            }
-            return state
-        else:
-            raise ValueError(f"Agent {agent.name} location is None.")
+        return {
+            'agent_name': agent.name,
+            'location': {
+                'name': location.name,
+                'description': location.description
+            },
+            'inventory': self._get_agent_inventory_names(agent),
+            'visible_items': self._get_visible_items(location),
+            'visible_characters': self._get_visible_characters(location, agent),
+            'available_exits': self._get_formatted_exits(location),
+            'available_actions': self.parser.get_available_actions(agent)
+        }
 
     def describe(self) -> str:
         """
@@ -299,7 +331,7 @@ class Game:
             if agent and agent.location:
                 visible_items = [item.name for item in agent.location.items.values()]
                 visible_characters = [char.name for char in agent.location.characters.values() if char.name != agent.name]
-                available_exits = list(agent.location.connections.keys())
+                available_exits = [f"{direction} to {destination.name}" for direction, destination in agent.location.connections.items()]
                 
                 context_lines = [f"You are currently in {current_room}."]
                 if visible_items:
@@ -323,7 +355,7 @@ class Game:
         if agent and agent.location:
             visible_items = [item.name for item in agent.location.items.values()]
             visible_characters = [char.name for char in agent.location.characters.values() if char.name != agent.name]
-            available_exits = list(agent.location.connections.keys())
+            available_exits = [f"{direction} to {destination.name}" for direction, destination in agent.location.connections.items()]
         # Patch the NoOpAction reason if needed
         action_obj = self._last_action_result.house_action
         if action_type == 'noop' and hasattr(action_obj, 'reason'):

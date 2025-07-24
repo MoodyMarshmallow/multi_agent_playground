@@ -184,6 +184,9 @@ cython_debug/
 # Cursor Memory Bank - AI assistant memory files
 cursor_memory/
 
+# Claude Code configuration directory
+.claude/
+
 # Other
 resources/
 resources_old/
