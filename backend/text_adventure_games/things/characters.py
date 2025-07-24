@@ -2,7 +2,7 @@ from .base import Thing
 from .items import Item
 from .locations import Location
 from backend.text_adventure_games.capabilities import ActionResult, Recipient, Giver, Conversational, Examinable
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 
 class Character(Thing, Recipient, Giver, Conversational, Examinable):
@@ -30,9 +30,9 @@ class Character(Thing, Recipient, Giver, Conversational, Examinable):
         
         # Existing character properties (maintain compatibility with current agent system)
         self.persona = persona  # Used by Kani agents for AI personality
-        self.inventory = {}     # Dict mapping item_name -> Item (existing pattern)
-        self.location = None    # Current Location object
-        self.current_container = None  # Track if character is inside a container
+        self.inventory: Dict[str, Item] = {}     # Dict mapping item_name -> Item (existing pattern)
+        self.location: Location  # Current Location object - initialized by game setup
+        self.current_container: Optional[Any] = None  # Track if character is inside a container
         
         # Existing properties (maintain compatibility)
         self.set_property("character_type", "notset")
@@ -69,7 +69,7 @@ class Character(Thing, Recipient, Giver, Conversational, Examinable):
         return thing_data
 
     @classmethod
-    def from_primitive(cls, data):
+    def from_primitive(cls, data, instance=None):
         """
         Converts a dictionary of primitive values into a character instance.
 
@@ -77,7 +77,11 @@ class Character(Thing, Recipient, Giver, Conversational, Examinable):
         """
         instance = cls(data['name'], data['description'], data['persona'])
         super().from_primitive(data, instance=instance)
-        instance.location = data.get('location', None)
+        # Location should always be provided in properly serialized data
+        location_data = data.get('location')
+        if location_data is None:
+            raise ValueError(f"Character {instance.name} deserialized without location data")
+        instance.location = location_data  # type: ignore # Location will be resolved by game setup
         instance.inventory = {
             k: Item.from_primitive(v) for k, v in data['inventory'].items()
         }
@@ -179,7 +183,7 @@ class Character(Thing, Recipient, Giver, Conversational, Examinable):
         return True
     
     # Examinable capability - for examine actions
-    def examine(self, examiner) -> ActionResult:
+    def examine(self, character) -> ActionResult:
         """
         Provide detailed character examination.
         Shows description, persona hints, and visible inventory.

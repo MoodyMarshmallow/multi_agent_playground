@@ -11,6 +11,7 @@ from typing import Optional, Dict, List, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from backend.text_adventure_games.things.characters import Character
+    from backend.text_adventure_games.things.items import Item
 
 
 class Object(Thing):

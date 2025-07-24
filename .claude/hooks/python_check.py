@@ -9,7 +9,14 @@ from pathlib import Path
 def main():
     try:
         # Read input data from stdin
-        input_data = json.load(sys.stdin)
+        stdin_content = sys.stdin.read().strip()
+        
+        # Handle empty input
+        if not stdin_content:
+            print('No input received')
+            sys.exit(0)
+        
+        input_data = json.loads(stdin_content)
 
         tool_input = input_data.get("tool_input", {})
         print(tool_input)
@@ -17,20 +24,23 @@ def main():
         # Get file path from tool input
         file_path = tool_input.get("file_path")
         if not file_path:
+            print('no file path')
             sys.exit(0)
 
         # Only check Python files
         if not file_path.endswith(".py"):
+            print('no .py files')
             sys.exit(0)
 
         # Check if file exists
         if not Path(file_path).exists():
+            print('file doesn\'t exist')
             sys.exit(0)
 
         # Run Pyright to check for type errors
         try:
             result = subprocess.run(
-                ["pyright", file_path, "--outputformat", "json"],
+                ["pyright", file_path],
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -48,8 +58,15 @@ def main():
 
                 # Load existing errors or create new list
                 if log_file.exists():
-                    with open(log_file, "r") as f:
-                        errors = json.load(f)
+                    try:
+                        with open(log_file, "r") as f:
+                            content = f.read().strip()
+                            if content:
+                                errors = json.loads(content)
+                            else:
+                                errors = []
+                    except (json.JSONDecodeError, FileNotFoundError):
+                        errors = []
                 else:
                     errors = []
 
@@ -71,6 +88,10 @@ def main():
             sys.exit(0)
         except FileNotFoundError:
             # Pyright not available, skip check
+            print('Pyright not found, skipping check')
+            sys.exit(0)
+        except Exception as subprocess_error:
+            print(f"Subprocess error: {subprocess_error}", file=sys.stderr)
             sys.exit(0)
 
     except json.JSONDecodeError as e:

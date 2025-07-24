@@ -10,6 +10,7 @@ The implementation that I have given below only uses simple keyword matching.
 import inspect
 import re
 import logging
+from typing import Optional
 
 from .things import Character, Item, Location
 from . import actions, blocks
@@ -74,7 +75,7 @@ class Parser:
         if "," in command:
             # Let the player type in a comma separted sequence of commands
             return "sequence"
-        elif self.get_direction(command, character.location):
+        elif character.location is not None and self.get_direction(command, character.location):
             # Check for the direction intent
             return "direction"
         return None
@@ -86,12 +87,12 @@ class Parser:
         """
         command = command.lower().strip()
         if command == "":
-            return None
+            raise ValueError("Empty command provided")
         intent = self.determine_intent(command)
         if intent == "sequence":
             return actions.ActionSequence(self.game, command)
         elif intent == "direction":
-            return actions.Go(self.game, command)
+            return GenericGoToAction(self.game, command)
         else:
             # Use pattern-based discovery for all other actions
             action_classes = self.discover_action_classes()
@@ -113,9 +114,9 @@ class Parser:
                             return action_class(self.game, command)
             
         self.fail(f"No action found for {command}")
-        return None
+        raise ValueError(f"No action found for {command}")
 
-    def parse_command(self, command: str, character: Character = None):
+    def parse_command(self, command: str, character: Optional[Character] = None):
         """
         Parse and execute a command, optionally for a specific character.
         
@@ -202,18 +203,19 @@ class Parser:
         return self.game.player
 
     def get_character_location(self, character: Character) -> Location:
+        assert character.location is not None, f"Character {character.name} has no location"
         return character.location
 
     def match_item(self, command: str, item_dict: dict[str, Item]) -> Item:
         """
         Check whether the name any of the items in this dictionary match the
-        command. If so, return Item, else return None.
+        command. If so, return Item, else raise ValueError.
         """
         for item_name in item_dict:
             if item_name in command:
                 item = item_dict[item_name]
                 return item
-        return None
+        raise ValueError(f"No item found matching '{command}'")
 
     def get_items_in_scope(self, character=None) -> dict[str, Item]:
         """
@@ -223,6 +225,7 @@ class Parser:
             character = self.game.player
         items_in_scope = {}
         # Items in the location
+        assert character.location is not None, f"Character {character.name} has no location"
         for item_name, item in character.location.items.items():
             items_in_scope[item_name] = item
             # If the item is a container and open, add its contents
@@ -241,10 +244,12 @@ class Parser:
             items_in_scope[item_name] = item
         return items_in_scope
 
-    def get_direction(self, command: str, location: Location = None) -> str:
+    def get_direction(self, command: str, location: Location) -> str:
         """
         Converts aliases for directions into its primary direction name.
         """
+        if location is None:
+            raise ValueError("Location cannot be None for direction parsing")
         command = command.lower()
         if command == "n" or "north" in command:
             return "north"
@@ -262,13 +267,12 @@ class Parser:
             return "out"
         if command.endswith("go in"):
             return "in"
-        if location:
-            for exit in location.connections.keys():
-                if exit.lower() in command:
-                    return exit
-        return None
+        for exit in location.connections.keys():
+            if exit.lower() in command:
+                return exit
+        raise ValueError(f"No valid direction found in command '{command}'")
 
-    def test_action_preconditions(self, action_class, command: str, character: Character = None) -> bool:
+    def test_action_preconditions(self, action_class, command: str, character: Character) -> bool:
         """
         Test if an action's preconditions would be satisfied without executing the action.
         
@@ -282,6 +286,8 @@ class Parser:
         """
         if character is None:
             character = self.game.player
+        if character is None:
+            raise ValueError("Character cannot be None")
         
         try:
             # Temporarily set the game player to the specified character for action instantiation
@@ -302,7 +308,10 @@ class Parser:
             
             if action_class.__name__ == 'Get' and not result:
                 logger.debug(f"Get action precondition FAILED for command '{command}'")
-                logger.debug(f"Character: {character.name} at {character.location.name}")
+                if character.location is not None:
+                    logger.debug(f"Character: {character.name} at {character.location.name}")
+                else:
+                    logger.debug(f"Character: {character.name} at unknown location")
                 logger.debug(f"Parser last error: {self.last_error_message}")
                 
                 # Try to understand what failed by checking each condition manually
@@ -315,11 +324,14 @@ class Parser:
                         logger.debug(f"- Item gettable: {action_instance.item.get_property('gettable', 'No gettable property')}")
                         
                         # Check if item is in location
-                        if action_instance.item.name in character.location.items:
-                            logger.debug("- Item IS in character location")
+                        if character.location is not None:
+                            if action_instance.item.name in character.location.items:
+                                logger.debug("- Item IS in character location")
+                            else:
+                                logger.debug("- Item NOT in character location")
+                                logger.debug(f"- Location items: {list(character.location.items.keys())}")
                         else:
-                            logger.debug("- Item NOT in character location")
-                            logger.debug(f"- Location items: {list(character.location.items.keys())}")
+                            logger.debug("- Character has no location")
             
             return result
         except Exception as e:
@@ -368,17 +380,16 @@ class Parser:
         available = []
         location = character.location
         
-        if not location:
-            return available
-        
         # Movement actions (still hardcoded as they're not pattern-based actions)
-        for direction, connected_loc in location.connections.items():
-            # Check if the connection is blocked
-            if not location.is_blocked(direction):
-                available.append({
-                    'command': f"go {direction}",
-                    'description': f"Move {direction} to {connected_loc.name}"
-                })
+        if location is not None:
+            connections = getattr(location, 'connections', {})
+            for direction, connected_loc in connections.items():
+                # Check if the connection is blocked
+                if not location.is_blocked(direction):
+                    available.append({
+                        'command': f"go {direction}",
+                        'description': f"Move {direction} to {connected_loc.name}"
+                    })
         
         # Auto-discover actions using the pattern system
         action_classes = self.discover_action_classes()

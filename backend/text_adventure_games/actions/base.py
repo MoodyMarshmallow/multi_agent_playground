@@ -1,6 +1,7 @@
 from ..things import Thing, Character, Item, Location
 from ...config.schema import HouseAction, NoOpAction, LookAction
-from typing import Optional, Any
+from typing import Optional, Any, List
+from abc import ABC, abstractmethod
 
 class ActionResult:
     def __init__(self, description: str, house_action: Optional[Any] = None, object_id: Optional[str] = None):
@@ -26,10 +27,10 @@ class Action:
       * apply_effects()
     """
 
-    ACTION_NAME: str = None
-    ACTION_DESCRIPTION: str = None
-    ACTION_ALIASES: list[str] = None
-    COMMAND_PATTERNS: list[str] = None  # New: defines what commands this action can handle
+    ACTION_NAME: str
+    ACTION_DESCRIPTION: str
+    ACTION_ALIASES: List[str]
+    COMMAND_PATTERNS: List[str]  # New: defines what commands this action can handle
 
     def __init__(self, game):
         self.game = game
@@ -132,7 +133,7 @@ class Action:
         thing: Thing,
         property_name: str,
         property_value: str,
-        error_message: str = None,
+        error_message: Optional[str] = None,
         display_message_upon: bool = False,
         describe_error: bool = True,
     ) -> bool:
@@ -166,7 +167,7 @@ class Action:
         self,
         thing: Thing,
         property_name: str,
-        error_message: str = None,
+        error_message: Optional[str] = None,
         display_message_upon: bool = False,
         describe_error: bool = True,
     ) -> bool:
@@ -228,7 +229,7 @@ class Action:
     def was_matched(
         self,
         thing: Thing,
-        error_message: str = None,
+        error_message: Optional[str] = None,
         describe_error: bool = True,
     ) -> bool:
         """

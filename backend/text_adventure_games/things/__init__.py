@@ -6,7 +6,7 @@ from .objects import Object, Sink, Television, Bed, Chair, Table, Cabinet, Books
 from .containers import Container
 
 __all__ = [
-    Thing, Character, Location, Item, ConsumableItem, DrinkableItem, EdibleItem,
-    ClothingItem, UtilityItem, BookItem, BeddingItem,
-    Object, Sink, Television, Bed, Chair, Table, Cabinet, Bookshelf, Toilet, Container
+    "Thing", "Character", "Location", "Item", "ConsumableItem", "DrinkableItem", "EdibleItem",
+    "ClothingItem", "UtilityItem", "BookItem", "BeddingItem",
+    "Object", "Sink", "Television", "Bed", "Chair", "Table", "Cabinet", "Bookshelf", "Toilet", "Container"
 ]

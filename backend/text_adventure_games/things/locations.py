@@ -87,7 +87,7 @@ class Location(Thing):
         return thing_data
 
     @classmethod
-    def from_primitive(cls, data):
+    def from_primitive(cls, data, instance=None):
         """
         Converts a dictionary of primitive values into an item instance.
 
@@ -164,7 +164,8 @@ class Location(Thing):
         Checks if the thing is at the location.
         """
         # The character must be at the location
-        if not thing.location == self:
+        thing_location = getattr(thing, 'location', None)
+        if thing_location != self:
             return False
         else:
             return True

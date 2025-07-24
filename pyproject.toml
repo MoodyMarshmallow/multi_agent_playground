@@ -23,6 +23,7 @@ dependencies = [
     "openai==1.82.1",
     "pydantic==2.11.5",
     "pydantic-core==2.33.2",
+    "pyright>=1.1.403",
     "python-dotenv==1.0.0",
     "regex==2024.11.6",
     "requests==2.32.3",

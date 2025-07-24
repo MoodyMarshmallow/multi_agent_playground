@@ -1,6 +1,9 @@
 from .base import Thing
 from backend.text_adventure_games.capabilities import ActionResult, Examinable, Consumable, Usable
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from backend.text_adventure_games.things.characters import Character
 
 
 class Item(Thing, Examinable):
@@ -50,7 +53,7 @@ class Item(Thing, Examinable):
         return thing_data
 
     @classmethod
-    def from_primitive(cls, data):
+    def from_primitive(cls, data, instance=None):
         """
         Converts a dictionary of primitive values into an item instance.
         """
