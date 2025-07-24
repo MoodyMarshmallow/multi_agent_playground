@@ -5,7 +5,7 @@ This module defines the interface protocols that objects can implement to advert
 their capabilities to the generic action system.
 """
 
-from typing import Protocol, Optional, List, Dict, Any
+from typing import Protocol, Optional, List, Dict, Any, runtime_checkable
 from dataclasses import dataclass
 
 
@@ -18,6 +18,7 @@ class ActionResult:
     events: Optional[List[str]] = None
 
 
+@runtime_checkable
 class Activatable(Protocol):
     """Objects that can be turned on/off or activated/deactivated"""
     
@@ -34,6 +35,7 @@ class Activatable(Protocol):
         ...
 
 
+@runtime_checkable
 class Openable(Protocol):
     """Objects that can be opened/closed"""
     
@@ -50,6 +52,7 @@ class Openable(Protocol):
         ...
 
 
+@runtime_checkable
 class Lockable(Protocol):
     """Objects that can be locked/unlocked"""
     
@@ -66,6 +69,7 @@ class Lockable(Protocol):
         ...
 
 
+@runtime_checkable
 class Usable(Protocol):
     """Objects that can be used by characters"""
     
@@ -82,6 +86,7 @@ class Usable(Protocol):
         ...
 
 
+@runtime_checkable
 class Container(Protocol):
     """Objects that can hold items"""
     
@@ -98,6 +103,7 @@ class Container(Protocol):
         ...
 
 
+@runtime_checkable
 class Recipient(Protocol):
     """Entities that can receive items (characters, containers, etc.)"""
     
@@ -110,6 +116,7 @@ class Recipient(Protocol):
         ...
 
 
+@runtime_checkable
 class Giver(Protocol):
     """Entities that can give items to others"""
     
@@ -122,6 +129,7 @@ class Giver(Protocol):
         ...
 
 
+@runtime_checkable
 class Conversational(Protocol):
     """Entities that can be talked to"""
     
@@ -134,6 +142,7 @@ class Conversational(Protocol):
         ...
 
 
+@runtime_checkable
 class Consumable(Protocol):
     """Items that can be consumed (eaten, drunk, etc.)"""
     
@@ -142,6 +151,7 @@ class Consumable(Protocol):
         ...
 
 
+@runtime_checkable
 class Examinable(Protocol):
     """Objects that provide detailed examination"""
     

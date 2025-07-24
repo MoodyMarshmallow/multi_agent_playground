@@ -17,15 +17,11 @@ class Direction(str, Enum):
     EAST = "east"
     WEST = "west"
 
-class BaseAction(BaseModel):
-    """Base class for all actions"""
-    action_type: str
-
-class TargetedAction(BaseAction):
+class TargetedAction(BaseModel):
     """Actions that target a specific object"""
     target: str
 
-class ItemAction(BaseAction):
+class ItemAction(BaseModel):
     """Actions that involve an item"""
     item: str
 
@@ -74,7 +70,7 @@ class GoToAction(TargetedAction):
     action_type: Literal["go_to"]
 
 # --- Basic Game Actions ---
-class LookAction(BaseAction):
+class LookAction(BaseModel):
     """Look around current location"""
     action_type: Literal["look"]
 
@@ -91,7 +87,7 @@ class ExamineAction(TargetedAction):
     """Examine an item or object closely"""
     action_type: Literal["examine"]
 
-class PlaceAction(BaseAction):
+class PlaceAction(BaseModel):
     """Place item in/on container or give to character"""
     action_type: Literal["place"]
     target: str      # item to place
@@ -102,7 +98,7 @@ class ConsumeAction(TargetedAction):
     action_type: Literal["consume"]
 
 # --- Fallback Action ---
-class NoOpAction(BaseAction):
+class NoOpAction(BaseModel):
     """No-operation action used when no valid action can be performed"""
     action_type: Literal["noop"]
     reason: Optional[str] = "Command not recognized or invalid"

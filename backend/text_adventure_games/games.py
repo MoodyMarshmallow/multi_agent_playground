@@ -1,5 +1,5 @@
 from .things import Location, Character
-from . import parsing, actions, blocks
+from . import parsing
 
 from ..config.schema import AgentActionOutput
 from datetime import datetime
@@ -170,28 +170,29 @@ class Game:
             Dict containing location info, inventory, and available actions
         """
         location = agent.location
-        
-        state = {
-            'agent_name': agent.name,
-            'location': {
-                'name': location.name,
-                'description': location.description
-            },
-            'inventory': list(agent.inventory.keys()),
-            'visible_items': [
-                {'name': item.name, 'description': item.description}
-                for item in location.items.values()
-            ],
-            'visible_characters': [
-                {'name': char.name, 'description': char.description}
-                for char in location.characters.values()
-                if char.name != agent.name
-            ],
-            'available_exits': list(location.connections.keys()),
-            'available_actions': self.parser.get_available_actions(agent)
-        }
-        
-        return state
+        if location is not None:
+            state = {
+                'agent_name': agent.name,
+                'location': {
+                    'name': location.name,
+                    'description': location.description
+                },
+                'inventory': list(agent.inventory.keys()),
+                'visible_items': [
+                    {'name': item.name, 'description': item.description}
+                    for item in location.items.values()
+                ],
+                'visible_characters': [
+                    {'name': char.name, 'description': char.description}
+                    for char in location.characters.values()
+                    if char.name != agent.name
+                ],
+                'available_exits': list(location.connections.keys()),
+                'available_actions': self.parser.get_available_actions(agent)
+            }
+            return state
+        else:
+            raise ValueError(f"Agent {agent.name} location is None.")
 
     def describe(self) -> str:
         """
@@ -210,55 +211,66 @@ class Game:
         """
         Describe the current location by printing its description field.
         """
-        return self.player.location.description
+        if self.player.location is not None:
+            return self.player.location.description
+        else:
+            raise ValueError(f"Player {self.player.name} location is None.")
 
     def describe_exits(self) -> str:
         """
         List the directions that the player can take to exit from the current
         location.
         """
-        exits = []
-        for direction in self.player.location.connections.keys():
-            location = self.player.location.connections[direction]
-            exits.append(direction.capitalize() + " to " + location.name)
-        description = ""
-        if len(exits) > 0:
-            description = "Exits:\n"
-            for exit in exits:
-                description += exit + "\n"
-        return description
+        if self.player.location is not None:
+            exits = []
+            for direction in self.player.location.connections.keys():
+                location = self.player.location.connections[direction]
+                exits.append(direction.capitalize() + " to " + location.name)
+            description = ""
+            if len(exits) > 0:
+                description = "Exits:\n"
+                for exit in exits:
+                    description += exit + "\n"
+            return description
+        else:
+            raise ValueError(f"Player {self.player.name} location is None.")
 
     def describe_items(self) -> str:
         """
         Describe what items are in the current location.
         """
-        description = ""
-        if len(self.player.location.items) > 0:
-            description = "You see:"
-            for item_name in self.player.location.items:
-                item = self.player.location.items[item_name]
-                description += "\n * " + item.description
-                if self.give_hints:
-                    description += "\n   You can:"
-                    special_commands = item.get_command_hints()
-                    for cmd in special_commands:
-                        description += "\n\t" + cmd
-        return description
+        if self.player.location is not None:
+            description = ""
+            if len(self.player.location.items) > 0:
+                description = "You see:"
+                for item_name in self.player.location.items:
+                    item = self.player.location.items[item_name]
+                    description += "\n * " + item.description
+                    if self.give_hints:
+                        description += "\n   You can:"
+                        special_commands = item.get_command_hints()
+                        for cmd in special_commands:
+                            description += "\n\t" + cmd
+            return description
+        else:
+            raise ValueError(f"Player {self.player.name} location is None.")
 
     def describe_characters(self) -> str:
         """
         Describe what characters are in the current location.
         """
-        description = ""
-
-        if len(self.player.location.characters) > 1:
-            description = "Characters:"
-            for character_name in self.player.location.characters:
-                if character_name == self.player.name:
-                    continue
-                character = self.player.location.characters[character_name]
-                description += "\n * " + character.description
-        return description
+        if self.player.location is not None:
+            description = ""
+            if len(self.player.location.characters) > 1:
+                description = "Characters:"
+                for character_name in self.player.location.characters:
+                    if character_name == self.player.name:
+                        continue
+                    character = self.player.location.characters[character_name]
+                    description += "\n * " + character.description
+            return description
+        else:
+            raise ValueError(f"Player {self.player.name} location is None.")
 
 
 

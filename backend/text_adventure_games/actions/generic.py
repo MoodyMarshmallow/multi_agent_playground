@@ -6,7 +6,6 @@ where objects define their own behavior through capability protocols.
 """
 
 from .base import Action, ActionResult
-from ..things import Thing, Character, Item, Location
 from ...config.schema import (
     SetToStateAction as SetToStateSchema, StartUsingAction as StartUsingSchema,
     StopUsingAction as StopUsingSchema, TakeAction as TakeSchema, DropAction as DropSchema,
@@ -14,7 +13,7 @@ from ...config.schema import (
     GoToAction as GoToSchema, LookAction as LookSchema
 )
 from backend.text_adventure_games.capabilities import (
-    Activatable, Openable, Lockable, Usable, Container, Consumable, Examinable, Recipient, Giver
+    Activatable, Openable, Lockable, Usable, Container, Consumable, Examinable, Recipient
 )
 import re
 
@@ -39,13 +38,15 @@ class GenericSetToStateAction(Action):
         """Generate applicable target objects based on their capabilities"""
         location = character.location
         if not location:
-            return
+            return []
         
+        combinations = []
         for item_name, item in location.items.items():
             # Check if object has state-changing capabilities
             if (isinstance(item, (Activatable, Openable, Lockable)) or
                 hasattr(item, 'get_available_actions')):
-                yield {"target": item_name}
+                combinations.append({"target": item_name})
+        return combinations
     
     def __init__(self, game, command: str):
         super().__init__(game)
@@ -110,6 +111,10 @@ class GenericSetToStateAction(Action):
     def apply_effects(self):
         try:
             # Delegate to the object's capability method
+            result = None
+            if self.target is None:
+                raise ValueError("Target object is None")
+                
             if self.state == "on":
                 result = self.target.activate()
             elif self.state == "off":
@@ -122,6 +127,9 @@ class GenericSetToStateAction(Action):
                 result = self.target.lock()
             elif self.state == "unlock":
                 result = self.target.unlock()
+            
+            if result is None:
+                raise ValueError(f"Unknown state: {self.state}")
             
             # Convert capability ActionResult to game ActionResult
             narration = self.parser.ok(result.description)
@@ -156,11 +164,13 @@ class GenericStartUsingAction(Action):
         """Generate applicable usable objects"""
         location = character.location
         if not location:
-            return
+            return []
         
+        combinations = []
         for item_name, item in location.items.items():
             if isinstance(item, Usable):
-                yield {"target": item_name}
+                combinations.append({"target": item_name})
+        return combinations
     
     def __init__(self, game, command: str):
         super().__init__(game)
@@ -198,6 +208,8 @@ class GenericStartUsingAction(Action):
     
     def apply_effects(self):
         try:
+            if self.target is None:
+                raise ValueError("Target object is None")
             result = self.target.start_using(self.character)
             
             narration = self.parser.ok(result.description)
@@ -232,11 +244,13 @@ class GenericStopUsingAction(Action):
         """Generate objects character is currently using"""
         location = character.location
         if not location:
-            return
+            return []
         
+        combinations = []
         for item_name, item in location.items.items():
             if isinstance(item, Usable) and item.is_being_used_by(character):
-                yield {"target": item_name}
+                combinations.append({"target": item_name})
+        return combinations
     
     def __init__(self, game, command: str):
         super().__init__(game)
@@ -278,6 +292,8 @@ class GenericStopUsingAction(Action):
     
     def apply_effects(self):
         try:
+            if self.target is None:
+                raise ValueError("Target object is None")
             result = self.target.stop_using(self.character)
             
             narration = self.parser.ok(result.description)
@@ -311,12 +327,14 @@ class GenericTakeAction(Action):
         """Generate applicable items that can be taken"""
         location = character.location
         if not location:
-            return
+            return []
         
+        combinations = []
         for item_name, item in location.items.items():
             # Check if item can be taken
             if item.get_property("gettable", True):
-                yield {"target": item_name}
+                combinations.append({"target": item_name})
+        return combinations
     
     def __init__(self, game, command: str):
         super().__init__(game)
@@ -364,7 +382,7 @@ class GenericTakeAction(Action):
     def apply_effects(self):
         try:
             # Remove from current location/container
-            if self.target.location:
+            if self.target is not None and self.target.location is not None:
                 self.target.location.remove_item(self.target)
             
             # Add to character inventory
@@ -399,8 +417,10 @@ class GenericDropAction(Action):
     @classmethod
     def get_applicable_combinations(cls, character, parser):
         """Generate items in character's inventory"""
+        combinations = []
         for item_name in character.inventory:
-            yield {"target": item_name}
+            combinations.append({"target": item_name})
+        return combinations
     
     def __init__(self, game, command: str):
         super().__init__(game)
@@ -469,17 +489,19 @@ class GenericPlaceAction(Action):
         """Generate combinations of inventory items and recipients"""
         location = character.location
         if not location:
-            return
+            return []
         
+        combinations = []
         for item_name in character.inventory:
             # Find potential recipients (containers or characters)
             for recipient_name, recipient in location.items.items():
                 if isinstance(recipient, (Container, Recipient)):
-                    yield {"target": item_name, "recipient": recipient_name}
+                    combinations.append({"target": item_name, "recipient": recipient_name})
             
             for recipient_name, recipient in location.characters.items():
                 if recipient != character and isinstance(recipient, Recipient):
-                    yield {"target": item_name, "recipient": recipient_name}
+                    combinations.append({"target": item_name, "recipient": recipient_name})
+        return combinations
     
     def __init__(self, game, command: str):
         super().__init__(game)
@@ -535,6 +557,8 @@ class GenericPlaceAction(Action):
     
     def apply_effects(self):
         try:
+            if self.recipient is None:
+                raise ValueError("Recipient is None")
             if hasattr(self.recipient, 'place_item'):
                 result = self.recipient.place_item(self.target, self.character)
             else:
@@ -569,9 +593,11 @@ class GenericConsumeAction(Action):
     @classmethod
     def get_applicable_combinations(cls, character, parser):
         """Generate consumable items in inventory"""
+        combinations = []
         for item_name, item in character.inventory.items():
             if isinstance(item, Consumable):
-                yield {"target": item_name}
+                combinations.append({"target": item_name})
+        return combinations
     
     def __init__(self, game, command: str):
         super().__init__(game)
@@ -606,6 +632,8 @@ class GenericConsumeAction(Action):
     
     def apply_effects(self):
         try:
+            if self.target is None:
+                raise ValueError("Target object is None")
             result = self.target.consume(self.character)
             
             narration = self.parser.ok(result.description)
@@ -639,20 +667,22 @@ class GenericExamineAction(Action):
         """Generate all examinable objects"""
         location = character.location
         if not location:
-            return
+            return []
         
+        combinations = []
         # Location items
         for item_name in location.items:
-            yield {"target": item_name}
+            combinations.append({"target": item_name})
         
         # Characters
         for char_name, char in location.characters.items():
             if char != character:  # Don't examine yourself
-                yield {"target": char_name}
+                combinations.append({"target": char_name})
         
         # Inventory items
         for item_name in character.inventory:
-            yield {"target": item_name}
+            combinations.append({"target": item_name})
+        return combinations
     
     def __init__(self, game, command: str):
         super().__init__(game)
@@ -698,7 +728,7 @@ class GenericExamineAction(Action):
                 result = self.target.examine(self.character)
                 description = result.description
             else:
-                description = f"You examine the {self.target_name}. {self.target.description}"
+                description = f"You examine the {self.target_name}. {getattr(self.target, 'description', 'Nothing special.')}"
             
             narration = self.parser.ok(description)
             schema = ActionResult(
@@ -713,13 +743,14 @@ class GenericExamineAction(Action):
             return narration, ActionResult(description=error_msg)
 
 
-class GenericGoToAction(Action):
-    """Generic action for navigation to rooms"""
+class MoveAction(Action):
+    """Direction-based movement action"""
     
-    ACTION_NAME = "go_to"
-    ACTION_DESCRIPTION = "Navigate to a room"
+    ACTION_NAME = "move"
+    ACTION_DESCRIPTION = "Move in a direction"
     COMMAND_PATTERNS = [
-        "go to {target}", "move to {target}", "walk to {target}", "travel to {target}"
+        "go {direction}", "move {direction}", "walk {direction}", "travel {direction}",
+        "{direction}", "n", "s", "e", "w", "north", "south", "east", "west"
     ]
     
     @classmethod
@@ -728,38 +759,45 @@ class GenericGoToAction(Action):
     
     @classmethod
     def get_applicable_combinations(cls, character, parser):
-        """Generate available locations"""
-        # Get all locations from the game
-        for location in parser.game.locations:
-            if location != character.location:  # Don't include current location
-                yield {"target": location.name.lower()}
+        """Generate available directions from current location"""
+        location = character.location
+        if not location:
+            return []
+        
+        combinations = []
+        for direction in location.connections.keys():
+            combinations.append({"direction": direction})
+        return combinations
     
     def __init__(self, game, command: str):
         super().__init__(game)
         self.command = command.lower().strip()
         self.character = self.parser.get_character(command)
         
-        # Parse target from command
+        # Parse direction from command using existing parser logic
+        self.direction = None
         self.target_location = None
-        self.target_name = ""
         
-        patterns = [r"go to\s+(.+)", r"move to\s+(.+)", r"walk to\s+(.+)", r"travel to\s+(.+)"]
-        for pattern in patterns:
-            match = re.search(pattern, self.command)
-            if match:
-                self.target_name = match.group(1).strip()
-                break
-        
-        # Find the target location
-        if self.target_name:
-            for location in self.game.locations:
-                if location.name.lower() == self.target_name.lower():
-                    self.target_location = location
-                    break
+        current_location = self.character.location
+        if current_location:
+            # Use the existing get_direction method from parser
+            self.direction = self.parser.get_direction(command, current_location)
+            # Look up the target location from the connections
+            if self.direction and self.direction in current_location.connections:
+                self.target_location = current_location.connections[self.direction]
     
     def check_preconditions(self) -> bool:
+        if not self.direction:
+            self.parser.fail(f"No valid direction found in command '{self.command}'")
+            return False
+            
         if not self.target_location:
-            self.parser.fail(f"You don't know where '{self.target_name}' is.")
+            self.parser.fail(f"You can't go {self.direction} from here.")
+            return False
+        
+        current_location = self.character.location
+        if current_location and current_location.is_blocked(self.direction):
+            self.parser.fail(f"The way {self.direction} is blocked.")
             return False
         
         return True
@@ -772,18 +810,23 @@ class GenericGoToAction(Action):
             if old_location:
                 old_location.remove_character(self.character)
             
-            self.target_location.add_character(self.character)
-            self.character.location = self.target_location
+            if self.target_location is not None:
+                self.target_location.add_character(self.character)
+                self.character.location = self.target_location
+                location_name = self.target_location.name
+            else:
+                raise ValueError("Target location is None")
             
-            narration = self.parser.ok(f"You go to the {self.target_location.name}.")
+            narration = self.parser.ok(f"You go {self.direction} to the {location_name}.")
+            # IMPORTANT: Schema passes the room name (not direction) to frontend
             schema = ActionResult(
-                description=f"You go to the {self.target_location.name}.",
-                house_action=GoToSchema(action_type="go_to", target=self.target_name)
+                description=f"You go {self.direction} to the {location_name}.",
+                house_action=GoToSchema(action_type="go_to", target=location_name)
             )
             return narration, schema
             
         except Exception as e:
-            error_msg = f"Failed to go to {self.target_name}: {str(e)}"
+            error_msg = f"Failed to go {self.direction}: {str(e)}"
             narration = self.parser.fail(error_msg)
             return narration, ActionResult(description=error_msg)
 
@@ -803,7 +846,7 @@ class EnhancedLookAction(Action):
     @classmethod
     def get_applicable_combinations(cls, character, parser):
         """Look is always available"""
-        yield {}
+        return [{}]
     
     def __init__(self, game, command: str = ""):
         super().__init__(game)

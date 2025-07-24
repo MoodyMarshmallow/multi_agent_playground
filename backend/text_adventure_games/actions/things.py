@@ -1,7 +1,5 @@
 from . import base
-from .consume import Drink, Eat
-from .rose import Smell_Rose
-from ...config.schema import GetItemAction, DropItemAction
+from ...config.schema import TakeAction, DropAction
 
 
 class Get(base.Action):
@@ -55,7 +53,7 @@ class Get(base.Action):
             character_name=self.character.name, item_name=self.item.name
         )
         narration = self.parser.ok(description)
-        get_action = GetItemAction(action_type="get_item", item=self.item.name)
+        get_action = TakeAction(action_type="take", target=self.item.name)
         schema = base.ActionResult(
             description=f"Got {self.item.name}.",
             house_action=get_action,
@@ -66,7 +64,7 @@ class Get(base.Action):
     @classmethod
     def get_applicable_combinations(cls, character, parser):
         """Return items that could potentially be gotten."""
-        return cls._get_location_items(character)
+        return list(cls._get_location_items(character))
 
 
 class Drop(base.Action):
@@ -116,7 +114,7 @@ class Drop(base.Action):
             location=self.location.name,
         )
         narration = self.parser.ok(description)
-        drop_action = DropItemAction(action_type="drop_item", item=self.item.name)
+        drop_action = DropAction(action_type="drop", target=self.item.name)
         schema = base.ActionResult(
             description=f"Dropped {self.item.name}.",
             house_action=drop_action,
@@ -127,7 +125,7 @@ class Drop(base.Action):
     @classmethod
     def get_applicable_combinations(cls, character, parser):
         """Return items that could potentially be dropped."""
-        return cls._get_inventory_items(character)
+        return list(cls._get_inventory_items(character))
 
 
 class Inventory(base.Action):
@@ -201,7 +199,7 @@ class Examine(base.Action):
     @classmethod
     def get_applicable_combinations(cls, character, parser):
         """Return items that could potentially be examined."""
-        return cls._get_all_items_in_scope(character, parser)
+        return list(cls._get_all_items_in_scope(character, parser))
 
 
 class Give(base.Action):
@@ -215,12 +213,13 @@ class Give(base.Action):
         give_words = ["give", "hand"]
         command_before_word = ""
         command_after_word = command
+        parts = None
         for word in give_words:
             if word in command:
                 parts = command.split(word, 1)
                 command_before_word = parts[0]
-            command_after_word = parts[1]
-            break
+                command_after_word = parts[1]
+                break
         self.giver = self.parser.get_character(command_before_word)
         self.recipient = self.parser.get_character(command_after_word)
         self.item = self.parser.match_item(command, self.giver.inventory)
@@ -241,12 +240,8 @@ class Give(base.Action):
 
     def apply_effects(self):
         """
-        Drop removes an item from character's inventory and adds it to the
-        current location. (Assumes that the preconditions are met.)
-        If the recipient is hungry and the item is food, the recipient will
-        eat it.
-        If the recipient is thisty and the item is drink, the recipient will
-        drink it.
+        Give removes an item from giver's inventory and adds it to the
+        recipient's inventory. (Assumes that the preconditions are met.)
         """
         self.giver.remove_from_inventory(self.item)
         self.recipient.add_to_inventory(self.item)
@@ -255,41 +250,18 @@ class Give(base.Action):
             item_name=self.item.name,
             recipient=self.recipient.name.capitalize(),
         )
-        self.parser.ok(description)
-
-        if self.recipient.get_property("is_hungry") and self.item.get_property(
-            "is_food"
-        ):
-            command = "{name} eat {food}".format(
-                name=self.recipient.name, food=self.item.name
-            )
-            eat = Eat(self.game, command)
-            eat()
-
-        if self.recipient.get_property("is_thisty") and self.item.get_property(
-            "is_drink"
-        ):
-            command = "{name} drink {drink}".format(
-                name=self.recipient.name, drink=self.item.name
-            )
-            drink = Drink(self.game, command)
-            drink()
-
-        if self.item.get_property("scent"):
-            command = "{name} smell {thing}".format(
-                name=self.recipient.name, thing=self.item.name
-            )
-            smell = Smell_Rose(self.game, command)
-            smell()
+        narration = self.parser.ok(description)
+        schema = base.ActionResult(description=description)
+        return narration, schema
 
     @classmethod
     def get_applicable_combinations(cls, character, parser):
         """Return item and character combinations for giving."""
-        return cls._get_combinations(
+        return list(cls._get_combinations(
             character, parser,
             item={"source": "inventory"},
-            character={"source": "location_characters", "exclude_self": True}
-        )
+            recipient={"source": "location_characters", "exclude_self": True}
+        ))
 
 
 class Unlock_Door(base.Action):
@@ -315,4 +287,6 @@ class Unlock_Door(base.Action):
 
     def apply_effects(self):
         self.door.set_property("is_locked", False)
-        self.parser.ok("Door is unlocked")
+        narration = self.parser.ok("Door is unlocked")
+        schema = base.ActionResult(description="Door is unlocked")
+        return narration, schema

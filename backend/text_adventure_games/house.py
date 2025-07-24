@@ -5,7 +5,7 @@ Builds and returns a fully populated Game object with all rooms, items, and acti
 
 from backend.text_adventure_games import games, things
 from backend.text_adventure_games.things import (
-    Item, EdibleItem, DrinkableItem, Container, Bed, Television, Sink,
+    EdibleItem, Container, Bed, Television, Sink,
     ClothingItem, UtilityItem, BookItem, BeddingItem, Chair, Table, Cabinet, Bookshelf, Toilet
 )
 # Note: Smart objects replace the need for custom action classes

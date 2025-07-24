@@ -1,6 +1,9 @@
 from backend.text_adventure_games.things.objects import Object
 from backend.text_adventure_games.capabilities import ActionResult, Openable, Container as ContainerCapability, Examinable
-from typing import List, Dict
+from typing import List, Dict, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from backend.text_adventure_games.things.items import Item
 
 class Container(Object, Openable, ContainerCapability, Examinable):
     """
@@ -43,7 +46,7 @@ class Container(Object, Openable, ContainerCapability, Examinable):
     
     def is_open(self) -> bool:
         """Check if container is open"""
-        return self.get_property("is_open", False)
+        return bool(self.get_property("is_open", False))
     
     # === CONTAINER CAPABILITY IMPLEMENTATION ===
     

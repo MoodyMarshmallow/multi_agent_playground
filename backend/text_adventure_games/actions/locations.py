@@ -1,5 +1,5 @@
 from . import base
-from ...config.schema import MoveAction
+from ...config.schema import GoToAction
 
 # from . import preconditions as P
 
@@ -101,8 +101,8 @@ class Go(base.Action):
             self.game.game_over_description = to_loc.description
             return self.parser.ok(to_loc.description)
         else:
-            # Create proper MoveAction schema
-            move_action = MoveAction(action_type="move", direction=self.direction)
+            # Create proper GoToAction schema
+            move_action = GoToAction(action_type="go_to", target=to_loc.name)
             
             # Get description from Describe action
             action = base.Describe(self.game, command=self.command)
