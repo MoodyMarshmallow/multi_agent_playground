@@ -1,7 +1,6 @@
 from ..things import Thing, Character, Item, Location
-from ...config.schema import HouseAction, NoOpAction, LookAction
+from ...config.schema import NoOpAction, LookAction
 from typing import Optional, Any, List
-from abc import ABC, abstractmethod
 
 class ActionResult:
     def __init__(self, description: str, house_action: Optional[Any] = None, object_id: Optional[str] = None):

@@ -13,12 +13,8 @@ import logging
 from typing import Optional
 
 from .things import Character, Item, Location
-from . import actions, blocks
-from .actions.generic import (
-    GenericSetToStateAction, GenericStartUsingAction, GenericStopUsingAction,
-    GenericTakeAction, GenericDropAction, GenericPlaceAction, 
-    GenericConsumeAction, GenericExamineAction, MoveAction, EnhancedLookAction
-)
+from . import actions
+from .actions.generic import MoveAction
 
 
 class Parser:

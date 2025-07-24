@@ -18,7 +18,6 @@ from datetime import datetime
 
 # Text adventure games imports
 from .text_adventure_games.games import Game
-from .text_adventure_games.things import Character, Location, Item
 
 # Agent management
 from .agent import AgentManager
@@ -37,7 +36,7 @@ class GameLoop:
     
     def __init__(self, agent_config: Optional[Dict[str, str]] = None):
         self.game: Optional[Game] = None
-        self.agent_manager: Optional[AgentManager] = None
+        self.agent_manager: AgentManager  # Will be initialized in initialize()
         self.is_running = False
         self.task: Optional[asyncio.Task] = None
         
@@ -82,6 +81,10 @@ class GameLoop:
         while self.is_running:
             if self.turn_counter >= self.max_turns_per_session:
                 print("Max turns reached, stopping game.")
+                break
+
+            if not self.agent_manager:
+                print("Agent manager not initialized, stopping game.")
                 break
 
             agent = self.agent_manager.get_next_agent()
@@ -139,7 +142,7 @@ class GameLoop:
             # Create agents based on configuration
             for agent_name, persona in agent_personas.items():
                 agent_strategy = self._create_agent_strategy(agent_name, persona)
-                if agent_strategy:
+                if agent_strategy and self.agent_manager:
                     self.agent_manager.register_agent_strategy(agent_name, agent_strategy)
             
             print("Agents set up successfully")
@@ -158,7 +161,8 @@ class GameLoop:
             traceback.print_exc()
             print("The game will run without agent strategies")
             # Just add the characters to active agents list without strategies
-            self.agent_manager.active_agents.extend(["alex_001", "alan_002"])
+            if self.agent_manager:
+                self.agent_manager.active_agents.extend(["alex_001", "alan_002"])
     
     def _create_agent_strategy(self, character_name: str, persona: str):
         """Create either a manual or AI agent based on configuration."""
@@ -190,6 +194,9 @@ class GameLoop:
         """Initialize the objects registry for frontend communication."""
         self.objects_registry = {}
         
+        if not self.game:
+            return
+            
         for location_name, location in self.game.locations.items():
             for item_name, item in location.items.items():
                 self.objects_registry[item_name] = {

@@ -6,7 +6,6 @@ where objects define their own behavior through capability protocols.
 """
 
 from .base import Action, ActionResult
-from ..things import Thing, Character, Item, Location
 from ...config.schema import (
     SetToStateAction as SetToStateSchema, StartUsingAction as StartUsingSchema,
     StopUsingAction as StopUsingSchema, TakeAction as TakeSchema, DropAction as DropSchema,
@@ -14,7 +13,7 @@ from ...config.schema import (
     GoToAction as GoToSchema, LookAction as LookSchema
 )
 from backend.text_adventure_games.capabilities import (
-    Activatable, Openable, Lockable, Usable, Container, Consumable, Examinable, Recipient, Giver
+    Activatable, Openable, Lockable, Usable, Container, Consumable, Examinable, Recipient
 )
 import re
 
