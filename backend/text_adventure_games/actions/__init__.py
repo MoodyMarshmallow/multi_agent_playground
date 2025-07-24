@@ -13,7 +13,7 @@ from .generic import (
     GenericPlaceAction,
     GenericConsumeAction,
     GenericExamineAction,
-    GenericGoToAction,
+    MoveAction,
     EnhancedLookAction,
 )
 
@@ -31,6 +31,6 @@ __all__ = [
     "GenericPlaceAction",
     "GenericConsumeAction",
     "GenericExamineAction",
-    "GenericGoToAction",
+    "MoveAction",
     "EnhancedLookAction",
 ]

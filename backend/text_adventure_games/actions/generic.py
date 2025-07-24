@@ -744,13 +744,14 @@ class GenericExamineAction(Action):
             return narration, ActionResult(description=error_msg)
 
 
-class GenericGoToAction(Action):
-    """Generic action for navigation to rooms"""
+class MoveAction(Action):
+    """Direction-based movement action"""
     
-    ACTION_NAME = "go_to"
-    ACTION_DESCRIPTION = "Navigate to a room"
+    ACTION_NAME = "move"
+    ACTION_DESCRIPTION = "Move in a direction"
     COMMAND_PATTERNS = [
-        "go to {target}", "move to {target}", "walk to {target}", "travel to {target}"
+        "go {direction}", "move {direction}", "walk {direction}", "travel {direction}",
+        "{direction}", "n", "s", "e", "w", "north", "south", "east", "west"
     ]
     
     @classmethod
@@ -759,12 +760,14 @@ class GenericGoToAction(Action):
     
     @classmethod
     def get_applicable_combinations(cls, character, parser):
-        """Generate available locations"""
-        # Get all locations from the game
+        """Generate available directions from current location"""
+        location = character.location
+        if not location:
+            return []
+        
         combinations = []
-        for location in parser.game.locations:
-            if location != character.location:  # Don't include current location
-                combinations.append({"target": location.name.lower()})
+        for direction in location.connections.keys():
+            combinations.append({"direction": direction})
         return combinations
     
     def __init__(self, game, command: str):
@@ -772,27 +775,30 @@ class GenericGoToAction(Action):
         self.command = command.lower().strip()
         self.character = self.parser.get_character(command)
         
-        # Parse target from command
+        # Parse direction from command using existing parser logic
+        self.direction = None
         self.target_location = None
-        self.target_name = ""
         
-        patterns = [r"go to\s+(.+)", r"move to\s+(.+)", r"walk to\s+(.+)", r"travel to\s+(.+)"]
-        for pattern in patterns:
-            match = re.search(pattern, self.command)
-            if match:
-                self.target_name = match.group(1).strip()
-                break
-        
-        # Find the target location
-        if self.target_name:
-            for location in self.game.locations:
-                if location.name.lower() == self.target_name.lower():
-                    self.target_location = location
-                    break
+        current_location = self.character.location
+        if current_location:
+            # Use the existing get_direction method from parser
+            self.direction = self.parser.get_direction(command, current_location)
+            # Look up the target location from the connections
+            if self.direction and self.direction in current_location.connections:
+                self.target_location = current_location.connections[self.direction]
     
     def check_preconditions(self) -> bool:
+        if not self.direction:
+            self.parser.fail(f"No valid direction found in command '{self.command}'")
+            return False
+            
         if not self.target_location:
-            self.parser.fail(f"You don't know where '{self.target_name}' is.")
+            self.parser.fail(f"You can't go {self.direction} from here.")
+            return False
+        
+        current_location = self.character.location
+        if current_location and current_location.is_blocked(self.direction):
+            self.parser.fail(f"The way {self.direction} is blocked.")
             return False
         
         return True
@@ -812,15 +818,16 @@ class GenericGoToAction(Action):
             else:
                 raise ValueError("Target location is None")
             
-            narration = self.parser.ok(f"You go to the {location_name}.")
+            narration = self.parser.ok(f"You go {self.direction} to the {location_name}.")
+            # IMPORTANT: Schema passes the room name (not direction) to frontend
             schema = ActionResult(
-                description=f"You go to the {location_name}.",
-                house_action=GoToSchema(action_type="go_to", target=self.target_name)
+                description=f"You go {self.direction} to the {location_name}.",
+                house_action=GoToSchema(action_type="go_to", target=location_name)
             )
             return narration, schema
             
         except Exception as e:
-            error_msg = f"Failed to go to {self.target_name}: {str(e)}"
+            error_msg = f"Failed to go {self.direction}: {str(e)}"
             narration = self.parser.fail(error_msg)
             return narration, ActionResult(description=error_msg)
 

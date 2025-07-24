@@ -17,7 +17,7 @@ from . import actions, blocks
 from .actions.generic import (
     GenericSetToStateAction, GenericStartUsingAction, GenericStopUsingAction,
     GenericTakeAction, GenericDropAction, GenericPlaceAction, 
-    GenericConsumeAction, GenericExamineAction, GenericGoToAction, EnhancedLookAction
+    GenericConsumeAction, GenericExamineAction, MoveAction, EnhancedLookAction
 )
 
 
@@ -92,7 +92,7 @@ class Parser:
         if intent == "sequence":
             return actions.ActionSequence(self.game, command)
         elif intent == "direction":
-            return GenericGoToAction(self.game, command)
+            return MoveAction(self.game, command)
         else:
             # Use pattern-based discovery for all other actions
             action_classes = self.discover_action_classes()
@@ -244,12 +244,11 @@ class Parser:
             items_in_scope[item_name] = item
         return items_in_scope
 
-    def get_direction(self, command: str, location: Location) -> str:
+    def get_direction(self, command: str, location: Location) -> str | None:
         """
         Converts aliases for directions into its primary direction name.
+        Returns None if no direction is found.
         """
-        if location is None:
-            raise ValueError("Location cannot be None for direction parsing")
         command = command.lower()
         if command == "n" or "north" in command:
             return "north"
@@ -270,7 +269,7 @@ class Parser:
         for exit in location.connections.keys():
             if exit.lower() in command:
                 return exit
-        raise ValueError(f"No valid direction found in command '{command}'")
+        return None
 
     def test_action_preconditions(self, action_class, command: str, character: Character) -> bool:
         """
@@ -352,7 +351,7 @@ class Parser:
         from .actions.generic import (
             EnhancedLookAction, GenericSetToStateAction, GenericStartUsingAction, GenericStopUsingAction,
             GenericTakeAction, GenericDropAction, GenericPlaceAction, GenericConsumeAction, 
-            GenericExamineAction, GenericGoToAction
+            GenericExamineAction, MoveAction
         )
         
         generic_actions = [
@@ -365,7 +364,7 @@ class Parser:
             GenericPlaceAction,
             GenericConsumeAction,
             GenericExamineAction,
-            GenericGoToAction
+            MoveAction
         ]
         
         return generic_actions
