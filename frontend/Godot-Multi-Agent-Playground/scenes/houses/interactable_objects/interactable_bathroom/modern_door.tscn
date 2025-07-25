@@ -108,7 +108,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_lypvr")
 }],
 "loop": false,
-"name": &"default",
+"name": &"default_closed",
 "speed": 5.0
 }, {
 "frames": [{
@@ -151,11 +151,10 @@ script = ExtResource("1_3ja6a")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(-1, -16)
 sprite_frames = SubResource("SpriteFrames_p6uc5")
-animation = &"close_door"
-autoplay = "default"
+animation = &"default_closed"
+autoplay = "default_closed"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
 position = Vector2(-1, -16)
 shape = SubResource("RectangleShape2D_ubm6w")
 

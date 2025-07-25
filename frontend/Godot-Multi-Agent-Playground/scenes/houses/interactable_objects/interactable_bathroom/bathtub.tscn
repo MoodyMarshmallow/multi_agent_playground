@@ -127,9 +127,8 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dyf5m"]
-radius = 9.0
-height = 32.0
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_okg67"]
+size = Vector2(10, 20)
 
 [node name="Bathtub" type="StaticBody2D"]
 script = ExtResource("1_4or8j")
@@ -139,11 +138,9 @@ position = Vector2(0, -20)
 sprite_frames = SubResource("SpriteFrames_s6jg7")
 autoplay = "default"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
-position = Vector2(0, -14)
-shape = SubResource("CapsuleShape2D_dyf5m")
-debug_color = Color(0.294889, 0.583602, 0.650043, 0.42)
-
 [node name="InteractableComponent" parent="." instance=ExtResource("2_4or8j")]
 position = Vector2(0, -20)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -14)
+shape = SubResource("RectangleShape2D_okg67")

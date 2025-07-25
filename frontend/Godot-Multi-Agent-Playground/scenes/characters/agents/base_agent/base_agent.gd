@@ -27,7 +27,7 @@ func _ready():
 	#Make the agent follow the path more precisely
 	navigation_agent_2d.path_desired_distance = 3.0  # Default is usually 20.0
 	navigation_agent_2d.target_desired_distance = 10.0  # Default is usually 10.0
-	navigation_agent_2d.path_max_distance = 15.0
+	navigation_agent_2d.path_max_distance = 5.0 # was 15.0
 	navigation_agent_2d.simplify_path = false
 
 # Supports using_navigation and szxc movement keys

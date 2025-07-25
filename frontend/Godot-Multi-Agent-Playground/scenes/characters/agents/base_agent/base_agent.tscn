@@ -4,7 +4,7 @@
 [ext_resource type="SpriteFrames" uid="uid://byufx62ggpgch" path="res://assets/game/characters/agents/sprite_frames/alex_001_sprite_frames.tres" id="2_mu2mq"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_6xp3e"]
-radius = 1.0
+radius = 6.0
 
 [node name="BaseAgent" type="CharacterBody2D"]
 script = ExtResource("1_rbydt")
@@ -12,6 +12,7 @@ script = ExtResource("1_rbydt")
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -10)
 sprite_frames = ExtResource("2_mu2mq")
 animation = &"idle_down"
 

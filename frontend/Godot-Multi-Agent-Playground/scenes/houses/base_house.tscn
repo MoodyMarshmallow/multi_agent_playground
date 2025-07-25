@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=4 uid="uid://c5oq8gc6y7nv6"]
 
-[ext_resource type="TileSet" path="res://Tilesets/modern_tile_set.tres" id="1_kgvyg"]
+[ext_resource type="TileSet" uid="uid://dfl6kn3bmjfc2" path="res://Tilesets/modern_tile_set.tres" id="1_kgvyg"]
 
 [node name="BaseHouse" type="Node2D"]
 
@@ -25,5 +25,4 @@ tile_map_data = PackedByteArray("AAAHAAUABgADAAwAAAAHAAQABgADAA4AAAAMAAEABAAJAAw
 tile_set = ExtResource("1_kgvyg")
 
 [node name="MoreLayeredFurniture" type="TileMapLayer" parent="HouseTilemap"]
-tile_map_data = PackedByteArray("AAASABEABwAGAB0AAAA=")
 tile_set = ExtResource("1_kgvyg")

@@ -4,7 +4,7 @@
 [ext_resource type="SpriteFrames" uid="uid://b7ofwbp0j5rlf" path="res://assets/game/characters/agents/sprite_frames/bob_004_sprite_frames.tres" id="2_hdbo5"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_jqwjp"]
-radius = 1.0
+radius = 6.0
 
 [node name="DebugAgent" type="CharacterBody2D"]
 script = ExtResource("1_papvl")
@@ -12,6 +12,7 @@ script = ExtResource("1_papvl")
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -10)
 sprite_frames = ExtResource("2_hdbo5")
 animation = &"idle_down"
 

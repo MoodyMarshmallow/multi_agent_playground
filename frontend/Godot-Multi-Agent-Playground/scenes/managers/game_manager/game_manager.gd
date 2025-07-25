@@ -7,7 +7,8 @@ extends Node2D
 @onready var text_input_manager: TextInputManager = $TextInputManager
 @onready var action_manager: ActionManager = $ActionManager
 
-@onready var object_manager: ObjectManager = $ObjectManager
+@onready var object_manager: ObjectManager = $NavigationRegionD/ObjectManager
+#@onready var object_manager: ObjectManager = $ObjectManager
 @onready var agent_manager: AgentManager = $AgentManager
 
 func _ready():

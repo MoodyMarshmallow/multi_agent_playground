@@ -127,8 +127,8 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_tv0q1"]
-size = Vector2(14, 15)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_klbfo"]
+size = Vector2(12.5, 13)
 
 [node name="Toybox" type="StaticBody2D"]
 position = Vector2(0, -8)
@@ -138,9 +138,8 @@ script = ExtResource("1_tt5kc")
 sprite_frames = SubResource("SpriteFrames_n13ov")
 autoplay = "default"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
-position = Vector2(0, 0.5)
-shape = SubResource("RectangleShape2D_tv0q1")
-
 [node name="InteractableComponent" parent="." instance=ExtResource("2_tt5kc")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.25, 0.5)
+shape = SubResource("RectangleShape2D_klbfo")
