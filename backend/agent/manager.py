@@ -30,6 +30,9 @@ class AgentManager:
         self.active_agents: List[str] = []
         self.current_agent_index = 0
         
+        # Track the single most recent action result for each agent
+        self.previous_action_results: Dict[str, str] = {}
+        
     def register_agent_strategy(self, character_name: str, strategy: AgentStrategy):
         """
         Connect an AI strategy to a character.
@@ -58,12 +61,12 @@ class AgentManager:
             return None
             
         try:
-            # Get world state from agent's perspective
-            world_state = self.get_world_state_for_agent(agent)
+            # Get the previous action result for this agent (empty string for first turn)
+            previous_result = self.previous_action_results.get(agent.name, "Welcome to the game! This is your first turn.")
             
             # Let the strategy decide
             strategy = self.agent_strategies[agent.name]
-            command = await strategy.select_action(world_state)
+            command = await strategy.select_action(previous_result)
             
             # Execute the command
             print(f"\n{agent.name}: {command}")
@@ -75,22 +78,28 @@ class AgentManager:
             # Check if this was a noop action (non-fatal error)
             is_noop = action_schema.action.action_type == "noop"
             
+            # Extract and store action result for next turn
             if is_noop:
-                # For noop actions, provide error feedback
+                # For noop actions, store error message
+                action_result = f"Action failed: {action_schema.description or 'Unknown error'}"
                 print(f"[WARNING]: Command failed for {agent.name}")
                 print("─" * 50)
                 print(f"Error: {action_schema.description}")
                 print("─" * 50)
             else:
-                # For successful actions, provide normal feedback
+                # For successful actions, store result description
                 if isinstance(result, tuple) and len(result) >= 1:
-                    description = result[0]
+                    action_result = result[0]
                     print(f"✓ Action result for {agent.name}:")
                     print("─" * 50)
-                    print(description)
+                    print(action_result)
                     print("─" * 50)
                 else:
-                    print(f"✓ Action result for {agent.name}: {result}")
+                    action_result = str(result)
+                    print(f"✓ Action result for {agent.name}: {action_result}")
+            
+            # Store the action result for this agent's next turn
+            self.previous_action_results[agent.name] = action_result
             
             return action_schema
             

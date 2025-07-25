@@ -24,7 +24,7 @@ class GenericSetToStateAction(Action):
     ACTION_NAME = "set_to_state"
     ACTION_DESCRIPTION = "Change an object's state"
     COMMAND_PATTERNS = [
-        "turn on {target}", "turn off {target}", "switch on {target}", "switch off {target}",
+        "switch on {target}", "switch off {target}",
         "open {target}", "close {target}", 
         "lock {target}", "unlock {target}"
     ]
@@ -329,8 +329,8 @@ class GenericTakeAction(Action):
         
         combinations = []
         for item_name, item in location.items.items():
-            # Check if item can be taken
-            if item.get_property("gettable", True):
+            # Check if item can be taken (default to False for safety)
+            if item.get_property("gettable", False):
                 combinations.append({"target": item_name})
         return combinations
     
@@ -370,8 +370,8 @@ class GenericTakeAction(Action):
             self.parser.fail(f"You don't see a {self.target_name} here.")
             return False
         
-        # Check if item can be taken
-        if not self.target.get_property("gettable", True):
+        # Check if item can be taken (default to False for safety)
+        if not self.target.get_property("gettable", False):
             self.parser.fail(f"You can't take the {self.target_name}.")
             return False
         
@@ -831,7 +831,7 @@ class EnhancedLookAction(Action):
     """Enhanced capability-aware look action that shows available object interactions"""
     
     ACTION_NAME = "look"
-    ACTION_DESCRIPTION = "Look around the current location"
+    ACTION_DESCRIPTION = "Refresh what you see around you"
     ACTION_ALIASES = ["l", "describe"]
     COMMAND_PATTERNS = ["look"]
     
@@ -860,63 +860,11 @@ class EnhancedLookAction(Action):
                 narration = self.parser.fail("You are nowhere.")
                 return narration, ActionResult(description="You are nowhere.")
             
-            # Start with basic location description
-            description_parts = [f"**{location.name}**", location.description]
+            # Get the world state exactly as the agent would receive it
+            world_state = self.game.get_world_state_for_agent(self.character)
             
-            # Show connections with destination names (using centralized formatting)
-            if location.connections:
-                # Use the game's centralized exit formatting method
-                formatted_exits = self.game._get_formatted_exits(location)
-                exits_text = "Exits: " + ", ".join(formatted_exits)
-                description_parts.append(exits_text)
-            
-            # Show objects with their available capabilities
-            if location.items:
-                objects_text = "\n**Objects here:**"
-                for item in location.items.values():
-                    item_desc = f"• {item.name}"
-                    
-                    # Add simple capability hints
-                    hints = []
-                    if isinstance(item, Activatable):
-                        if hasattr(item, 'is_active'):
-                            hints.append("turn on/off" if not item.is_active() else "turn off")
-                        else:
-                            hints.append("turn on/off")
-                    if isinstance(item, Openable):
-                        if hasattr(item, 'is_open'):
-                            hints.append("open" if not item.is_open() else "close")
-                        else:
-                            hints.append("open/close")
-                    if isinstance(item, Usable):
-                        hints.append("use")
-                    if isinstance(item, Examinable):
-                        hints.append("examine")
-                    
-                    if hints:
-                        item_desc += f" [{', '.join(hints)}]"
-                    
-                    objects_text += f"\n  {item_desc}"
-                description_parts.append(objects_text)
-            
-            # Show characters
-            if location.characters:
-                other_characters = [char for char in location.characters.values() if char != self.character]
-                if other_characters:
-                    chars_text = "\n**Characters here:**"
-                    for char in other_characters:
-                        char_desc = f"• {char.name} - {char.description}"
-                        chars_text += f"\n  {char_desc}"
-                    description_parts.append(chars_text)
-            
-            # Show inventory
-            if self.character.inventory:
-                inv_text = "\n**You are carrying:**"
-                for item in self.character.inventory.values():
-                    inv_text += f"\n  • {item.name}"
-                description_parts.append(inv_text)
-            
-            full_description = "\n\n".join(description_parts)
+            # Format it using the same method as agents receive
+            full_description = self._format_world_state(world_state)
             
             narration = self.parser.ok(full_description)
             schema = ActionResult(
@@ -930,3 +878,48 @@ class EnhancedLookAction(Action):
             error_msg = f"Failed to look around: {str(e)}"
             narration = self.parser.fail(error_msg)
             return narration, ActionResult(description=error_msg)
+    
+    def _format_world_state(self, state: dict) -> str:
+        """Format world state into readable observation."""
+        lines = []
+        
+        # Location
+        location_info = state.get('location', {})
+        lines.append(f"You are at: {location_info.get('name', 'Unknown Location')}")
+        if location_info.get('description'):
+            lines.append(location_info['description'])
+        
+        # Inventory
+        inventory = state.get('inventory', [])
+        if inventory:
+            lines.append(f"\nYou are carrying: {', '.join(inventory)}")
+        else:
+            lines.append("\nYou are not carrying anything.")
+        
+        # Visible items
+        visible_items = state.get('visible_items', [])
+        if visible_items:
+            lines.append("\nYou can see:")
+            for item in visible_items:
+                lines.append(f"  - {item.get('name', 'item')}: {item.get('description', 'an item')}")
+        
+        # Other characters
+        visible_characters = state.get('visible_characters', [])
+        if visible_characters:
+            lines.append("\nOther characters here:")
+            for char in visible_characters:
+                lines.append(f"  - {char.get('name', 'character')}: {char.get('description', 'a character')}")
+        
+        # Available exits
+        available_exits = state.get('available_exits', [])
+        if available_exits:
+            lines.append(f"\nAvailable exits: {', '.join(available_exits)}")
+        
+        # Available actions
+        available_actions = state.get('available_actions', [])
+        if available_actions:
+            lines.append("\nAvailable actions:")
+            for action in available_actions:
+                lines.append(f"  - {action['command']}: {action.get('description', 'perform action')}")
+        
+        return '\n'.join(lines)

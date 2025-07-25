@@ -42,8 +42,11 @@ class Thing(ABC):
 
     def get_property(self, property_name: str, default=None):
         """
-        Gets the value of this property for this item (returns default if not set)
+        Gets the value of this property for this item.
+        Raises KeyError if property doesn't exist and no default is provided.
         """
+        if property_name not in self.properties and default is None:
+            raise KeyError(f"Property '{property_name}' not found on {self.__class__.__name__} '{self.name}'")
         return self.properties.get(property_name, default)
 
     def add_command_hint(self, command: str):

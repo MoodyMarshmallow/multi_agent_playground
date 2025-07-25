@@ -1,4 +1,7 @@
 {
+  "env": {
+    "BASH_MAX_TIMEOUT_MS": "120000"
+  },
   "permissions": {
     "deny": [
       "Read(.env)",
@@ -9,17 +12,17 @@
       "Read(**/*.crt)",
       "Read(**/*.cert)",
       "Read(**/secrets/**)",
-      "Read(**/credentials/**)",
-      "WebFetch(domain:kani.readthedocs.io)"
+      "Read(**/credentials/**)"
+    ],
+    "allow": [
+      "mcp__sequential-thinking__sequentialthinking"
     ]
   },
   "hooks": {
     "PreToolUse": [
       {
         "matcher": "Bash|Edit|MultiEdit|Write",
-        "hooks": [
-
-        ]
+        "hooks": []
       }
     ],
     "PostToolUse": [
@@ -33,8 +36,5 @@
         ]
       }
     ]
-  },
-  "env" : {
-    "BASH_MAX_TIMEOUT_MS": "120000"
   }
 }
