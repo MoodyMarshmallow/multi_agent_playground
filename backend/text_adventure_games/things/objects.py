@@ -19,7 +19,7 @@ class Object(Thing):
     
     def __init__(self, name: str, description: str):
         super().__init__(name, description)
-        self.gettable = False
+        self.set_property("gettable", False)
         self.location = None
 
 

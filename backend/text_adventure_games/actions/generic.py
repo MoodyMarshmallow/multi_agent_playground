@@ -24,7 +24,7 @@ class GenericSetToStateAction(Action):
     ACTION_NAME = "set_to_state"
     ACTION_DESCRIPTION = "Change an object's state"
     COMMAND_PATTERNS = [
-        "turn on {target}", "turn off {target}", "switch on {target}", "switch off {target}",
+        "switch on {target}", "switch off {target}",
         "open {target}", "close {target}", 
         "lock {target}", "unlock {target}"
     ]
@@ -44,7 +44,7 @@ class GenericSetToStateAction(Action):
         for item_name, item in location.items.items():
             # Check if object has state-changing capabilities
             if (isinstance(item, (Activatable, Openable, Lockable)) or
-                hasattr(item, 'get_available_actions')):
+                hasattr(item, 'get_object_capabilities')):
                 combinations.append({"target": item_name})
         return combinations
     
@@ -151,8 +151,7 @@ class GenericStartUsingAction(Action):
     ACTION_NAME = "start_using"
     ACTION_DESCRIPTION = "Start using an object"
     COMMAND_PATTERNS = [
-        "use {target}", "sleep on {target}", "watch {target}", "sit on {target}",
-        "play {target}", "take bath in {target}"
+        "use {target}"
     ]
     
     @classmethod
@@ -231,8 +230,7 @@ class GenericStopUsingAction(Action):
     ACTION_NAME = "stop_using"
     ACTION_DESCRIPTION = "Stop using an object"
     COMMAND_PATTERNS = [
-        "stop using {target}", "get up from {target}", "stop watching {target}",
-        "get out of {target}", "stop playing {target}"
+        "stop using {target}"
     ]
     
     @classmethod
@@ -315,7 +313,7 @@ class GenericTakeAction(Action):
     ACTION_NAME = "take"
     ACTION_DESCRIPTION = "Take an item"
     COMMAND_PATTERNS = [
-        "take {target}", "get {target}", "pick up {target}", "grab {target}"
+        "take {target}"
     ]
     
     @classmethod
@@ -331,8 +329,8 @@ class GenericTakeAction(Action):
         
         combinations = []
         for item_name, item in location.items.items():
-            # Check if item can be taken
-            if item.get_property("gettable", True):
+            # Check if item can be taken (default to False for safety)
+            if item.get_property("gettable", False):
                 combinations.append({"target": item_name})
         return combinations
     
@@ -372,8 +370,8 @@ class GenericTakeAction(Action):
             self.parser.fail(f"You don't see a {self.target_name} here.")
             return False
         
-        # Check if item can be taken
-        if not self.target.get_property("gettable", True):
+        # Check if item can be taken (default to False for safety)
+        if not self.target.get_property("gettable", False):
             self.parser.fail(f"You can't take the {self.target_name}.")
             return False
         
@@ -407,7 +405,7 @@ class GenericDropAction(Action):
     ACTION_NAME = "drop"
     ACTION_DESCRIPTION = "Drop an item"
     COMMAND_PATTERNS = [
-        "drop {target}", "put down {target}", "leave {target}"
+        "drop {target}"
     ]
     
     @classmethod
@@ -476,8 +474,7 @@ class GenericPlaceAction(Action):
     ACTION_NAME = "place"
     ACTION_DESCRIPTION = "Place an item in/on something or give to someone"
     COMMAND_PATTERNS = [
-        "put {target} in {recipient}", "place {target} in {recipient}",
-        "give {target} to {recipient}", "put {target} on {recipient}"
+        "put {target} in {recipient}"
     ]
     
     @classmethod
@@ -583,7 +580,7 @@ class GenericConsumeAction(Action):
     ACTION_NAME = "consume"
     ACTION_DESCRIPTION = "Consume an item"
     COMMAND_PATTERNS = [
-        "eat {target}", "drink {target}", "consume {target}"
+        "consume {target}"
     ]
     
     @classmethod
@@ -655,7 +652,7 @@ class GenericExamineAction(Action):
     ACTION_NAME = "examine"
     ACTION_DESCRIPTION = "Examine something closely"
     COMMAND_PATTERNS = [
-        "examine {target}", "look at {target}", "inspect {target}", "check {target}"
+        "examine {target}"
     ]
     
     @classmethod
@@ -749,8 +746,7 @@ class MoveAction(Action):
     ACTION_NAME = "move"
     ACTION_DESCRIPTION = "Move in a direction"
     COMMAND_PATTERNS = [
-        "go {direction}", "move {direction}", "walk {direction}", "travel {direction}",
-        "{direction}", "n", "s", "e", "w", "north", "south", "east", "west"
+        "go {direction}"
     ]
     
     @classmethod
@@ -835,9 +831,9 @@ class EnhancedLookAction(Action):
     """Enhanced capability-aware look action that shows available object interactions"""
     
     ACTION_NAME = "look"
-    ACTION_DESCRIPTION = "Look around the current location"
+    ACTION_DESCRIPTION = "Refresh what you see around you"
     ACTION_ALIASES = ["l", "describe"]
-    COMMAND_PATTERNS = ["look", "describe", "l"]
+    COMMAND_PATTERNS = ["look"]
     
     @classmethod
     def get_command_patterns(cls):
@@ -864,62 +860,11 @@ class EnhancedLookAction(Action):
                 narration = self.parser.fail("You are nowhere.")
                 return narration, ActionResult(description="You are nowhere.")
             
-            # Start with basic location description
-            description_parts = [f"**{location.name}**", location.description]
+            # Get the world state exactly as the agent would receive it
+            world_state = self.game.get_world_state_for_agent(self.character)
             
-            # Show connections
-            if location.connections:
-                exits = list(location.connections.keys())
-                exits_text = "Exits: " + ", ".join(exits)
-                description_parts.append(exits_text)
-            
-            # Show objects with their available capabilities
-            if location.items:
-                objects_text = "\n**Objects here:**"
-                for item in location.items.values():
-                    item_desc = f"• {item.name}"
-                    
-                    # Add simple capability hints
-                    hints = []
-                    if isinstance(item, Activatable):
-                        if hasattr(item, 'is_active'):
-                            hints.append("turn on/off" if not item.is_active() else "turn off")
-                        else:
-                            hints.append("turn on/off")
-                    if isinstance(item, Openable):
-                        if hasattr(item, 'is_open'):
-                            hints.append("open" if not item.is_open() else "close")
-                        else:
-                            hints.append("open/close")
-                    if isinstance(item, Usable):
-                        hints.append("use")
-                    if isinstance(item, Examinable):
-                        hints.append("examine")
-                    
-                    if hints:
-                        item_desc += f" [{', '.join(hints)}]"
-                    
-                    objects_text += f"\n  {item_desc}"
-                description_parts.append(objects_text)
-            
-            # Show characters
-            if location.characters:
-                other_characters = [char for char in location.characters.values() if char != self.character]
-                if other_characters:
-                    chars_text = "\n**Characters here:**"
-                    for char in other_characters:
-                        char_desc = f"• {char.name} - {char.description}"
-                        chars_text += f"\n  {char_desc}"
-                    description_parts.append(chars_text)
-            
-            # Show inventory
-            if self.character.inventory:
-                inv_text = "\n**You are carrying:**"
-                for item in self.character.inventory.values():
-                    inv_text += f"\n  • {item.name}"
-                description_parts.append(inv_text)
-            
-            full_description = "\n\n".join(description_parts)
+            # Format it using the same method as agents receive
+            full_description = self._format_world_state(world_state)
             
             narration = self.parser.ok(full_description)
             schema = ActionResult(
@@ -933,3 +878,48 @@ class EnhancedLookAction(Action):
             error_msg = f"Failed to look around: {str(e)}"
             narration = self.parser.fail(error_msg)
             return narration, ActionResult(description=error_msg)
+    
+    def _format_world_state(self, state: dict) -> str:
+        """Format world state into readable observation."""
+        lines = []
+        
+        # Location
+        location_info = state.get('location', {})
+        lines.append(f"You are at: {location_info.get('name', 'Unknown Location')}")
+        if location_info.get('description'):
+            lines.append(location_info['description'])
+        
+        # Inventory
+        inventory = state.get('inventory', [])
+        if inventory:
+            lines.append(f"\nYou are carrying: {', '.join(inventory)}")
+        else:
+            lines.append("\nYou are not carrying anything.")
+        
+        # Visible items
+        visible_items = state.get('visible_items', [])
+        if visible_items:
+            lines.append("\nYou can see:")
+            for item in visible_items:
+                lines.append(f"  - {item.get('name', 'item')}: {item.get('description', 'an item')}")
+        
+        # Other characters
+        visible_characters = state.get('visible_characters', [])
+        if visible_characters:
+            lines.append("\nOther characters here:")
+            for char in visible_characters:
+                lines.append(f"  - {char.get('name', 'character')}: {char.get('description', 'a character')}")
+        
+        # Available exits
+        available_exits = state.get('available_exits', [])
+        if available_exits:
+            lines.append(f"\nAvailable exits: {', '.join(available_exits)}")
+        
+        # Available actions
+        available_actions = state.get('available_actions', [])
+        if available_actions:
+            lines.append("\nAvailable actions:")
+            for action in available_actions:
+                lines.append(f"  - {action['command']}: {action.get('description', 'perform action')}")
+        
+        return '\n'.join(lines)

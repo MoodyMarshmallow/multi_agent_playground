@@ -73,11 +73,43 @@ pip install -r requirements.txt
 
 ## Important Implementation Details
 
-### Agent System
+### Agent System & Prompt Construction
 - Characters are defined in `backend/text_adventure_games/house.py`
 - AI agents (KaniAgent) are registered in `backend/game_loop.py:_setup_agents()`
 - Agent personas and behaviors are defined during KaniAgent initialization
 - Agents use function calling to select actions from available options
+
+#### How Prompts Are Built and Passed to AI Agents
+
+The prompt construction flow follows this pattern:
+
+1. **System Prompt Creation** (`backend/agent/agent_strategies.py:72-94`):
+   - Built in `KaniAgent.__init__()` with character name and persona
+   - Includes role definition, world interaction instructions, and function calling guidance
+   - Example: `"You are {character_name}, a character in a text adventure game. Your persona: {persona}..."`
+
+2. **World State Formatting** (`backend/agent/agent_strategies.py:201-244`):
+   - `_format_world_state()` converts game state dict into readable observation text
+   - Includes: location, inventory, visible items, characters, exits, and available actions
+   - Added to each turn as context for the LLM
+
+3. **Turn Execution Flow**:
+   - `AgentManager.execute_agent_turn()` → `KaniAgent.select_action()` → Kani framework
+   - World state retrieved via `Game.get_world_state_for_agent()` 
+   - Formatted observation + recent actions context sent to LLM
+   - Agent uses `@ai_function() submit_command()` for structured action selection
+
+4. **Function Calling Integration**:
+   - Kani's `full_round()` method enables function calling with `max_function_rounds=1`
+   - Agent must call `submit_command(command: str)` to select actions
+   - Command validation against available actions list prevents invalid moves
+
+5. **Message Flow**:
+   - Game Loop (`backend/game_loop.py:90-104`) orchestrates agent turns
+   - Each agent receives fresh world state perception per turn
+   - Results converted to `AgentActionOutput` schema for frontend consumption
+
+The Kani framework handles the low-level LLM communication, prompt assembly, and function call mechanics, while this codebase focuses on world state perception and action validation.
 
 ### Game World
 - World is built using the house layout in `backend/text_adventure_games/house.py`

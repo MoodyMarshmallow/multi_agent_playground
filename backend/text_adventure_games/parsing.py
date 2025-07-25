@@ -375,16 +375,6 @@ class Parser:
         available = []
         location = character.location
         
-        # Movement actions (still hardcoded as they're not pattern-based actions)
-        if location is not None:
-            connections = getattr(location, 'connections', {})
-            for direction, connected_loc in connections.items():
-                # Check if the connection is blocked
-                if not location.is_blocked(direction):
-                    available.append({
-                        'command': f"go {direction}",
-                        'description': f"Move {direction} to {connected_loc.name}"
-                    })
         
         # Auto-discover actions using the pattern system
         action_classes = self.discover_action_classes()
@@ -425,13 +415,6 @@ class Parser:
                         # Pattern couldn't be filled with this combination, skip
                         continue
         
-        # Add basic non-pattern actions
-        available.extend([
-            {'command': 'look', 'description': 'Examine your surroundings'},
-            {'command': 'describe', 'description': 'Describe the current location'},
-            {'command': 'inventory', 'description': 'Check what you are carrying'},
-            {'command': 'quit', 'description': 'Quit the game'}
-        ])
         
         return available
 

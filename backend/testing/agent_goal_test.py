@@ -60,7 +60,7 @@ class AgentGoalTest:
         initial_world_state: WorldStateConfig,
         agent_config: AgentConfig,
         success_criteria: List[Criterion],
-        failure_criteria: List[Criterion] = None,
+        failure_criteria: Optional[List[Criterion]] = None,
         max_turns: int = 50,
         timeout_seconds: int = 300
     ):

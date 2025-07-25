@@ -174,11 +174,37 @@ class GameLoop:
         else:  # agent_type == "ai" or any other value
             try:
                 print(f"Creating AI agent for {character_name}")
-                return KaniAgent(character_name, persona)
+                
+                # Get initial world state by executing a look command for this character
+                if self.game and character_name in self.game.characters:
+                    character = self.game.characters[character_name]
+                    initial_world_state = self._get_initial_world_state_for_agent(character)
+                    return KaniAgent(character_name, persona, initial_world_state)
+                else:
+                    print(f"Warning: Character {character_name} not found, creating agent without initial state")
+                    return KaniAgent(character_name, persona)
+                    
             except Exception as e:
                 print(f"Failed to create AI agent for {character_name}: {e}")
                 print(f"Falling back to manual agent for {character_name}")
                 return ManualAgent(character_name, persona)
+    
+    def _get_initial_world_state_for_agent(self, character) -> str:
+        """Get the initial world state for an agent by executing a look action."""
+        from .text_adventure_games.actions.generic import EnhancedLookAction
+        
+        # Create and execute a look action for this character
+        look_action = EnhancedLookAction(self.game, "look")
+        look_action.character = character
+        
+        # Execute the look action to get formatted world state
+        try:
+            narration, schema = look_action.apply_effects()
+            # Return the description which contains the formatted world state
+            return schema.description if schema and schema.description else "You are in an unknown location."
+        except Exception as e:
+            print(f"Error getting initial world state for {character.name}: {e}")
+            return "You are in an unknown location. Use 'look' to see your surroundings."
     
     def set_agent_config(self, agent_config: Dict[str, str]):
         """Update agent configuration and reinitialize agents."""

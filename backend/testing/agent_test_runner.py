@@ -98,8 +98,11 @@ class AgentTestRunner:
                     if action_output:
                         action_history.append(action_output)
                         print(f"Agent action: {action_output.action.action_type}")
-                        if hasattr(action_output.action, 'target'):
-                            print(f"  Target: {action_output.action.target}")
+                        # Check if the action has a target attribute (some actions like LookAction and NoOpAction don't)
+                        action = action_output.action
+                        target = getattr(action, 'target', None)
+                        if target is not None:
+                            print(f"  Target: {target}")
                         print(f"  Location: {action_output.current_room}")
                         if action_output.description:
                             print(f"  Result: {action_output.description}")

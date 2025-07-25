@@ -88,5 +88,55 @@
     "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py",
     "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py:197:50 - error: \"locations\" is not a known attribute of \"None\" (reportOptionalMemberAccess)\n1 error, 0 warnings, 0 informations \n",
     "session_id": "5c75bc95-c889-4c0a-9dc1-55433ff398db"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py:103:65 - error: Cannot access attribute \"target\" for class \"LookAction\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"target\" is unknown (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py:103:65 - error: Cannot access attribute \"target\" for class \"NoOpAction\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"target\" is unknown (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py:104:55 - error: Cannot access attribute \"target\" for class \"LookAction\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"target\" is unknown (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py:104:55 - error: Cannot access attribute \"target\" for class \"NoOpAction\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"target\" is unknown (reportAttributeAccessIssue)\n4 errors, 0 warnings, 0 informations \n",
+    "session_id": "19222611-2540-4958-b414-6d89488b59ca"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\criteria.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\criteria.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\criteria.py:55:21 - error: Object of type \"None\" cannot be used as iterable value (reportOptionalIterable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\criteria.py:60:21 - error: Object of type \"None\" cannot be used as iterable value (reportOptionalIterable)\n2 errors, 0 warnings, 0 informations \n",
+    "session_id": "19222611-2540-4958-b414-6d89488b59ca"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\test_actions.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\test_actions.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\test_actions.py:10:48 - error: \"HouseGameBuilder\" is unknown import symbol (reportAttributeAccessIssue)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "93ecf3b1-26a1-4f51-8ba5-99cf8d55fb7a"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_adventure_games\\actions\\generic.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_adventure_games\\actions\\generic.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_adventure_games\\actions\\generic.py:867:37 - error: Cannot access attribute \"_format_world_state_like_agent\" for class \"EnhancedLookAction*\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"_format_world_state_like_agent\" is unknown (reportAttributeAccessIssue)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "571bb9de-d470-4386-89c8-b979d2724413"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_adventure_games\\actions\\generic.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_adventure_games\\actions\\generic.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_adventure_games\\actions\\generic.py:867:37 - error: Cannot access attribute \"_format_world_state\" for class \"EnhancedLookAction*\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"_format_world_state\" is unknown (reportAttributeAccessIssue)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "571bb9de-d470-4386-89c8-b979d2724413"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\agent_strategies.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\agent_strategies.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\agent_strategies.py:127:52 - error: \"world_state\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\agent_strategies.py:162:61 - error: \"world_state\" is not defined (reportUndefinedVariable)\n2 errors, 0 warnings, 0 informations \n",
+    "session_id": "571bb9de-d470-4386-89c8-b979d2724413"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py:146:76 - error: Argument of type \"ManualAgent | KaniAgent\" cannot be assigned to parameter \"strategy\" of type \"AgentStrategy\" in function \"register_agent_strategy\"\n  \u00c2\u00a0\u00c2\u00a0Type \"ManualAgent | KaniAgent\" is not assignable to type \"AgentStrategy\"\n  \u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\"KaniAgent\" is incompatible with protocol \"AgentStrategy\"\n  \u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\"select_action\" is an incompatible type\n  \u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0Type \"(action_result: str) -> CoroutineType[Any, Any, str]\" is not assignable to type \"(world_state: dict[Unknown, Unknown]) -> CoroutineType[Any, Any, str]\"\n  \u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0Parameter name mismatch: \"world_state\" versus \"action_result\"\n  \u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0Parameter 1: type \"dict[Unknown, Unknown]\" is incompatible with type \"str\" (reportArgumentType)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py:179:39 - error: \"characters\" is not a known attribute of \"None\" (reportOptionalMemberAccess)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py:181:48 - error: Cannot access attribute \"_get_initial_world_state_for_agent\" for class \"GameLoop*\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"_get_initial_world_state_for_agent\" is unknown (reportAttributeAccessIssue)\n3 errors, 0 warnings, 0 informations \n",
+    "session_id": "571bb9de-d470-4386-89c8-b979d2724413"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\agent_strategies.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\agent_strategies.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\agent_strategies.py:246:35 - error: \"world_state\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\agent_strategies.py:249:29 - error: \"world_state\" is not defined (reportUndefinedVariable)\n2 errors, 0 warnings, 0 informations \n",
+    "session_id": "571bb9de-d470-4386-89c8-b979d2724413"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py:181:48 - error: Cannot access attribute \"_get_initial_world_state_for_agent\" for class \"GameLoop*\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"_get_initial_world_state_for_agent\" is unknown (reportAttributeAccessIssue)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "571bb9de-d470-4386-89c8-b979d2724413"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\manager.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\manager.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\manager.py:69:52 - error: Argument of type \"dict[Unknown, Unknown]\" cannot be assigned to parameter \"action_result\" of type \"str\" in function \"select_action\"\n  \u00c2\u00a0\u00c2\u00a0\"dict[Unknown, Unknown]\" is not assignable to \"str\" (reportArgumentType)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "571bb9de-d470-4386-89c8-b979d2724413"
   }
 ]

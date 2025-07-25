@@ -18,8 +18,8 @@ class AgentStrategy(Protocol):
     Interface for agent decision-making strategies.
     Implement this with your kani-based LLM agents.
     """
-    async def select_action(self, world_state: dict) -> str:
-        """Given world state, return a command string"""
+    async def select_action(self, action_result: str) -> str:
+        """Given action result, return a command string"""
         ...
 
 
@@ -29,7 +29,7 @@ class KaniAgent(Kani):
     Extends Kani directly to enable proper function calling support.
     """
     
-    def __init__(self, character_name: str, persona: str, model="gpt-4o-mini", api_key: Optional[str] = None):
+    def __init__(self, character_name: str, persona: str, initial_world_state: Optional[str] = None, model="gpt-4o-mini", api_key: Optional[str] = None):
         self.character_name = character_name
         self.persona = persona
         
@@ -97,6 +97,10 @@ Remember: You can only choose from the available actions provided. If unsure, su
             engine=engine,
             system_prompt=system_prompt
         )
+        
+        # Store initial world state to be sent as first user message
+        self.initial_world_state = initial_world_state
+        self.initial_context_sent = False
     
     @ai_function()
     def submit_command(self, command: str):
@@ -109,17 +113,24 @@ Remember: You can only choose from the available actions provided. If unsure, su
         print(f"[{self.character_name}] FUNCTION CALL: submit_command('{command}') -> stored as '{self.selected_command}'")
         return f"Command '{command}' submitted successfully."
     
-    async def select_action(self, world_state: dict) -> str:
+    async def select_action(self, action_result: str) -> str:
         """
-        Use LLM with function calling to select an action based on world state.
+        Use LLM with function calling to select an action based on previous action result.
+        On first call, sends initial world state as first user message.
         """
         try:
             print(f"\n[{self.character_name}] === AGENT TURN STARTED ===")
             # Reset selected command
             self.selected_command = None
             
-            # Format world state as a message
-            observation = self._format_world_state(world_state)
+            # Handle first turn: send initial world state as first user message
+            if not self.initial_context_sent and self.initial_world_state:
+                print(f"[{self.character_name}] Sending initial world state as first user message")
+                observation = self.initial_world_state
+                self.initial_context_sent = True
+            else:
+                # Subsequent turns: use action result from previous turn
+                observation = action_result
             
             # Add recent actions context to avoid loops
             if self.recent_actions:
@@ -127,17 +138,16 @@ Remember: You can only choose from the available actions provided. If unsure, su
                 observation += "\nTry to do something different if you've been repeating actions."
             
             # Add instruction about function calling
-            observation += "\n\nYou must call the submit_command function with your chosen action."
+            observation += "\n\nYou must call the submit_command function with your chosen action. Submit \"look\" to show what commands you can take."
             
             # Debug: Print the full observation sent to the LLM
-            print(f"\n[{self.character_name}] WORLD STATE OBSERVATION:")
+            print(f"\n[{self.character_name}] OBSERVATION:")
             print("=" * 60)
             print(observation)
             print("=" * 60)
             
             # Get LLM response with function calling
             print(f"[{self.character_name}] Sending observation to LLM...")
-            # Use full_round to allow function calling
             async for message in self.full_round(observation, max_function_rounds=1):
                 print(f"[{self.character_name}] LLM message: {message.role}")
             print(f"[{self.character_name}] LLM response received")
@@ -146,51 +156,20 @@ Remember: You can only choose from the available actions provided. If unsure, su
             if self.selected_command:
                 command = self.selected_command
                 print(f"[{self.character_name}] Function call successful: '{command}'")
-            else:
-                # Fallback if no function was called (shouldn't happen with proper prompting)
-                print(f"[{self.character_name}] WARNING: No submit_command function was called!")
-                print(f"[{self.character_name}] Using fallback command: 'look'")
-                print(f"[{self.character_name}] FINAL ACTION: 'look'\n")
-                return "look"
-            
-            # Validate command is in available actions
-            valid_commands = [a['command'].lower() for a in world_state.get('available_actions', [])]
-            print(f"[{self.character_name}] Validating command '{command}' against {len(valid_commands)} available actions")
-            print(f"[{self.character_name}] Available commands: {valid_commands}")
-            
-            if command in valid_commands:
+                
                 # Track this action
                 self.recent_actions.append(command)
                 if len(self.recent_actions) > self.max_recent_actions:
                     self.recent_actions.pop(0)
-                print(f"[{self.character_name}] Command VALID: '{command}'")
+                    
                 print(f"[{self.character_name}] FINAL ACTION: '{command}'\n")
                 return command
             else:
-                print(f"[{self.character_name}] Command NOT VALID: '{command}'")
-                # Try to find a close match
-                for valid_cmd in valid_commands:
-                    if command in valid_cmd or valid_cmd in command:
-                        self.recent_actions.append(valid_cmd)
-                        if len(self.recent_actions) > self.max_recent_actions:
-                            self.recent_actions.pop(0)
-                        print(f"[{self.character_name}] Found close match: '{command}' -> '{valid_cmd}'")
-                        print(f"[{self.character_name}] FINAL ACTION: '{valid_cmd}'\n")
-                        return valid_cmd
-                
-                # Fallback to first available action or "look"
-                if valid_commands:
-                    fallback = valid_commands[0]
-                    self.recent_actions.append(fallback)
-                    if len(self.recent_actions) > self.max_recent_actions:
-                        self.recent_actions.pop(0)
-                    print(f"[{self.character_name}] No match found, using first available: '{fallback}'")
-                    print(f"[{self.character_name}] FINAL ACTION: '{fallback}'\n")
-                    return fallback
-                else:
-                    print(f"[{self.character_name}] No available commands, using fallback: 'look'")
-                    print(f"[{self.character_name}] FINAL ACTION: 'look'\n")
-                    return "look"
+                # Fallback if no function was called
+                print(f"[{self.character_name}] WARNING: No submit_command function was called!")
+                print(f"[{self.character_name}] Using fallback command: 'look'")
+                print(f"[{self.character_name}] FINAL ACTION: 'look'\n")
+                return "look"
                     
         except Exception as e:
             print(f"[{self.character_name}] ERROR in select_action: {e}")
@@ -254,59 +233,26 @@ class ManualAgent:
         self.character_name = character_name
         self.persona = persona or f"Manual control for {character_name}"
         
-    async def select_action(self, world_state: dict) -> str:
+    async def select_action(self, action_result: str) -> str:
         """
-        Prompt the developer to manually select an action based on world state.
+        Prompt the developer to manually select an action based on action result.
+        Note: ManualAgent ignores action_result and shows current world state.
         """
         print(f"\n{'='*60}")
         print(f"MANUAL CONTROL - {self.character_name}")
         print(f"{'='*60}")
         
-        # Display current world state
-        self._display_world_state(world_state)
+        print(f"Previous action result: {action_result}")
+        print(f"Note: ManualAgent always shows available actions. Use 'look' to see full world state.")
         
-        # Display available actions
-        available_actions = world_state.get('available_actions', [])
-        if not available_actions:
-            print("No actions available!")
-            return "look"
-        
-        print(f"\nAvailable Actions ({len(available_actions)} options):")
-        print("-" * 40)
-        
-        for i, action in enumerate(available_actions, 1):
-            command = action.get('command', 'unknown')
-            description = action.get('description', 'No description')
-            print(f"{i:2}. {command:<20} - {description}")
-        
-        # Prompt for selection
-        while True:
-            try:
-                print(f"\nSelect action for {self.character_name} (1-{len(available_actions)}, 'q' to quit, 's' to skip):")
-                user_input = input("> ").strip().lower()
-                
-                if user_input == 'q':
-                    return "quit"
-                elif user_input == 's':
-                    return "look"  # Safe default action
-                
-                choice = int(user_input)
-                if 1 <= choice <= len(available_actions):
-                    selected_action = available_actions[choice - 1]
-                    command = selected_action.get('command', 'look')
-                    print(f"Selected: {command}")
-                    return command
-                else:
-                    print(f"Invalid choice. Please enter 1-{len(available_actions)}")
-                    
-            except ValueError:
-                print("Invalid input. Please enter a number, 'q' to quit, or 's' to skip.")
-            except KeyboardInterrupt:
-                print("\nInterrupted. Skipping turn.")
-                return "look"
+        # For now, return "look" to get world state, since ManualAgent needs to see available actions
+        # TODO: This needs to be refactored to work with the new architecture
+        print("ManualAgent temporarily disabled - use 'look' to see world state")
+        return "look"
     
     def _display_world_state(self, state: dict):
         """Display the current world state in a readable format."""
+        print("What you see around you:")
         
         # Location information
         location_info = state.get('location', {})

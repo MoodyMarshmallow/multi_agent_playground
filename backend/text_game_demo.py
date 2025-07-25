@@ -29,7 +29,7 @@ def main():
         game_obj = build_house_game()
         # Canonical parse and render for initial look
         narration, schema = game_obj.parser.parse_command("look")
-        game_obj.parser.print_narration(narration)
+        print(narration)
         print(f"[DEBUG] Action schema: {getattr(schema, 'description', schema)}")
         if hasattr(schema, '__dict__'):
             print(f"[DEBUG] ActionResult fields: {vars(schema)}")
@@ -52,7 +52,7 @@ def main():
                 break
             # Canonical parse and render for user command
             narration, schema = game_obj.parser.parse_command(command)
-            game_obj.parser.print_narration(narration)
+            print(narration)
             print(f"[DEBUG] Action schema: {getattr(schema, 'description', schema)}")
             if hasattr(schema, '__dict__'):
                 print(f"[DEBUG] ActionResult fields: {vars(schema)}")
