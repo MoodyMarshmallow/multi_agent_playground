@@ -27,8 +27,6 @@ func instantiate_inventory_panel(agent_id: String, text: String):
 	
 	# Store reference to the panel
 	inventory_panels[agent_id] = new_panel
-	
-	print("Created inventory panel for agent: ", agent_id)
 
 func update_inventory_panel(agent_id: String, text: String):
 	# Check if panel exists for this agent
@@ -53,7 +51,5 @@ func destroy_inventory_panel(agent_id: String):
 		
 		# Remove from dictionary
 		inventory_panels.erase(agent_id)
-		
-		print("Destroyed inventory panel for agent: ", agent_id)
 	else:
 		print("No inventory panel found for agent: ", agent_id)

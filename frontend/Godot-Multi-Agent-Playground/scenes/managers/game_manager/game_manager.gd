@@ -41,7 +41,6 @@ func _initialize_agent_inventories():
 		
 		# Create inventory panel for this agent
 		inventory.instantiate_inventory_panel(agent.agent_id, "empty")
-		print("Initialized inventory panel for agent: ", agent.agent_id)
 		
 		# Connect the agent's inventory changed signal
 		agent.connect("inventory_changed", Callable(self, "_on_agent_inventory_changed"))
