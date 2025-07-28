@@ -1,0 +1,30 @@
+[gd_scene load_steps=2 format=3 uid="uid://bcwfjardq1fi7"]
+
+[ext_resource type="Script" path="res://scenes/ui/inventory/inventory_panel.gd" id="1_3sci5"]
+
+[node name="InventoryPanel" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 60)
+size_flags_vertical = 3
+script = ExtResource("1_3sci5")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="AgentNameLabel" type="Label" parent="MarginContainer/VBoxContainer2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "alex_001:"
+
+[node name="AgentInventoryLabel" type="Label" parent="MarginContainer/VBoxContainer2"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+text = "apple
+milk
+bread
+knife
+boots
+pot"

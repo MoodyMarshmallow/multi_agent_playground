@@ -1,14 +1,15 @@
 extends Node2D
 
-@onready var debugging_input: LineEdit = $UIManager/DebuggingInput
 @onready var ui_manager: CanvasLayer = $UIManager
+@onready var debugging_input: LineEdit = $UIManager/DebuggingInput
+@onready var inventory: Inventory = $UIManager/Inventory
+@onready var chat_box: ChatBox = $UIManager/ChatBox
 
 @onready var http_manager: HTTPManager = $HttpManager
 @onready var text_input_manager: TextInputManager = $TextInputManager
 @onready var action_manager: ActionManager = $ActionManager
 
 @onready var object_manager: ObjectManager = $NavigationRegionD/ObjectManager
-#@onready var object_manager: ObjectManager = $ObjectManager
 @onready var agent_manager: AgentManager = $AgentManager
 
 func _ready():
@@ -22,8 +23,44 @@ func _ready():
 	http_manager.connect("play_next_action", Callable(self, "_on_play_next_action"))
 
 	agent_manager.connect("agent_action_completed", Callable(self, "_on_agent_action_completed"))
+	
+	# Initialize inventory panels for all agents (except DebugAgent)
+	_initialize_agent_inventories()
+
+func _initialize_agent_inventories():
+	# Wait one frame to ensure all nodes are ready
+	await get_tree().process_frame
+	
+	# Get all agents from the agent manager
+	var agents = agent_manager.get_children()
+	
+	for agent in agents:
+		# Skip DebugAgent
+		if agent.name == "DebugAgent" or "debug" in agent.name.to_lower():
+			continue
+		
+		# Create inventory panel for this agent
+		inventory.instantiate_inventory_panel(agent.agent_id, "empty")
+		print("Initialized inventory panel for agent: ", agent.agent_id)
+		
+		# Connect the agent's inventory changed signal
+		agent.connect("inventory_changed", Callable(self, "_on_agent_inventory_changed"))
+
+func _on_agent_inventory_changed(agent_id: String, inventory_text: String):
+	# Update the inventory UI for this agent
+	inventory.update_inventory_panel(agent_id, inventory_text)
 
 func on_general_action_received(action: Dictionary):
+	# Handle chat actions
+	if action.has("action_type") and action["action_type"] == "chat":
+		if action.has("sender") and action.has("recipient") and action.has("message"):
+			chat_box.send_message_with_sender_recipient(
+				action["sender"], 
+				action["recipient"], 
+				action["message"]
+			)
+		return
+	
 	# Set place_location for place actions
 	if action.has("action_type") and action["action_type"] == "place":
 		if action.has("recipient"):

@@ -4,6 +4,7 @@ extends CharacterBody2D
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 @onready var navigation_agent_2d: NavigationAgent2D = $NavigationAgent2D
 @onready var collision_shape_2d: CollisionShape2D = $CollisionShape2D
+@onready var object_manager: ObjectManager = $"../../NavigationRegionD/ObjectManager"
 
 @export var agent_id: String = ""
 var speed: float = 50.0
@@ -13,6 +14,7 @@ var inventory: Array[String] = []
 var inventory_objects: Array = []
 
 signal reached_destination(action: Dictionary)
+signal inventory_changed(agent_id: String, inventory_text: String)
 
 var pending_action: Dictionary = {}
 
@@ -129,9 +131,9 @@ func to_snake_case(name: String) -> String:
 
 # Adds an item to the inventory by name (standardized to snake_case)
 func add_to_inventory(item: String) -> void:
+	print("adding to inventory, ", item)
 	var key = to_snake_case(item)
 	# Only add if the object exists in the object manager
-	var object_manager = get_parent().get_parent().get_node("ObjectManager")
 	if object_manager:
 		var obj = object_manager.get_object_by_name(item)
 		if obj and is_instance_valid(obj):
@@ -141,6 +143,7 @@ func add_to_inventory(item: String) -> void:
 					inventory_objects.append(obj)
 					obj.global_position = global_position
 					obj.visible = false # Optionally hide the object
+				_emit_inventory_changed()
 		else:
 			print("[BaseAgent] Tried to add invalid or non-existent item to inventory: ", item)
 
@@ -150,11 +153,18 @@ func remove_from_inventory(item: String) -> void:
 	if key in inventory:
 		inventory.erase(key)
 		# Remove the object reference from inventory_objects
-		var object_manager = get_parent().get_parent().get_node("ObjectManager")
 		if object_manager:
 			var obj = object_manager.get_object_by_name(item)
 			if obj and obj in inventory_objects:
 				inventory_objects.erase(obj)
+		_emit_inventory_changed()
+
+# Helper function to emit inventory changed signal
+func _emit_inventory_changed():
+	var inventory_text = "empty"
+	if inventory.size() > 0:
+		inventory_text = "\n".join(inventory).replace("_", " ")
+	emit_signal("inventory_changed", agent_id, inventory_text)
 
 # Prints the inventory in the specified format (underscores replaced by spaces)
 func print_inventory() -> void:

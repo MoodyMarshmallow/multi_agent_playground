@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=4 uid="uid://bsurtjbglcegr"]
+[gd_scene load_steps=24 format=4 uid="uid://bsurtjbglcegr"]
 
 [ext_resource type="Script" path="res://scenes/managers/game_manager/game_manager.gd" id="1_8chwo"]
 [ext_resource type="Script" path="res://scripts/camera/camera_2d.gd" id="2_c2n6y"]
@@ -6,8 +6,10 @@
 [ext_resource type="PackedScene" uid="uid://c5oq8gc6y7nv6" path="res://scenes/houses/base_house.tscn" id="4_jd3tu"]
 [ext_resource type="PackedScene" uid="uid://d1gdbqhr6vn37" path="res://scenes/ui/user_input/debugging_input/debugging_input.tscn" id="5_s0t5u"]
 [ext_resource type="PackedScene" uid="uid://dsv32w5f65vpb" path="res://scenes/managers/http_manager/http_manager.tscn" id="6_3yqf7"]
+[ext_resource type="PackedScene" uid="uid://mk24lgvdykm4" path="res://scenes/ui/inventory/inventory.tscn" id="7_68qki"]
 [ext_resource type="Script" path="res://scenes/managers/http_manager/http_manager.gd" id="7_o0mry"]
 [ext_resource type="PackedScene" uid="uid://mgbup0ujo054" path="res://scenes/managers/text_input_manager/text_input_manager.tscn" id="8_16vc2"]
+[ext_resource type="PackedScene" uid="uid://ccgwdqw822uv5" path="res://scenes/ui/chat_box/chat_box.tscn" id="8_merwx"]
 [ext_resource type="PackedScene" uid="uid://d0q8ov4ixqehc" path="res://scenes/managers/action_manager/action_manager.tscn" id="9_6pfk0"]
 [ext_resource type="Script" path="res://scenes/managers/action_manager/action_manager.gd" id="10_x01g6"]
 [ext_resource type="PackedScene" uid="uid://87lmxewh1kml" path="res://scenes/managers/object_manager/object_manager.tscn" id="11_app4l"]
@@ -32,13 +34,16 @@ size = Vector2(20, 5)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_g4ex8"]
 size = Vector2(11.5, 12)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xfeap"]
+bg_color = Color(0.20871, 0.20871, 0.20871, 1)
+
 [node name="GameManager" type="Node2D"]
 process_mode = 1
 position = Vector2(-50, -11)
 script = ExtResource("1_8chwo")
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(320, 180)
+position = Vector2(261, 167)
 script = ExtResource("2_c2n6y")
 
 [node name="GameTileMap" type="Node2D" parent="."]
@@ -76,9 +81,28 @@ shape = SubResource("RectangleShape2D_g4ex8")
 
 [node name="UIManager" type="CanvasLayer" parent="."]
 
+[node name="PanelContainer" type="PanelContainer" parent="UIManager"]
+offset_right = 106.0
+offset_bottom = 320.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_xfeap")
+
 [node name="DebuggingInput" parent="UIManager" instance=ExtResource("5_s0t5u")]
-offset_top = 290.0
-offset_bottom = 321.0
+offset_left = 4.0
+offset_top = 288.0
+offset_right = 100.0
+offset_bottom = 319.0
+
+[node name="Inventory" parent="UIManager" instance=ExtResource("7_68qki")]
+offset_left = 4.0
+offset_top = 1.0
+offset_right = -540.0
+offset_bottom = -164.0
+
+[node name="ChatBox" parent="UIManager" instance=ExtResource("8_merwx")]
+offset_left = 4.0
+offset_top = 282.0
+offset_right = 4.0
+offset_bottom = 282.0
 
 [node name="HttpManager" parent="." instance=ExtResource("6_3yqf7")]
 script = ExtResource("7_o0mry")
@@ -92,6 +116,7 @@ script = ExtResource("10_x01g6")
 script = ExtResource("13_q7aor")
 
 [node name="DebugAgent" parent="AgentManager" instance=ExtResource("14_48ncs")]
+visible = false
 position = Vector2(103, 280)
 agent_id = "DebugAgent"
 

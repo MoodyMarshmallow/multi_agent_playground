@@ -176,6 +176,22 @@ func _parse_action(text: String):
 		})
 		return
 
+	# chat: {sender} -> {recipient}: {message}
+	regex.compile("^(\\w+)\\s*->\\s*(\\w+)\\s*:\\s*(.+)$")
+	result = regex.search(text.strip_edges())
+	if result:
+		var sender = result.get_string(1)
+		var recipient = result.get_string(2)
+		var message = result.get_string(3).strip_edges()
+		emit_signal("action", {
+			"action_type": "chat",
+			"sender": sender,
+			"recipient": recipient,
+			"message": message,
+			"description": "chat message from " + sender + " to " + recipient
+		})
+		return
+
 	# If no match, print for debugging
 	print("Unrecognized action command:", text)
 
