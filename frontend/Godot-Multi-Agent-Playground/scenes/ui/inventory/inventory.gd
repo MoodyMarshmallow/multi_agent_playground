@@ -35,7 +35,6 @@ func update_inventory_panel(agent_id: String, text: String):
 	if agent_id in inventory_panels:
 		var panel = inventory_panels[agent_id]
 		panel.set_text(text)
-		print("Updated inventory panel for agent: ", agent_id)
 	else:
 		print("No inventory panel found for agent: ", agent_id, ". Creating new one...")
 		instantiate_inventory_panel(agent_id, text)

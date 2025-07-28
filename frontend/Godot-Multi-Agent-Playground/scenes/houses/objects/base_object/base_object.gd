@@ -23,4 +23,13 @@ func use() -> void:
 	queue_free()
 
 func examine_object() -> void:
-	print("Examining ", self.name.to_lower())
+	pass
+
+func start_using() -> void:
+	pass
+
+func stop_using() -> void:
+	pass
+
+func go_to() -> void:
+	pass
