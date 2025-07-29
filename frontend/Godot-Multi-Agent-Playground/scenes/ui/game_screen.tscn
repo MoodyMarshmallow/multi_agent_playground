@@ -1,7 +1,22 @@
-[gd_scene load_steps=2 format=3 uid="uid://c8obsmt824n80"]
+[gd_scene load_steps=3 format=3 uid="uid://c8obsmt824n80"]
 
 [ext_resource type="PackedScene" uid="uid://73jm5qjy52vq" path="res://dialogue/game_dialogue_balloon.tscn" id="1_8hmcv"]
+[ext_resource type="PackedScene" uid="uid://cqygglynsxpcu" path="res://scenes/ui/inventory_box.tscn" id="2_e2vrk"]
 
 [node name="GameScreen" type="CanvasLayer"]
 
-[node name="GameDialogueBalloon" parent="." instance=ExtResource("1_8hmcv")]
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Dialogue" parent="HBoxContainer" instance=ExtResource("1_8hmcv")]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="Inventory" parent="HBoxContainer" instance=ExtResource("2_e2vrk")]

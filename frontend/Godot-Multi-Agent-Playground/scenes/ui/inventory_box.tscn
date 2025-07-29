@@ -1,27 +1,24 @@
-[gd_scene load_steps=5 format=3 uid="uid://73jm5qjy52vq"]
+[gd_scene load_steps=4 format=3 uid="uid://cqygglynsxpcu"]
 
-[ext_resource type="Script" uid="uid://4wyi1a5hh0uc" path="res://dialogue/game_dialogue_balloon.gd" id="1_sjhsj"]
-[ext_resource type="PackedScene" uid="uid://ckvgyvclnwggo" path="res://addons/dialogue_manager/dialogue_label.tscn" id="2_a8ve6"]
-[ext_resource type="Theme" uid="uid://ddurm1ac0cbxo" path="res://dialogue/dialogue_balloon_theme.tres" id="2_xkmgq"]
-[ext_resource type="PackedScene" uid="uid://b10qd3jlkbfqj" path="res://scenes/ui/emotes_panel.tscn" id="3_vwqec"]
+[ext_resource type="Script" uid="uid://4wyi1a5hh0uc" path="res://dialogue/game_dialogue_balloon.gd" id="1_8pf7o"]
+[ext_resource type="Theme" uid="uid://ddurm1ac0cbxo" path="res://dialogue/dialogue_balloon_theme.tres" id="2_576uk"]
+[ext_resource type="PackedScene" uid="uid://ckvgyvclnwggo" path="res://addons/dialogue_manager/dialogue_label.tscn" id="3_hyuop"]
 
 [node name="GameDialogueBalloon" type="CanvasLayer"]
-script = ExtResource("1_sjhsj")
+script = ExtResource("1_8pf7o")
 
 [node name="Balloon" type="Control" parent="."]
 unique_name_in_owner = true
 layout_mode = 3
 anchors_preset = 0
-size_flags_horizontal = 0
-size_flags_vertical = 0
-theme = ExtResource("2_xkmgq")
+theme = ExtResource("2_576uk")
 
 [node name="Panel" type="Panel" parent="Balloon"]
 clip_children = 2
 layout_mode = 1
-offset_left = 50.0
+offset_left = 350.0
 offset_top = 280.0
-offset_right = 300.0
+offset_right = 600.0
 offset_bottom = 350.0
 mouse_filter = 1
 
@@ -36,9 +33,6 @@ grow_vertical = 2
 [node name="HBoxContainer" type="HBoxContainer" parent="Balloon/Panel/Dialogue"]
 layout_mode = 2
 
-[node name="EmotesPanel" parent="Balloon/Panel/Dialogue/HBoxContainer" instance=ExtResource("3_vwqec")]
-layout_mode = 2
-
 [node name="VBoxContainer" type="VBoxContainer" parent="Balloon/Panel/Dialogue/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -51,11 +45,11 @@ layout_mode = 2
 mouse_filter = 1
 theme_type_variation = &"CharacterNameText"
 bbcode_enabled = true
-text = "Character"
+text = "Inventory"
 fit_content = true
 scroll_active = false
 
-[node name="DialogueLabel" parent="Balloon/Panel/Dialogue/HBoxContainer/VBoxContainer" instance=ExtResource("2_a8ve6")]
+[node name="DialogueLabel" parent="Balloon/Panel/Dialogue/HBoxContainer/VBoxContainer" instance=ExtResource("3_hyuop")]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3

@@ -1,4 +1,4 @@
-[gd_scene load_steps=0 format=3 uid="uid://4s17jcdb6vfl"]
+[gd_scene format=3 uid="uid://4s17jcdb6vfl"]
 
 [node name="CanvasLayer" type="CanvasLayer"]
 
@@ -6,3 +6,4 @@
 auto_translate_mode = 1
 item_count = 1
 item_0/text = "Inventory"
+item_0/id = 0
