@@ -22,10 +22,12 @@ This is a multi-agent simulation framework with a FastAPI backend and Godot fron
 
 ### Data Flow
 1. Game Loop executes agent turns sequentially
-2. Agents use Kani (OpenAI) to select actions based on world state
-3. Actions are executed through the text adventure framework
-4. Results are converted to AgentActionOutput schema and queued for frontend polling
-5. Frontend polls `/agent_act/next` endpoint for latest actions
+2. Agents receive action results from previous turn (or initial world state on first turn)
+3. Agents use Kani (OpenAI) to select actions based on feedback
+4. Actions are executed through the text adventure framework
+5. Results are converted to AgentActionOutput schema and queued for frontend polling
+6. Action results are stored for next agent turn
+7. Frontend polls `/agent_act/next` endpoint for latest actions
 
 ## Development Commands
 
@@ -81,35 +83,42 @@ pip install -r requirements.txt
 
 #### How Prompts Are Built and Passed to AI Agents
 
-The prompt construction flow follows this pattern:
+The agent feedback system has been redesigned for more realistic behavior:
 
 1. **System Prompt Creation** (`backend/agent/agent_strategies.py:72-94`):
    - Built in `KaniAgent.__init__()` with character name and persona
    - Includes role definition, world interaction instructions, and function calling guidance
    - Example: `"You are {character_name}, a character in a text adventure game. Your persona: {persona}..."`
 
-2. **World State Formatting** (`backend/agent/agent_strategies.py:201-244`):
-   - `_format_world_state()` converts game state dict into readable observation text
-   - Includes: location, inventory, visible items, characters, exits, and available actions
-   - Added to each turn as context for the LLM
+2. **Initial World State** (`backend/game_loop.py:_get_initial_world_state_for_agent()`):
+   - On agent creation, a look action is executed to get initial world state
+   - Formatted world state is passed as the **first user message** to the agent
+   - Uses `EnhancedLookAction._format_world_state()` for consistent formatting
+   - Only happens once during initialization
 
-3. **Turn Execution Flow**:
-   - `AgentManager.execute_agent_turn()` → `KaniAgent.select_action()` → Kani framework
-   - World state retrieved via `Game.get_world_state_for_agent()` 
-   - Formatted observation + recent actions context sent to LLM
+3. **Action Result Feedback** (`backend/agent/manager.py:execute_agent_turn()`):
+   - After initialization, agents receive **action results from their previous turn**
+   - Success: Description of what happened (e.g., "You moved to the kitchen")
+   - Failure: Error message (e.g., "Action failed: You cannot go that direction")
+   - Stored in `AgentManager.previous_action_results` per agent
+
+4. **Turn Execution Flow**:
+   - `AgentManager.execute_agent_turn()` → `KaniAgent.select_action(action_result)` → Kani framework
+   - Agent receives previous action result (not world state)
+   - Recent actions context still added to prevent loops
    - Agent uses `@ai_function() submit_command()` for structured action selection
 
-4. **Function Calling Integration**:
+5. **Look Action Integration** (`backend/text_adventure_games/actions/generic.py:EnhancedLookAction`):
+   - **Only way** for agents to see full world state after initialization
+   - Uses same `_format_world_state()` method as initial state
+   - Agents must actively choose to look to understand their environment
+
+6. **Function Calling Integration**:
    - Kani's `full_round()` method enables function calling with `max_function_rounds=1`
    - Agent must call `submit_command(command: str)` to select actions
-   - Command validation against available actions list prevents invalid moves
+   - No command validation (agents can attempt any action)
 
-5. **Message Flow**:
-   - Game Loop (`backend/game_loop.py:90-104`) orchestrates agent turns
-   - Each agent receives fresh world state perception per turn
-   - Results converted to `AgentActionOutput` schema for frontend consumption
-
-The Kani framework handles the low-level LLM communication, prompt assembly, and function call mechanics, while this codebase focuses on world state perception and action validation.
+The Kani framework handles the low-level LLM communication, prompt assembly, and function call mechanics, while this codebase focuses on action result feedback and requires agents to actively observe their environment.
 
 ### Game World
 - World is built using the house layout in `backend/text_adventure_games/house.py`
