@@ -1,9 +1,14 @@
 ~ start
 
-Marlow: [[Hi][Hello][Howdy]], nice to meet you.
-Marlow: Welcome to your new farm.
-Marlow: As you can see the cows and chicken are hungry.
-Marlow: You need to grow some crops to feed them.
-Marlow: Here are some seeds to grow some crops.
+Lily: [[Hi|Hello|Howdy]], nice to meet you
+Lily: Welcome to your new farm.
+Lily: The cows and chickens are hungry!
+Lily: You need to grow some crops to feed them
+Lily: Here are some seeds to grow some crops
+- Take crop seeds
+	Player: Yes I can grow crops
+	do GameDialogueManager.action_give_crop_seeds()
+- No, I don't want them
+	Player: I'm not ready to grow my farm yet
 
 => END

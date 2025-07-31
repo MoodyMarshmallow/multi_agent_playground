@@ -1,6 +1,6 @@
-[gd_resource type="Theme" load_steps=18 format=3 uid="uid://bw5uv50tghjat"]
+[gd_resource type="Theme" load_steps=18 format=3 uid="uid://ddurm1ac0cbxo"]
 
-[ext_resource type="Texture2D" uid="uid://tybp0t4e2llk" path="res://assets/ui/basic_ui_sprites.png" id="1_mn4fd"]
+[ext_resource type="Texture2D" uid="uid://by213v06ag6we" path="res://assets 2/ui/basic_ui_sprites.png" id="1_mn4fd"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_0s7yl"]
 load_path = "res://.godot/imported/basic_ui_sprites.png-f1365ff47f1f008f610f3c558cf47256.ctex"
@@ -52,7 +52,11 @@ region = Rect2(59, 107, 26, 26)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_8opba"]
 texture = SubResource("AtlasTexture_jumr2")
-region_rect = Rect2(4, 4, 18, 18)
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+region_rect = Rect2(0, 0, 26, 26)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_lnyc6"]
 atlas = ExtResource("1_mn4fd")
@@ -60,7 +64,11 @@ region = Rect2(275, 212, 90, 25)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ry12t"]
 texture = SubResource("AtlasTexture_lnyc6")
-region_rect = Rect2(4, 4, 82, 17)
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+region_rect = Rect2(0, 0, 90, 25)
 
 [resource]
 Button/styles/disabled = SubResource("StyleBoxTexture_ms46y")

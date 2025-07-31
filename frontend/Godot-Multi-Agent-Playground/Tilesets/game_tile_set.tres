@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://cbwmtk4qhqy45" path="res://assets/game/objects/basic_grass_biom_things.png" id="4_toun0"]
 [ext_resource type="PackedScene" uid="uid://c4k1uqhj4v47p" path="res://scenes/houses/large_house.tscn" id="5_bkrag"]
 [ext_resource type="PackedScene" uid="uid://fymdmmtewgdu" path="res://scenes/houses/larger_house.tscn" id="6_wqwix"]
-[ext_resource type="PackedScene" uid="uid://dblfsnmsnqmyj" path="res://scenes/houses/second_house.tscn" id="7_ow828"]
+[ext_resource type="PackedScene" uid="uid://qouea1qnerbx" path="res://scenes/houses/second_house.tscn" id="7_ow828"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nk0kv"]
 texture = ExtResource("1_kqi08")
