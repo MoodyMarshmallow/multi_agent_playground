@@ -190,4 +190,5 @@ cursor_memory/
 # Other
 resources/
 resources_old/
-simulacra_visualization/
+simulacra_visualization/.DS_Store
+*.DS_Store

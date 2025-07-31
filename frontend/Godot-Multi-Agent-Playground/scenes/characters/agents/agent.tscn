@@ -1,0 +1,48 @@
+[gd_scene load_steps=10 format=3 uid="uid://bd6po2t1gpvri"]
+
+[ext_resource type="PackedScene" uid="uid://0vuviv68yjtr" path="res://scenes/components/player_animated_sprite.tscn" id="1_8ljyr"]
+[ext_resource type="Script" uid="uid://d3222blusnjsr" path="res://scenes/characters/agents/old/agent.gd" id="1_lucgp"]
+[ext_resource type="SpriteFrames" uid="uid://bg2y2kukotskp" path="res://assets/game/characters/agents/sprite_frames/alan_002_sprite_frames.tres" id="3_56v4n"]
+[ext_resource type="Script" uid="uid://ddbth0scof7ks" path="res://scenes/characters/agents/old/agent_state_machine.gd" id="3_vhqan"]
+[ext_resource type="Script" uid="uid://xanrctexksfp" path="res://scenes/characters/agents/old/agent_idle.gd" id="4_6b4s1"]
+[ext_resource type="Script" uid="uid://cnrxffnsybdct" path="res://scenes/characters/agents/old/agent_walk.gd" id="5_bb8p1"]
+[ext_resource type="FontFile" uid="uid://46afpnw3fj03" path="res://assets/ui/fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf" id="6_jtutc"]
+[ext_resource type="Script" uid="uid://dbhghxbb5q3od" path="res://scenes/characters/agents/old/emoji_label.gd" id="7_88ey6"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_8bwlk"]
+radius = 4.0
+
+[node name="Agent" type="CharacterBody2D"]
+position = Vector2(179, 275)
+script = ExtResource("1_lucgp")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+
+[node name="AnimatedSprite2D" parent="." instance=ExtResource("1_8ljyr")]
+sprite_frames = ExtResource("3_56v4n")
+animation = &"walk_up"
+autoplay = "idle_down"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -7)
+shape = SubResource("CircleShape2D_8bwlk")
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("3_vhqan")
+initial_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="StateMachine"]
+script = ExtResource("4_6b4s1")
+
+[node name="Walk" type="Node" parent="StateMachine"]
+script = ExtResource("5_bb8p1")
+
+[node name="EmojiLabel" type="RichTextLabel" parent="."]
+offset_left = 9.0
+offset_top = -28.0
+offset_right = 49.0
+offset_bottom = 12.0
+theme_override_fonts/normal_font = ExtResource("6_jtutc")
+theme_override_font_sizes/normal_font_size = 15
+text = "😊"
+script = ExtResource("7_88ey6")
