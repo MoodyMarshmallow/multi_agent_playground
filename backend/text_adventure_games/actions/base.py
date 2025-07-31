@@ -424,7 +424,7 @@ class Quit(Action):
         return narration, schema
 
 
-class Describe(Action):
+class Look(Action):
     ACTION_NAME = "describe"
     ACTION_DESCRIPTION = "Describe the current location"
     ACTION_ALIASES = ["look", "l"]
@@ -443,7 +443,7 @@ class Describe(Action):
 
     def apply_effects(self):
         # Get basic location description
-        base_description = self.game.describe()
+        base_description = self.game.description_manager.describe_full_location()
         
         # Get available actions from parser
         available_actions = self.parser.get_available_actions(self.game.player)

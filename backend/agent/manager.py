@@ -73,7 +73,7 @@ class AgentManager:
             result = self.game.parser.parse_command(command, character=agent)
             
             # Get the schema immediately after execution
-            action_schema = self.game.get_schema()
+            action_schema = self.game.schema_exporter.get_schema()
             
             # Check if this was a noop action (non-fatal error)
             is_noop = action_schema.action.action_type == "noop"
@@ -115,7 +115,7 @@ class AgentManager:
         Returns:
             Dict containing location info, inventory, and available actions
         """
-        return self.game.get_world_state_for_agent(agent)
+        return self.game.world_state_manager.get_world_state_for_agent(agent)
     
     
     def get_next_agent(self) -> Optional[Character]:

@@ -720,6 +720,10 @@ class GenericExamineAction(Action):
     
     def apply_effects(self):
         try:
+            # Ensure target exists (should be guaranteed by preconditions)
+            if self.target is None:
+                return self.parser.fail(f"You don't see a {self.target_name} here.")
+            
             # Use object's examine capability if available, otherwise basic description
             if isinstance(self.target, Examinable):
                 result = self.target.examine(self.character)
@@ -861,7 +865,7 @@ class EnhancedLookAction(Action):
                 return narration, ActionResult(description="You are nowhere.")
             
             # Get the world state exactly as the agent would receive it
-            world_state = self.game.get_world_state_for_agent(self.character)
+            world_state = self.game.world_state_manager.get_world_state_for_agent(self.character)
             
             # Format it using the same method as agents receive
             full_description = self._format_world_state(world_state)

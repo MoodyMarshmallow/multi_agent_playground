@@ -105,7 +105,7 @@ class Go(base.Action):
             move_action = GoToAction(action_type="go_to", target=to_loc.name)
             
             # Get description from Describe action
-            action = base.Describe(self.game, command=self.command)
+            action = base.Look(self.game, command=self.command)
             narration, _ = action()
             
             # Return ActionResult with proper schema

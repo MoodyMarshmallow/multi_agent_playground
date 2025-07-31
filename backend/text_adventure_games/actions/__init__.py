@@ -2,7 +2,7 @@ from .base import (
     Action,
     ActionSequence,
     Quit,
-    Describe,
+    Look,
 )
 from .generic import (
     GenericSetToStateAction,
@@ -22,7 +22,7 @@ __all__ = [
     "Action",
     "ActionSequence",
     "Quit",
-    "Describe",
+    "Look",
     "GenericSetToStateAction",
     "GenericStartUsingAction",
     "GenericStopUsingAction",

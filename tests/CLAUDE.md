@@ -8,7 +8,7 @@ The tests module contains comprehensive testing infrastructure including backend
 
 ## Directory Structure
 
-### Backend Integration Tests
+### Core Tests (Root Level)
 - **test_backend_endpoints.py**: HTTP endpoint validation and API response testing
 - **test_godot_r_key_simulation.py**: Godot frontend integration and R-key simulation testing
 
@@ -24,6 +24,25 @@ Advanced LLM agent behavior testing framework:
 - **test_interactions.py**: Agent-to-agent and agent-to-environment interaction tests
 - **test_navigation.py**: Comprehensive navigation and pathfinding tests
 - **test_suite_example.py**: Complete test suite demonstration
+
+### Debug Tests (`debug/`)
+Development and debugging utilities:
+- **debug_actions.py**: Action system debugging and validation
+- **debug_agent_manager.py**: Agent manager testing and diagnostics
+- **debug_character_creation.py**: Character creation and setup debugging
+- **debug_house_setup.py**: World/house setup validation
+- **debug_match_item.py**: Item matching and inventory debugging
+
+### Integration Tests (`integration/`)
+End-to-end and system integration testing:
+- **test_api.py**: API integration testing and validation
+- **run_agent_tests.py**: Agent test execution and coordination
+- **verify_tile_removal.py**: Godot tilemap integration verification
+
+### Manual Tests (`manual/`)
+Manual testing utilities and development servers:
+- **run_backend.py**: Manual backend server startup for testing
+- **run_manual_debug.py**: Interactive debugging and testing utilities
 
 ## Testing Framework Architecture
 
@@ -60,7 +79,7 @@ python -m pytest tests/test_godot_r_key_simulation.py
 #### Agent Goal Tests
 ```bash
 # Run simple agent tests
-python run_agent_tests.py
+python tests/integration/run_agent_tests.py
 
 # Specific test categories
 python -m pytest tests/agent_goals/test_navigation.py
@@ -68,6 +87,34 @@ python -m pytest tests/agent_goals/test_interactions.py
 
 # Example test suite
 python tests/agent_goals/test_suite_example.py
+```
+
+#### Integration Tests
+```bash
+# API integration tests
+python tests/integration/test_api.py
+
+# Godot tilemap verification
+python tests/integration/verify_tile_removal.py
+```
+
+#### Manual Testing
+```bash
+# Start backend for manual testing
+python tests/manual/run_backend.py
+
+# Interactive debugging
+python tests/manual/run_manual_debug.py
+```
+
+#### Debug Utilities
+```bash
+# Debug specific components
+python tests/debug/debug_actions.py
+python tests/debug/debug_agent_manager.py
+python tests/debug/debug_character_creation.py
+python tests/debug/debug_house_setup.py
+python tests/debug/debug_match_item.py
 ```
 
 ### Writing New Tests

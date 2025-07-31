@@ -43,10 +43,16 @@ python -m pytest tests/
 python -m pytest tests/test_backend_endpoints.py
 
 # Quick API test
-python test_api.py
+python tests/integration/test_api.py
 
 # Run agent goal tests
-python run_agent_tests.py
+python tests/integration/run_agent_tests.py
+
+# Manual backend startup
+python tests/manual/run_backend.py
+
+# Debug utilities
+python tests/debug/debug_actions.py
 
 # Run agent goal test suite
 python -m pytest tests/agent_goals/

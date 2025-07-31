@@ -34,7 +34,7 @@ def main():
         if hasattr(schema, '__dict__'):
             print(f"[DEBUG] ActionResult fields: {vars(schema)}")
         try:
-            schema_result = game_obj.get_schema()
+            schema_result = game_obj.schema_exporter.get_schema()
             print("[get_schema() DEBUG OUTPUT]:")
             print(json.dumps(schema_result.model_dump(), indent=2))
         except Exception as e:
@@ -58,7 +58,7 @@ def main():
                 print(f"[DEBUG] ActionResult fields: {vars(schema)}")
             # Print the get_schema() output for debugging
             try:
-                schema_result = game_obj.get_schema()
+                schema_result = game_obj.schema_exporter.get_schema()
                 print("[get_schema() DEBUG OUTPUT]:")
                 print(json.dumps(schema_result.model_dump(), indent=2))
             except Exception as e:

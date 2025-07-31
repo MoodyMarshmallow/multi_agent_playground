@@ -1,5 +1,10 @@
 from .things import Location, Character
 from . import parsing
+from .state.world_state import WorldStateManager
+from .state.character_manager import CharacterManager
+from .state.descriptions import DescriptionManager
+from .events.event_manager import EventManager
+from .events.schema_export import SchemaExporter
 
 from ..config.schema import AgentActionOutput
 from datetime import datetime
@@ -15,6 +20,16 @@ class Game:
     exits which are the directions that a player can move to get to an
     adjacent location. The player can move from one location to another
     location by typing a command like "Go North".
+    
+    Architecture:
+    The Game class now uses a modular manager system instead of monolithic methods:
+    - world_state_manager: Handles world state queries and building
+    - description_manager: Manages location and object descriptions  
+    - event_manager: Manages event queue for frontend communication
+    - schema_exporter: Converts actions to API schema format
+    - agent_manager: Manages agent turn order and registration
+    
+    Use managers directly instead of wrapper methods for better performance and clarity.
     """
 
     def __init__(
@@ -22,7 +37,6 @@ class Game:
         start_at: Location,
         player: Character,
         characters=None,
-        custom_actions=None,
     ):
         self.start_at = start_at
         self.player = player
@@ -90,6 +104,13 @@ class Game:
         self._last_action_result = None
         self._last_action_agent_id = None
 
+        # NEW: Initialize modular managers
+        self.world_state_manager = WorldStateManager(self)
+        self.agent_manager = CharacterManager(self)
+        self.description_manager = DescriptionManager(self)
+        self.event_manager = EventManager(self)
+        self.schema_exporter = SchemaExporter(self)
+
 
     def is_won(self) -> bool:
         """
@@ -126,12 +147,12 @@ class Game:
         Args:
             character: The Character to make an active agent
         """
-        if character.name not in self.characters:
-            raise ValueError(f"Character {character.name} not in game")
+        # Delegate to the new agent manager while maintaining backward compatibility
+        self.agent_manager.register_agent(character)
         
-        self.active_agents.add(character.name)
-        if character.name not in self.turn_order:
-            self.turn_order.append(character.name)
+        # Update legacy attributes for backward compatibility
+        self.active_agents = self.agent_manager.active_agents
+        self.turn_order = self.agent_manager.turn_order
 
     def add_event(self, event_type: str, data: dict):
         """
@@ -141,229 +162,12 @@ class Game:
             event_type: Type of event (e.g., 'move', 'get', 'drop')
             data: Event-specific data
         """
-        self.event_id_counter += 1
-        event = {
-            'id': self.event_id_counter,
-            'type': event_type,
-            'timestamp': self.event_id_counter,  # Simple turn counter
-            'data': data
-        }
-        self.event_queue.append(event)
-
-    def get_events_since(self, last_event_id: int) -> list[dict]:
-        """
-        Get all events after the given ID.
+        # Delegate to the new event manager while maintaining backward compatibility
+        self.event_manager.add_event(event_type, data)
         
-        Args:
-            last_event_id: ID of last processed event
-            
-        Returns:
-            List of new events
-        """
-        return [e for e in self.event_queue if e['id'] > last_event_id]
-
-    # ===== CENTRALIZED WORLD STATE UTILITIES =====
-    # Single source of truth for all world state building
-    
-    def _get_agent_inventory_names(self, agent: Character) -> list[str]:
-        """Get agent inventory as list of item names."""
-        return list(agent.inventory.keys())
-    
-    def _get_visible_items(self, location) -> list[dict]:
-        """Get visible items in location with name and description."""
-        return [
-            {'name': item.name, 'description': item.description}
-            for item in location.items.values()
-        ]
-    
-    def _get_visible_characters(self, location, exclude_agent: Character) -> list[dict]:
-        """Get visible characters in location excluding the specified agent."""
-        return [
-            {'name': char.name, 'description': char.description}
-            for char in location.characters.values()
-            if char.name != exclude_agent.name
-        ]
-    
-    def _get_formatted_exits(self, location) -> list[str]:
-        """Get exits formatted with destination names."""
-        return [f"{direction} to {destination.name}" 
-                for direction, destination in location.connections.items()]
-    
-    def _get_empty_world_state(self, agent_name: str) -> dict:
-        """Return empty world state for agents with no location."""
-        return {
-            'agent_name': agent_name,
-            'location': {'name': 'Nowhere', 'description': 'You are in a void.'},
-            'inventory': [],
-            'visible_items': [],
-            'visible_characters': [],
-            'available_exits': [],
-            'available_actions': []
-        }
-
-    def get_world_state_for_agent(self, agent: Character) -> dict:
-        """
-        CENTRALIZED METHOD: Get the observable world state for an agent.
-        This is the single source of truth for world state building.
-        
-        Returns:
-            Dict containing location info, inventory, and available actions
-        """
-        if agent.location is None:
-            return self._get_empty_world_state(agent.name)
-            
-        location = agent.location
-        return {
-            'agent_name': agent.name,
-            'location': {
-                'name': location.name,
-                'description': location.description
-            },
-            'inventory': self._get_agent_inventory_names(agent),
-            'visible_items': self._get_visible_items(location),
-            'visible_characters': self._get_visible_characters(location, agent),
-            'available_exits': self._get_formatted_exits(location),
-            'available_actions': self.parser.get_available_actions(agent)
-        }
-
-    def describe(self) -> str:
-        """
-        Describe the current game state by first describing the current
-        location, then listing any exits, and then describing any objects
-        in the current location.
-        """
-        description = self.describe_current_location() + "\n"
-        description += self.describe_exits() + "\n"
-        description += self.describe_items() + "\n"
-        description += self.describe_characters() + "\n"
-        # self.parser.ok(description)
-        return description
-
-    def describe_current_location(self) -> str:
-        """
-        Describe the current location by printing its description field.
-        """
-        if self.player.location is not None:
-            return self.player.location.description
-        else:
-            raise ValueError(f"Player {self.player.name} location is None.")
-
-    def describe_exits(self) -> str:
-        """
-        List the directions that the player can take to exit from the current
-        location.
-        """
-        if self.player.location is not None:
-            exits = []
-            for direction in self.player.location.connections.keys():
-                location = self.player.location.connections[direction]
-                exits.append(direction.capitalize() + " to " + location.name)
-            description = ""
-            if len(exits) > 0:
-                description = "Exits:\n"
-                for exit in exits:
-                    description += exit + "\n"
-            return description
-        else:
-            raise ValueError(f"Player {self.player.name} location is None.")
-
-    def describe_items(self) -> str:
-        """
-        Describe what items are in the current location.
-        """
-        if self.player.location is not None:
-            description = ""
-            if len(self.player.location.items) > 0:
-                description = "You see:"
-                for item_name in self.player.location.items:
-                    item = self.player.location.items[item_name]
-                    description += "\n * " + item.description
-                    if self.give_hints:
-                        description += "\n   You can:"
-                        special_commands = item.get_command_hints()
-                        for cmd in special_commands:
-                            description += "\n\t" + cmd
-            return description
-        else:
-            raise ValueError(f"Player {self.player.name} location is None.")
-
-    def describe_characters(self) -> str:
-        """
-        Describe what characters are in the current location.
-        """
-        if self.player.location is not None:
-            description = ""
-            if len(self.player.location.characters) > 1:
-                description = "Characters:"
-                for character_name in self.player.location.characters:
-                    if character_name == self.player.name:
-                        continue
-                    character = self.player.location.characters[character_name]
-                    description += "\n * " + character.description
-            return description
-        else:
-            raise ValueError(f"Player {self.player.name} location is None.")
+        # Update legacy attributes for backward compatibility
+        self.event_queue = self.event_manager.event_queue
+        self.event_id_counter = self.event_manager.event_id_counter
 
 
 
-    def get_schema(self) -> AgentActionOutput:
-        """
-        Export the last action as an AgentActionOutput schema object.
-        The description is narrative and user-friendly for the GUI chat, while the reason in NoOpAction remains technical.
-        """
-        if not self._last_action_result or not self._last_action_agent_id:
-            raise RuntimeError("No action has been taken yet.")
-        agent = self.characters.get(self._last_action_agent_id)
-        current_room = agent.location.name if agent and agent.location else None
-        # Compose a technical, GUI-friendly description
-        # 1. Always include the action type and affected object (if any)
-        action_type = getattr(self._last_action_result.house_action, 'action_type', 'noop')
-        affected_object = self._last_action_result.object_id
-        # 2. For NoOp, treat as non-fatal error with informative feedback
-        if action_type == 'noop':
-            # Get the actual reason from the action result
-            action_reason = getattr(self._last_action_result.house_action, 'reason', 'Unknown command or invalid action')
-            
-            # Create error-focused description for agents
-            description = f"ACTION FAILED: {action_reason}"
-            
-            # Add current context to help agent understand their situation
-            if agent and agent.location:
-                visible_items = [item.name for item in agent.location.items.values()]
-                visible_characters = [char.name for char in agent.location.characters.values() if char.name != agent.name]
-                available_exits = [f"{direction} to {destination.name}" for direction, destination in agent.location.connections.items()]
-                
-                context_lines = [f"You are currently in {current_room}."]
-                if visible_items:
-                    context_lines.append(f"Available items: {', '.join(visible_items)}")
-                if visible_characters:
-                    context_lines.append(f"Other characters: {', '.join(visible_characters)}")
-                if available_exits:
-                    context_lines.append(f"Available exits: {', '.join(available_exits)}")
-                
-                description += f" {' '.join(context_lines)}"
-            
-            reason = action_reason
-        else:
-            # For real actions, use the action result's description (assumed user-facing)
-            description = self._last_action_result.description
-            reason = None
-        # Context for frontend (not in main description)
-        visible_items = []
-        visible_characters = []
-        available_exits = []
-        if agent and agent.location:
-            visible_items = [item.name for item in agent.location.items.values()]
-            visible_characters = [char.name for char in agent.location.characters.values() if char.name != agent.name]
-            available_exits = [f"{direction} to {destination.name}" for direction, destination in agent.location.connections.items()]
-        # Patch the NoOpAction reason if needed
-        action_obj = self._last_action_result.house_action
-        if action_type == 'noop' and hasattr(action_obj, 'reason'):
-            action_obj.reason = reason
-        return AgentActionOutput(
-            agent_id=self._last_action_agent_id,
-            action=action_obj,
-            timestamp=datetime.now().isoformat(),
-            current_room=current_room,
-            description=description
-        )
