@@ -57,25 +57,24 @@ def debug_match_item():
     
     print("\n=== Testing Get Action Creation ===")
     try:
-        # This is what happens in Get.__init__
+        # This is what happens with the new parser interface
         parser = game.parser
-        parser.character = test_char  # Set the character for parser
+        # The new parser uses character as parameter, not attribute
+        print(f"Test character: {test_char}")
+        print(f"Test character location: {test_char.location.name}")
         
-        print(f"Parser character: {parser.character}")
-        print(f"Parser character location: {parser.character.location.name}")
+        # Test parsing with the character parameter (new interface)
+        result = parser.parse_command(command, character=test_char)
+        print(f"Parse result: {result}")
+        print(f"Parser last error: {parser.last_error_message}")
         
-        # Create Get action (this calls match_item)
-        get_action = Get(game, command)
-        print(f"Get action item: {get_action.item}")
-        print(f"Get action character: {get_action.character}")
-        print(f"Get action location: {get_action.location}")
-        
-        # Test preconditions
-        preconditions_pass = get_action.check_preconditions()
-        print(f"Preconditions pass: {preconditions_pass}")
-        
-        if not preconditions_pass:
-            print(f"Parser last error: {parser.last_error_message}")
+        # Check if action was executed successfully
+        if hasattr(game, '_last_executed_action') and game._last_executed_action:
+            last_action = game._last_executed_action
+            print(f"Last executed action: {type(last_action).__name__}")
+            print(f"Action character: {last_action.character}")
+        else:
+            print("No action was executed")
         
     except Exception as e:
         print(f"Error creating Get action: {e}")
@@ -89,13 +88,14 @@ def debug_match_item():
         kitchen.add_character(game.player)
         game.player.location = kitchen
         
-        parser.character = game.player
+        # Use new parser interface
+        player_result = game.parser.parse_command(command, character=game.player)
+        print(f"Default player parse result: {player_result}")
         
-        get_action_player = Get(game, command)
-        print(f"Default player Get action item: {get_action_player.item}")
-        
-        preconditions_player = get_action_player.check_preconditions()
-        print(f"Default player preconditions pass: {preconditions_player}")
+        # Check last executed action
+        if hasattr(game, '_last_executed_action') and game._last_executed_action:
+            last_action = game._last_executed_action
+            print(f"Default player last action: {type(last_action).__name__}")
         
     except Exception as e:
         print(f"Error with default player: {e}")

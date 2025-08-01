@@ -94,10 +94,11 @@ class AgentTestRunner:
                 
                 # Execute agent turn
                 try:
-                    action_output = await agent_manager.execute_agent_turn(agent_char)
+                    action_output, action_ended_turn = await agent_manager.execute_agent_turn(agent_char)
                     if action_output:
                         action_history.append(action_output)
-                        print(f"Agent action: {action_output.action.action_type}")
+                        turn_status = " (ended turn)" if action_ended_turn else " (continued turn)"
+                        print(f"Agent action: {action_output.action.action_type}{turn_status}")
                         # Check if the action has a target attribute (some actions like LookAction and NoOpAction don't)
                         action = action_output.action
                         target = getattr(action, 'target', None)

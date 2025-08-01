@@ -839,6 +839,9 @@ class EnhancedLookAction(Action):
     ACTION_ALIASES = ["l", "describe"]
     COMMAND_PATTERNS = ["look"]
     
+    # Look actions are quick observations that don't end the agent's turn
+    ends_turn = False
+    
     @classmethod
     def get_command_patterns(cls):
         return cls.COMMAND_PATTERNS

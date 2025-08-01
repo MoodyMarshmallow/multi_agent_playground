@@ -50,15 +50,15 @@ class AgentManager:
         if character_name not in self.active_agents:
             self.active_agents.append(character_name)
     
-    async def execute_agent_turn(self, agent: Character) -> Optional[AgentActionOutput]:
+    async def execute_agent_turn(self, agent: Character) -> tuple[Optional[AgentActionOutput], bool]:
         """
         Have an agent take their turn using their strategy.
         
         Returns:
-            AgentActionOutput schema if an action was executed, None if no strategy or error.
+            Tuple of (AgentActionOutput schema if action executed or None, action_ended_turn boolean)
         """
         if agent.name not in self.agent_strategies:
-            return None
+            return None, True  # Default to ending turn if no strategy
             
         try:
             # Get the previous action result for this agent (empty string for first turn)
@@ -101,11 +101,16 @@ class AgentManager:
             # Store the action result for this agent's next turn
             self.previous_action_results[agent.name] = action_result
             
-            return action_schema
+            # Check if the action ended the turn
+            action_ended_turn = True  # Default to ending turn
+            if hasattr(self.game, '_last_executed_action') and self.game._last_executed_action:
+                action_ended_turn = getattr(self.game._last_executed_action, 'ends_turn', True)
+            
+            return action_schema, action_ended_turn
             
         except Exception as e:
             print(f"Error in execute_agent_turn for {agent.name}: {e}")
-            return None
+            return None, True  # Default to ending turn on error
     
     def get_world_state_for_agent(self, agent: Character) -> dict:
         """

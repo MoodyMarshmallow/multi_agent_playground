@@ -16,25 +16,30 @@ def test_endpoint(name, method, url, data=None, expected_status=200):
     """Test an endpoint and return results."""
     print(f"\n🔍 Testing {name}...")
     
+    response = None
     try:
         if method == "GET":
             response = requests.get(url)
         elif method == "POST":
             response = requests.post(url, json=data)
         
-        print(f"   Status: {response.status_code}")
-        
-        if response.status_code == expected_status:
-            try:
-                json_data = response.json()
-                print(f"   ✅ Success - Response: {json.dumps(json_data, indent=2)[:200]}...")
-                return True, json_data
-            except json.JSONDecodeError:
-                print(f"   ✅ Success - Text Response: {response.text[:100]}...")
-                return True, response.text
+        if response is not None:
+            print(f"   Status: {response.status_code}")
+            
+            if response.status_code == expected_status:
+                try:
+                    json_data = response.json()
+                    print(f"   ✅ Success - Response: {json.dumps(json_data, indent=2)[:200]}...")
+                    return True, json_data
+                except json.JSONDecodeError:
+                    print(f"   ✅ Success - Text Response: {response.text[:100]}...")
+                    return True, response.text
+            else:
+                print(f"   ❌ Failed - Expected {expected_status}, got {response.status_code}")
+                print(f"   Response: {response.text}")
+                return False, None
         else:
-            print(f"   ❌ Failed - Expected {expected_status}, got {response.status_code}")
-            print(f"   Response: {response.text}")
+            print(f"   ❌ Invalid method: {method}")
             return False, None
             
     except requests.exceptions.ConnectionError:

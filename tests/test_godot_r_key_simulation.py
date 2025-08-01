@@ -55,7 +55,7 @@ class GodotSimulator:
             self.log(f"❌ Connection failed: {e}", "ERROR")
             return False
     
-    def get_current_agent(self) -> Dict[str, Any]:
+    def get_current_agent(self) -> Dict[str, Any] | None:
         """Get the currently selected agent (like in Godot UI)."""
         if not self.agents:
             return None

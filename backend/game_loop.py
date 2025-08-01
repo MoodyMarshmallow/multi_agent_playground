@@ -89,20 +89,22 @@ class GameLoop:
 
             agent = self.agent_manager.get_next_agent()
             if agent:
-                # Execute turn and get schema
-                action_schema = await self.agent_manager.execute_agent_turn(agent)
+                # Execute turn and get schema and turn-ending status
+                action_schema, action_ended_turn = await self.agent_manager.execute_agent_turn(agent)
                 
                 # Only process if an action was actually taken
                 if action_schema:
                     # Log the turn
-                    print(f"Turn {self.turn_counter}: {agent.name} executed action")
+                    turn_status = "ended turn" if action_ended_turn else "continued turn"
+                    print(f"Turn {self.turn_counter}: {agent.name} executed action ({turn_status})")
                     
                     # Add the action schema directly as an event
                     self._add_action_event(action_schema)
                 
-                # Advance to the next agent (whether action succeeded or not)
-                self.agent_manager.advance_turn()
-                self.turn_counter += 1
+                # Only advance to the next agent if the action ended the turn
+                if action_ended_turn:
+                    self.agent_manager.advance_turn()
+                    self.turn_counter += 1
 
             # Small delay to prevent a tight loop
             await asyncio.sleep(1)  # Adjust as needed

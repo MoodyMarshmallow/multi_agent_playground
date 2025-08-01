@@ -30,6 +30,9 @@ class Action:
     ACTION_DESCRIPTION: str
     ACTION_ALIASES: List[str]
     COMMAND_PATTERNS: List[str]  # New: defines what commands this action can handle
+    
+    # Turn management - whether this action ends the agent's turn
+    ends_turn: bool = True  # Default: all actions end turns for backward compatibility
 
     def __init__(self, game):
         self.game = game

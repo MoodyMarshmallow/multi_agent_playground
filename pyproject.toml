@@ -36,3 +36,8 @@ dependencies = [
     "urllib3==2.4.0",
     "uvicorn==0.34.3",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1",
+]

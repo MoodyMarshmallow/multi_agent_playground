@@ -6,8 +6,8 @@ import sys
 sys.path.insert(0, 'backend')
 
 from backend.text_adventure_games.house import build_house_game
-from backend.text_adventure_games.actions.things import Get, Drop
-from backend.text_adventure_games.actions.containers import OpenContainer
+from backend.text_adventure_games.actions.generic import MoveAction, GenericTakeAction, GenericDropAction
+# Note: OpenContainer action was removed during refactoring - container interactions now use generic actions
 
 # Build the game
 game = build_house_game()
@@ -22,9 +22,9 @@ print(f"Discovered {len(action_classes)} action classes:")
 for action_class in action_classes:
     print(f"  - {action_class.__name__}: {getattr(action_class, 'COMMAND_PATTERNS', 'NO PATTERNS')}")
 
-print("\n=== Testing Get Action Specifically ===")
-print(f"Get class has COMMAND_PATTERNS: {hasattr(Get, 'COMMAND_PATTERNS')}")
-print(f"Get COMMAND_PATTERNS: {getattr(Get, 'COMMAND_PATTERNS', 'NONE')}")
+print("\n=== Testing GenericTakeAction Specifically ===")
+print(f"GenericTakeAction class has COMMAND_PATTERNS: {hasattr(GenericTakeAction, 'COMMAND_PATTERNS')}")
+print(f"GenericTakeAction COMMAND_PATTERNS: {getattr(GenericTakeAction, 'COMMAND_PATTERNS', 'NONE')}")
 
 print("\n=== Testing Kitchen Items (Default House) ===")
 kitchen = None
@@ -60,7 +60,7 @@ print("\n=== Testing Get Combinations ===")
 # Move player to kitchen
 if kitchen:
     game.player.location = kitchen
-    combinations = list(Get.get_applicable_combinations(game.player, parser))
+    combinations = list(GenericTakeAction.get_applicable_combinations(game.player, parser))
     print(f"Get action combinations: {combinations}")
 
 print("\n=== Testing Available Actions ===")
@@ -74,10 +74,10 @@ print("\n=== Testing Get Action Preconditions Manually ===")
 if kitchen:
     # Test preconditions manually like the action discovery does
     try:
-        get_action_instance = Get(game, "get apple")
+        get_action_instance = GenericTakeAction(game, "get apple")
         print(f"Get action instantiated successfully")
-        print(f"Item found: {get_action_instance.item}")
-        print(f"Item name: {get_action_instance.item.name if get_action_instance.item else 'None'}")
+        print(f"Target found: {get_action_instance.target}")
+        print(f"Target name: {get_action_instance.target.name if get_action_instance.target else 'None'}")
         
         # Test preconditions
         preconditions_result = get_action_instance.check_preconditions()
@@ -91,7 +91,7 @@ if kitchen:
         
     # Also test what test_action_preconditions returns
     print(f"\n=== Testing test_action_preconditions ===")
-    precondition_test = parser.test_action_preconditions(Get, "get apple", game.player)
+    precondition_test = parser.test_action_preconditions(GenericTakeAction, "get apple", game.player)
     print(f"test_action_preconditions result: {precondition_test}")
 
 print("\n=== Simulating Exact Test Scenario ===")

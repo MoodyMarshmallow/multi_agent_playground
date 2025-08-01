@@ -103,6 +103,7 @@ class Game:
 
         self._last_action_result = None
         self._last_action_agent_id = None
+        self._last_executed_action = None  # Track the last executed action instance
 
         # NEW: Initialize modular managers
         self.world_state_manager = WorldStateManager(self)

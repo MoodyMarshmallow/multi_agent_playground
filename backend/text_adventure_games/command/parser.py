@@ -136,6 +136,8 @@ class CommandParser:
                 schema = ActionResult(description=str(narration))
                 return narration, schema
             else:
+                # Store the action instance for turn management
+                self.game._last_executed_action = action
                 result = action()
                 # result should be (narration, schema)
                 if not (isinstance(result, tuple) and len(result) == 2):
@@ -150,11 +152,8 @@ class CommandParser:
                 # Record the last acting agent's id for schema export
                 if hasattr(self.game, '_last_action_agent_id'):
                     self.game._last_action_agent_id = self.game.player.name
-                # Get the narration from the ActionResult (if available)
-            # Always return (narration, schema)
             return narration, schema
         finally:
-            # Restore original player
             self.game.player = original_player
 
     def discover_action_classes(self):

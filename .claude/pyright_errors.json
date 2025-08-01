@@ -238,5 +238,70 @@
     "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_adventure_games\\games.py",
     "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_adventure_games\\games.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_adventure_games\\games.py:110:30 - error: \"AgentManager\" is not defined (reportUndefinedVariable)\n1 error, 0 warnings, 0 informations \n",
     "session_id": "3ff076fc-0cae-4f9b-8ce2-7ad063cd1e7a"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\manager.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\manager.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\manager.py:61:20 - error: Type \"None\" is not assignable to return type \"tuple[AgentActionOutput | None, bool]\"\n  \u00c2\u00a0\u00c2\u00a0\"None\" is not assignable to \"tuple[AgentActionOutput | None, bool]\" (reportReturnType)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\manager.py:104:20 - error: Type \"AgentActionOutput\" is not assignable to return type \"tuple[AgentActionOutput | None, bool]\"\n  \u00c2\u00a0\u00c2\u00a0\"AgentActionOutput\" is not assignable to \"tuple[AgentActionOutput | None, bool]\" (reportReturnType)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\manager.py:108:20 - error: Type \"None\" is not assignable to return type \"tuple[AgentActionOutput | None, bool]\"\n  \u00c2\u00a0\u00c2\u00a0\"None\" is not assignable to \"tuple[AgentActionOutput | None, bool]\" (reportReturnType)\n3 errors, 0 warnings, 0 informations \n",
+    "session_id": "d84f52c0-477a-4601-a0f0-7529af4fcbfd"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\manager.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\manager.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\manager.py:104:20 - error: Type \"AgentActionOutput\" is not assignable to return type \"tuple[AgentActionOutput | None, bool]\"\n  \u00c2\u00a0\u00c2\u00a0\"AgentActionOutput\" is not assignable to \"tuple[AgentActionOutput | None, bool]\" (reportReturnType)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\manager.py:108:20 - error: Type \"None\" is not assignable to return type \"tuple[AgentActionOutput | None, bool]\"\n  \u00c2\u00a0\u00c2\u00a0\"None\" is not assignable to \"tuple[AgentActionOutput | None, bool]\" (reportReturnType)\n2 errors, 0 warnings, 0 informations \n",
+    "session_id": "d84f52c0-477a-4601-a0f0-7529af4fcbfd"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:9:70 - error: \"GetAction\" is unknown import symbol (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:9:81 - error: \"DropAction\" is unknown import symbol (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:26:50 - error: \"Get\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:27:40 - error: \"Get\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:63:25 - error: \"Get\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:77:31 - error: \"Get\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:94:58 - error: \"Get\" is not defined (reportUndefinedVariable)\n7 errors, 0 warnings, 0 informations \n",
+    "session_id": "d84f52c0-477a-4601-a0f0-7529af4fcbfd"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:26:50 - error: \"Get\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:27:40 - error: \"Get\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:63:25 - error: \"Get\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:77:31 - error: \"Get\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:94:58 - error: \"Get\" is not defined (reportUndefinedVariable)\n5 errors, 0 warnings, 0 informations \n",
+    "session_id": "d84f52c0-477a-4601-a0f0-7529af4fcbfd"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:63:25 - error: \"Get\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:77:31 - error: \"Get\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:94:58 - error: \"Get\" is not defined (reportUndefinedVariable)\n3 errors, 0 warnings, 0 informations \n",
+    "session_id": "4a032daf-391b-4958-b2c7-56555b99586b"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:77:31 - error: \"Get\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:94:58 - error: \"Get\" is not defined (reportUndefinedVariable)\n2 errors, 0 warnings, 0 informations \n",
+    "session_id": "5aac7caf-e426-4581-9e0d-eed19f30cd3d"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:79:50 - error: Cannot access attribute \"item\" for class \"GenericTakeAction\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"item\" is unknown (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:80:49 - error: Cannot access attribute \"item\" for class \"GenericTakeAction\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"item\" is unknown (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:80:82 - error: Cannot access attribute \"item\" for class \"GenericTakeAction\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"item\" is unknown (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:94:58 - error: \"Get\" is not defined (reportUndefinedVariable)\n4 errors, 0 warnings, 0 informations \n",
+    "session_id": "5aac7caf-e426-4581-9e0d-eed19f30cd3d"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_actions.py:94:58 - error: \"Get\" is not defined (reportUndefinedVariable)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "5aac7caf-e426-4581-9e0d-eed19f30cd3d"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_match_item.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_match_item.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_match_item.py:69:40 - error: \"get_action\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_match_item.py:70:39 - error: \"get_action\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_match_item.py:73:30 - error: \"get_action\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_match_item.py:91:9 - error: \"parser\" is possibly unbound (reportPossiblyUnboundVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_match_item.py:91:16 - error: Cannot assign to attribute \"character\" for class \"Parser\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"character\" is unknown (reportAttributeAccessIssue)\n5 errors, 0 warnings, 0 informations \n",
+    "session_id": "5aac7caf-e426-4581-9e0d-eed19f30cd3d"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_match_item.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_match_item.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_match_item.py:91:9 - error: \"parser\" is possibly unbound (reportPossiblyUnboundVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\debug\\debug_match_item.py:91:16 - error: Cannot assign to attribute \"character\" for class \"Parser\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"character\" is unknown (reportAttributeAccessIssue)\n2 errors, 0 warnings, 0 informations \n",
+    "session_id": "5aac7caf-e426-4581-9e0d-eed19f30cd3d"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py:12:62 - error: \"MoveAction\" is unknown import symbol (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py:27:23 - error: \"MoveBackendAction\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py:35:25 - error: \"MoveFrontendAction\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py:48:35 - error: \"Agent\" is unknown import symbol (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py:76:16 - error: Import \"backend.agent_manager\" could not be resolved (reportMissingImports)\n5 errors, 0 warnings, 0 informations \n",
+    "session_id": "5aac7caf-e426-4581-9e0d-eed19f30cd3d"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py:27:23 - error: \"MoveBackendAction\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py:35:25 - error: \"MoveFrontendAction\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py:48:35 - error: \"Agent\" is unknown import symbol (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py:76:16 - error: Import \"backend.agent_manager\" could not be resolved (reportMissingImports)\n4 errors, 0 warnings, 0 informations \n",
+    "session_id": "5aac7caf-e426-4581-9e0d-eed19f30cd3d"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py:36:47 - error: \"MoveBackendAction\" is unknown import symbol (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py:48:35 - error: \"Agent\" is unknown import symbol (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py:76:16 - error: Import \"backend.agent_manager\" could not be resolved (reportMissingImports)\n3 errors, 0 warnings, 0 informations \n",
+    "session_id": "5aac7caf-e426-4581-9e0d-eed19f30cd3d"
   }
 ]
