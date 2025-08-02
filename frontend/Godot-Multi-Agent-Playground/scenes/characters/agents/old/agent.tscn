@@ -1,12 +1,12 @@
 [gd_scene load_steps=9 format=3 uid="uid://dleatrinsn5so"]
 
 [ext_resource type="PackedScene" uid="uid://0vuviv68yjtr" path="res://scenes/components/player_animated_sprite.tscn" id="1_8ljyr"]
-[ext_resource type="Script" path="res://scenes/characters/agents/old/agent.gd" id="1_lucgp"]
-[ext_resource type="Script" path="res://scenes/characters/agents/old/agent_state_machine.gd" id="3_vhqan"]
-[ext_resource type="Script" path="res://scenes/characters/agents/old/agent_idle.gd" id="4_6b4s1"]
-[ext_resource type="Script" path="res://scenes/characters/agents/old/agent_walk.gd" id="5_bb8p1"]
+[ext_resource type="Script" uid="uid://d3222blusnjsr" path="res://scenes/characters/agents/old/agent.gd" id="1_lucgp"]
+[ext_resource type="Script" uid="uid://ddbth0scof7ks" path="res://scenes/characters/agents/old/agent_state_machine.gd" id="3_vhqan"]
+[ext_resource type="Script" uid="uid://xanrctexksfp" path="res://scenes/characters/agents/old/agent_idle.gd" id="4_6b4s1"]
+[ext_resource type="Script" uid="uid://cnrxffnsybdct" path="res://scenes/characters/agents/old/agent_walk.gd" id="5_bb8p1"]
 [ext_resource type="FontFile" uid="uid://46afpnw3fj03" path="res://assets/ui/fonts/Noto_Color_Emoji/NotoColorEmoji-Regular.ttf" id="6_jtutc"]
-[ext_resource type="Script" path="res://scenes/characters/agents/old/emoji_label.gd" id="7_88ey6"]
+[ext_resource type="Script" uid="uid://dbhghxbb5q3od" path="res://scenes/characters/agents/old/emoji_label.gd" id="7_88ey6"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_8bwlk"]
 radius = 1.0

@@ -303,5 +303,10 @@
     "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py",
     "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py:36:47 - error: \"MoveBackendAction\" is unknown import symbol (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py:48:35 - error: \"Agent\" is unknown import symbol (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\tests\\integration\\verify_tile_removal.py:76:16 - error: Import \"backend.agent_manager\" could not be resolved (reportMissingImports)\n3 errors, 0 warnings, 0 informations \n",
     "session_id": "5aac7caf-e426-4581-9e0d-eed19f30cd3d"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_game_demo.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_game_demo.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_game_demo.py:36:9 - error: \"logger\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_game_demo.py:38:13 - error: \"logger\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_game_demo.py:41:13 - error: \"logger\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_game_demo.py:42:13 - error: \"logger\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_game_demo.py:44:13 - error: \"logger\" is not defined (reportUndefinedVariable)\n5 errors, 0 warnings, 0 informations \n",
+    "session_id": "34f9b380-b76a-4aad-ac33-673cbdd98135"
   }
 ]

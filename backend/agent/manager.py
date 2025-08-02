@@ -6,6 +6,7 @@ text adventure game framework.
 """
 
 from typing import Optional, Dict, List
+import logging
 
 # Text adventure games imports
 from ..text_adventure_games.things import Character
@@ -16,6 +17,10 @@ from ..config.schema import AgentActionOutput
 
 # Local imports
 from .agent_strategies import AgentStrategy
+from ..log_config import log_agent_decision
+
+# Module-level logger
+logger = logging.getLogger(__name__)
 
 
 class AgentManager:
@@ -69,7 +74,7 @@ class AgentManager:
             command = await strategy.select_action(previous_result)
             
             # Execute the command
-            print(f"\n{agent.name}: {command}")
+            log_agent_decision(agent.name, command, {"previous_result": previous_result})
             result = self.game.parser.parse_command(command, character=agent)
             
             # Get the schema immediately after execution
@@ -82,21 +87,12 @@ class AgentManager:
             if is_noop:
                 # For noop actions, store error message
                 action_result = f"Action failed: {action_schema.description or 'Unknown error'}"
-                print(f"[WARNING]: Command failed for {agent.name}")
-                print("─" * 50)
-                print(f"Error: {action_schema.description}")
-                print("─" * 50)
             else:
                 # For successful actions, store result description
                 if isinstance(result, tuple) and len(result) >= 1:
                     action_result = result[0]
-                    print(f"✓ Action result for {agent.name}:")
-                    print("─" * 50)
-                    print(action_result)
-                    print("─" * 50)
                 else:
                     action_result = str(result)
-                    print(f"✓ Action result for {agent.name}: {action_result}")
             
             # Store the action result for this agent's next turn
             self.previous_action_results[agent.name] = action_result
@@ -109,7 +105,7 @@ class AgentManager:
             return action_schema, action_ended_turn
             
         except Exception as e:
-            print(f"Error in execute_agent_turn for {agent.name}: {e}")
+            logger.error(f"Error in execute_agent_turn for {agent.name}: {e}")
             return None, True  # Default to ending turn on error
     
     def get_world_state_for_agent(self, agent: Character) -> dict:

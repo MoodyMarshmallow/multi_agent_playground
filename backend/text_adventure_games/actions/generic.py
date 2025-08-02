@@ -15,6 +15,7 @@ from ...config.schema import (
 from backend.text_adventure_games.capabilities import (
     Activatable, Openable, Lockable, Usable, Container, Consumable, Examinable, Recipient
 )
+from ..utils import remove_item_safely
 import re
 
 
@@ -381,7 +382,7 @@ class GenericTakeAction(Action):
         try:
             # Remove from current location/container
             if self.target is not None and self.target.location is not None:
-                self.target.location.remove_item(self.target)
+                remove_item_safely(self.target.location, self.target, self.character)
             
             # Add to character inventory
             self.character.add_to_inventory(self.target)

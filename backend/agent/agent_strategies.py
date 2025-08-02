@@ -6,11 +6,15 @@ decision making in the text adventure game framework.
 """
 
 import os
+import logging
 from typing import Protocol, Optional
 
 # Kani imports
 from kani import Kani, ChatMessage, ai_function
 from kani.engines.openai import OpenAIEngine
+
+# Module-level logger
+logger = logging.getLogger(__name__)
 
 
 class AgentStrategy(Protocol):
@@ -62,7 +66,7 @@ class KaniAgent(Kani):
             for cert_file in potential_cert_files:
                 if os.path.exists(cert_file):
                     os.environ["SSL_CERT_FILE"] = cert_file
-                    print(f"Fixed SSL_CERT_FILE to: {cert_file}")
+                    logger.info(f"Fixed SSL_CERT_FILE to: {cert_file}")
                     break
         
         # Initialize kani with OpenAI
@@ -110,7 +114,7 @@ Remember: You can only choose from the available actions provided. If unsure, su
             command: The exact command you want to perform (e.g., "go north", "get lamp", "look")
         """
         self.selected_command = command.lower().strip()
-        print(f"[{self.character_name}] FUNCTION CALL: submit_command('{command}') -> stored as '{self.selected_command}'")
+        logger.debug(f"[{self.character_name}] FUNCTION CALL: submit_command('{command}') -> stored as '{self.selected_command}'")
         return f"Command '{command}' submitted successfully."
     
     async def select_action(self, action_result: str) -> str:
@@ -119,13 +123,13 @@ Remember: You can only choose from the available actions provided. If unsure, su
         On first call, sends initial world state as first user message.
         """
         try:
-            print(f"\n[{self.character_name}] === AGENT TURN STARTED ===")
+            logger.info(f"[{self.character_name}] Agent turn started")
             # Reset selected command
             self.selected_command = None
             
             # Handle first turn: send initial world state as first user message
             if not self.initial_context_sent and self.initial_world_state:
-                print(f"[{self.character_name}] Sending initial world state as first user message")
+                logger.info(f"[{self.character_name}] Sending initial world state as first user message")
                 observation = self.initial_world_state
                 self.initial_context_sent = True
             else:
@@ -140,41 +144,39 @@ Remember: You can only choose from the available actions provided. If unsure, su
             # Add instruction about function calling
             observation += "\n\nYou must call the submit_command function with your chosen action. Submit \"look\" to show what commands you can take."
             
-            # Debug: Print the full observation sent to the LLM
-            print(f"\n[{self.character_name}] OBSERVATION:")
-            print("=" * 60)
-            print(observation)
-            print("=" * 60)
+            # Debug: Log the full observation sent to the LLM
+            logger.debug(f"[{self.character_name}] OBSERVATION:")
+            logger.debug(observation)
             
             # Get LLM response with function calling
-            print(f"[{self.character_name}] Sending observation to LLM...")
+            logger.debug(f"[{self.character_name}] Sending observation to LLM...")
             async for message in self.full_round(observation, max_function_rounds=1):
-                print(f"[{self.character_name}] LLM message: {message.role}")
-            print(f"[{self.character_name}] LLM response received")
+                logger.debug(f"[{self.character_name}] LLM message: {message.role}")
+            logger.debug(f"[{self.character_name}] LLM response received")
             
             # Check if a command was submitted via function call
             if self.selected_command:
                 command = self.selected_command
-                print(f"[{self.character_name}] Function call successful: '{command}'")
+                logger.info(f"[{self.character_name}] Function call successful: '{command}'")
                 
                 # Track this action
                 self.recent_actions.append(command)
                 if len(self.recent_actions) > self.max_recent_actions:
                     self.recent_actions.pop(0)
                     
-                print(f"[{self.character_name}] FINAL ACTION: '{command}'\n")
+                logger.info(f"[{self.character_name}] FINAL ACTION: '{command}'")
                 return command
             else:
                 # Fallback if no function was called
-                print(f"[{self.character_name}] WARNING: No submit_command function was called!")
-                print(f"[{self.character_name}] Using fallback command: 'look'")
-                print(f"[{self.character_name}] FINAL ACTION: 'look'\n")
+                logger.warning(f"[{self.character_name}] No submit_command function was called!")
+                logger.info(f"[{self.character_name}] Using fallback command: 'look'")
+                logger.info(f"[{self.character_name}] FINAL ACTION: 'look'")
                 return "look"
                     
         except Exception as e:
-            print(f"[{self.character_name}] ERROR in select_action: {e}")
-            print(f"[{self.character_name}] Using emergency fallback: 'look'")
-            print(f"[{self.character_name}] FINAL ACTION: 'look'\n")
+            logger.error(f"[{self.character_name}] ERROR in select_action: {e}")
+            logger.info(f"[{self.character_name}] Using emergency fallback: 'look'")
+            logger.info(f"[{self.character_name}] FINAL ACTION: 'look'")
             return "look"  # Safe fallback
     
     def _format_world_state(self, state: dict) -> str:
@@ -238,6 +240,7 @@ class ManualAgent:
         Prompt the developer to manually select an action based on action result.
         Note: ManualAgent ignores action_result and shows current world state.
         """
+        # ManualAgent UI output (always shown to user for manual control)
         print(f"\n{'='*60}")
         print(f"MANUAL CONTROL - {self.character_name}")
         print(f"{'='*60}")
@@ -248,10 +251,14 @@ class ManualAgent:
         # For now, return "look" to get world state, since ManualAgent needs to see available actions
         # TODO: This needs to be refactored to work with the new architecture
         print("ManualAgent temporarily disabled - use 'look' to see world state")
+        
+        # Log the manual agent activation
+        logger.info(f"ManualAgent {self.character_name} prompting for manual input")
         return "look"
     
     def _display_world_state(self, state: dict):
         """Display the current world state in a readable format."""
+        # ManualAgent UI output (always shown to user for manual control)
         print("What you see around you:")
         
         # Location information

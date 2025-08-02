@@ -16,6 +16,7 @@ The server will start on http://localhost:8000
 
 import sys
 import os
+import argparse
 from pathlib import Path
 
 # Add the project root to Python path
@@ -26,6 +27,16 @@ sys.path.insert(0, str(project_root))
 os.environ.setdefault("PYTHONPATH", str(project_root))
 
 if __name__ == "__main__":
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description="Multi-Agent Playground Backend Server (Manual Startup)")
+    parser.add_argument("--verbose", "-v", action="store_true", 
+                       help="Enable verbose logging (show INFO+ messages)")
+    args = parser.parse_args()
+    
+    # Setup logging
+    from backend.log_config import setup_logging
+    setup_logging(verbose=args.verbose)
+    
     import uvicorn
     from backend.main import app
     
@@ -36,6 +47,10 @@ if __name__ == "__main__":
     print("Agents endpoint: http://localhost:8000/agents/init")
     print("Objects endpoint: http://localhost:8000/objects")
     print("Game events endpoint: http://localhost:8000/game/events")
+    if args.verbose:
+        print("Verbose logging: ENABLED (INFO+ messages)")
+    else:
+        print("Verbose logging: DISABLED (WARNING+ messages only)")
     print("\nPress Ctrl+C to stop the server")
     print("-" * 50)
     

@@ -2,6 +2,7 @@ from .base import Thing
 from .items import Item
 from .locations import Location
 from backend.text_adventure_games.capabilities import ActionResult, Recipient, Giver, Conversational, Examinable
+from ..utils import remove_item_safely
 from typing import Dict, Any, Optional
 
 
@@ -92,7 +93,7 @@ class Character(Thing, Recipient, Giver, Conversational, Examinable):
         Add an item to the character's inventory.
         """
         if item.location is not None:
-            item.location.remove_item(item)
+            remove_item_safely(item.location, item, self)
             item.location = None
         self.inventory[item.name] = item
         item.owner = self

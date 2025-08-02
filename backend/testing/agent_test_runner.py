@@ -7,6 +7,7 @@ Executes agent goal tests and provides detailed results.
 
 import asyncio
 import time
+import logging
 from typing import Dict, List, Any, Callable, Optional
 from copy import deepcopy
 
@@ -16,6 +17,9 @@ from ..text_adventure_games.house import build_house_game
 from ..text_adventure_games.things import Character, Item, Location
 from ..agent import AgentManager, KaniAgent
 from ..config.schema import AgentActionOutput
+
+# Module-level logger
+logger = logging.getLogger(__name__)
 
 
 class AgentTestRunner:
@@ -36,13 +40,10 @@ class AgentTestRunner:
         Returns:
             TestResult with detailed information about the test execution
         """
-        print(f"\n{'='*60}")
-        print(f"RUNNING TEST: {test.name}")
-        print(f"{'='*60}")
-        print(f"Description: {test.description}")
-        print(f"Success criteria: {len(test.success_criteria)}")
-        print(f"Max turns: {test.max_turns}")
-        print(f"{'='*60}")
+        logger.info(f"RUNNING TEST: {test.name}")
+        logger.info(f"Description: {test.description}")
+        logger.info(f"Success criteria: {len(test.success_criteria)}")
+        logger.info(f"Max turns: {test.max_turns}")
         
         start_time = time.time()
         action_history = []
@@ -71,7 +72,7 @@ class AgentTestRunner:
             
             # Main test loop
             for turn in range(test.max_turns):
-                print(f"\n--- Turn {turn + 1} ---")
+                logger.info(f"--- Turn {turn + 1} ---")
                 
                 # Get current game state
                 current_state = self._get_current_state(agent_char, game)
@@ -79,17 +80,17 @@ class AgentTestRunner:
                 # Check for success
                 success, success_reasons = test.check_success(current_state, action_history)
                 if success:
-                    print(f"[SUCCESS] Test PASSED after {turn + 1} turns!")
+                    logger.info(f"[SUCCESS] Test PASSED after {turn + 1} turns!")
                     for reason in success_reasons:
-                        print(f"  - {reason}")
+                        logger.info(f"  - {reason}")
                     break
                 
                 # Check for failure
                 failed, failure_reasons = test.check_failure(current_state, action_history)
                 if failed:
-                    print(f"[FAILURE] Test FAILED after {turn + 1} turns!")
+                    logger.warning(f"[FAILURE] Test FAILED after {turn + 1} turns!")
                     for reason in failure_reasons:
-                        print(f"  - {reason}")
+                        logger.warning(f"  - {reason}")
                     break
                 
                 # Execute agent turn
@@ -98,20 +99,20 @@ class AgentTestRunner:
                     if action_output:
                         action_history.append(action_output)
                         turn_status = " (ended turn)" if action_ended_turn else " (continued turn)"
-                        print(f"Agent action: {action_output.action.action_type}{turn_status}")
+                        logger.info(f"Agent action: {action_output.action.action_type}{turn_status}")
                         # Check if the action has a target attribute (some actions like LookAction and NoOpAction don't)
                         action = action_output.action
                         target = getattr(action, 'target', None)
                         if target is not None:
-                            print(f"  Target: {target}")
-                        print(f"  Location: {action_output.current_room}")
+                            logger.info(f"  Target: {target}")
+                        logger.info(f"  Location: {action_output.current_room}")
                         if action_output.description:
-                            print(f"  Result: {action_output.description}")
+                            logger.info(f"  Result: {action_output.description}")
                     else:
-                        print("No action output received")
+                        logger.warning("No action output received")
                         
                 except Exception as e:
-                    print(f"Error during agent turn: {e}")
+                    logger.error(f"Error during agent turn: {e}")
                     error_message = str(e)
                     break
                 
@@ -131,7 +132,7 @@ class AgentTestRunner:
                 failure_reasons = ["Test completed without achieving goal"]
             
         except Exception as e:
-            print(f"[ERROR] Test ERROR: {e}")
+            logger.error(f"[ERROR] Test ERROR: {e}")
             error_message = str(e)
             success = False
             failed = True
@@ -159,18 +160,17 @@ class AgentTestRunner:
             error_message=error_message
         )
         
-        # Print summary
-        print(f"\n{'='*60}")
-        print(f"TEST RESULT: {'PASSED' if success else 'FAILED'}")
-        print(f"Duration: {duration:.2f}s")
-        print(f"Turns taken: {len(action_history)}")
-        print(f"Efficiency score: {behavior_analysis.efficiency_score:.2f}")
-        print(f"Decision quality: {behavior_analysis.decision_quality_score:.2f}")
+        # Log summary
+        result_level = logging.INFO if success else logging.WARNING
+        logger.log(result_level, f"TEST RESULT: {'PASSED' if success else 'FAILED'}")
+        logger.info(f"Duration: {duration:.2f}s")
+        logger.info(f"Turns taken: {len(action_history)}")
+        logger.info(f"Efficiency score: {behavior_analysis.efficiency_score:.2f}")
+        logger.info(f"Decision quality: {behavior_analysis.decision_quality_score:.2f}")
         if behavior_analysis.invalid_actions:
-            print(f"Invalid actions: {len(behavior_analysis.invalid_actions)}")
+            logger.warning(f"Invalid actions: {len(behavior_analysis.invalid_actions)}")
         if behavior_analysis.loop_detection:
-            print(f"Loops detected: {len(behavior_analysis.loop_detection)}")
-        print(f"{'='*60}")
+            logger.warning(f"Loops detected: {len(behavior_analysis.loop_detection)}")
         
         return result
     
@@ -185,10 +185,8 @@ class AgentTestRunner:
         Returns:
             TestSuiteResult with aggregated information
         """
-        print(f"\n{'='*80}")
-        print(f"RUNNING TEST SUITE: {suite_name}")
-        print(f"Total tests: {len(tests)}")
-        print(f"{'='*80}")
+        logger.info(f"RUNNING TEST SUITE: {suite_name}")
+        logger.info(f"Total tests: {len(tests)}")
         
         start_time = time.time()
         results = []
@@ -196,7 +194,7 @@ class AgentTestRunner:
         failed = 0
         
         for i, test in enumerate(tests, 1):
-            print(f"\n[{i}/{len(tests)}] Starting test: {test.name}")
+            logger.info(f"[{i}/{len(tests)}] Starting test: {test.name}")
             
             result = await self.run_test(test)
             results.append(result)
@@ -218,16 +216,13 @@ class AgentTestRunner:
             total_duration=total_duration
         )
         
-        # Print suite summary
-        print(f"\n{'='*80}")
-        print(f"TEST SUITE COMPLETE: {suite_name}")
-        print(f"{'='*80}")
-        print(f"Total tests: {suite_result.total_tests}")
-        print(f"Passed: {suite_result.passed_tests}")
-        print(f"Failed: {suite_result.failed_tests}")
-        print(f"Success rate: {suite_result.success_rate:.1f}%")
-        print(f"Total duration: {suite_result.total_duration:.2f}s")
-        print(f"{'='*80}")
+        # Log suite summary
+        logger.info(f"TEST SUITE COMPLETE: {suite_name}")
+        logger.info(f"Total tests: {suite_result.total_tests}")
+        logger.info(f"Passed: {suite_result.passed_tests}")
+        logger.info(f"Failed: {suite_result.failed_tests}")
+        logger.info(f"Success rate: {suite_result.success_rate:.1f}%")
+        logger.info(f"Total duration: {suite_result.total_duration:.2f}s")
         
         return suite_result
     
@@ -334,7 +329,7 @@ class AgentTestRunner:
         
         # Add initial inventory
         for item_name in test.initial_world_state.agent_inventory:
-            item = Item(item_name, f"a {item_name}", f"A {item_name}")
+            item = Item(item_name, f"{item_name}", f"{item_name}")
             agent_char.add_to_inventory(item)
         
         # Add to game

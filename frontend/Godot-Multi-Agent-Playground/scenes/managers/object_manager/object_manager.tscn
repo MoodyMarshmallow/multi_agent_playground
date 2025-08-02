@@ -1,6 +1,6 @@
 [gd_scene load_steps=66 format=3 uid="uid://87lmxewh1kml"]
 
-[ext_resource type="Script" path="res://scenes/managers/object_manager/object_manager.gd" id="1_qigme"]
+[ext_resource type="Script" uid="uid://cxn4bwkjf2hlq" path="res://scenes/managers/object_manager/object_manager.gd" id="1_qigme"]
 [ext_resource type="PackedScene" uid="uid://cuqajcajlvp5g" path="res://scenes/houses/objects/bedroom_objects/bed.tscn" id="2_8d1d4"]
 [ext_resource type="PackedScene" uid="uid://dclrtgqjexelw" path="res://scenes/houses/objects/bedroom_objects/dresser.tscn" id="3_qv13i"]
 [ext_resource type="PackedScene" uid="uid://buaglmo3rtgdf" path="res://scenes/houses/objects/bedroom_objects/closet.tscn" id="4_71i66"]
@@ -31,7 +31,7 @@
 [ext_resource type="Texture2D" uid="uid://76i0te6lvfny" path="res://modern_assets/basement.png" id="20_xnip6"]
 [ext_resource type="Texture2D" uid="uid://dbkh8gpdeehfd" path="res://modern_assets/living_room.png" id="21_60jnj"]
 [ext_resource type="PackedScene" uid="uid://cw0lecymp5o4" path="res://scenes/houses/objects/kitchen_objects/coffee_maker.tscn" id="21_q01qo"]
-[ext_resource type="Script" path="res://scenes/houses/objects/base_object/base_object.gd" id="24_f5nuw"]
+[ext_resource type="Script" uid="uid://qxtkcb0ctjcu" path="res://scenes/houses/objects/base_object/base_object.gd" id="24_f5nuw"]
 [ext_resource type="PackedScene" uid="uid://bjv0y3uv2miya" path="res://scenes/houses/objects/entry_room_objects/welcom_mat.tscn" id="25_he3b4"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_qasog"]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://c2d26560ay4rk"]
 
-[ext_resource type="Script" path="res://scenes/ui/chat_box/message.gd" id="1_eagkp"]
+[ext_resource type="Script" uid="uid://dohdhguh8ogko" path="res://scenes/ui/chat_box/message.gd" id="1_eagkp"]
 
 [node name="Message" type="Label"]
 custom_minimum_size = Vector2(50, 10)

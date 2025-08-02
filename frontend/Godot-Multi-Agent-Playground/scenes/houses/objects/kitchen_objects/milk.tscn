@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://bjdqitwligaqr"]
 
-[ext_resource type="Script" path="res://scenes/houses/objects/base_object/base_object.gd" id="1_ldehq"]
+[ext_resource type="Script" uid="uid://qxtkcb0ctjcu" path="res://scenes/houses/objects/base_object/base_object.gd" id="1_ldehq"]
 [ext_resource type="Texture2D" uid="uid://c7741g46skylf" path="res://assets/game/food/PiiXL_food_and_little_bit_of_kitchenware/FOOD.png" id="2_3ifg7"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dr2aj"]

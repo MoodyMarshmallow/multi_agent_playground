@@ -3,7 +3,6 @@
 [ext_resource type="Texture2D" uid="uid://by213v06ag6we" path="res://assets 2/ui/basic_ui_sprites.png" id="1_mn4fd"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_0s7yl"]
-load_path = "res://.godot/imported/basic_ui_sprites.png-f1365ff47f1f008f610f3c558cf47256.ctex"
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_qq8su"]
 atlas = SubResource("CompressedTexture2D_0s7yl")
@@ -14,7 +13,6 @@ texture = SubResource("AtlasTexture_qq8su")
 region_rect = Rect2(4, 4, 18, 18)
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_0g3av"]
-load_path = "res://.godot/imported/basic_ui_sprites.png-f1365ff47f1f008f610f3c558cf47256.ctex"
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jfa0k"]
 atlas = SubResource("CompressedTexture2D_0g3av")
@@ -25,7 +23,6 @@ texture = SubResource("AtlasTexture_jfa0k")
 region_rect = Rect2(4, 4, 18, 18)
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_br61u"]
-load_path = "res://.godot/imported/basic_ui_sprites.png-f1365ff47f1f008f610f3c558cf47256.ctex"
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_b3kmi"]
 atlas = SubResource("CompressedTexture2D_br61u")
@@ -44,7 +41,6 @@ texture = SubResource("AtlasTexture_gw3gf")
 region_rect = Rect2(4, 4, 18, 18)
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_6nvbg"]
-load_path = "res://.godot/imported/basic_ui_sprites.png-f1365ff47f1f008f610f3c558cf47256.ctex"
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jumr2"]
 atlas = SubResource("CompressedTexture2D_6nvbg")

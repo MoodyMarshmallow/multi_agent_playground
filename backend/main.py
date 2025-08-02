@@ -14,6 +14,9 @@ This combines:
 from dotenv import load_dotenv
 from typing import List, Dict, Any, Optional
 import asyncio
+import argparse
+import sys
+import os
 from contextlib import asynccontextmanager
 
 load_dotenv()
@@ -21,9 +24,14 @@ load_dotenv()
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-# Import the game controller
+# Import the game controller and logging
 from .game_loop import GameLoop
 from .config.schema import WorldStateResponse, GameEvent, GameEventList, StatusMsg, GameStatus, AgentStateResponse, GameObject, AgentActionOutput
+from .log_config import setup_logging
+
+# Setup logging based on environment variable (for uvicorn compatibility)
+verbose_mode = os.getenv("VERBOSE", "false").lower() in ("true", "1", "yes")
+setup_logging(verbose=verbose_mode)
 
 # Global game controller instance
 game_controller: Optional[GameLoop] = None
@@ -135,5 +143,24 @@ async def get_game_status():
 
 
 if __name__ == "__main__":
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description="Multi-Agent Playground Backend Server")
+    parser.add_argument("--verbose", "-v", action="store_true", 
+                       help="Enable verbose logging (show INFO+ messages)")
+    parser.add_argument("--reload", action="store_true", 
+                       help="Enable auto-reload for development")
+    parser.add_argument("--port", type=int, default=8000,
+                       help="Port to run the server on (default: 8000)")
+    args = parser.parse_args()
+    
+    # Setup logging based on verbose flag
+    setup_logging(verbose=args.verbose)
+    
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(
+        app, 
+        host="0.0.0.0", 
+        port=args.port,
+        reload=args.reload,
+        log_level="info"
+    )

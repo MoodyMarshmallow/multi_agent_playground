@@ -99,7 +99,7 @@ class Container(Object, Openable, ContainerCapability, Examinable):
     def examine(self, character) -> ActionResult:
         """Provide detailed examination of the container"""
         state = "open" if self.is_open() else "closed"
-        desc = f"A {self.description} that is currently {state}"
+        desc = f"{self.description} that is currently {state}"
         
         if self.is_open() and self.inventory:
             items = ", ".join([item.name for item in self.inventory.values()])

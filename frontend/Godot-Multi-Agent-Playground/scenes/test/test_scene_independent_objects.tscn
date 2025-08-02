@@ -5,7 +5,7 @@
 [ext_resource type="TileSet" uid="uid://clqkkmcjq30g" path="res://Tilesets/game_tile_set.tres" id="3_m3rlt"]
 [ext_resource type="PackedScene" uid="uid://c5oq8gc6y7nv6" path="res://scenes/houses/base_house.tscn" id="4_vyq2c"]
 [ext_resource type="PackedScene" uid="uid://dsv32w5f65vpb" path="res://scenes/managers/http_manager/http_manager.tscn" id="6_fqhw5"]
-[ext_resource type="Script" path="res://scenes/managers/http_manager/http_manager.gd" id="7_tgdes"]
+[ext_resource type="Script" uid="uid://b0htjifjykju3" path="res://scenes/managers/http_manager/http_manager.gd" id="7_tgdes"]
 [ext_resource type="PackedScene" uid="uid://87lmxewh1kml" path="res://scenes/managers/object_manager/object_manager.tscn" id="9_baa1i"]
 [ext_resource type="PackedScene" uid="uid://deei71h1kowkb" path="res://scenes/characters/agents/base_agent/base_agent.tscn" id="15_1bxtn"]
 [ext_resource type="PackedScene" uid="uid://cllfcrk1gqj8i" path="res://scenes/characters/agents/debug_agent/debug_agent.tscn" id="15_k8cdm"]

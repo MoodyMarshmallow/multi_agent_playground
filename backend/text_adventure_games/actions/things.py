@@ -1,5 +1,6 @@
 from . import base
 from ...config.schema import TakeAction, DropAction
+from ..utils import remove_item_safely
 
 
 class Get(base.Action):
@@ -47,7 +48,7 @@ class Get(base.Action):
         Get's an item from the location and adds it to the character's
         inventory, assuming preconditions are met.
         """
-        self.location.remove_item(self.item)
+        remove_item_safely(self.location, self.item, self.character)
         self.character.add_to_inventory(self.item)
         description = "{character_name} got the {item_name}.".format(
             character_name=self.character.name, item_name=self.item.name

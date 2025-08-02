@@ -136,7 +136,7 @@ class ClothingItem(Item):
         if self.examine_text and len(self.examine_text.strip()) > 0:
             return ActionResult(self.examine_text)
         else:
-            desc = f"A {self.clothing_type} made of {self.material}. {self.description}"
+            desc = f"{self.clothing_type} made of {self.material}. {self.description}"
             return ActionResult(desc)
 
 
@@ -174,7 +174,7 @@ class UtilityItem(Item, Usable):
         if self.examine_text and len(self.examine_text.strip()) > 0:
             return ActionResult(self.examine_text)
         else:
-            desc = f"A {self.utility_type}: {self.description}"
+            desc = f"{self.utility_type}: {self.description}"
             if self.current_user:
                 desc += f". {self.current_user.name} is currently using it"
             return ActionResult(desc)
@@ -223,7 +223,7 @@ class BeddingItem(Item):
         if self.examine_text and len(self.examine_text.strip()) > 0:
             return ActionResult(self.examine_text)
         else:
-            desc = f"A {self.bedding_type}"
+            desc = f"{self.bedding_type}"
             if self.color:
                 desc += f" in {self.color}"
             desc += f" made of {self.material}. {self.description}"

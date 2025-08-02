@@ -15,6 +15,7 @@ This implements:
 import asyncio
 from typing import Dict, List, Optional, Any
 from datetime import datetime
+import logging
 
 # Text adventure games imports
 from .text_adventure_games.games import Game
@@ -27,6 +28,10 @@ from .agent.agent_strategies import KaniAgent, ManualAgent
 from .text_adventure_games.house import build_house_game
 
 from .config.schema import AgentActionOutput
+from .log_config import log_game_event, log_action_execution
+
+# Module-level logger
+logger = logging.getLogger(__name__)
 
 class GameLoop:
     """
@@ -63,7 +68,7 @@ class GameLoop:
             await self.initialize()
             self.is_running = True
             self.task = asyncio.create_task(self.run_game_loop())
-            print("Game loop started in the background")
+            logger.info("Game loop started in the background")
 
     async def stop(self):
         """Stop the game loop."""
@@ -74,17 +79,17 @@ class GameLoop:
                 await self.task
             except asyncio.CancelledError:
                 pass  # Expected
-            print("Game loop stopped")
+            logger.info("Game loop stopped")
 
     async def run_game_loop(self):
         """The main game loop where agents take turns."""
         while self.is_running:
             if self.turn_counter >= self.max_turns_per_session:
-                print("Max turns reached, stopping game.")
+                logger.warning("Max turns reached, stopping game.")
                 break
 
             if not self.agent_manager:
-                print("Agent manager not initialized, stopping game.")
+                logger.error("Agent manager not initialized, stopping game.")
                 break
 
             agent = self.agent_manager.get_next_agent()
@@ -96,7 +101,12 @@ class GameLoop:
                 if action_schema:
                     # Log the turn
                     turn_status = "ended turn" if action_ended_turn else "continued turn"
-                    print(f"Turn {self.turn_counter}: {agent.name} executed action ({turn_status})")
+                    log_game_event("turn_end", {
+                        "agent": agent.name,
+                        "turn": self.turn_counter,
+                        "action": getattr(action_schema.action, 'action_type', 'unknown'),
+                        "status": turn_status
+                    })
                     
                     # Add the action schema directly as an event
                     self._add_action_event(action_schema)
@@ -123,7 +133,7 @@ class GameLoop:
         # Initialize objects registry
         self._initialize_objects_registry()
         
-        print("Game controller initialized successfully")
+        logger.info("Game controller initialized successfully")
     
     def _build_house_environment(self) -> Game:
         """
@@ -147,21 +157,21 @@ class GameLoop:
                 if agent_strategy and self.agent_manager:
                     self.agent_manager.register_agent_strategy(agent_name, agent_strategy)
             
-            print("Agents set up successfully")
+            logger.info("Agents set up successfully")
             if self.agent_config:
                 manual_agents = [name for name, type_ in self.agent_config.items() if type_ == "manual"]
                 ai_agents = [name for name, type_ in self.agent_config.items() if type_ == "ai"]
-                print(f"Manual agents: {manual_agents}")
-                print(f"AI agents: {ai_agents}")
+                logger.info(f"Manual agents: {manual_agents}")
+                logger.info(f"AI agents: {ai_agents}")
             else:
-                print("All agents using AI (default)")
+                logger.info("All agents using AI (default)")
                 
         except Exception as e:
             import traceback
-            print(f"Warning: Could not set up agents: {e}")
-            print(f"Full error traceback:")
+            logger.warning(f"Could not set up agents: {e}")
+            logger.warning("Full error traceback:")
             traceback.print_exc()
-            print("The game will run without agent strategies")
+            logger.warning("The game will run without agent strategies")
             # Just add the characters to active agents list without strategies
             if self.agent_manager:
                 self.agent_manager.active_agents.extend(["alex_001", "alan_002"])
@@ -171,11 +181,11 @@ class GameLoop:
         agent_type = self.agent_config.get(character_name, "ai")  # Default to AI
         
         if agent_type == "manual":
-            print(f"Creating manual agent for {character_name}")
+            logger.info(f"Creating manual agent for {character_name}")
             return ManualAgent(character_name, persona)
         else:  # agent_type == "ai" or any other value
             try:
-                print(f"Creating AI agent for {character_name}")
+                logger.info(f"Creating AI agent for {character_name}")
                 
                 # Get initial world state by executing a look command for this character
                 if self.game and character_name in self.game.characters:
@@ -183,12 +193,12 @@ class GameLoop:
                     initial_world_state = self._get_initial_world_state_for_agent(character)
                     return KaniAgent(character_name, persona, initial_world_state)
                 else:
-                    print(f"Warning: Character {character_name} not found, creating agent without initial state")
+                    logger.warning(f"Character {character_name} not found, creating agent without initial state")
                     return KaniAgent(character_name, persona)
                     
             except Exception as e:
-                print(f"Failed to create AI agent for {character_name}: {e}")
-                print(f"Falling back to manual agent for {character_name}")
+                logger.warning(f"Failed to create AI agent for {character_name}: {e}")
+                logger.info(f"Falling back to manual agent for {character_name}")
                 return ManualAgent(character_name, persona)
     
     def _get_initial_world_state_for_agent(self, character) -> str:
@@ -205,7 +215,7 @@ class GameLoop:
             # Return the description which contains the formatted world state
             return schema.description if schema and schema.description else "You are in an unknown location."
         except Exception as e:
-            print(f"Error getting initial world state for {character.name}: {e}")
+            logger.error(f"Error getting initial world state for {character.name}: {e}")
             return "You are in an unknown location. Use 'look' to see your surroundings."
     
     def set_agent_config(self, agent_config: Dict[str, str]):
@@ -292,50 +302,47 @@ class GameLoop:
         is_noop = action_output.action.action_type == "noop"
         
         if is_noop:
-            print(f"\n ACTION ERROR - Agent: {action_output.agent_id}")
-            print("─" * 60)
-            print(f"Location: {action_output.current_room or 'Unknown'}")
-            print(f"Error Type: Invalid Action (noop)")
+            # Log action error as WARNING level (abnormal behavior)
+            error_details = []
+            error_details.append(f"Agent: {action_output.agent_id}")
+            error_details.append(f"Location: {action_output.current_room or 'Unknown'}")
+            error_details.append(f"Error Type: Invalid Action (noop)")
             
-            # Print action fields for debugging
+            # Add action fields for debugging
             action_fields = self._get_action_fields(action_output.action)
             if action_fields:
                 for field_name, field_value in action_fields.items():
                     if field_value is not None:
-                        print(f"{field_name.title()}: {field_value}")
+                        error_details.append(f"{field_name.title()}: {field_value}")
             
-            print(f"Timestamp: {action_output.timestamp}")
+            error_details.append(f"Timestamp: {action_output.timestamp}")
             
             if action_output.description:
-                print(f"Error Details:")
-                print("─" * 40)
-                print(action_output.description)
-                print("─" * 40)
+                error_details.append(f"Error Details: {action_output.description}")
             
-            print("─" * 60)
+            # Log as warning since this is abnormal behavior
+            logger.warning("ACTION ERROR - " + " | ".join(error_details))
         else:
-            # Normal action output
-            print(f"\n✓ ACTION EXECUTED - Agent: {action_output.agent_id}")
-            print("═" * 60)
-            print(f"Location: {action_output.current_room or 'Unknown'}")
-            print(f"Action Type: {action_output.action.action_type}")
+            # Normal action output - log as INFO (verbose mode only)
+            success_details = []
+            success_details.append(f"Agent: {action_output.agent_id}")
+            success_details.append(f"Location: {action_output.current_room or 'Unknown'}")
+            success_details.append(f"Action: {action_output.action.action_type}")
             
-            # Print all action fields dynamically (excluding action_type which we already showed)
+            # Add action fields dynamically (excluding action_type which we already showed)
             action_fields = self._get_action_fields(action_output.action)
             if action_fields:
                 for field_name, field_value in action_fields.items():
                     if field_value is not None:  # Only show fields with values
-                        print(f"{field_name.title()}: {field_value}")
+                        success_details.append(f"{field_name.title()}: {field_value}")
             
-            print(f"Timestamp: {action_output.timestamp}")
+            success_details.append(f"Timestamp: {action_output.timestamp}")
             
             if action_output.description:
-                print(f"Result:")
-                print("─" * 40)
-                print(action_output.description)
-                print("─" * 40)
+                success_details.append(f"Result: {action_output.description}")
             
-            print("═" * 60)
+            # Log as info (only shown in verbose mode)
+            logger.info("ACTION EXECUTED - " + " | ".join(success_details))
     
     def _get_action_fields(self, action) -> dict:
         """Extract all fields from an action object, excluding action_type."""

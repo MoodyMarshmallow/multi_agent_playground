@@ -133,7 +133,7 @@ class Bed(Object, Usable, Examinable):
         return self.current_user == character
     
     def examine(self, character) -> ActionResult:
-        desc = f"A {self.comfort_level} bed"
+        desc = f"{self.comfort_level} bed"
         if self.is_made:
             desc += " with neatly arranged sheets"
         else:
@@ -168,7 +168,7 @@ class Chair(Object, Usable, Examinable):
         return self.current_user == character
     
     def examine(self, character) -> ActionResult:
-        desc = f"A {self.comfort_level} {self.material} {self.name}"
+        desc = f"{self.comfort_level} {self.material} {self.name}"
         if self.current_user:
             desc += f". {self.current_user.name} is sitting on it"
         return ActionResult(desc)
@@ -184,7 +184,7 @@ class Table(Object, Examinable):
         self.surface_items: Dict[str, 'Item'] = {}
     
     def examine(self, character) -> ActionResult:
-        desc = f"A {self.shape} {self.material} {self.name}"
+        desc = f"{self.shape} {self.material} {self.name}"
         if self.surface_items:
             items_desc = ", ".join([item.name for item in self.surface_items.values()])
             desc += f". On the table you see: {items_desc}"
@@ -262,7 +262,7 @@ class Cabinet(Object, Openable, ContainerCapability, Examinable):
     
     def examine(self, character) -> ActionResult:
         state = "open" if self.is_open_state else "closed"
-        desc = f"A {self.material} {self.name} that is currently {state}"
+        desc = f"{self.material} {self.name} that is currently {state}"
         if self.is_open_state and self.inventory:
             items = ", ".join([item.name for item in self.inventory.values()])
             desc += f". Inside you can see: {items}"
@@ -316,7 +316,7 @@ class Bookshelf(Object, ContainerCapability, Examinable):
         return list(self.inventory.values())
     
     def examine(self, character) -> ActionResult:
-        desc = f"A {self.height} {self.material} {self.name}"
+        desc = f"{self.height} {self.material} {self.name}"
         if self.inventory:
             items = ", ".join([item.name for item in self.inventory.values()])
             desc += f". On the shelves you can see: {items}"
@@ -350,7 +350,7 @@ class Toilet(Object, Usable, Examinable):
     
     def examine(self, character) -> ActionResult:
         cleanliness = "clean" if self.is_clean else "dirty"
-        desc = f"A {cleanliness} bathroom {self.name}"
+        desc = f"{cleanliness} bathroom {self.name}"
         if self.current_user:
             desc += f". {self.current_user.name} is using it"
         return ActionResult(desc)

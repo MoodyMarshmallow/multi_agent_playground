@@ -123,9 +123,16 @@ async def run_collection_test():
 
 async def main():
     """Main function to run various test scenarios."""
-    # Check for debug flag in command line arguments
+    # Check for debug and verbose flags in command line arguments
     debug_mode = '--debug' in sys.argv or '-d' in sys.argv
-    setup_logging(debug=debug_mode)
+    verbose_mode = '--verbose' in sys.argv or '-v' in sys.argv
+    
+    if debug_mode:
+        setup_logging(debug=debug_mode)
+    else:
+        # Use centralized logging configuration
+        from backend.log_config import setup_logging as setup_main_logging
+        setup_main_logging(verbose=verbose_mode)
     
     print("Agent Goal-Based Testing System")
     print("="*50)

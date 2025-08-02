@@ -36,11 +36,15 @@ import pprint
 from typing import Dict, Any, Optional, List
 import re
 
-def setup_logging():
-    """Set up comprehensive logging for the Multi-Agent Playground backend."""
-    # Create formatters with better spacing
+def setup_logging(verbose: bool = False):
+    """Set up comprehensive logging for the Multi-Agent Playground backend.
+    
+    Args:
+        verbose: If True, console shows INFO+ messages. If False, only WARNING+ messages.
+    """
+    # Create formatters with clean spacing
     detailed_formatter = logging.Formatter(
-        "\n%(asctime)s [%(levelname)s] %(name)s.%(funcName)s:\n%(message)s\n"
+        "%(asctime)s [%(levelname)s] %(name)s.%(funcName)s: %(message)s"
     )
     simple_formatter = logging.Formatter(
         "%(asctime)s [%(levelname)s] %(message)s"
@@ -52,9 +56,9 @@ def setup_logging():
     debug_file_handler.setLevel(logging.DEBUG)
     debug_file_handler.setFormatter(detailed_formatter)
     
-    # Console handler - only shows INFO and above (no DEBUG noise)
+    # Console handler - level depends on verbose flag
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
+    console_handler.setLevel(logging.INFO if verbose else logging.WARNING)
     console_handler.setFormatter(simple_formatter)
     
     # Configure root logger
@@ -347,40 +351,3 @@ def log_salience_evaluation(agent_id: str, event: str, salience: int):
     """Log salience evaluation results in a clean format"""
     logger = logging.getLogger(__name__)
     logger.debug(f"[Salience] Evaluation:\n  Agent: {agent_id}\n  Event: '{event}'\n  Score: {salience}/10")
-
-# ===== LRU LLM SYSTEM LOGGING UTILITIES =====
-
-# def log_cache_operation(cache_type: str, operation: str, key: str, hit: bool = None):
-#     """Log cache operations for the LRU LLM system"""
-#     logger = logging.getLogger(__name__)
-#     if hit is not None:
-#         status = "HIT" if hit else "MISS"
-#         logger.debug(f"[Cache-{cache_type}] {operation} '{key}': {status}")
-#     else:
-#         logger.debug(f"[Cache-{cache_type}] {operation} '{key}'")
-
-# def log_memory_operation(agent_id: str, operation: str, details: Dict[str, Any]):
-#     """Log memory operations for agent memory management"""
-#     logger = logging.getLogger(__name__)
-    
-#     if operation == "store":
-#         event_type = details.get('event_type', 'unknown')
-#         importance = details.get('importance', 'unknown')
-#         logger.debug(f"[Memory-{agent_id}] Store: {event_type} (importance: {importance})")
-    
-#     elif operation == "retrieve":
-#         query = details.get('query', 'unknown')
-#         count = details.get('result_count', 0)
-#         logger.debug(f"[Memory-{agent_id}] Retrieve: '{query}' -> {count} results")
-    
-#     elif operation == "consolidate":
-#         removed_count = details.get('removed_count', 0)
-#         logger.debug(f"[Memory-{agent_id}] Consolidate: removed {removed_count} low-importance memories")
-    
-#     else:
-#         logger.debug(f"[Memory-{agent_id}] {operation}: {details}")
-
-# def log_performance_metrics(component: str, metrics: Dict[str, Any]):
-#     """Log performance metrics for monitoring"""
-#     logger = logging.getLogger(__name__)
-#     logger.info(f"[Performance-{component}] Metrics: {metrics}") 

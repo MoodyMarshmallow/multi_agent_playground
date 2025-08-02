@@ -35,7 +35,7 @@ def create_bedroom_items():
     
     # Add quilt items to the closet
     for color in ["red", "blue", "green", "yellow", "white", "black"]:
-        quilt = BeddingItem(f"{color} quilt", f"a {color} quilt", f"A soft, {color} quilt for the bed.", 
+        quilt = BeddingItem(f"{color} quilt", f"{color} quilt", f"A soft, {color} quilt for the bed.", 
                            bedding_type="quilt", material="cotton", color=color)
         closet.add_item(quilt)
     
