@@ -187,8 +187,41 @@ cursor_memory/
 # Claude Code configuration directory
 .claude/
 
+# Godot 4 specific ignores
+.godot/
+.import/
+*.tmp
+
+# Log files
+debug.log
+*.log
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Chat/planning files (optional - remove if you want to track these)
+CHAT_IMPLEMENTATION_PLAN.md
+
 # Other
 resources/
 resources_old/
 simulacra_visualization/.DS_Store
-*.DS_Store
