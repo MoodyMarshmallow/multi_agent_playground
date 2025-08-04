@@ -83,6 +83,7 @@ You will receive descriptions of your current situation including:
 - Other characters present
 - Your current inventory
 - Available actions you can take
+- Any pending chat requests
 
 Based on this information, you must choose ONE action to take by calling the submit_command function.
 
@@ -94,6 +95,13 @@ Example valid commands:
 - examine door
 - look
 - inventory
+
+CHAT SYSTEM:
+- Use 'look' to see other characters you can chat with
+- Send chat requests: "chat_request [name] [reason]" (e.g., "chat_request Alice Want to discuss the plan?")
+- Respond to requests: "chat_response [request_id] accept" or "chat_response [request_id] reject"
+- Send messages: "chat [name] [message]" (only after accepting a chat request)
+- Chat responses don't end your turn, but messages do
 
 Remember: You can only choose from the available actions provided. If unsure, submit "look" to examine your surroundings."""
 

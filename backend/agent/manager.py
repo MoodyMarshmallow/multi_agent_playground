@@ -13,10 +13,11 @@ from ..text_adventure_games.things import Character
 from ..text_adventure_games.games import Game
 
 # Schema imports  
-from ..config.schema import AgentActionOutput
+from ..config.schema import AgentActionOutput, ChatRequest
 
 # Local imports
 from .agent_strategies import AgentStrategy
+from .chat_manager import ChatManager
 from ..log_config import log_agent_decision
 
 # Module-level logger
@@ -37,6 +38,9 @@ class AgentManager:
         
         # Track the single most recent action result for each agent
         self.previous_action_results: Dict[str, str] = {}
+        
+        # Initialize chat manager
+        self.chat_manager = ChatManager()
         
     def register_agent_strategy(self, character_name: str, strategy: AgentStrategy):
         """
@@ -68,6 +72,12 @@ class AgentManager:
         try:
             # Get the previous action result for this agent (empty string for first turn)
             previous_result = self.previous_action_results.get(agent.name, "Welcome to the game! This is your first turn.")
+            
+            # Check for pending chat requests and include in feedback
+            pending_requests = self.chat_manager.get_pending_requests(agent.name)
+            if pending_requests:
+                chat_notifications = self._format_chat_notifications(pending_requests)
+                previous_result += "\n\n" + chat_notifications
             
             # Let the strategy decide
             strategy = self.agent_strategies[agent.name]
@@ -131,3 +141,18 @@ class AgentManager:
         """Move to the next agent's turn."""
         if self.active_agents:
             self.current_agent_index = (self.current_agent_index + 1) % len(self.active_agents)
+    
+    def _format_chat_notifications(self, requests: List[ChatRequest]) -> str:
+        """Format chat requests for agent feedback"""
+        if not requests:
+            return ""
+        
+        notifications = ["CHAT REQUESTS PENDING:"]
+        for request in requests:
+            notifications.append(
+                f"- {request.sender_id} wants to chat: \"{request.message}\" "
+                f"(Request ID: {request.request_id})"
+            )
+        
+        notifications.append("\nYou can respond with 'chat_response <request_id> accept' or 'chat_response <request_id> reject'")
+        return "\n".join(notifications)

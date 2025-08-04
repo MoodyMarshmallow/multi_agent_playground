@@ -17,8 +17,8 @@ class Direction(str, Enum):
     EAST = "east"
     WEST = "west"
 
-class TargetedAction(BaseModel):
-    """Actions that target a specific object"""
+class SingleTargetedAction(BaseModel):
+    """Actions that target a single object"""
     target: str
 
 class ItemAction(BaseModel):
@@ -26,7 +26,7 @@ class ItemAction(BaseModel):
     item: str
 
 # ------------------------------
-# AGENT AND WORLD MODELS (optional) - we can remove this if we don't need it
+# AGENT AND WORLD MODELS
 # ------------------------------
 
 class Message(BaseModel):
@@ -35,6 +35,14 @@ class Message(BaseModel):
     message: str
     timestamp: Optional[str] = None
     conversation_id: Optional[str] = None
+
+class ChatRequest(BaseModel):
+    request_id: str
+    sender_id: str
+    recipient_id: str
+    message: str
+    timestamp: str
+    status: Literal["pending", "accepted", "rejected", "expired"]
 
 class AgentPerception(BaseModel):
     timestamp: Optional[str] = None
@@ -48,24 +56,24 @@ class AgentPerception(BaseModel):
 # HOUSE ACTIONS
 # ------------------------------
 
-# --- GENERIC OBJECT-CENTRIC ACTIONS (Following Schema_planning_final.md) ---
+# --- GENERIC OBJECT-CENTRIC ACTIONS ---
 
-class SetToStateAction(TargetedAction):
+class SetToStateAction(SingleTargetedAction):
     """Change object state (on/off, open/close, lock/unlock)"""
     action_type: Literal["set_to_state"]
     state: str  # "on", "off", "open", "close", "lock", "unlock"
 
-class StartUsingAction(TargetedAction):
+class StartUsingAction(SingleTargetedAction):
     """Start using an object (using restricts agent to be at the object)"""
     action_type: Literal["start_using"]
 
-class StopUsingAction(TargetedAction):
+class StopUsingAction(SingleTargetedAction):
     """Stop using an object (frees agent from being restricted to the object)"""
     action_type: Literal["stop_using"]
 
 
 # --- NAVIGATION ACTIONS ---
-class GoToAction(TargetedAction):
+class GoToAction(SingleTargetedAction):
     """Navigate to a specific room or object"""
     action_type: Literal["go_to"]
 
@@ -75,15 +83,15 @@ class LookAction(BaseModel):
     action_type: Literal["look"]
 
 # --- ITEM ACTIONS ---
-class TakeAction(TargetedAction):
+class TakeAction(SingleTargetedAction):
     """Take an item and add it to inventory"""
     action_type: Literal["take"]
 
-class DropAction(TargetedAction):
+class DropAction(SingleTargetedAction):
     """Drop an item from inventory"""
     action_type: Literal["drop"]
 
-class ExamineAction(TargetedAction):
+class ExamineAction(SingleTargetedAction):
     """Examine an item or object closely"""
     action_type: Literal["examine"]
 
@@ -93,9 +101,30 @@ class PlaceAction(BaseModel):
     target: str      # item to place
     recipient: str   # object to place it on/in or character to give to
 
-class ConsumeAction(TargetedAction):
+class ConsumeAction(SingleTargetedAction):
     """Consume an item (removes item from inventory)"""
     action_type: Literal["consume"]
+
+# --- CHARACTER ACTIONS ---
+class ChatAction(BaseModel):
+    """Chat to another agent in the vicinity"""
+    action_type: Literal["chat"]
+    sender: str     # sender agent id
+    recipient: str  # recipient agent id
+    message: str
+
+class ChatRequestAction(BaseModel):
+    """Internal: Send a chat request to another agent"""
+    action_type: Literal["chat_request"]
+    recipient: str
+    message: str  # Explanation of why agent wants to chat
+
+class ChatResponseAction(BaseModel):
+    """Internal: Accept or reject a chat request"""
+    action_type: Literal["chat_response"]
+    request_id: str
+    accepted: bool  # True for accept, False for reject
+    response_message: Optional[str] = None  # Optional response message
 
 # --- Fallback Action ---
 class NoOpAction(BaseModel):
@@ -121,6 +150,10 @@ HouseAction = Annotated[
         ExamineAction,
         PlaceAction,
         ConsumeAction,
+        # Character Actions
+        ChatAction,
+        ChatRequestAction,
+        ChatResponseAction,
         # Fallback
         NoOpAction,
     ],
@@ -130,12 +163,6 @@ HouseAction = Annotated[
 # ------------------------------
 # MAIN API PAYLOADS
 # ------------------------------
-
-# class AgentActionInput(BaseModel):
-#     agent_id: str
-#     action: HouseAction
-#     in_progress: bool = True
-#     perception: AgentPerception
 
 class AgentActionOutput(BaseModel):
     agent_id: str
@@ -181,7 +208,6 @@ class GameStatus(BaseModel):
 
 # ------------------------------
 # (expand as needed for objects, agents, locations, etc.)
-# TODO: we can remove this if we don't need it
 # ------------------------------
 class AgentStateResponse(BaseModel):
     agent_id: str

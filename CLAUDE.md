@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a multi-agent simulation framework with a FastAPI backend and Godot frontend. The project allows LLM-powered agents to interact in a text adventure game world with real-time visualization.
 
+## Development Guidelines
+
+- **Project Management**: This project is run using the uv library manager. You MUST use uv to run commands.
+
 ## Key Architecture
 
 ### Backend Structure

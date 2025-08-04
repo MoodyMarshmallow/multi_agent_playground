@@ -21,6 +21,7 @@ dependencies = [
     "jiter==0.10.0",
     "kani==1.4.3",
     "openai==1.82.1",
+    "psutil>=7.0.0",
     "pydantic==2.11.5",
     "pydantic-core==2.33.2",
     "pyright>=1.1.403",

@@ -916,7 +916,14 @@ class EnhancedLookAction(Action):
         if visible_characters:
             lines.append("\nOther characters here:")
             for char in visible_characters:
-                lines.append(f"  - {char.get('name', 'character')}: {char.get('description', 'a character')}")
+                char_line = f"  - {char.get('name', 'character')}: {char.get('description', 'a character')}"
+                
+                # Add chat availability indicator
+                char_name = char.get('name')
+                if char_name:
+                    char_line += f" (You can chat with {char_name} using: chat_request {char_name} <your message>)"
+                
+                lines.append(char_line)
         
         # Available exits
         available_exits = state.get('available_exits', [])
@@ -931,3 +938,337 @@ class EnhancedLookAction(Action):
                 lines.append(f"  - {action['command']}: {action.get('description', 'perform action')}")
         
         return '\n'.join(lines)
+
+
+class GenericChatRequestAction(Action):
+    """Send a chat request to another agent"""
+    
+    ACTION_NAME = "chat_request"
+    ACTION_DESCRIPTION = "Send a chat request to another agent"
+    COMMAND_PATTERNS = [
+        "chat_request {recipient} {message}"
+    ]
+    ends_turn = True
+    
+    @classmethod
+    def get_command_patterns(cls):
+        return cls.COMMAND_PATTERNS
+    
+    @classmethod
+    def get_applicable_combinations(cls, character, parser):
+        """Generate other characters in the same location"""
+        location = character.location
+        if not location:
+            return []
+        
+        combinations = []
+        # Find other characters in the room
+        for char_name, char in parser.game.characters.items():
+            if char.location == location and char.name != character.name:
+                combinations.append({"recipient": char_name})
+        return combinations
+    
+    def __init__(self, game, command: str):
+        super().__init__(game)
+        self.command = command.strip()
+        self.character = self.parser.get_character(command)
+        
+        # Parse recipient and message from command
+        self.recipient = None
+        self.message = ""
+        
+        # Parse: chat_request <recipient> <message>
+        parts = command.split(' ', 2)
+        if len(parts) >= 3 and parts[0].lower() == "chat_request":
+            recipient_name = parts[1]
+            self.message = parts[2]
+            
+            # Find recipient character
+            if recipient_name in self.game.characters:
+                self.recipient = self.game.characters[recipient_name]
+    
+    def check_preconditions(self) -> bool:
+        if not self.recipient:
+            self.parser.fail("You need to specify a valid recipient.")
+            return False
+        
+        if not self.message:
+            self.parser.fail("You need to provide a message explaining why you want to chat.")
+            return False
+        
+        # Check if recipient is in the same location
+        if self.recipient.location != self.character.location:
+            self.parser.fail(f"{self.recipient.name} is not here.")
+            return False
+        
+        return True
+    
+    def apply_effects(self):
+        try:
+            # Access chat manager through game's agent manager
+            if not hasattr(self.game, 'agent_manager') or not hasattr(self.game.agent_manager, 'chat_manager'):
+                raise ValueError("Chat system not available")
+            
+            if not self.recipient:
+                raise ValueError("No recipient specified")
+            
+            chat_manager = self.game.agent_manager.chat_manager
+            
+            # Send chat request
+            request_id = chat_manager.send_chat_request(
+                sender_id=self.character.name,
+                recipient_id=self.recipient.name,
+                message=self.message
+            )
+            
+            description = f"You sent a chat request to {self.recipient.name}: '{self.message}'"
+            narration = self.parser.ok(description)
+            
+            # Import ChatRequestAction schema
+            from ...config.schema import ChatRequestAction as ChatRequestSchema
+            
+            schema = ActionResult(
+                description=description,
+                house_action=ChatRequestSchema(
+                    action_type="chat_request",
+                    recipient=self.recipient.name,
+                    message=self.message
+                )
+            )
+            return narration, schema
+            
+        except Exception as e:
+            error_msg = f"Failed to send chat request: {str(e)}"
+            narration = self.parser.fail(error_msg)
+            return narration, ActionResult(description=error_msg)
+
+
+class GenericChatResponseAction(Action):
+    """Accept or reject a chat request"""
+    
+    ACTION_NAME = "chat_response"
+    ACTION_DESCRIPTION = "Accept or reject a chat request"
+    COMMAND_PATTERNS = [
+        "chat_response {request_id} {response}"
+    ]
+    ends_turn = False  # This action does not end the turn
+    
+    @classmethod
+    def get_command_patterns(cls):
+        return cls.COMMAND_PATTERNS
+    
+    @classmethod
+    def get_applicable_combinations(cls, character, parser):
+        """Generate pending chat requests for this character"""
+        if not hasattr(parser.game, 'agent_manager') or not hasattr(parser.game.agent_manager, 'chat_manager'):
+            return []
+        
+        chat_manager = parser.game.agent_manager.chat_manager
+        pending_requests = chat_manager.get_pending_requests(character.name)
+        
+        combinations = []
+        for request in pending_requests:
+            combinations.append({
+                "request_id": request.request_id,
+                "response": "accept"
+            })
+            combinations.append({
+                "request_id": request.request_id,
+                "response": "reject"
+            })
+        return combinations
+    
+    def __init__(self, game, command: str):
+        super().__init__(game)
+        self.command = command.strip()
+        self.character = self.parser.get_character(command)
+        
+        # Parse request_id and response from command
+        self.request_id = ""
+        self.accepted = False
+        
+        # Parse: chat_response <request_id> <accept/reject>
+        parts = command.split(' ', 2)
+        if len(parts) >= 3 and parts[0].lower() == "chat_response":
+            self.request_id = parts[1]
+            response = parts[2].lower()
+            self.accepted = response in ["accept", "yes", "true"]
+    
+    def check_preconditions(self) -> bool:
+        if not self.request_id:
+            self.parser.fail("You need to specify a request ID.")
+            return False
+        
+        # Check if chat manager exists
+        if not hasattr(self.game, 'agent_manager') or not hasattr(self.game.agent_manager, 'chat_manager'):
+            self.parser.fail("Chat system not available.")
+            return False
+        
+        # Check if the request exists
+        chat_manager = self.game.agent_manager.chat_manager
+        request = chat_manager.get_request_by_id(self.request_id)
+        if not request:
+            self.parser.fail(f"No chat request found with ID: {self.request_id}")
+            return False
+        
+        # Check if this agent is the recipient
+        if request.recipient_id != self.character.name:
+            self.parser.fail("You can only respond to your own chat requests.")
+            return False
+        
+        return True
+    
+    def apply_effects(self):
+        try:
+            chat_manager = self.game.agent_manager.chat_manager
+            
+            # Respond to the request
+            request = chat_manager.respond_to_request(
+                agent_id=self.character.name,
+                request_id=self.request_id,
+                accepted=self.accepted
+            )
+            
+            if not request:
+                raise ValueError("Failed to respond to chat request")
+            
+            if self.accepted:
+                description = f"You accepted the chat request from {request.sender_id}."
+            else:
+                description = f"You rejected the chat request from {request.sender_id}."
+            
+            narration = self.parser.ok(description)
+            
+            # Import ChatResponseAction schema
+            from ...config.schema import ChatResponseAction as ChatResponseSchema
+            
+            schema = ActionResult(
+                description=description,
+                house_action=ChatResponseSchema(
+                    action_type="chat_response",
+                    request_id=self.request_id,
+                    accepted=self.accepted
+                )
+            )
+            return narration, schema
+            
+        except Exception as e:
+            error_msg = f"Failed to respond to chat request: {str(e)}"
+            narration = self.parser.fail(error_msg)
+            return narration, ActionResult(description=error_msg)
+
+
+class GenericChatAction(Action):
+    """Send a chat message to another agent (only after accepting a chat request)"""
+    
+    ACTION_NAME = "chat"
+    ACTION_DESCRIPTION = "Send a chat message to another agent"
+    COMMAND_PATTERNS = [
+        "chat {recipient} {message}"
+    ]
+    ends_turn = True  # Sending a message ends the turn
+    
+    @classmethod
+    def get_command_patterns(cls):
+        return cls.COMMAND_PATTERNS
+    
+    @classmethod
+    def get_applicable_combinations(cls, character, parser):
+        """Generate other characters this agent can chat with (in active conversation)"""
+        if not hasattr(parser.game, 'agent_manager') or not hasattr(parser.game.agent_manager, 'chat_manager'):
+            return []
+        
+        chat_manager = parser.game.agent_manager.chat_manager
+        
+        # Only allow chatting with conversation partner
+        conversation_partner = chat_manager.get_conversation_partner(character.name)
+        if conversation_partner:
+            return [{"recipient": conversation_partner}]
+        
+        return []
+    
+    def __init__(self, game, command: str):
+        super().__init__(game)
+        self.command = command.strip()
+        self.character = self.parser.get_character(command)
+        
+        # Parse recipient and message from command
+        self.recipient = None
+        self.message = ""
+        
+        # Parse: chat <recipient> <message>
+        parts = command.split(' ', 2)
+        if len(parts) >= 3 and parts[0].lower() == "chat":
+            recipient_name = parts[1]
+            self.message = parts[2]
+            
+            # Find recipient character
+            if recipient_name in self.game.characters:
+                self.recipient = self.game.characters[recipient_name]
+    
+    def check_preconditions(self) -> bool:
+        if not self.recipient:
+            self.parser.fail("You need to specify a valid recipient.")
+            return False
+        
+        if not self.message:
+            self.parser.fail("You need to provide a message.")
+            return False
+        
+        # Check if recipient is in the same location
+        if self.recipient.location != self.character.location:
+            self.parser.fail(f"{self.recipient.name} is not here.")
+            return False
+        
+        # Check if there's an active conversation
+        if not hasattr(self.game, 'agent_manager') or not hasattr(self.game.agent_manager, 'chat_manager'):
+            self.parser.fail("Chat system not available.")
+            return False
+        
+        chat_manager = self.game.agent_manager.chat_manager
+        conversation_partner = chat_manager.get_conversation_partner(self.character.name)
+        
+        if not conversation_partner:
+            self.parser.fail("You need to have an accepted chat request before sending messages.")
+            return False
+        
+        if conversation_partner != self.recipient.name:
+            self.parser.fail(f"You can only chat with {conversation_partner} right now.")
+            return False
+        
+        return True
+    
+    def apply_effects(self):
+        try:
+            if not self.recipient:
+                raise ValueError("No recipient specified")
+            
+            chat_manager = self.game.agent_manager.chat_manager
+            
+            # End the conversation after sending message
+            chat_manager.end_conversation(self.character.name)
+            
+            description = f"You sent a message to {self.recipient.name}: '{self.message}'"
+            narration = self.parser.ok(description)
+            
+            # Import ChatAction schema
+            from ...config.schema import ChatAction as ChatSchema
+            
+            # Create ChatAction for frontend consumption
+            schema = ActionResult(
+                description=description,
+                house_action=ChatSchema(
+                    action_type="chat",
+                    sender=self.character.name,
+                    recipient=self.recipient.name,
+                    message=self.message
+                )
+            )
+            
+            # This ChatAction will be sent to the frontend event queue
+            return narration, schema
+            
+        except Exception as e:
+            error_msg = f"Failed to send chat message: {str(e)}"
+            narration = self.parser.fail(error_msg)
+            return narration, ActionResult(description=error_msg)

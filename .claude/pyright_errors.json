@@ -308,5 +308,15 @@
     "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_game_demo.py",
     "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_game_demo.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_game_demo.py:36:9 - error: \"logger\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_game_demo.py:38:13 - error: \"logger\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_game_demo.py:41:13 - error: \"logger\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_game_demo.py:42:13 - error: \"logger\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_game_demo.py:44:13 - error: \"logger\" is not defined (reportUndefinedVariable)\n5 errors, 0 warnings, 0 informations \n",
     "session_id": "34f9b380-b76a-4aad-ac33-673cbdd98135"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\manager.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\manager.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\manager.py:79:43 - error: Cannot access attribute \"_format_chat_notifications\" for class \"AgentManager*\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"_format_chat_notifications\" is unknown (reportAttributeAccessIssue)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "76eaeaa5-02d1-4ef0-9a2d-9b4f73b5145c"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_adventure_games\\actions\\generic.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_adventure_games\\actions\\generic.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_adventure_games\\actions\\generic.py:1010:45 - error: \"name\" is not a known attribute of \"None\" (reportOptionalMemberAccess)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_adventure_games\\actions\\generic.py:1014:72 - error: \"name\" is not a known attribute of \"None\" (reportOptionalMemberAccess)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_adventure_games\\actions\\generic.py:1024:46 - error: \"name\" is not a known attribute of \"None\" (reportOptionalMemberAccess)\n3 errors, 0 warnings, 0 informations \n",
+    "session_id": "76eaeaa5-02d1-4ef0-9a2d-9b4f73b5145c"
   }
 ]

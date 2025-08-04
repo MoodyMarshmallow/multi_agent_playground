@@ -15,7 +15,7 @@ Pydantic models for data validation and API responses.
 
 **Base Classes:**
 - `Direction` - Enum for movement directions (north, south, east, west)
-- `TargetedAction` - Base for actions targeting specific objects
+- `SingleTargetedAction` - Base for actions targeting a single object
 - `ItemAction` - Base for actions involving items
 
 **Action Schemas:**

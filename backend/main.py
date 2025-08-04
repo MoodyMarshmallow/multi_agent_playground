@@ -141,6 +141,26 @@ async def get_game_status():
         raise HTTPException(status_code=500, detail="Game not initialized")
     return GameStatus(**game_controller.get_game_status())
 
+@app.post("/game/pause", response_model=StatusMsg)
+async def pause_game():
+    """Pause the game loop."""
+    if not game_controller:
+        raise HTTPException(status_code=500, detail="Game not initialized")
+    if not game_controller.is_running:
+        return StatusMsg(status="already_paused")
+    await game_controller.stop()
+    return StatusMsg(status="paused")
+
+@app.post("/game/resume", response_model=StatusMsg)
+async def resume_game():
+    """Resume the game loop."""
+    if not game_controller:
+        raise HTTPException(status_code=500, detail="Game not initialized")
+    if game_controller.is_running:
+        return StatusMsg(status="already_running")
+    await game_controller.start()
+    return StatusMsg(status="resumed")
+
 
 if __name__ == "__main__":
     # Parse command line arguments
