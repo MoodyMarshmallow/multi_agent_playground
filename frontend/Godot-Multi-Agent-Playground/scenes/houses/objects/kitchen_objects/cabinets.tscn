@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://8gxhc0s2nvi"]
+
+[ext_resource type="Texture2D" uid="uid://cmr6euh4xnewa" path="res://modern_assets/kitchen.png" id="1_o0cng"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hv7fb"]
+atlas = ExtResource("1_o0cng")
+region = Rect2(64, 112, 47, 9)
+
+[node name="Cabinets" type="Node2D"]
+position = Vector2(-11, -24)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -4)
+texture = SubResource("AtlasTexture_hv7fb")

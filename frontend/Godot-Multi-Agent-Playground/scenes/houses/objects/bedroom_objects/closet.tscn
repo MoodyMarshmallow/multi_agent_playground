@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://buaglmo3rtgdf"]
+
+[ext_resource type="Texture2D" uid="uid://cmojxpge0eyqw" path="res://modern_assets/bedroom.png" id="1_ddq7b"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_udsdf"]
+atlas = ExtResource("1_ddq7b")
+region = Rect2(64, 1576, 47, 40)
+
+[node name="Closet" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -18)
+texture = SubResource("AtlasTexture_udsdf")

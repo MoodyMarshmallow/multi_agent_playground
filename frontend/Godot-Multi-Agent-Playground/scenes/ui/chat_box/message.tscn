@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://c2d26560ay4rk"]
+
+[ext_resource type="Script" uid="uid://dohdhguh8ogko" path="res://scenes/ui/chat_box/message.gd" id="1_eagkp"]
+
+[node name="Message" type="Label"]
+custom_minimum_size = Vector2(50, 10)
+size_flags_vertical = 6
+theme_override_font_sizes/font_size = 8
+text = "alan_002 -> alex_001: Hi how are you doing? The weather today is really sunny!"
+autowrap_mode = 2
+script = ExtResource("1_eagkp")

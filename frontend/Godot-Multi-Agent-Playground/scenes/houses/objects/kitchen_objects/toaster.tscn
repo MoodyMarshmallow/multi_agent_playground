@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://cywkv7exjjrpx"]
+
+[ext_resource type="Texture2D" uid="uid://cmr6euh4xnewa" path="res://modern_assets/kitchen.png" id="1_q0ypt"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7ycg2"]
+atlas = ExtResource("1_q0ypt")
+region = Rect2(146, 98, 13, 11)
+
+[node name="Toaster" type="Node2D"]
+position = Vector2(86, -36)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -5)
+texture = SubResource("AtlasTexture_7ycg2")

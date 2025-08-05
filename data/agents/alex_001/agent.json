@@ -1,31 +1,19 @@
 {
   "agent_id": "alex_001",
-  "vision_r": 4,
-  "retention": 5,
-  "curr_time": "2025-06-10T14:54:31",
+  "curr_time": "01T10:34:18",
   "curr_tile": [
-    9,
-    5
+    22,
+    9
   ],
-  "daily_plan_req": "Finish painting, make lunch, call gallery",
-  "name": "Alex",
+  "curr_room": "fridge",
   "first_name": "Alex",
   "last_name": "Smith",
   "age": 29,
-  "innate": {
-    "openness": 7,
-    "conscientiousness": 6,
-    "extraversion": 5
-  },
-  "learned": {
-    "languages": [
-      "English",
-      "French"
-    ]
-  },
-  "currently": "I was idle. I could see: books_on_floor in bedroom, globe in bedroom, left_bookshelf in bedroom, right_bookshelf in bedroom",
+  "backstory": "Alex grew up in a small coastal town where her love for art was nurtured by her grandmother, a local painter. She studied fine arts at university and moved to the city to pursue her dream of becoming a professional artist. She has been working toward her first solo gallery show.",
+  "personality": "Alex is highly creative and passionate about her work, often losing track of time when painting. She's introverted but warm, preferring deep conversations with close friends over large social gatherings. She can be perfectionistic about her art, which sometimes causes her stress.",
+  "occupation": "Professional artist specializing in landscape paintings",
+  "currently": "I moved to position [20, 8]",
   "lifestyle": "artist",
-  "living_area": "downtown studio",
   "daily_req": [
     "Work on her paintings for her upcoming show",
     "Take a break to watch some TV",
@@ -33,6 +21,7 @@
     "Work on her paintings some more",
     "Go to bed early"
   ],
+  "living_area": "downtown studio",
   "f_daily_schedule": [
     [
       "sleeping",
@@ -57,60 +46,6 @@
     [
       "lunch break",
       60
-    ]
-  ],
-  "f_daily_schedule_hourly_org": [
-    [
-      "sleeping",
-      360
-    ],
-    [
-      "morning routine",
-      20
-    ],
-    [
-      "painting",
-      240
-    ],
-    [
-      "lunch",
-      60
-    ]
-  ],
-  "act_address": "downtown studio:main:bedroom:bed",
-  "act_start_time": "2023-10-01T08:00:00Z",
-  "act_duration": 30,
-  "act_description": "waking up and stretching",
-  "act_pronunciation": "\ud83c\udf05\ud83e\udd38\u200d\u2640\ufe0f",
-  "act_event": [
-    "Alex",
-    "wake up",
-    "bedroom"
-  ],
-  "act_obj_description": "bed",
-  "act_obj_pronunciation": "\ud83d\udecf\ufe0f",
-  "act_obj_event": [
-    "Alex",
-    "uses",
-    "bed"
-  ],
-  "chatting_with": null,
-  "chat": [],
-  "chatting_with_buffer": {},
-  "chatting_end_time": null,
-  "act_path_set": false,
-  "planned_path": [
-    [
-      12,
-      8
-    ],
-    [
-      12,
-      9
-    ],
-    [
-      13,
-      9
     ]
   ]
 }

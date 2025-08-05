@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://dt21iknxdtiln"]
+
+[ext_resource type="Script" uid="uid://qxtkcb0ctjcu" path="res://scenes/houses/objects/base_object/base_object.gd" id="1_oethm"]
+[ext_resource type="Texture2D" uid="uid://c13ukj30gs138" path="res://assets/game/food/mega_food_pack/bread.png" id="2_0u2kf"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ywsr5"]
+atlas = ExtResource("2_0u2kf")
+region = Rect2(0, 0, 8, 8)
+
+[node name="Bread" type="Node2D"]
+visible = false
+position = Vector2(-59, -23)
+script = ExtResource("1_oethm")
+start_visible = false
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-1.66893e-06, -7)
+scale = Vector2(1.31641, 1.31641)
+texture = SubResource("AtlasTexture_ywsr5")

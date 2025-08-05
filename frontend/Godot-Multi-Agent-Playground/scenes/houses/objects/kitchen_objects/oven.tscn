@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://cfwxhqgcrtr40"]
+
+[ext_resource type="Texture2D" uid="uid://dxqk0hxjoo51b" path="res://modern_assets/animated_assets/animated_kitchen/animated_kitchen_oven.png" id="1_8kmca"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qfi56"]
+atlas = ExtResource("1_8kmca")
+region = Rect2(0, 2, 16, 25)
+
+[node name="Oven" type="Node2D"]
+position = Vector2(22, -12)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -15)
+texture = SubResource("AtlasTexture_qfi56")

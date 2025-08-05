@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://bjv0y3uv2miya"]
+
+[ext_resource type="Texture2D" uid="uid://enmyg61e2tas" path="res://modern_assets/furniture.png" id="1_8ue5p"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mc2ob"]
+atlas = ExtResource("1_8ue5p")
+region = Rect2(181, 202, 22, 16)
+
+[node name="WelcomMat" type="Node2D"]
+position = Vector2(0, 8)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -8)
+texture = SubResource("AtlasTexture_mc2ob")

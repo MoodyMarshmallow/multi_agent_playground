@@ -1,0 +1,102 @@
+[gd_scene load_steps=15 format=3 uid="uid://dl0vnrqaxgvli"]
+
+[ext_resource type="Script" uid="uid://d4he51rwi2dl0" path="res://scenes/houses/interactable_objects/interactable_kitchen/coffee.gd" id="1_6b7kc"]
+[ext_resource type="Texture2D" uid="uid://omiadq8r4dq1" path="res://modern_assets/animated_assets/animated_kitchen/animated_coffee.png" id="1_fsiqm"]
+[ext_resource type="PackedScene" uid="uid://c2w2uh4fkyjpq" path="res://scenes/components/interactable_component.tscn" id="2_6b7kc"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i2a21"]
+atlas = ExtResource("1_fsiqm")
+region = Rect2(32, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ggd68"]
+atlas = ExtResource("1_fsiqm")
+region = Rect2(48, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hme5n"]
+atlas = ExtResource("1_fsiqm")
+region = Rect2(64, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ad43c"]
+atlas = ExtResource("1_fsiqm")
+region = Rect2(80, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1t1kn"]
+atlas = ExtResource("1_fsiqm")
+region = Rect2(0, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0acpx"]
+atlas = ExtResource("1_fsiqm")
+region = Rect2(0, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gvw8g"]
+atlas = ExtResource("1_fsiqm")
+region = Rect2(16, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iegm7"]
+atlas = ExtResource("1_fsiqm")
+region = Rect2(32, 0, 16, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lyn8d"]
+atlas = ExtResource("1_fsiqm")
+region = Rect2(0, 0, 16, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_5nwtn"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_i2a21")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ggd68")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hme5n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ad43c")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1t1kn")
+}],
+"loop": false,
+"name": &"coffee_cold",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0acpx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gvw8g")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iegm7")
+}],
+"loop": false,
+"name": &"coffee_hot",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lyn8d")
+}],
+"loop": false,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_uu4xl"]
+radius = 4.0
+
+[node name="Coffee" type="StaticBody2D"]
+script = ExtResource("1_6b7kc")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_5nwtn")
+autoplay = "default"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 6)
+shape = SubResource("CircleShape2D_uu4xl")
+
+[node name="InteractableComponent" parent="." instance=ExtResource("2_6b7kc")]

@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://d0q8ov4ixqehc"]
+
+[node name="ActionManager" type="Node2D"]

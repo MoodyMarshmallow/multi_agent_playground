@@ -1,14 +1,14 @@
 [gd_scene load_steps=52 format=3 uid="uid://vrla6qrxhljt"]
 
-[ext_resource type="Script" uid="uid://cv0vuqh4ccn3y" path="res://scenes/characters/player/player.gd" id="1_1pbox"]
-[ext_resource type="Texture2D" uid="uid://c87y01j7xmy3i" path="res://assets/game/characters/basic_character_sprites.png" id="1_iupbh"]
-[ext_resource type="Texture2D" uid="uid://bcxy7j7mwbvmq" path="res://assets/game/characters/character_sprites.png" id="1_kij0h"]
-[ext_resource type="Script" uid="uid://w4l7qdhr1jc8" path="res://scripts/state_machine/node_finite_state_machine.gd" id="3_xdmnl"]
-[ext_resource type="Script" uid="uid://boavjdor7c8qj" path="res://scenes/characters/player/idle_state.gd" id="4_b73nd"]
-[ext_resource type="Script" uid="uid://dqabbr4nfqk0s" path="res://scenes/characters/player/walk_state.gd" id="5_e346c"]
-[ext_resource type="Script" uid="uid://c55p3vhcm4frx" path="res://scenes/characters/player/chopping_state.gd" id="7_vnpum"]
-[ext_resource type="Script" uid="uid://lba7hjbyw58n" path="res://scenes/characters/player/tilling_state.gd" id="8_2snob"]
-[ext_resource type="Script" uid="uid://dcbs7eoqjpfuq" path="res://scenes/characters/player/watering_state.gd" id="9_0bcts"]
+[ext_resource type="Script" uid="uid://ck8sfce5k2rrt" path="res://scenes/characters/player/player.gd" id="1_1pbox"]
+[ext_resource type="Texture2D" uid="uid://cu2gmh17d6r5q" path="res://assets/game/characters/basic_character_sprites.png" id="1_iupbh"]
+[ext_resource type="Texture2D" uid="uid://jlxhi6evang2" path="res://assets/game/characters/character_sprites.png" id="1_kij0h"]
+[ext_resource type="Script" uid="uid://cpag3iabd010f" path="res://scripts/state_machine/node_finite_state_machine.gd" id="3_xdmnl"]
+[ext_resource type="Script" uid="uid://bdm5gfomuiojb" path="res://scenes/characters/player/idle_state.gd" id="4_b73nd"]
+[ext_resource type="Script" uid="uid://c41eg8tqu4k0g" path="res://scenes/characters/player/walk_state.gd" id="5_e346c"]
+[ext_resource type="Script" uid="uid://vrnv0j5r4yme" path="res://scenes/characters/player/chopping_state.gd" id="7_vnpum"]
+[ext_resource type="Script" uid="uid://c4fy87hhkhdfu" path="res://scenes/characters/player/tilling_state.gd" id="8_2snob"]
+[ext_resource type="Script" uid="uid://dpc6m6r5i60dp" path="res://scenes/characters/player/watering_state.gd" id="9_0bcts"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_x6jik"]
 atlas = ExtResource("1_kij0h")
@@ -394,7 +394,7 @@ animations = [{
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_5wu6k"]
-radius = 5.0
+radius = 3.0
 
 [node name="Player" type="CharacterBody2D"]
 collision_layer = 2
