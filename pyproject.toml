@@ -42,7 +42,3 @@ dependencies = [
 dev = [
     "pytest>=8.4.1",
 ]
-[tool.pytest.ini_options]
-# Restrict pytest to the tests/ directory and ignore docs/ files
-norecursedirs = ["docs"]
-testpaths = ["tests"]
