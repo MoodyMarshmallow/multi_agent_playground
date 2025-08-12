@@ -1,1 +1,3 @@
-# Config module for multi-agent playground backend 
+import importlib, sys
+_pkg = importlib.import_module('backend.domain.config')
+sys.modules[__name__] = _pkg

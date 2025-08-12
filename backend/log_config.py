@@ -81,9 +81,9 @@ def setup_logging(verbose: bool = False):
     logging.getLogger("kani.get_prompt").setLevel(logging.WARNING)
     
     # Configure backend module loggers
-    logging.getLogger("backend.game_loop").setLevel(logging.INFO)
-    logging.getLogger("backend.agent_manager").setLevel(logging.INFO)
-    logging.getLogger("backend.text_adventure_games").setLevel(logging.INFO)
+    logging.getLogger("backend.application.game_loop").setLevel(logging.INFO)
+    logging.getLogger("backend.domain.agent.manager").setLevel(logging.INFO)
+    logging.getLogger("backend.domain.text_adventure_games").setLevel(logging.INFO)
     logging.getLogger("backend.lru_llm").setLevel(logging.INFO)
     
     # Set up pretty-printing for Kani logs with long content

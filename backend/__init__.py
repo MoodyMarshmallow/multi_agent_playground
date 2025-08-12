@@ -5,10 +5,10 @@ __all__ = []
 
 # Import other modules conditionally to avoid circular imports
 def get_agent_manager():
-    from .agent.manager import AgentManager
-    from .agent.agent_strategies import KaniAgent
+    from .domain.agent.manager import AgentManager
+    from .domain.agent.agent_strategies import KaniAgent
     return AgentManager, KaniAgent
 
 def get_game_controller():
-    from .game_loop import GameLoop
-    return GameLoop 
+    from .application.game_loop import GameLoop
+    return GameLoop
