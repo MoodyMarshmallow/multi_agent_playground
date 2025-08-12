@@ -20,7 +20,7 @@ def find_server_port():
         try:
             if proc.info['name'] and 'python' in proc.info['name'].lower():
                 cmdline = proc.info['cmdline']
-                if cmdline and any('backend.interfaces.main:app' in arg or 'backend/interfaces/main.py' in arg for arg in cmdline):
+                if cmdline and any('backend.main:app' in arg or 'backend/main.py' in arg for arg in cmdline):
                     # Found our server process, extract port
                     for i, arg in enumerate(cmdline):
                         if arg == '--port' and i + 1 < len(cmdline):
@@ -95,9 +95,9 @@ if __name__ == "__main__":
     if port is None:
         print("✗ Could not find running multi-agent playground server")
         print("  Make sure the server is running with:")
-        print("    python -m uvicorn backend.interfaces.main:app --reload")
+        print("    python -m uvicorn backend.main:app --reload")
         print("    or")
-        print("    python backend/interfaces/main.py")
+        print("    python backend/main.py")
         sys.exit(1)
     
     pause_game(port)

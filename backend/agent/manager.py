@@ -18,7 +18,7 @@ from ..config.schema import AgentActionOutput, ChatRequest
 # Local imports
 from .agent_strategies import AgentStrategy
 from .chat_manager import ChatManager
-from ...log_config import log_agent_decision
+from ..log_config import log_agent_decision
 
 # Module-level logger
 logger = logging.getLogger(__name__)

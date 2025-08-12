@@ -6,7 +6,7 @@ from typing import Dict, List, Optional
 from datetime import datetime
 import uuid
 
-from ..config.schema import ChatRequest
+from backend.config.schema import ChatRequest
 
 
 class ChatManager:
