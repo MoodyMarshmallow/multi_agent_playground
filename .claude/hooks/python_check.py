@@ -47,34 +47,7 @@ def main():
             )
 
             if result.returncode != 0 and (result.stdout or result.stderr):
-                # Log the error for debugging
-                log_file = Path(__file__).parent.parent / "pyright_errors.json"
                 error_output = result.stdout or result.stderr
-                error_entry = {
-                    "file_path": file_path,
-                    "errors": error_output,
-                    "session_id": input_data.get("session_id"),
-                }
-
-                # Load existing errors or create new list
-                if log_file.exists():
-                    try:
-                        with open(log_file, "r") as f:
-                            content = f.read().strip()
-                            if content:
-                                errors = json.loads(content)
-                            else:
-                                errors = []
-                    except (json.JSONDecodeError, FileNotFoundError):
-                        errors = []
-                else:
-                    errors = []
-
-                errors.append(error_entry)
-
-                # Save errors
-                with open(log_file, "w") as f:
-                    json.dump(errors, f, indent=2)
 
                 # Send error message to stderr for LLM to see
                 print(f"Pyright errors found in {file_path}:", file=sys.stderr)
