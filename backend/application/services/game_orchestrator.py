@@ -19,12 +19,21 @@ from ...domain.entities.agent import Agent
 from ...domain.entities.game_state import GameState
 from ...domain.services.simulation_engine import SimulationEngine, AgentExecutor, ActionEventPublisher
 from ...domain.services.turn_scheduler import TurnScheduler
+from ...domain.events.event_bus import EventBus
+from ...domain.events.domain_event import AgentActionEvent
 
 # Infrastructure imports (will be injected)
 from ...text_adventure_games.games import Game
 from ...agent.manager import AgentManager
 from ...infrastructure.agents.kani_agent import KaniAgent, ManualAgent
+from ...infrastructure.events.async_event_bus import AsyncEventBus
 from ...config.schema import AgentActionOutput
+
+# Phase 4: Configuration and strategy loading
+from ..config.agent_strategy_loader import AgentStrategyLoader, ConfigurationError, AgentCreationError
+
+# Phase 5: World building configuration
+from ..config.world_builder import WorldBuilder, WorldBuildingError
 
 
 class GameOrchestratorAgentExecutor(AgentExecutor):
@@ -57,30 +66,28 @@ class GameOrchestratorAgentExecutor(AgentExecutor):
 class GameOrchestratorEventPublisher(ActionEventPublisher):
     """Infrastructure implementation of ActionEventPublisher for SimulationEngine."""
     
-    def __init__(self):
-        self._event_handlers = []
+    def __init__(self, event_bus: EventBus):
+        self._event_bus = event_bus
+        self._logger = logging.getLogger(__name__)
     
     def publish_action_event(self, action_schema: Dict[str, Any]) -> None:
-        """Publish action event to registered handlers."""
-        # Convert dict back to AgentActionOutput for compatibility
+        """Publish action event through the event bus."""
         if action_schema:
             try:
-                # AgentActionOutput expects specific fields, construct from schema
-                action_output = AgentActionOutput(
-                    agent_id=action_schema.get('agent_id', ''),
-                    action=action_schema.get('action', {}),
-                    current_room=action_schema.get('current_room'),
-                    description=action_schema.get('description'),
-                    timestamp=action_schema.get('timestamp')
-                )
-                for handler in self._event_handlers:
-                    handler(action_output)
+                # Convert action_schema to AgentActionEvent
+                agent_action_event = AgentActionEvent.from_agent_action_output(action_schema)
+                
+                # Publish through event bus (async operation, but we'll handle it in a task)
+                asyncio.create_task(self._event_bus.publish(agent_action_event))
+                
+                self._logger.debug(f"Published agent action event: {agent_action_event.event_id}")
+                
             except Exception as e:
-                logging.getLogger(__name__).error(f"Error publishing event: {e}")
+                self._logger.error(f"Error publishing event: {e}")
     
     def add_event_handler(self, handler) -> None:
-        """Add an event handler."""
-        self._event_handlers.append(handler)
+        """Legacy method for backward compatibility - now unused."""
+        self._logger.warning("add_event_handler called but is no longer used with event bus")
 
 
 class GameOrchestrator:
@@ -92,8 +99,13 @@ class GameOrchestrator:
     game lifecycle and simulation flow.
     """
     
-    def __init__(self, agent_config: Optional[Dict[str, str]] = None):
+    def __init__(self, config_file_path: str, agent_config: Optional[Dict[str, str]] = None,
+                 world_config_path: Optional[str] = None):
         self._logger = logging.getLogger(__name__)
+        
+        # Validate required configuration
+        if not config_file_path:
+            raise ValueError("config_file_path is required. Agent configuration must be loaded from YAML file.")
         
         # Domain state
         self._game_state: Optional[GameState] = None
@@ -105,14 +117,20 @@ class GameOrchestrator:
         # Infrastructure components (will be initialized)
         self._game: Optional[Game] = None
         self._agent_manager: Optional[AgentManager] = None
+        self._event_bus: Optional[EventBus] = None
         
         # Infrastructure adapters
         self._agent_executor: Optional[GameOrchestratorAgentExecutor] = None
-        self._event_publisher = GameOrchestratorEventPublisher()
+        self._event_publisher: Optional[GameOrchestratorEventPublisher] = None
         self._simulation_engine: Optional[SimulationEngine] = None
         
         # Configuration
-        self._agent_config = agent_config or {}
+        self._config_file_path = config_file_path
+        self._agent_config = agent_config or {}  # Kept for backward compatibility but deprecated
+        
+        # Phase 5: World configuration
+        self._world_config_path = world_config_path or "config/worlds/house.yaml"
+        self._world_builder = WorldBuilder()
         
         # Objects registry for API compatibility
         self._objects_registry: Dict[str, Dict] = {}
@@ -124,14 +142,21 @@ class GameOrchestrator:
             session_id = str(uuid.uuid4())
             self._game_state = GameState(session_id=session_id)
             
-            # Build game world
-            self._game = self._build_house_environment()
+            # Initialize event bus
+            self._event_bus = AsyncEventBus()
+            await self._event_bus.start()
+            
+            # Build game world from configuration
+            self._game = self._build_world_from_config()
+            if not self._game:
+                raise RuntimeError("Failed to build game world")
             
             # Initialize agent manager
             self._agent_manager = AgentManager(self._game)
             
             # Initialize infrastructure adapters
             self._agent_executor = GameOrchestratorAgentExecutor(self._agent_manager)
+            self._event_publisher = GameOrchestratorEventPublisher(self._event_bus)
             
             # Initialize simulation engine with adapters
             self._simulation_engine = SimulationEngine(
@@ -154,74 +179,89 @@ class GameOrchestrator:
             self._logger.error(f"Failed to initialize game orchestrator: {e}")
             raise
     
-    def _build_house_environment(self) -> Game:
-        """Create a house environment using the text adventure framework."""
-        from ...text_adventure_games.house import build_house_game
-        return build_house_game()
+    def _build_world_from_config(self) -> Game:
+        """Create a world environment from YAML configuration."""
+        import os
+        
+        # Use absolute path to ensure it works regardless of working directory
+        if not os.path.isabs(self._world_config_path):
+            # Navigate to project root (from backend/application/services/ -> ../../.. -> project_root)
+            project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+            world_config_path = os.path.join(project_root, self._world_config_path)
+        else:
+            world_config_path = self._world_config_path
+        
+        try:
+            # Build world from YAML configuration
+            game = self._world_builder.build_world_from_file(world_config_path)
+            self._logger.info(f"Successfully built world from configuration: {world_config_path}")
+            return game
+            
+        except WorldBuildingError as e:
+            self._logger.error(f"World building failed: {e}")
+            # Fallback to hardcoded house world for backward compatibility
+            self._logger.warning("Falling back to hardcoded house world")
+            from ...text_adventure_games.house import build_house_game
+            return build_house_game()
+        except Exception as e:
+            self._logger.error(f"Unexpected error during world building: {e}")
+            # Fallback to hardcoded house world for backward compatibility
+            self._logger.warning("Falling back to hardcoded house world")
+            from ...text_adventure_games.house import build_house_game
+            return build_house_game()
     
     async def _setup_agents(self) -> None:
-        """Setup agents based on configuration."""
+        """Setup agents from YAML configuration file."""
         try:
-            # Define agent personas (extracted from GameLoop)
-            agent_personas = {
-                "alex_001": "I am Alex, a friendly and social person who loves to chat with others. I enjoy reading books and might want to explore the house. I'm curious about what others are doing and like to help when I can.",
-                "alan_002": "I am Alan, a quiet and thoughtful person who likes to observe and think. I prefer to explore slowly and examine things carefully. I might be interested in food and practical items."
-            }
+            # Phase 4: Always use YAML configuration
+            await self._setup_agents_from_config()
+                
+        except Exception as e:
+            self._logger.error(f"Failed to setup agents from configuration: {e}")
+            raise RuntimeError(f"Agent setup failed. Ensure {self._config_file_path} is valid and accessible.") from e
+    
+    async def _setup_agents_from_config(self) -> None:
+        """Setup agents from YAML configuration file (Phase 4)."""
+        if not self._config_file_path:
+            raise ConfigurationError("Config file path not provided")
+        
+        self._logger.info(f"Loading agents from configuration file: {self._config_file_path}")
+        
+        # Create strategy loader
+        strategy_loader = AgentStrategyLoader(fallback_to_manual=True)
+        
+        try:
+            # Load agents from YAML configuration
+            agent_strategies = strategy_loader.load_agents_from_file(self._config_file_path)
             
-            # Create domain entities and infrastructure strategies
-            for agent_name, persona in agent_personas.items():
+            # Process each loaded agent
+            for agent_id, agent_strategy in agent_strategies.items():
                 # Create domain entity
                 agent = Agent(
-                    agent_id=agent_name,
-                    character_name=agent_name,
-                    persona=persona,
+                    agent_id=agent_id,
+                    character_name=agent_strategy.character_name,
+                    persona=getattr(agent_strategy, 'persona', f'Agent {agent_id}'),
                     current_location=None,  # Will be set after world state query
                     is_active=True
                 )
-                self._agents[agent_name] = agent
+                self._agents[agent_id] = agent
                 
-                # Create infrastructure strategy
-                agent_strategy = await self._create_agent_strategy(agent_name, persona)
-                if agent_strategy and self._agent_manager:
-                    self._agent_manager.register_agent_strategy(agent_name, agent_strategy)
+                # Register strategy with agent manager
+                if self._agent_manager:
+                    self._agent_manager.register_agent_strategy(agent_id, agent_strategy)
                     
-                    # Add to turn rotation (ensure game_state is not None)
+                    # Add to turn rotation
                     if self._game_state:
-                        self._turn_scheduler.add_agent_to_rotation(self._game_state, agent_name)
-            
-            self._logger.info(f"Set up {len(self._agents)} agents successfully")
-            
-        except Exception as e:
-            self._logger.error(f"Failed to setup agents: {e}")
-            # Add agents to rotation even if strategy creation failed
-            if self._game_state:
-                for agent_name in ["alex_001", "alan_002"]:
-                    self._turn_scheduler.add_agent_to_rotation(self._game_state, agent_name)
-    
-    async def _create_agent_strategy(self, character_name: str, persona: str):
-        """Create either a manual or AI agent based on configuration."""
-        agent_type = self._agent_config.get(character_name, "ai")  # Default to AI
-        
-        if agent_type == "manual":
-            self._logger.info(f"Creating manual agent for {character_name}")
-            return ManualAgent(character_name, persona)
-        else:  # agent_type == "ai" or any other value
-            try:
-                self._logger.info(f"Creating AI agent for {character_name}")
+                        self._turn_scheduler.add_agent_to_rotation(self._game_state, agent_id)
                 
-                # Get initial world state by executing a look command for this character
-                if self._game and character_name in self._game.characters:
-                    character = self._game.characters[character_name]
-                    initial_world_state = self._get_initial_world_state_for_agent(character)
-                    return KaniAgent(character_name, persona, initial_world_state)
-                else:
-                    self._logger.warning(f"Character {character_name} not found, creating agent without initial state")
-                    return KaniAgent(character_name, persona)
-                    
-            except Exception as e:
-                self._logger.warning(f"Failed to create AI agent for {character_name}: {e}")
-                self._logger.info(f"Falling back to manual agent for {character_name}")
-                return ManualAgent(character_name, persona)
+                self._logger.info(f"Successfully configured agent: {agent_id}")
+            
+            self._logger.info(f"Set up {len(self._agents)} agents from configuration file")
+            
+        except (ConfigurationError, AgentCreationError) as e:
+            self._logger.error(f"Failed to load agents from config: {e}")
+            raise
+    
     
     def _get_initial_world_state_for_agent(self, character) -> str:
         """Get the initial world state for an agent by executing a look action."""
@@ -287,8 +327,11 @@ class GameOrchestrator:
         return action_schema, action_ended_turn
     
     def add_event_handler(self, handler) -> None:
-        """Add an event handler for action events."""
-        self._event_publisher.add_event_handler(handler)
+        """Add an event handler for action events (legacy compatibility)."""
+        if self._event_publisher:
+            self._event_publisher.add_event_handler(handler)
+        else:
+            self._logger.warning("Cannot add event handler: event publisher not initialized")
     
     # Public API methods for compatibility with GameLoop
     
@@ -307,6 +350,10 @@ class GameOrchestrator:
     def get_agent_manager(self) -> Optional[AgentManager]:
         """Get the infrastructure agent manager."""
         return self._agent_manager
+    
+    def get_event_bus(self) -> Optional[EventBus]:
+        """Get the event bus instance."""
+        return self._event_bus
     
     def get_objects_registry(self) -> Dict[str, Dict]:
         """Get the objects registry."""
@@ -336,6 +383,11 @@ class GameOrchestrator:
         # Clear agent manager state
         if self._agent_manager:
             self._agent_manager.previous_action_results.clear()
+        
+        # Clear event bus
+        if self._event_bus:
+            await self._event_bus.clear_events()
+            await self._event_bus.stop()
         
         # Reinitialize everything
         await self.initialize()

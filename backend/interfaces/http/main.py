@@ -41,7 +41,23 @@ async def lifespan(app: FastAPI):
     """Lifespan event handler for startup and shutdown."""
     # Startup
     global game_controller
-    game_controller = GameLoop()
+    
+    # Get config file paths from environment or use defaults
+    config_file_path = os.getenv("AGENTS_CONFIG_PATH", "config/agents.yaml")
+    world_config_path = os.getenv("WORLD_CONFIG_PATH", "config/worlds/house.yaml")
+    
+    # Use absolute paths to ensure it works regardless of working directory
+    if not os.path.isabs(config_file_path):
+        # Navigate to project root from backend/interfaces/http/
+        project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        config_file_path = os.path.join(project_root, config_file_path)
+    
+    if not os.path.isabs(world_config_path):
+        # Navigate to project root from backend/interfaces/http/
+        project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        world_config_path = os.path.join(project_root, world_config_path)
+    
+    game_controller = GameLoop(config_file_path=config_file_path, world_config_path=world_config_path)
     await game_controller.start()
     
     yield
@@ -71,8 +87,8 @@ async def get_latest_agent_actions():
     if not game_controller:
         raise HTTPException(status_code=500, detail="Game not initialized")
     
-    # Get unserved events from the event queue
-    unserved_events = game_controller.get_unserved_events()
+    # Get unserved events from the event bus
+    unserved_events = await game_controller.get_unserved_events()
     return unserved_events
 
 # check if this is the same as get world state, and do we need this?
@@ -110,14 +126,14 @@ async def get_world_state():
     """
     if not game_controller:
         raise HTTPException(status_code=500, detail="Game not initialized")
-    state = game_controller.get_world_state()
+    state = await game_controller.get_world_state()
     return WorldStateResponse(**state)
 
 @app.get("/game/events", response_model=GameEventList)
 async def get_game_events(since_timestamp: str = ""):
     if not game_controller:
         raise HTTPException(status_code=500, detail="Game not initialized")
-    events = game_controller.get_events_since(since_timestamp)
+    events = await game_controller.get_events_since(since_timestamp)
     # Convert AgentActionOutput to GameEvent format
     game_events = []
     for event in events:
@@ -139,7 +155,8 @@ async def reset_game():
 async def get_game_status():
     if not game_controller:
         raise HTTPException(status_code=500, detail="Game not initialized")
-    return GameStatus(**game_controller.get_game_status())
+    status_dict = await game_controller.get_game_status()
+    return GameStatus(**status_dict)
 
 @app.post("/game/pause", response_model=StatusMsg)
 async def pause_game():

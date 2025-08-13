@@ -32,6 +32,8 @@ from .log_config import log_game_event, log_action_execution
 
 # Application service import
 from .application.services.game_orchestrator import GameOrchestrator
+from .domain.events.domain_event import AgentActionEvent
+from .domain.events.event_bus import EventBus
 
 # Module-level logger
 logger = logging.getLogger(__name__)
@@ -45,24 +47,21 @@ class GameLoop:
     maintaining backward compatibility for all public APIs.
     """
     
-    def __init__(self, agent_config: Optional[Dict[str, str]] = None):
+    def __init__(self, config_file_path: str, agent_config: Optional[Dict[str, str]] = None,
+                 world_config_path: Optional[str] = None):
         # Initialize the application orchestrator
-        self._orchestrator = GameOrchestrator(agent_config)
+        self._orchestrator = GameOrchestrator(config_file_path, agent_config, world_config_path)
         
         # Legacy properties maintained for backward compatibility
         self.agent_config = agent_config or {}
+        self.config_file_path = config_file_path
         self.is_running = False
         self.task: Optional[asyncio.Task] = None
         
-        # Event system for frontend (only AgentActionOutput objects)
-        self.event_queue: List[AgentActionOutput] = []
+        # Legacy event tracking for backward compatibility
+        # Note: The actual events are now stored in the event bus
         self.event_id_counter = 0
-        
-        # Track served events for polling endpoint
         self.last_served_event_index = 0
-        
-        # Set up event handler to capture orchestrator events
-        self._orchestrator.add_event_handler(self._add_action_event)
     
     # Legacy properties for backward compatibility
     @property
@@ -169,7 +168,7 @@ class GameLoop:
     
     # Objects registry initialization now handled by orchestrator
     
-    def get_world_state(self) -> Dict[str, Any]:
+    async def get_world_state(self) -> Dict[str, Any]:
         """
         Get the complete state of the game world.
         """
@@ -180,7 +179,7 @@ class GameLoop:
             "agents": self.get_all_agent_states(),
             "objects": self.get_all_objects(),
             "locations": self.get_all_location_states(),
-            "game_status": self.get_game_status()
+            "game_status": await self.get_game_status()
         }
 
     def get_all_agent_states(self) -> Dict[str, Dict]:
@@ -212,13 +211,11 @@ class GameLoop:
     
     
     def _add_action_event(self, action_output: AgentActionOutput):
-        """Add an AgentActionOutput to the event queue."""
+        """Legacy method - events are now handled by event bus."""
         self.event_id_counter += 1
         
         # Print the AgentActionOutput in readable format
         self._print_action_output(action_output)
-        
-        self.event_queue.append(action_output)
     
     def _print_action_output(self, action_output: AgentActionOutput):
         """Print AgentActionOutput in a readable format."""
@@ -297,18 +294,49 @@ class GameLoop:
         """Get current timestamp as ISO format string."""
         return datetime.now().isoformat()
     
-    def get_events_since(self, last_timestamp: str) -> List[AgentActionOutput]:
+    async def get_events_since(self, last_timestamp: str) -> List[AgentActionOutput]:
         """Get events since the specified timestamp."""
+        event_bus = self._orchestrator.get_event_bus()
+        if not event_bus:
+            return []
+        
         if not last_timestamp:
-            return self.event_queue
-        return [event for event in self.event_queue if event.timestamp and event.timestamp > last_timestamp]
+            # Get all agent action events
+            domain_events = await event_bus.get_events_since("1970-01-01T00:00:00", "agent_action")
+        else:
+            domain_events = await event_bus.get_events_since(last_timestamp, "agent_action")
+        
+        # Convert domain events back to AgentActionOutput format
+        agent_action_outputs = []
+        for event in domain_events:
+            if isinstance(event, AgentActionEvent):
+                agent_action_outputs.append(AgentActionOutput(**event.to_agent_action_output()))
+        
+        return agent_action_outputs
     
-    def get_unserved_events(self) -> List[AgentActionOutput]:
+    async def get_unserved_events(self) -> List[AgentActionOutput]:
         """Get events that haven't been served to the polling endpoint yet."""
-        unserved_events = self.event_queue[self.last_served_event_index:]
-        # Update the index to mark these as served
-        self.last_served_event_index = len(self.event_queue)
-        return unserved_events
+        event_bus = self._orchestrator.get_event_bus()
+        if not event_bus:
+            return []
+        
+        # Get unserved events from event bus
+        domain_events = await event_bus.get_unserved_events("frontend")
+        
+        # Convert to AgentActionOutput format and mark as served
+        agent_action_outputs = []
+        event_ids_to_mark = []
+        
+        for event in domain_events:
+            if isinstance(event, AgentActionEvent):
+                agent_action_outputs.append(AgentActionOutput(**event.to_agent_action_output()))
+                event_ids_to_mark.append(event.event_id)
+        
+        # Mark events as served
+        if event_ids_to_mark:
+            await event_bus.mark_events_served(event_ids_to_mark, "frontend")
+        
+        return agent_action_outputs
     
     
     
@@ -337,25 +365,30 @@ class GameLoop:
     async def reset(self):
         """Reset the entire game."""
         await self.stop()
-        self.event_queue.clear()
         self.event_id_counter = 0
         self.last_served_event_index = 0
         
-        # Reset orchestrator state
+        # Reset orchestrator state (includes event bus reset)
         await self._orchestrator.reset()
         
         await self.start()
     
-    def get_game_status(self) -> Dict:
+    async def get_game_status(self) -> Dict:
         """Get current game status."""
         if not self.game or not self.agent_manager:
             return {"status": "not_initialized"}
+        
+        # Get event count from event bus
+        event_bus = self._orchestrator.get_event_bus()
+        total_events = 0
+        if event_bus:
+            total_events = await event_bus.get_event_count()
         
         return {
             "status": "running",
             "turn_counter": self.turn_counter,
             "active_agents": len(self.agent_manager.active_agents),
-            "total_events": len(self.event_queue),
+            "total_events": total_events,
             "locations": len(self.game.locations),
             "characters": len(self.game.characters)
         } 

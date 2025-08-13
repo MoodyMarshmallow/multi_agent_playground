@@ -5,7 +5,8 @@
   "permissions": {
     "allow": [
       "mcp__sequential-thinking__sequentialthinking",
-      "Bash(python -m pyright:*)"
+      "Bash(python -m pyright:*)",
+      "WebFetch(domain:kani.readthedocs.io)"
     ],
     "deny": [
       "Read(.env)",

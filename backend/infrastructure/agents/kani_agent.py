@@ -7,7 +7,7 @@ decision making in the text adventure game framework.
 
 import os
 import logging
-from typing import Protocol, Optional
+from typing import Protocol, Optional, Any
 
 # Kani imports
 from kani import Kani, ChatMessage, ai_function
@@ -33,44 +33,49 @@ class KaniAgent(Kani):
     Extends Kani directly to enable proper function calling support.
     """
     
-    def __init__(self, character_name: str, persona: str, initial_world_state: Optional[str] = None, model="gpt-4o-mini", api_key: Optional[str] = None):
+    def __init__(self, character_name: str, persona: str, initial_world_state: Optional[str] = None, model="gpt-4o-mini", api_key: Optional[str] = None, engine: Optional[Any] = None):
         self.character_name = character_name
         self.persona = persona
-        
-        # Get API key from environment if not provided
-        if api_key is None:
-            api_key = os.getenv("OPENAI_API_KEY")
-        
-        if not api_key:
-            raise ValueError("OpenAI API key required. Set OPENAI_API_KEY environment variable or pass api_key parameter.")
         
         # Track recent actions to avoid loops
         self.recent_actions = []
         self.max_recent_actions = 5
         
+        # Determine engine to use
+        if engine is not None:
+            # Use provided engine (new approach)
+            kani_engine = engine
+        else:
+            # Create OpenAI engine (backward compatibility)
+            if api_key is None:
+                api_key = os.getenv("OPENAI_API_KEY")
+            
+            if not api_key:
+                raise ValueError("OpenAI API key required. Set OPENAI_API_KEY environment variable or pass api_key parameter.")
+            
+            kani_engine = OpenAIEngine(api_key=api_key, model=model)
+        
         # Store the command submitted by the agent
         self.selected_command = None
         
-        # Fix SSL certificate path issue on Windows
-        import ssl
-        original_ssl_cert_file = os.environ.get("SSL_CERT_FILE")
-        if original_ssl_cert_file and not original_ssl_cert_file.endswith(('.pem', '.crt')):
-            # If SSL_CERT_FILE points to a directory, fix it
-            potential_cert_files = [
-                os.path.join(original_ssl_cert_file, "cacert.pem"),
-                os.path.join(original_ssl_cert_file, "cert.pem"),
-                "C:/Users/milos/.conda/envs/kani_env/Library/ssl/cacert.pem",
-                "C:/Users/milos/.conda/envs/kani_env/Lib/site-packages/certifi/cacert.pem"
-            ]
-            
-            for cert_file in potential_cert_files:
-                if os.path.exists(cert_file):
-                    os.environ["SSL_CERT_FILE"] = cert_file
-                    logger.info(f"Fixed SSL_CERT_FILE to: {cert_file}")
-                    break
-        
-        # Initialize kani with OpenAI
-        engine = OpenAIEngine(api_key=api_key, model=model)
+        # Fix SSL certificate path issue on Windows (only for OpenAI engines)
+        if engine is None:
+            import ssl
+            original_ssl_cert_file = os.environ.get("SSL_CERT_FILE")
+            if original_ssl_cert_file and not original_ssl_cert_file.endswith(('.pem', '.crt')):
+                # If SSL_CERT_FILE points to a directory, fix it
+                potential_cert_files = [
+                    os.path.join(original_ssl_cert_file, "cacert.pem"),
+                    os.path.join(original_ssl_cert_file, "cert.pem"),
+                    "C:/Users/milos/.conda/envs/kani_env/Library/ssl/cacert.pem",
+                    "C:/Users/milos/.conda/envs/kani_env/Lib/site-packages/certifi/cacert.pem"
+                ]
+                
+                for cert_file in potential_cert_files:
+                    if os.path.exists(cert_file):
+                        os.environ["SSL_CERT_FILE"] = cert_file
+                        logger.info(f"Fixed SSL_CERT_FILE to: {cert_file}")
+                        break
         
         # Create system prompt focused on function calling
         system_prompt = f"""You are {character_name}, a character in a text adventure game.
@@ -106,7 +111,7 @@ CHAT SYSTEM:
 Remember: You can only choose from the available actions provided. If unsure, submit "look" to examine your surroundings."""
 
         super().__init__(
-            engine=engine,
+            engine=kani_engine,
             system_prompt=system_prompt
         )
         

@@ -1,0 +1,335 @@
+# House World Configuration
+# ========================
+# This YAML configuration defines the complete house world extracted from
+# the hardcoded world building system. It includes all locations, items,
+# characters, and game settings for the canonical house scenario.
+
+game:
+  world_name: "house"
+  world_description: "A modern house with multiple rooms to explore"
+  max_turns_per_session: 1000
+  starting_location: "entry"
+  win_conditions: []
+  lose_conditions: []
+
+locations:
+  bedroom:
+    name: "Bedroom"
+    description: "A cozy bedroom with a bed, closet, and dresser."
+    connections:
+      south: "kitchen"
+      east: "laundry"
+  
+  kitchen:
+    name: "Kitchen"
+    description: "A modern kitchen with appliances, cabinets, and a large table."
+    connections:
+      south: "entry"
+      east: "dining"
+      north: "bedroom"
+  
+  entry:
+    name: "Entry Room"
+    description: "The main entryway to the house, with a door leading outside."
+    connections:
+      north: "kitchen"
+      east: "dining"
+  
+  dining:
+    name: "Dining Room"
+    description: "A formal dining room with a long table and chairs."
+    connections:
+      west: "kitchen"
+      east: "living"
+      north: "bedroom"
+  
+  bathroom:
+    name: "Bathroom"
+    description: "A clean bathroom with a bathtub, sink, and toilet."
+    connections:
+      south: "game"
+  
+  laundry:
+    name: "Laundry Room"
+    description: "A small laundry room with a washer, dryer, and supplies."
+    connections:
+      west: "bedroom"
+      east: "game"
+  
+  living:
+    name: "Living Room"
+    description: "A spacious living room with sofas, a TV, and bookshelves."
+    connections:
+      west: "dining"
+      east: "game"
+  
+  game:
+    name: "Game Room"
+    description: "A fun game room with a pool table and entertainment area."
+    connections:
+      north: "bathroom"
+      west: "laundry"
+      south: "living"
+
+items:
+  # Bedroom Items
+  - name: "bed"
+    display_name: "bed"
+    description: "A comfortable bed with soft pillows and a blue quilt"
+    item_type: "furniture"
+    location: "bedroom"
+    properties:
+      color: "blue"
+      is_made: true
+      custom_properties:
+        quilt_color: "blue"
+  
+  - name: "closet"
+    display_name: "closet"
+    description: "A large wooden closet"
+    item_type: "container"
+    location: "bedroom"
+    properties:
+      material: "wood"
+      is_openable: true
+      is_open: false
+    contained_items:
+      # Clothing items
+      - name: "jacket"
+        display_name: "a warm jacket"
+        description: "A warm, cozy jacket."
+        item_type: "clothing"
+        properties:
+          clothing_type: "jacket"
+          material: "wool"
+      
+      - name: "boots"
+        display_name: "a pair of boots"
+        description: "Sturdy leather boots."
+        item_type: "clothing"
+        properties:
+          clothing_type: "boots"
+          material: "leather"
+      
+      - name: "hat"
+        display_name: "a sun hat"
+        description: "A wide-brimmed sun hat."
+        item_type: "clothing"
+        properties:
+          clothing_type: "hat"
+          material: "straw"
+      
+      - name: "scarf"
+        display_name: "a wool scarf"
+        description: "A long, woolen scarf."
+        item_type: "clothing"
+        properties:
+          clothing_type: "scarf"
+          material: "wool"
+      
+      # Quilt items in different colors
+      - name: "red_quilt"
+        display_name: "red quilt"
+        description: "A soft, red quilt for the bed."
+        item_type: "bedding"
+        properties:
+          bedding_type: "quilt"
+          material: "cotton"
+          color: "red"
+      
+      - name: "blue_quilt"
+        display_name: "blue quilt"
+        description: "A soft, blue quilt for the bed."
+        item_type: "bedding"
+        properties:
+          bedding_type: "quilt"
+          material: "cotton"
+          color: "blue"
+      
+      - name: "green_quilt"
+        display_name: "green quilt"
+        description: "A soft, green quilt for the bed."
+        item_type: "bedding"
+        properties:
+          bedding_type: "quilt"
+          material: "cotton"
+          color: "green"
+      
+      - name: "yellow_quilt"
+        display_name: "yellow quilt"
+        description: "A soft, yellow quilt for the bed."
+        item_type: "bedding"
+        properties:
+          bedding_type: "quilt"
+          material: "cotton"
+          color: "yellow"
+      
+      - name: "white_quilt"
+        display_name: "white quilt"
+        description: "A soft, white quilt for the bed."
+        item_type: "bedding"
+        properties:
+          bedding_type: "quilt"
+          material: "cotton"
+          color: "white"
+      
+      - name: "black_quilt"
+        display_name: "black quilt"
+        description: "A soft, black quilt for the bed."
+        item_type: "bedding"
+        properties:
+          bedding_type: "quilt"
+          material: "cotton"
+          color: "black"
+
+  # Kitchen Items
+  - name: "apple"
+    display_name: "A red apple"
+    description: "A juicy red apple that looks delicious."
+    item_type: "edible"
+    location: "kitchen"
+    properties:
+      color: "red"
+      is_gettable: true
+  
+  - name: "sink"
+    display_name: "sink"
+    description: "A stainless steel kitchen sink with modern fixtures"
+    item_type: "furniture"
+    location: "kitchen"
+    properties:
+      material: "stainless steel"
+      is_gettable: false
+  
+  - name: "kitchen_cabinet"
+    display_name: "kitchen cabinet"
+    description: "A wooden cabinet for storing dishes and food"
+    item_type: "container"
+    location: "kitchen"
+    properties:
+      material: "wood"
+      is_openable: true
+    contained_items:
+      - name: "fork"
+        display_name: "fork"
+        description: "A metal dinner fork"
+        item_type: "utility"
+        properties:
+          utility_type: "utensil"
+          material: "metal"
+      
+      - name: "knife"
+        display_name: "knife"
+        description: "A sharp kitchen knife"
+        item_type: "utility"
+        properties:
+          utility_type: "utensil"
+          material: "metal"
+      
+      - name: "plate"
+        display_name: "plate"
+        description: "A ceramic dinner plate"
+        item_type: "utility"
+        properties:
+          utility_type: "utensil"
+          material: "ceramic"
+
+  # Living Room Items
+  - name: "tv"
+    display_name: "tv"
+    description: "A large flat-screen television mounted on the wall"
+    item_type: "electronic"
+    location: "living"
+    properties:
+      is_gettable: false
+  
+  - name: "couch"
+    display_name: "couch"
+    description: "A comfortable leather couch perfect for watching TV"
+    item_type: "furniture"
+    location: "living"
+    properties:
+      material: "leather"
+      custom_properties:
+        comfort_level: "very comfortable"
+  
+  - name: "coffee_table"
+    display_name: "coffee table"
+    description: "A glass coffee table in front of the couch"
+    item_type: "furniture"
+    location: "living"
+    properties:
+      material: "glass"
+      custom_properties:
+        shape: "rectangular"
+  
+  - name: "bookshelf"
+    display_name: "bookshelf"
+    description: "A tall wooden bookshelf filled with interesting books"
+    item_type: "container"
+    location: "living"
+    properties:
+      material: "wood"
+    contained_items:
+      - name: "novel"
+        display_name: "novel"
+        description: "A mystery novel"
+        item_type: "book"
+        properties:
+          book_title: "The Case of the Missing Code"
+          book_author: "Jane Developer"
+      
+      - name: "cookbook"
+        display_name: "cookbook"
+        description: "A cookbook"
+        item_type: "book"
+        properties:
+          book_title: "Cooking for Coders"
+          book_author: "Chef Algorithm"
+
+  # Dining Room Items
+  - name: "dining_table"
+    display_name: "dining table"
+    description: "A large wooden dining table"
+    item_type: "furniture"
+    location: "dining"
+    properties:
+      material: "oak"
+      custom_properties:
+        shape: "oval"
+  
+  - name: "dining_chair"
+    display_name: "dining chair"
+    description: "A wooden dining chair"
+    item_type: "furniture"
+    location: "dining"
+    properties:
+      material: "oak"
+
+  # Bathroom Items
+  - name: "toilet"
+    display_name: "toilet"
+    description: "A standard white porcelain toilet"
+    item_type: "furniture"
+    location: "bathroom"
+    properties:
+      material: "porcelain"
+      color: "white"
+      is_gettable: false
+
+characters:
+  - name: "alex_001"
+    display_name: "Alex"
+    description: "Alex is a friendly and social person who loves to chat with others."
+    initial_location: "bedroom"
+    persona: "I am Alex, a friendly and social person who loves to chat with others. I enjoy reading books and might want to explore the house. I'm curious about what others are doing and like to help when I can."
+    is_npc: true
+    properties: {}
+  
+  - name: "alan_002"
+    display_name: "Alan"
+    description: "Alan is a quiet and thoughtful person who likes to observe and think."
+    initial_location: "kitchen"
+    persona: "I am Alan, a quiet and thoughtful person who likes to observe and think. I prefer to explore slowly and examine things carefully. I might be interested in food and practical items."
+    is_npc: true
+    properties: {}

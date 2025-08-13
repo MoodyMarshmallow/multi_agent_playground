@@ -161,9 +161,22 @@ python -m pytest tests/agent_goals/test_interactions.py
 python tests/integration/run_agent_tests.py --verbose
 ```
 
+### Backend Endpoint Testing
+```bash
+# Test Phase 2 refactored backend endpoints (recommended)
+PYTHONPATH=. python tests/test_backend_endpoints_phase2.py
+
+# Legacy endpoint testing
+python tests/test_backend_endpoints.py
+
+# Run pytest
+python -m pytest tests/
+```
+
 ### Test Categories
 - **Navigation Tests**: Agent pathfinding and movement
 - **Interaction Tests**: Object manipulation and world interaction
 - **Behavior Tests**: Decision-making and goal achievement
 - **Integration Tests**: End-to-end system validation
+- **Architecture Tests**: Phase 2 refactoring validation
 

@@ -336,7 +336,7 @@ class ConfigLoader:
 1. Move and restructure Kani agents:
    - `KaniAgent` → `backend/infrastructure/agents/plugins/kani/openai_agent.py`
    - `ManualAgent` → `backend/infrastructure/agents/plugins/manual/manual_agent.py`
-   - Maintain Kani class inheritance and function calling patterns
+   - Maintain Kani class inheritance and function calling patterns 
 
 2. Create Kani-compatible plugin loader:
    - `AgentStrategyLoader` → `backend/application/config/agent_strategy_loader.py`
