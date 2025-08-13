@@ -6,6 +6,6 @@ AI-powered and manual agents in the text adventure game framework.
 """
 
 from .manager import AgentManager
-from .agent_strategies import KaniAgent, ManualAgent, AgentStrategy
+from ..infrastructure.agents.kani_agent import KaniAgent, ManualAgent, AgentStrategy
 
 __all__ = ['AgentManager', 'KaniAgent', 'ManualAgent', 'AgentStrategy']

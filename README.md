@@ -52,16 +52,16 @@ echo "OPENAI_API_KEY=your-api-key-here" > .env
 #### Option A: Standard uvicorn (Recommended)
 ```bash
 # Clean output (errors/warnings only)
-python -m uvicorn backend.main:app --reload
+python -m uvicorn backend.interfaces.http.main:app --reload
 
 # Verbose mode (detailed logging)
 # Linux/Mac:
-VERBOSE=true python -m uvicorn backend.main:app --reload
+VERBOSE=true python -m uvicorn backend.interfaces.http.main:app --reload
 # Windows:
-set VERBOSE=true && python -m uvicorn backend.main:app --reload
+set VERBOSE=true && python -m uvicorn backend.interfaces.http.main:app --reload
 
 # Custom port with verbose mode
-VERBOSE=true python -m uvicorn backend.main:app --reload --port 8001
+VERBOSE=true python -m uvicorn backend.interfaces.http.main:app --reload --port 8001
 ```
 
 #### Option B: Direct Python (Alternative)
@@ -88,10 +88,10 @@ python tests/manual/run_backend.py --verbose
 ### Backend Server
 ```bash
 # Standard uvicorn (clean output)
-python -m uvicorn backend.main:app --reload
+python -m uvicorn backend.interfaces.http.main:app --reload
 
 # Uvicorn with verbose logging
-VERBOSE=true python -m uvicorn backend.main:app --reload
+VERBOSE=true python -m uvicorn backend.interfaces.http.main:app --reload
 
 # Direct Python with arguments
 python backend/main.py --verbose --reload

@@ -142,7 +142,7 @@ This improves performance by eliminating wrapper overhead and provides clearer s
 ## Common Commands
 ```bash
 # Start server
-python -m uvicorn backend.main:app --reload
+python -m uvicorn backend.interfaces.http.main:app --reload
 
 # Run tests
 python -m pytest tests/

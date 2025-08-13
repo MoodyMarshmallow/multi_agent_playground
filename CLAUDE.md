@@ -13,7 +13,7 @@ This is a multi-agent simulation framework with a FastAPI backend and Godot fron
 ## Key Architecture
 
 ### Backend Structure
-- **FastAPI Server** (`backend/main.py`): HTTP endpoints for frontend communication
+- **FastAPI Server** (`backend/interfaces/http/main.py`): HTTP endpoints for frontend communication
 - **Game Loop** (`backend/game_loop.py`): Main controller managing turn-based agent execution
 - **Agent Manager** (`backend/agent_manager.py`): Connects AI agents to game characters using Kani library
 - **Text Adventure Framework** (`backend/text_adventure_games/`): Core game engine with locations, items, and actions
@@ -38,7 +38,7 @@ This is a multi-agent simulation framework with a FastAPI backend and Godot fron
 ### Backend
 ```bash
 # Start backend server
-python -m uvicorn backend.main:app --reload
+python -m uvicorn backend.interfaces.http.main:app --reload
 
 # Run tests
 python -m pytest tests/

@@ -22,13 +22,16 @@ from .text_adventure_games.games import Game
 
 # Agent management
 from .agent import AgentManager
-from .agent.agent_strategies import KaniAgent, ManualAgent
+from .infrastructure.agents.kani_agent import KaniAgent, ManualAgent
 
 # --- Canonical world setup from canonical_demo.py ---
 from .text_adventure_games.house import build_house_game
 
 from .config.schema import AgentActionOutput
 from .log_config import log_game_event, log_action_execution
+
+# Application service import
+from .application.services.game_orchestrator import GameOrchestrator
 
 # Module-level logger
 logger = logging.getLogger(__name__)
@@ -37,30 +40,57 @@ class GameLoop:
     """
     Drives the game loop for the multi-agent playground.
     Also enqueues events for the frontend to consume.
+    
+    NOTE: This class now delegates most logic to GameOrchestrator while
+    maintaining backward compatibility for all public APIs.
     """
     
     def __init__(self, agent_config: Optional[Dict[str, str]] = None):
-        self.game: Optional[Game] = None
-        self.agent_manager: AgentManager  # Will be initialized in initialize()
+        # Initialize the application orchestrator
+        self._orchestrator = GameOrchestrator(agent_config)
+        
+        # Legacy properties maintained for backward compatibility
+        self.agent_config = agent_config or {}
         self.is_running = False
         self.task: Optional[asyncio.Task] = None
-        
-        # Agent configuration: maps agent_name -> agent_type ("ai" or "manual")
-        self.agent_config = agent_config or {}
         
         # Event system for frontend (only AgentActionOutput objects)
         self.event_queue: List[AgentActionOutput] = []
         self.event_id_counter = 0
         
-        # Turn management
-        self.turn_counter = 0
-        self.max_turns_per_session = 1000
-        
-        # Objects registry for frontend
-        self.objects_registry: Dict[str, Dict] = {}
-        
         # Track served events for polling endpoint
         self.last_served_event_index = 0
+        
+        # Set up event handler to capture orchestrator events
+        self._orchestrator.add_event_handler(self._add_action_event)
+    
+    # Legacy properties for backward compatibility
+    @property
+    def game(self) -> Optional[Game]:
+        """Get the game instance from orchestrator."""
+        return self._orchestrator.get_infrastructure_game()
+    
+    @property
+    def agent_manager(self) -> Optional[AgentManager]:
+        """Get the agent manager from orchestrator."""
+        return self._orchestrator.get_agent_manager()
+    
+    @property
+    def turn_counter(self) -> int:
+        """Get the turn counter from orchestrator."""
+        game_state = self._orchestrator.get_game_state_entity()
+        return game_state.turn_counter if game_state else 0
+    
+    @property
+    def max_turns_per_session(self) -> int:
+        """Get the max turns per session from orchestrator."""
+        game_state = self._orchestrator.get_game_state_entity()
+        return game_state.max_turns_per_session if game_state else 1000
+    
+    @property
+    def objects_registry(self) -> Dict[str, Dict]:
+        """Get the objects registry from orchestrator."""
+        return self._orchestrator.get_objects_registry()
     
     async def start(self):
         """Initialize and start the game loop in the background."""
@@ -84,139 +114,48 @@ class GameLoop:
     async def run_game_loop(self):
         """The main game loop where agents take turns."""
         while self.is_running:
-            if self.turn_counter >= self.max_turns_per_session:
-                logger.warning("Max turns reached, stopping game.")
-                break
-
-            if not self.agent_manager:
-                logger.error("Agent manager not initialized, stopping game.")
-                break
-
-            agent = self.agent_manager.get_next_agent()
-            if agent:
-                # Execute turn and get schema and turn-ending status
-                action_schema, action_ended_turn = await self.agent_manager.execute_agent_turn(agent)
+            # Delegate to orchestrator for turn execution
+            try:
+                action_schema, action_ended_turn = await self._orchestrator.execute_next_turn()
                 
-                # Only process if an action was actually taken
+                # Log the turn if an action was taken
                 if action_schema:
-                    # Log the turn
+                    game_state = self._orchestrator.get_game_state_entity()
+                    turn_counter = game_state.turn_counter if game_state else 0
+                    
                     turn_status = "ended turn" if action_ended_turn else "continued turn"
                     log_game_event("turn_end", {
-                        "agent": agent.name,
-                        "turn": self.turn_counter,
-                        "action": getattr(action_schema.action, 'action_type', 'unknown'),
+                        "agent": action_schema.get('agent_id', 'unknown'),
+                        "turn": turn_counter,
+                        "action": action_schema.get('action', {}).get('action_type', 'unknown'),
                         "status": turn_status
                     })
-                    
-                    # Add the action schema directly as an event
-                    self._add_action_event(action_schema)
                 
-                # Only advance to the next agent if the action ended the turn
-                if action_ended_turn:
-                    self.agent_manager.advance_turn()
-                    self.turn_counter += 1
+                # If no action was taken and no turn ended, we should break to avoid infinite loop
+                if not action_schema and not action_ended_turn:
+                    logger.info("No more actions to process, stopping game loop.")
+                    break
+                    
+            except Exception as e:
+                logger.error(f"Error in game loop: {e}")
+                break
 
             # Small delay to prevent a tight loop
             await asyncio.sleep(1)  # Adjust as needed
     
     async def initialize(self):
         """Initialize the game world and agents."""
-        # Build the house environment
-        self.game = self._build_house_environment()
-        
-        # Initialize agent manager
-        self.agent_manager = AgentManager(self.game)
-        
-        # Create and register AI agents
-        await self._setup_agents()
-        
-        # Initialize objects registry
-        self._initialize_objects_registry()
-        
+        # Delegate initialization to orchestrator
+        await self._orchestrator.initialize()
         logger.info("Game controller initialized successfully")
     
-    def _build_house_environment(self) -> Game:
-        """
-        Create a house environment matching the canonical canonical_demo.py world.
-        """
-        
-        return build_house_game()
+    # Remove old implementation methods - now handled by orchestrator
     
-    async def _setup_agents(self):
-        """Setup agents based on configuration (AI or manual)."""
-        try:
-            # Define agent personas
-            agent_personas = {
-                "alex_001": "I am Alex, a friendly and social person who loves to chat with others. I enjoy reading books and might want to explore the house. I'm curious about what others are doing and like to help when I can.",
-                "alan_002": "I am Alan, a quiet and thoughtful person who likes to observe and think. I prefer to explore slowly and examine things carefully. I might be interested in food and practical items."
-            }
-            
-            # Create agents based on configuration
-            for agent_name, persona in agent_personas.items():
-                agent_strategy = self._create_agent_strategy(agent_name, persona)
-                if agent_strategy and self.agent_manager:
-                    self.agent_manager.register_agent_strategy(agent_name, agent_strategy)
-            
-            logger.info("Agents set up successfully")
-            if self.agent_config:
-                manual_agents = [name for name, type_ in self.agent_config.items() if type_ == "manual"]
-                ai_agents = [name for name, type_ in self.agent_config.items() if type_ == "ai"]
-                logger.info(f"Manual agents: {manual_agents}")
-                logger.info(f"AI agents: {ai_agents}")
-            else:
-                logger.info("All agents using AI (default)")
-                
-        except Exception as e:
-            import traceback
-            logger.warning(f"Could not set up agents: {e}")
-            logger.warning("Full error traceback:")
-            traceback.print_exc()
-            logger.warning("The game will run without agent strategies")
-            # Just add the characters to active agents list without strategies
-            if self.agent_manager:
-                self.agent_manager.active_agents.extend(["alex_001", "alan_002"])
+    # Agent setup now handled by orchestrator
     
-    def _create_agent_strategy(self, character_name: str, persona: str):
-        """Create either a manual or AI agent based on configuration."""
-        agent_type = self.agent_config.get(character_name, "ai")  # Default to AI
-        
-        if agent_type == "manual":
-            logger.info(f"Creating manual agent for {character_name}")
-            return ManualAgent(character_name, persona)
-        else:  # agent_type == "ai" or any other value
-            try:
-                logger.info(f"Creating AI agent for {character_name}")
-                
-                # Get initial world state by executing a look command for this character
-                if self.game and character_name in self.game.characters:
-                    character = self.game.characters[character_name]
-                    initial_world_state = self._get_initial_world_state_for_agent(character)
-                    return KaniAgent(character_name, persona, initial_world_state)
-                else:
-                    logger.warning(f"Character {character_name} not found, creating agent without initial state")
-                    return KaniAgent(character_name, persona)
-                    
-            except Exception as e:
-                logger.warning(f"Failed to create AI agent for {character_name}: {e}")
-                logger.info(f"Falling back to manual agent for {character_name}")
-                return ManualAgent(character_name, persona)
+    # Agent strategy creation now handled by orchestrator
     
-    def _get_initial_world_state_for_agent(self, character) -> str:
-        """Get the initial world state for an agent by executing a look action."""
-        from .text_adventure_games.actions.generic import EnhancedLookAction
-        
-        # Create and execute a look action for this character
-        look_action = EnhancedLookAction(self.game, "look")
-        look_action.character = character
-        
-        # Execute the look action to get formatted world state
-        try:
-            narration, schema = look_action.apply_effects()
-            # Return the description which contains the formatted world state
-            return schema.description if schema and schema.description else "You are in an unknown location."
-        except Exception as e:
-            logger.error(f"Error getting initial world state for {character.name}: {e}")
-            return "You are in an unknown location. Use 'look' to see your surroundings."
+    # World state queries now handled by orchestrator
     
     def set_agent_config(self, agent_config: Dict[str, str]):
         """Update agent configuration and reinitialize agents."""
@@ -228,22 +167,7 @@ class GameLoop:
         """Get current agent configuration."""
         return self.agent_config.copy()
     
-    def _initialize_objects_registry(self):
-        """Initialize the objects registry for frontend communication."""
-        self.objects_registry = {}
-        
-        if not self.game:
-            return
-            
-        for location_name, location in self.game.locations.items():
-            for item_name, item in location.items.items():
-                self.objects_registry[item_name] = {
-                    "name": item_name,
-                    "description": item.description,
-                    "location": location_name,
-                    "state": "default",  # You can expand this based on item properties
-                    "gettable": item.get_property("gettable") if item.get_property("gettable") is not None else True
-                }
+    # Objects registry initialization now handled by orchestrator
     
     def get_world_state(self) -> Dict[str, Any]:
         """
@@ -415,7 +339,11 @@ class GameLoop:
         await self.stop()
         self.event_queue.clear()
         self.event_id_counter = 0
-        self.turn_counter = 0
+        self.last_served_event_index = 0
+        
+        # Reset orchestrator state
+        await self._orchestrator.reset()
+        
         await self.start()
     
     def get_game_status(self) -> Dict:

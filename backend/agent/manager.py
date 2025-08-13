@@ -16,7 +16,7 @@ from ..text_adventure_games.games import Game
 from ..config.schema import AgentActionOutput, ChatRequest
 
 # Local imports
-from .agent_strategies import AgentStrategy
+from ..infrastructure.agents.kani_agent import AgentStrategy
 from .chat_manager import ChatManager
 from ..log_config import log_agent_decision
 

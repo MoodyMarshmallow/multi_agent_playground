@@ -38,7 +38,7 @@ if __name__ == "__main__":
     setup_logging(verbose=args.verbose)
     
     import uvicorn
-    from backend.main import app
+    from backend.interfaces.http.main import app
     
     print("🏠 Multi-Agent Playground Backend")
     print("================================")

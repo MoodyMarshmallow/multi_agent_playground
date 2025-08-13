@@ -3,6 +3,10 @@
     "BASH_MAX_TIMEOUT_MS": "120000"
   },
   "permissions": {
+    "allow": [
+      "mcp__sequential-thinking__sequentialthinking",
+      "Bash(python -m pyright:*)"
+    ],
     "deny": [
       "Read(.env)",
       "Read(**/.env*)",
@@ -13,9 +17,6 @@
       "Read(**/*.cert)",
       "Read(**/secrets/**)",
       "Read(**/credentials/**)"
-    ],
-    "allow": [
-      "mcp__sequential-thinking__sequentialthinking"
     ]
   },
   "hooks": {
