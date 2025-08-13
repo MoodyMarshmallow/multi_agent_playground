@@ -3,7 +3,7 @@ Schema conversion utilities for action results.
 """
 
 from datetime import datetime
-from backend.config.schema import AgentActionOutput
+from config.schema import AgentActionOutput
 
 
 class SchemaExporter:

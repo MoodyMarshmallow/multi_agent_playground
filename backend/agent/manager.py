@@ -13,7 +13,7 @@ from ..text_adventure_games.things import Character
 from ..text_adventure_games.games import Game
 
 # Schema imports  
-from ..config.schema import AgentActionOutput, ChatRequest
+from ...config.schema import AgentActionOutput, ChatRequest
 
 # Local imports
 from ..infrastructure.agents.kani_agent import AgentStrategy

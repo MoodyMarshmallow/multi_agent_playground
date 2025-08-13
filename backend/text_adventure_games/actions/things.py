@@ -1,5 +1,5 @@
 from . import base
-from ...config.schema import TakeAction, DropAction
+from ....config.schema import TakeAction, DropAction
 from ..utils import remove_item_safely
 
 

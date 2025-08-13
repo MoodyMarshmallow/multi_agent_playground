@@ -1,5 +1,5 @@
 """
-WorldBuilder Factory for Phase 5
+WorldBuilder Factory
 ================================
 Factory class for building Game objects from YAML world configuration files.
 

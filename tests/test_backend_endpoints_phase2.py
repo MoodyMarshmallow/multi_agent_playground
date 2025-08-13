@@ -34,7 +34,7 @@ try:
     from fastapi.testclient import TestClient
     from backend.interfaces.http.main import app
     from backend.game_loop import GameLoop
-    from backend.config.schema import AgentActionOutput, WorldStateResponse, GameStatus
+    from config.schema import AgentActionOutput, WorldStateResponse, GameStatus
 except ImportError as e:
     print(f"Import error: {e}")
     print("Make sure you're running from the project root directory")

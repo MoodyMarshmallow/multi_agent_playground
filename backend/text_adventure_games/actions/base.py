@@ -1,5 +1,5 @@
 from ..things import Thing, Character, Item, Location
-from ...config.schema import NoOpAction, LookAction
+from ....config.schema import NoOpAction, LookAction
 from typing import Optional, Any, List
 
 class ActionResult:

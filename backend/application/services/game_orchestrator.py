@@ -27,7 +27,6 @@ from ...text_adventure_games.games import Game
 from ...agent.manager import AgentManager
 from ...infrastructure.agents.kani_agent import KaniAgent, ManualAgent
 from ...infrastructure.events.async_event_bus import AsyncEventBus
-from ...config.schema import AgentActionOutput
 
 # Phase 4: Configuration and strategy loading
 from ..config.agent_strategy_loader import AgentStrategyLoader, ConfigurationError, AgentCreationError
@@ -99,8 +98,7 @@ class GameOrchestrator:
     game lifecycle and simulation flow.
     """
     
-    def __init__(self, config_file_path: str, agent_config: Optional[Dict[str, str]] = None,
-                 world_config_path: Optional[str] = None):
+    def __init__(self, config_file_path: str, world_config_path: Optional[str] = None):
         self._logger = logging.getLogger(__name__)
         
         # Validate required configuration
@@ -126,7 +124,6 @@ class GameOrchestrator:
         
         # Configuration
         self._config_file_path = config_file_path
-        self._agent_config = agent_config or {}  # Kept for backward compatibility but deprecated
         
         # Phase 5: World configuration
         self._world_config_path = world_config_path or "config/worlds/house.yaml"
@@ -199,16 +196,10 @@ class GameOrchestrator:
             
         except WorldBuildingError as e:
             self._logger.error(f"World building failed: {e}")
-            # Fallback to hardcoded house world for backward compatibility
-            self._logger.warning("Falling back to hardcoded house world")
-            from ...text_adventure_games.house import build_house_game
-            return build_house_game()
+            raise RuntimeError(f"Failed to build world from configuration: {e}") from e
         except Exception as e:
             self._logger.error(f"Unexpected error during world building: {e}")
-            # Fallback to hardcoded house world for backward compatibility
-            self._logger.warning("Falling back to hardcoded house world")
-            from ...text_adventure_games.house import build_house_game
-            return build_house_game()
+            raise RuntimeError(f"Failed to build world from configuration: {e}") from e
     
     async def _setup_agents(self) -> None:
         """Setup agents from YAML configuration file."""

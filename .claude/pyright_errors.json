@@ -503,5 +503,80 @@
     "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py",
     "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py:150:31 - error: Cannot access attribute \"_build_world_from_config\" for class \"GameOrchestrator*\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"_build_world_from_config\" is unknown (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py:153:48 - error: Argument of type \"Unknown | Game | None\" cannot be assigned to parameter \"game\" of type \"Game\" in function \"__init__\"\n  \u00c2\u00a0\u00c2\u00a0Type \"Unknown | Game | None\" is not assignable to type \"Game\"\n  \u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\"None\" is not assignable to \"Game\" (reportArgumentType)\n2 errors, 0 warnings, 0 informations \n",
     "session_id": "7c1ad77e-7d85-4742-a38a-a71008071658"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py:30:6 - error: Import \"...config.schema\" could not be resolved (reportMissingImports)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "7c1ad77e-7d85-4742-a38a-a71008071658"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py:30:6 - error: Import \"...config.schema\" could not be resolved (reportMissingImports)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py:128:30 - error: \"agent_config\" is not defined (reportUndefinedVariable)\n2 errors, 0 warnings, 0 informations \n",
+    "session_id": "7c1ad77e-7d85-4742-a38a-a71008071658"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py:30:6 - error: Import \"...config.schema\" could not be resolved (reportMissingImports)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "7c1ad77e-7d85-4742-a38a-a71008071658"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py:28:6 - error: Import \".text_adventure_games.house\" could not be resolved (reportMissingImports)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py:30:6 - error: Import \".config.schema\" could not be resolved (reportMissingImports)\n2 errors, 0 warnings, 0 informations \n",
+    "session_id": "7c1ad77e-7d85-4742-a38a-a71008071658"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py:27:6 - error: Import \".config.schema\" could not be resolved (reportMissingImports)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "7c1ad77e-7d85-4742-a38a-a71008071658"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py:27:6 - error: Import \".config.schema\" could not be resolved (reportMissingImports)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "7c1ad77e-7d85-4742-a38a-a71008071658"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py:27:6 - error: Import \".config.schema\" could not be resolved (reportMissingImports)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "7c1ad77e-7d85-4742-a38a-a71008071658"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py:27:6 - error: Import \".config.schema\" could not be resolved (reportMissingImports)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "7c1ad77e-7d85-4742-a38a-a71008071658"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py:50:65 - error: Argument of type \"str | None\" cannot be assigned to parameter \"agent_config\" of type \"Dict[str, str] | None\" in function \"__init__\"\n  \u00c2\u00a0\u00c2\u00a0Type \"str | None\" is not assignable to type \"Dict[str, str] | None\"\n  \u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0Type \"str\" is not assignable to type \"Dict[str, str] | None\"\n  \u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\"str\" is not assignable to \"Dict[str, str]\"\n  \u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\u00c2\u00a0\"str\" is not assignable to \"None\" (reportArgumentType)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "7c1ad77e-7d85-4742-a38a-a71008071658"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py:127:30 - error: \"agent_config\" is not defined (reportUndefinedVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py:202:18 - error: Import \"...text_adventure_games.house\" could not be resolved (reportMissingImports)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py:208:18 - error: Import \"...text_adventure_games.house\" could not be resolved (reportMissingImports)\n3 errors, 0 warnings, 0 informations \n",
+    "session_id": "7c1ad77e-7d85-4742-a38a-a71008071658"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py:201:18 - error: Import \"...text_adventure_games.house\" could not be resolved (reportMissingImports)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\application\\services\\game_orchestrator.py:207:18 - error: Import \"...text_adventure_games.house\" could not be resolved (reportMissingImports)\n2 errors, 0 warnings, 0 informations \n",
+    "session_id": "7c1ad77e-7d85-4742-a38a-a71008071658"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py:19:6 - error: Import \"..config.schema\" could not be resolved (reportMissingImports)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py:30:54 - error: \"build_house_game\" is not defined (reportUndefinedVariable)\n2 errors, 0 warnings, 0 informations \n",
+    "session_id": "7c1ad77e-7d85-4742-a38a-a71008071658"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py:33:54 - error: \"build_house_game\" is not defined (reportUndefinedVariable)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "7c1ad77e-7d85-4742-a38a-a71008071658"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py:283:16 - error: Object of type \"None\" cannot be called (reportOptionalCall)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "7c1ad77e-7d85-4742-a38a-a71008071658"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\testing\\agent_test_runner.py:283:16 - error: Object of type \"None\" cannot be called (reportOptionalCall)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "7c1ad77e-7d85-4742-a38a-a71008071658"
   }
 ]

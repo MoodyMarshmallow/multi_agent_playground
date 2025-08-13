@@ -13,10 +13,15 @@ from copy import deepcopy
 
 from .agent_goal_test import AgentGoalTest, TestResult, TestSuiteResult
 from ..text_adventure_games.games import Game
-from ..text_adventure_games.house import build_house_game
 from ..text_adventure_games.things import Character, Item, Location
 from ..agent import AgentManager, KaniAgent
-from ..config.schema import AgentActionOutput
+from ..application.config.world_builder import WorldBuilder
+# Import from config directory at project root
+import os
+import sys
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+sys.path.insert(0, project_root)
+from config.schema import AgentActionOutput
 
 # Module-level logger
 logger = logging.getLogger(__name__)
@@ -27,7 +32,7 @@ class AgentTestRunner:
     Executes agent goal tests and provides detailed results.
     """
     
-    def __init__(self, game_builder_func: Callable = build_house_game):
+    def __init__(self, game_builder_func: Optional[Callable] = None):
         self.game_builder = game_builder_func
     
     async def run_test(self, test: AgentGoalTest) -> TestResult:
@@ -277,7 +282,21 @@ class AgentTestRunner:
     
     def _setup_game_world(self, test: AgentGoalTest) -> Game:
         """Setup the game world according to test configuration."""
-        game = self.game_builder()
+        # Use WorldBuilder with default house configuration for testing
+        world_builder = WorldBuilder()
+        
+        try:
+            # Try to use default house world configuration
+            # Navigate to project root (from backend/testing/ -> ../.. -> project_root)
+            project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+            house_config_path = os.path.join(project_root, "config", "worlds", "house.yaml")
+            game = world_builder.build_world_from_file(house_config_path)
+        except Exception as e:
+            logger.error(f"Failed to build world from YAML, falling back to custom game builder: {e}")
+            if self.game_builder:
+                game = self.game_builder()
+            else:
+                raise RuntimeError("No game builder available and YAML world building failed")
         
         # Modify world state based on test configuration
         world_state = test.initial_world_state

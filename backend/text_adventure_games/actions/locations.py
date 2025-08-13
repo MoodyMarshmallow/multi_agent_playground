@@ -1,5 +1,5 @@
 from . import base
-from ...config.schema import GoToAction
+from ....config.schema import GoToAction
 
 # from . import preconditions as P
 

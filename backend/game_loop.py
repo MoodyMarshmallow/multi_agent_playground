@@ -24,10 +24,7 @@ from .text_adventure_games.games import Game
 from .agent import AgentManager
 from .infrastructure.agents.kani_agent import KaniAgent, ManualAgent
 
-# --- Canonical world setup from canonical_demo.py ---
-from .text_adventure_games.house import build_house_game
-
-from .config.schema import AgentActionOutput
+from config.schema import AgentActionOutput
 from .log_config import log_game_event, log_action_execution
 
 # Application service import
@@ -50,7 +47,7 @@ class GameLoop:
     def __init__(self, config_file_path: str, agent_config: Optional[Dict[str, str]] = None,
                  world_config_path: Optional[str] = None):
         # Initialize the application orchestrator
-        self._orchestrator = GameOrchestrator(config_file_path, agent_config, world_config_path)
+        self._orchestrator = GameOrchestrator(config_file_path, world_config_path)
         
         # Legacy properties maintained for backward compatibility
         self.agent_config = agent_config or {}
@@ -58,10 +55,6 @@ class GameLoop:
         self.is_running = False
         self.task: Optional[asyncio.Task] = None
         
-        # Legacy event tracking for backward compatibility
-        # Note: The actual events are now stored in the event bus
-        self.event_id_counter = 0
-        self.last_served_event_index = 0
     
     # Legacy properties for backward compatibility
     @property
@@ -209,13 +202,6 @@ class GameLoop:
         return states
     
     
-    
-    def _add_action_event(self, action_output: AgentActionOutput):
-        """Legacy method - events are now handled by event bus."""
-        self.event_id_counter += 1
-        
-        # Print the AgentActionOutput in readable format
-        self._print_action_output(action_output)
     
     def _print_action_output(self, action_output: AgentActionOutput):
         """Print AgentActionOutput in a readable format."""
@@ -365,8 +351,6 @@ class GameLoop:
     async def reset(self):
         """Reset the entire game."""
         await self.stop()
-        self.event_id_counter = 0
-        self.last_served_event_index = 0
         
         # Reset orchestrator state (includes event bus reset)
         await self._orchestrator.reset()

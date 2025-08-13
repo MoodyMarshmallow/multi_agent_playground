@@ -6,7 +6,7 @@ where objects define their own behavior through capability protocols.
 """
 
 from .base import Action, ActionResult
-from ...config.schema import (
+from ....config.schema import (
     SetToStateAction as SetToStateSchema, StartUsingAction as StartUsingSchema,
     StopUsingAction as StopUsingSchema, TakeAction as TakeSchema, DropAction as DropSchema,
     PlaceAction as PlaceSchema, ConsumeAction as ConsumeSchema, ExamineAction as ExamineSchema,
@@ -15,8 +15,15 @@ from ...config.schema import (
 from backend.text_adventure_games.capabilities import (
     Activatable, Openable, Lockable, Usable, Container, Consumable, Examinable, Recipient
 )
-from ..utils import remove_item_safely
 import re
+
+
+def remove_item_safely(location, item, new_owner):
+    """Safely remove an item from a location or container."""
+    if hasattr(location, 'inventory') and item.name in location.inventory:
+        del location.inventory[item.name]
+    elif hasattr(location, 'items') and item.name in location.items:
+        del location.items[item.name]
 
 
 class GenericSetToStateAction(Action):
@@ -1025,7 +1032,7 @@ class GenericChatRequestAction(Action):
             narration = self.parser.ok(description)
             
             # Import ChatRequestAction schema
-            from ...config.schema import ChatRequestAction as ChatRequestSchema
+            from ....config.schema import ChatRequestAction as ChatRequestSchema
             
             schema = ActionResult(
                 description=description,
@@ -1140,7 +1147,7 @@ class GenericChatResponseAction(Action):
             narration = self.parser.ok(description)
             
             # Import ChatResponseAction schema
-            from ...config.schema import ChatResponseAction as ChatResponseSchema
+            from ....config.schema import ChatResponseAction as ChatResponseSchema
             
             schema = ActionResult(
                 description=description,
@@ -1252,7 +1259,7 @@ class GenericChatAction(Action):
             narration = self.parser.ok(description)
             
             # Import ChatAction schema
-            from ...config.schema import ChatAction as ChatSchema
+            from ....config.schema import ChatAction as ChatSchema
             
             # Create ChatAction for frontend consumption
             schema = ActionResult(

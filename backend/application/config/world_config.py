@@ -1,5 +1,5 @@
 """
-World Configuration Schema for Phase 5
+World Configuration Schema
 ======================================
 Pydantic models for defining game worlds, locations, items, and characters 
 through YAML configuration files.

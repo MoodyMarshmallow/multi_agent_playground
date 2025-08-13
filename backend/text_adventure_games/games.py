@@ -6,7 +6,7 @@ from .state.descriptions import DescriptionManager
 from .events.event_manager import EventManager
 from .events.schema_export import SchemaExporter
 
-from ..config.schema import AgentActionOutput
+from ...config.schema import AgentActionOutput
 from datetime import datetime
 
 

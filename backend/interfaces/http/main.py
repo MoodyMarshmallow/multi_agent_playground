@@ -26,7 +26,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # Import the game controller and logging
 from ...game_loop import GameLoop
-from ...config.schema import WorldStateResponse, GameEvent, GameEventList, StatusMsg, GameStatus, AgentStateResponse, GameObject, AgentActionOutput
+from config.schema import WorldStateResponse, GameEvent, GameEventList, StatusMsg, GameStatus, AgentStateResponse, GameObject, AgentActionOutput
 from ...log_config import setup_logging
 
 # Setup logging based on environment variable (for uvicorn compatibility)

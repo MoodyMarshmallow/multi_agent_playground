@@ -2,8 +2,15 @@ from .base import Thing
 from .items import Item
 from .locations import Location
 from backend.text_adventure_games.capabilities import ActionResult, Recipient, Giver, Conversational, Examinable
-from ..utils import remove_item_safely
 from typing import Dict, Any, Optional
+
+
+def remove_item_safely(location, item, new_owner):
+    """Safely remove an item from a location or container."""
+    if hasattr(location, 'inventory') and item.name in location.inventory:
+        del location.inventory[item.name]
+    elif hasattr(location, 'items') and item.name in location.items:
+        del location.items[item.name]
 
 
 class Character(Thing, Recipient, Giver, Conversational, Examinable):

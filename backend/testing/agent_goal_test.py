@@ -12,7 +12,7 @@ from datetime import datetime
 
 from .criteria import Criterion
 from .config import WorldStateConfig, AgentConfig, BehaviorAnalysis
-from ..config.schema import AgentActionOutput
+from ...config.schema import AgentActionOutput
 
 
 @dataclass
