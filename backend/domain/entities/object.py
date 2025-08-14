@@ -1,17 +1,10 @@
-"""
-Object classes for the object-centric architecture.
-
-Objects are fixed in place and cannot be picked up, but can be interacted with
-through various capabilities.
-"""
-
-from backend.text_adventure_games.things.base import Thing
-from backend.text_adventure_games.capabilities import ActionResult, Activatable, Usable, Examinable, Openable, Container as ContainerCapability
+from .thing import Thing
+from ..value_objects.capabilities import ActionResult, Activatable, Usable, Examinable, Openable, Container as ContainerCapability
 from typing import Optional, Dict, List, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from backend.text_adventure_games.things.characters import Character
-    from backend.text_adventure_games.things.items import Item
+    from .character import Character  # noqa: F401
+    from .item import Item  # noqa: F401
 
 
 class Object(Thing):

@@ -1,7 +1,7 @@
-from .base import Thing
-from .items import Item
-from .locations import Location
-from backend.text_adventure_games.capabilities import ActionResult, Recipient, Giver, Conversational, Examinable
+from .thing import Thing
+from .item import Item
+from .location import Location
+from ..value_objects.capabilities import ActionResult, Recipient, Giver, Conversational, Examinable
 from typing import Dict, Any, Optional
 
 
@@ -89,7 +89,7 @@ class Character(Thing, Recipient, Giver, Conversational, Examinable):
         location_data = data.get('location')
         if location_data is None:
             raise ValueError(f"Character {instance.name} deserialized without location data")
-        instance.location = location_data  # type: ignore # Location will be resolved by game setup
+        instance.location = location_data # Location will be resolved by game setup
         instance.inventory = {
             k: Item.from_primitive(v) for k, v in data['inventory'].items()
         }

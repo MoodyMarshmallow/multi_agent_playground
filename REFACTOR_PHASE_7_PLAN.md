@@ -51,7 +51,8 @@ application/
 ├── services/
 │   ├── game_orchestrator.py      # ✅ Already exists
 │   ├── command_processor.py      # From command/parser.py
-│   └── action_discovery.py       # From actions/discovery.py
+│   ├── action_discovery.py       # From actions/discovery.py
+│   └── world_state_service.py    # Centralized world-state/observation formatting used by actions and agents
 ├── config/
 │   ├── world_builder.py          # ✅ Already exists
 │   └── agent_strategy_loader.py  # ✅ Already exists
@@ -78,6 +79,10 @@ infrastructure/
 └── persistence/
     └── state_manager.py          # From state/character_manager.py
 ```
+
+Notes:
+- Game engine and adapters may depend on domain entities (allowed), but must not depend on application or interfaces.
+- Pydantic/API schemas should be confined to adapters (e.g., schema exporter) and HTTP layer.
 
 ### 🌐 **Interfaces Layer** (`backend/interfaces/`)
 **External interfaces, already established**
@@ -122,6 +127,11 @@ interfaces/
    - Update all imports from `text_adventure_games.capabilities` -> `domain.value_objects.capabilities`
    - Update all imports from `text_adventure_games.actions` -> `domain.actions`
 
+4. **Decouple Actions from Pydantic Schemas (Critical for Domain purity)**
+   - Replace direct uses of `config.schema.*` inside actions with a domain-level `ActionResult` DTO only.
+   - Move all conversions to API/Pydantic models into an infrastructure adapter (see Phase 7C: `schema_exporter.py`).
+   - Ensure domain actions return plain data needed for adapters to build `AgentActionOutput`.
+
 ### **Phase 7B: Application Service Migration**
 **Priority: Medium | Risk: Low**
 
@@ -136,6 +146,11 @@ interfaces/
    - Extract pure business logic from command processing
    - Create use case handlers for complex operations
    - Maintain separation from infrastructure concerns
+
+3. **Centralize World-State/Observation Formatting**
+   - Create `application/services/world_state_service.py` to format observations shown to agents (initial world state and look output).
+   - Refactor `EnhancedLookAction` and agent prompt construction (`KaniAgent`) to call this service to avoid duplication and drift.
+   - Ensure first-turn initial state injection uses the same formatter.
 
 ### **Phase 7C: Infrastructure Migration**
 **Priority: Medium | Risk: Medium**
@@ -153,9 +168,17 @@ interfaces/
    ```
 
 2. **Update Game Engine**
-   - Refactor `Game` class to use dependency injection
-   - Remove direct dependencies on domain entities
-   - Implement repository patterns for entity management
+   - Refactor `Game` class to use dependency injection for collaborators (parser, description engine, state manager)
+   - Depend only on domain entities and value objects; avoid any upward dependencies on application/interfaces
+   - Implement repository patterns for entity management where appropriate
+
+3. **Add Schema Adapter Boundaries**
+   - Ensure `infrastructure/events/schema_export.py` (or equivalent) is the only place that maps domain action results to `AgentActionOutput` Pydantic models.
+   - Remove any Pydantic usage from domain/application layers.
+
+4. **Introduce Transitional Shims (for safe, incremental migration)**
+   - Keep lightweight modules under `backend/text_adventure_games/` that re-export from new locations during the migration window.
+   - Remove these shims in Phase 7D once imports are fully updated and tests are green.
 
 ### **Phase 7D: Final Cleanup**
 **Priority: High | Risk: Low**
@@ -174,6 +197,14 @@ interfaces/
    - Update test files and debug utilities
    - Fix any remaining import errors
    - Update agent_test_runner.py to use new structure
+   - Remove duplicate protocol definitions (e.g., ensure only `backend/domain/entities/agent_strategy.py` remains and all infra imports reference it)
+
+## Cross-Cutting Changes (Do during 7A–7C where they fit best)
+
+- Standardize on `agent_id` as the primary key across layers; translate to `character_name` only at the game engine boundary. Align `AgentManager` maps accordingly.
+- Inject initial world state into Kani agents at setup time (via `GameOrchestrator`), using the centralized world-state formatter. This matches the documented first-turn behavior.
+- Remove Windows-specific SSL handling from `KaniAgent`; move any environment/bootstrap fixes into engine creation or startup scripts.
+- Ensure `requirements.txt` includes `kani[openai]` and `kani[anthropic]` extras (or adjust providers accordingly).
 
 ## Import Path Changes
 
@@ -249,5 +280,6 @@ from backend.infrastructure.game.game_engine import Game
 - [ ] All tests pass
 - [ ] Clean import structure with clear layer boundaries
 - [ ] `backend/text_adventure_games/` directory completely removed
+- [ ] Kani agents receive initial world state on first turn via the centralized formatter
 
 This completes the transformation to a proper hexagonal architecture with clear separation of concerns and maintainable code organization.

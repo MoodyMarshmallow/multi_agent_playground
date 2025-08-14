@@ -1,12 +1,12 @@
-from .things import Location, Character
-from . import parsing
+from ...domain.entities import Location, Character
+from .command.parser import CommandParser as Parser
 from .state.world_state import WorldStateManager
 from .state.character_manager import CharacterManager
 from .state.descriptions import DescriptionManager
-from .events.event_manager import EventManager
-from .events.schema_export import SchemaExporter
+from ..events.event_manager import EventManager
+from ..events.schema_export import SchemaExporter
 
-from ...config.schema import AgentActionOutput
+from config.schema import AgentActionOutput
 from datetime import datetime
 
 
@@ -89,7 +89,7 @@ class Game:
         self.locations = location_map(self.start_at, {})
 
         # Parser
-        self.parser = parsing.Parser(self)
+        self.parser = Parser(self)
 
         # NOTE: Custom actions are no longer added to parser - using pattern-based discovery only
 

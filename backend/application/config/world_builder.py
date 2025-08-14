@@ -9,15 +9,17 @@ enabling multiple scenarios and external customization.
 
 import yaml
 import logging
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Union
 from pathlib import Path
 
-from ...text_adventure_games import games, things
-from ...text_adventure_games.things import (
-    Location, Character,
-    EdibleItem, Container, Bed, Television, Sink, ClothingItem, 
-    UtilityItem, BookItem, BeddingItem, Chair, Table, Cabinet, 
-    Bookshelf, Toilet
+from ...infrastructure.game import game_engine as games
+from ...domain.entities import Location, Character, Container, Thing
+from ...domain.entities.item import (
+    EdibleItem, ClothingItem, UtilityItem, BookItem, BeddingItem,
+)
+# Furniture/fixtures from domain entities
+from ...domain.entities.object import (
+    Bed, Television, Sink, Chair, Table, Cabinet, Bookshelf, Toilet
 )
 from .world_config import WorldConfig, WorldConfigurationError, WorldBuildingError
 
@@ -184,7 +186,7 @@ class WorldBuilder:
                 raise WorldBuildingError(f"Item creation failed: {item_config.name}") from e
     
     def _create_item(self, name: str, display_name: str, description: str, 
-                    item_type: str, properties: Any) -> things.Thing:
+                    item_type: str, properties: Any) -> Thing:
         """Create a single item with the specified type and properties."""
         # Get the item class for this type
         item_class_or_handler = self._item_type_mapping.get(item_type)
@@ -205,7 +207,7 @@ class WorldBuilder:
         return item
     
     def _create_standard_item(self, item_class, name: str, display_name: str, 
-                            description: str, properties: Any) -> things.Thing:
+                            description: str, properties: Any) -> Any:
         """Create a standard item using its class constructor."""
         try:
             # Handle different item types with specific constructor arguments
@@ -254,7 +256,7 @@ class WorldBuilder:
             raise
     
     def _create_furniture_item(self, name: str, display_name: str, 
-                              description: str, properties: Any) -> things.Thing:
+                              description: str, properties: Any) -> Thing:
         """Create furniture items with appropriate specialized classes."""
         # Map furniture items to specific classes based on name/properties
         name_lower = name.lower()
@@ -275,7 +277,7 @@ class WorldBuilder:
             # Generic furniture - use Chair as base furniture class
             return Chair(name, description)
     
-    def _apply_item_properties(self, item: things.Thing, properties: Any) -> None:
+    def _apply_item_properties(self, item: Any, properties: Any) -> None:
         """Apply properties to an item after creation."""
         if not properties:
             return

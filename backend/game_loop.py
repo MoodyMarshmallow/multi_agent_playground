@@ -18,7 +18,7 @@ from datetime import datetime
 import logging
 
 # Text adventure games imports
-from .text_adventure_games.games import Game
+from .infrastructure.game.game_engine import Game
 
 # Agent management
 from .agent import AgentManager

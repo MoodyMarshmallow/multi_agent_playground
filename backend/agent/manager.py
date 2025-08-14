@@ -8,9 +8,9 @@ text adventure game framework.
 from typing import Optional, Dict, List
 import logging
 
-# Text adventure games imports
-from ..text_adventure_games.things import Character
-from ..text_adventure_games.games import Game
+# Domain entity import (Phase 7A migration)
+from ..domain.entities.character import Character
+from ..infrastructure.game.game_engine import Game
 
 # Schema imports  
 from ...config.schema import AgentActionOutput, ChatRequest

@@ -1,14 +1,5 @@
-"""
-Locations
-
-Locations are the places in the game that a player can visit.  They are
-connected to other locations and contain items that the player can interact
-with.  A connection to an adjacent location can be blocked (often introducing
-a puzzle for the player to solve before making progress).
-"""
-
-from .base import Thing
-from .items import Item
+from .thing import Thing
+from .item import Item  # type: ignore
 
 
 class Location(Thing):

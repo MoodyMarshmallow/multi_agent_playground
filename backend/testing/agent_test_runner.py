@@ -12,8 +12,9 @@ from typing import Dict, List, Any, Callable, Optional
 from copy import deepcopy
 
 from .agent_goal_test import AgentGoalTest, TestResult, TestSuiteResult
-from ..text_adventure_games.games import Game
-from ..text_adventure_games.things import Character, Item, Location
+from ..infrastructure.game.game_engine import Game
+from ..domain.entities import Character
+from ..domain.entities.item import Item
 from ..agent import AgentManager, KaniAgent
 from ..application.config.world_builder import WorldBuilder
 # Import from config directory at project root

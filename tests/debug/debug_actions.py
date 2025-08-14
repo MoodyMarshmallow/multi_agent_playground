@@ -43,7 +43,7 @@ else:
 
 print("\n=== Testing What Happens When We Add Another Apple ===")
 if kitchen:
-    from backend.text_adventure_games.things import Item
+    from backend.domain.entities.item import Item
     # Simulate what the test does
     test_apple = Item(name="apple", description="A red apple from test")
     test_apple.set_property("gettable", True)
@@ -99,7 +99,7 @@ print("\n=== Simulating Exact Test Scenario ===")
 game2 = build_house_game()
 
 # Add apple like the test does
-from backend.text_adventure_games.things import Item
+from backend.domain.entities.item import Item
 test_apple = Item(name="apple", description="A red apple")
 test_apple.set_property("gettable", True)
 kitchen2 = game2.locations["Kitchen"]
@@ -136,7 +136,7 @@ print("\n=== Testing Multiple Characters ===")
 # Test what happens with multiple characters like in the actual test
 if kitchen2:
     # Add Alan character to kitchen (like in the test)
-    from backend.text_adventure_games.things import Character
+    from backend.domain.entities import Character
     alan = Character(name="alan_test", description="Alan test character", persona="test")
     kitchen2.add_character(alan)
     

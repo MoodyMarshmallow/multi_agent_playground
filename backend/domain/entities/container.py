@@ -1,11 +1,11 @@
-from backend.text_adventure_games.things.objects import Object
-from backend.text_adventure_games.capabilities import ActionResult, Openable, Container as ContainerCapability, Examinable
+from ..value_objects.capabilities import ActionResult, Openable, Container as ContainerCapability, Examinable
 from typing import List, Dict, TYPE_CHECKING
+from .thing import Thing
 
 if TYPE_CHECKING:
-    from backend.text_adventure_games.things.items import Item
+    from .item import Item  # noqa: F401
 
-class Container(Object, Openable, ContainerCapability, Examinable):
+class Container(Thing, Openable, ContainerCapability, Examinable):
     """
     A container object that can hold items, be opened/closed, and is registered for lookup.
     """
@@ -126,4 +126,4 @@ class Container(Object, Openable, ContainerCapability, Examinable):
 
     @classmethod
     def all(cls):
-        return list(cls.registry.values()) 
+        return list(cls.registry.values())

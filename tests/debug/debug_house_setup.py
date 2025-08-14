@@ -37,7 +37,7 @@ def debug_house_setup():
     print(f"Get apple actions: {get_apple_actions}")
     
     print("\n=== Test Environment Setup (Adding Apple Like Test) ===")
-    from backend.text_adventure_games.things import Item
+    from backend.domain.entities.item import Item
     
     # This is what the test does - it adds an apple
     test_apple = Item(name="apple", description="A red apple")

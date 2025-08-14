@@ -1,6 +1,5 @@
 from collections import defaultdict
 from typing import Dict, Any, Set, Type, List
-import inspect
 from abc import ABC
 
 
@@ -68,7 +67,7 @@ class Thing(ABC):
         """
         # Import capabilities here to avoid circular imports
         try:
-            from backend.text_adventure_games.capabilities import (
+            from backend.domain.value_objects.capabilities import (
                 Activatable, Openable, Lockable, Usable, Container, 
                 Consumable, Examinable, Recipient, Giver, Conversational
             )
@@ -110,7 +109,7 @@ class Thing(ABC):
         """
         # Import capabilities here to avoid circular imports
         try:
-            from backend.text_adventure_games.capabilities import (
+            from backend.domain.value_objects.capabilities import (
                 Activatable, Openable, Lockable, Usable, Container, 
                 Consumable, Examinable
             )
@@ -144,7 +143,7 @@ class Thing(ABC):
         """
         # Import capabilities here to avoid circular imports
         try:
-            from backend.text_adventure_games.capabilities import (
+            from backend.domain.value_objects.capabilities import (
                 Activatable, Openable, Lockable, Usable, Container, 
                 Consumable, Examinable
             )
@@ -202,4 +201,3 @@ class Thing(ABC):
             instance.commands = set(data['commands'])
         
         return instance
-

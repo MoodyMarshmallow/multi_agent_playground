@@ -23,7 +23,8 @@ from ...domain.events.event_bus import EventBus
 from ...domain.events.domain_event import AgentActionEvent
 
 # Infrastructure imports (will be injected)
-from ...text_adventure_games.games import Game
+from ...infrastructure.game.game_engine import Game
+from ...domain.actions.interaction_actions import EnhancedLookAction
 from ...agent.manager import AgentManager
 from ...infrastructure.agents.kani_agent import KaniAgent, ManualAgent
 from ...infrastructure.events.async_event_bus import AsyncEventBus
@@ -256,7 +257,6 @@ class GameOrchestrator:
     
     def _get_initial_world_state_for_agent(self, character) -> str:
         """Get the initial world state for an agent by executing a look action."""
-        from ...text_adventure_games.actions.generic import EnhancedLookAction
         
         # Create and execute a look action for this character
         look_action = EnhancedLookAction(self._game, "look")

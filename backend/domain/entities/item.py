@@ -1,9 +1,9 @@
-from .base import Thing
-from backend.text_adventure_games.capabilities import ActionResult, Examinable, Consumable, Usable
+from .thing import Thing
+from ..value_objects.capabilities import ActionResult, Examinable, Consumable, Usable
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from backend.text_adventure_games.things.characters import Character
+    from .character import Character  # noqa: F401
 
 
 class Item(Thing, Examinable):
