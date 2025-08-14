@@ -5,7 +5,7 @@
 import sys
 sys.path.insert(0, 'backend')
 
-from backend.text_adventure_games.house import build_house_game
+from backend.text_adventure_games.world import build_house_game
 from backend.text_adventure_games.actions.generic import MoveAction, GenericTakeAction, GenericDropAction
 # Note: OpenContainer action was removed during refactoring - container interactions now use generic actions
 

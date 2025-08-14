@@ -23,19 +23,6 @@ class CommandParser:
         self.game = game
         self.last_error_message = None
 
-    def ok(self, description: str):
-        """
-        Success message handler.
-        """
-        self.last_error_message = None
-        return description
-
-    def fail(self, description: str):
-        """
-        Failure message handler.
-        """
-        self.last_error_message = description
-        return description
 
     def add_block(self, block):
         """
@@ -109,7 +96,7 @@ class CommandParser:
                         if matches:
                             return action_class(self.game, command)
             
-        self.fail(f"No action found for {command}")
+        self.last_error_message = f"No action found for {command}"
         raise ValueError(f"No action found for {command}")
 
     def parse_command(self, command: str, character: Optional[Character] = None):
@@ -121,7 +108,7 @@ class CommandParser:
             character: Optional character to execute the command (defaults to player)
             
         Returns:
-            tuple: (narration, schema) tuple: narration is user-facing, schema is ActionResult
+            ActionResult: The result of executing the action
         """
         # Set the acting character for this command
         original_player = self.game.player
@@ -131,28 +118,25 @@ class CommandParser:
         try:
             action = self.parse_action(command)
             if not action:
-                narration = self.fail("I'm not sure what you want to do.")
+                self.last_error_message = "I'm not sure what you want to do."
                 from backend.text_adventure_games.actions.base import ActionResult
-                schema = ActionResult(description=str(narration))
-                return narration, schema
+                result = ActionResult(description=self.last_error_message or "I'm not sure what you want to do.")
+                return result
             else:
                 # Store the action instance for turn management
                 self.game._last_executed_action = action
                 result = action()
-                # result should be (narration, schema)
-                if not (isinstance(result, tuple) and len(result) == 2):
-                    narration = str(result)
+                # All actions now return ActionResult directly
+                if not hasattr(result, 'description'):
+                    # Fallback - create ActionResult from string
                     from backend.text_adventure_games.actions.base import ActionResult
-                    schema = ActionResult(description=narration)
-                else:
-                    narration, schema = result
-                # If narration is None, use last error message
-                if narration is None:
-                    narration = self.last_error_message or "An unknown error occurred."
+                    result = ActionResult(description=str(result))
+                
                 # Record the last acting agent's id for schema export
                 if hasattr(self.game, '_last_action_agent_id'):
                     self.game._last_action_agent_id = self.game.player.name
-            return narration, schema
+                    
+                return result
         finally:
             self.game.player = original_player
 

@@ -33,9 +33,13 @@ class KaniAgent(Kani):
     Extends Kani directly to enable proper function calling support.
     """
     
-    def __init__(self, character_name: str, persona: str, initial_world_state: Optional[str] = None, model="gpt-4o-mini", api_key: Optional[str] = None):
+    def __init__(self, character_name: str, persona: str, initial_world_state: Optional[str] = None, model="gpt-4o-mini", api_key: Optional[str] = None, game=None, character=None):
         self.character_name = character_name
         self.persona = persona
+        
+        # Store game and character references for immediate execution
+        self.game = game
+        self.character = character
         
         # Get API key from environment if not provided
         if api_key is None:
@@ -50,6 +54,9 @@ class KaniAgent(Kani):
         
         # Store the command submitted by the agent
         self.selected_command = None
+        
+        # Safety flag to prevent multiple executions per turn
+        self.command_executed_this_turn = False
         
         # Fix SSL certificate path issue on Windows
         import ssl
@@ -116,14 +123,47 @@ Remember: You can only choose from the available actions provided. If unsure, su
     
     @ai_function()
     def submit_command(self, command: str):
-        """Submit a SINGLE command you want to execute this turn.
+        """Submit a SINGLE command and get immediate result.
         
         Args:
             command: The exact command you want to perform (e.g., "go north", "get lamp", "look")
+        
+        Returns:
+            str: The actual result description from executing the command
         """
+        # Prevent multiple executions per turn
+        if self.command_executed_this_turn:
+            return "You have already executed a command this turn."
+        
+        # Check if we have game and character references
+        if not self.game or not self.character:
+            # Fallback to old behavior if references not available
+            self.selected_command = command.lower().strip()
+            logger.debug(f"[{self.character_name}] FUNCTION CALL: submit_command('{command}') -> stored as '{self.selected_command}' (no game reference)")
+            return f"Command '{command}' submitted successfully."
+        
+        # Store command and execute immediately
         self.selected_command = command.lower().strip()
-        logger.debug(f"[{self.character_name}] FUNCTION CALL: submit_command('{command}') -> stored as '{self.selected_command}'")
-        return f"Command '{command}' submitted successfully."
+        self.command_executed_this_turn = True
+        
+        # Execute command via game parser
+        try:
+            logger.debug(f"[{self.character_name}] EXECUTING: submit_command('{command}') immediately")
+            action_result = self.game.parser.parse_command(command, character=self.character)
+            
+            # Store in game for schema export (maintain compatibility)
+            self.game._last_action_result = action_result
+            self.game._last_action_agent_id = self.character.name
+            
+            # Return the actual description from ActionResult
+            result_description = action_result.description if action_result else "No result available"
+            logger.debug(f"[{self.character_name}] RESULT: {result_description}")
+            return result_description
+            
+        except Exception as e:
+            error_msg = f"Command execution failed: {str(e)}"
+            logger.error(f"[{self.character_name}] {error_msg}")
+            return error_msg
     
     async def select_action(self, action_result: str) -> str:
         """

@@ -20,8 +20,6 @@ class Character(Thing, Recipient, Giver, Conversational, Examinable):
     * A location (the place in the game where they currently are)
     * An inventory of items that they are carrying (a dictionary mapping from
       item name to Item instance)
-    * TODO: A dictionary of items that they are currently wearing
-    * TODO: A dictionary of items that they are currently weilding
     """
 
     def __init__(

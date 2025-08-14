@@ -25,21 +25,21 @@ class Get(base.Action):
         """
         if not self.was_matched(self.item, "I don't see it."):
             message = "I don't see it."
-            self.parser.fail(message)
+            self.parser.last_error_message = message
             return False
         if not self.location.here(self.character):
             message = "{name} is not here.".format(name=self.character.name)
-            self.parser.fail(message)
+            self.parser.last_error_message = message
             return False
         if not self.location.here(self.item):
             message = "There is no {name} here.".format(name=self.item.name)
-            self.parser.fail(message)
+            self.parser.last_error_message = message
             return False
         if not self.item.get_property("gettable"):
             error_message = "{name} is not {property_name}.".format(
                 name=self.item.name.capitalize(), property_name="gettable"
             )
-            self.parser.fail(error_message)
+            self.parser.last_error_message = error_message
             return False
         return True
 
@@ -50,17 +50,12 @@ class Get(base.Action):
         """
         remove_item_safely(self.location, self.item, self.character)
         self.character.add_to_inventory(self.item)
-        description = "{character_name} got the {item_name}.".format(
-            character_name=self.character.name, item_name=self.item.name
-        )
-        narration = self.parser.ok(description)
         get_action = TakeAction(action_type="take", target=self.item.name)
-        schema = base.ActionResult(
+        return base.ActionResult(
             description=f"Got {self.item.name}.",
             house_action=get_action,
             object_id=self.item.name
         )
-        return narration, schema
 
     @classmethod
     def get_applicable_combinations(cls, character, parser):
@@ -96,7 +91,7 @@ class Drop(base.Action):
             description = d.format(
                 character_name=self.character.name, item_name=self.item.name
             )
-            self.parser.fail(description)
+            self.parser.last_error_message = description
             return False
         return True
 
@@ -114,14 +109,12 @@ class Drop(base.Action):
             item_name=self.item.name,
             location=self.location.name,
         )
-        narration = self.parser.ok(description)
         drop_action = DropAction(action_type="drop", target=self.item.name)
-        schema = base.ActionResult(
+        return base.ActionResult(
             description=f"Dropped {self.item.name}.",
             house_action=drop_action,
             object_id=self.item.name
         )
-        return narration, schema
 
     @classmethod
     def get_applicable_combinations(cls, character, parser):
@@ -151,7 +144,6 @@ class Inventory(base.Action):
     def apply_effects(self):
         if len(self.character.inventory) == 0:
             description = f"{self.character.name}'s inventory is empty."
-            return self.parser.ok(description)
         else:
             description = "In your inventory, you have:\n"
             for item_name in self.character.inventory:
@@ -160,7 +152,7 @@ class Inventory(base.Action):
                 hints = item.get_command_hints() if hasattr(item, 'get_command_hints') else []
                 for cmd in hints:
                     description += f"\t{cmd}\n"
-            return self.parser.ok(description)
+        return base.ActionResult(description=description)
 
 
 class Examine(base.Action):
@@ -193,9 +185,9 @@ class Examine(base.Action):
             hints = self.matched_item.get_command_hints() if hasattr(self.matched_item, 'get_command_hints') else []
             for cmd in hints:
                 description += f"\n\t{cmd}"
-            return self.parser.ok(description)
         else:
-            return self.parser.ok("You don't see anything special.")
+            description = "You don't see anything special."
+        return base.ActionResult(description=description)
 
     @classmethod
     def get_applicable_combinations(cls, character, parser):
@@ -251,9 +243,7 @@ class Give(base.Action):
             item_name=self.item.name,
             recipient=self.recipient.name.capitalize(),
         )
-        narration = self.parser.ok(description)
-        schema = base.ActionResult(description=description)
-        return narration, schema
+        return base.ActionResult(description=description)
 
     @classmethod
     def get_applicable_combinations(cls, character, parser):
@@ -288,6 +278,4 @@ class Unlock_Door(base.Action):
 
     def apply_effects(self):
         self.door.set_property("is_locked", False)
-        narration = self.parser.ok("Door is unlocked")
-        schema = base.ActionResult(description="Door is unlocked")
-        return narration, schema
+        return base.ActionResult(description="Door is unlocked")

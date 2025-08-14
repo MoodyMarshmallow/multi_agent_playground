@@ -25,7 +25,7 @@ from .agent import AgentManager
 from .agent.agent_strategies import KaniAgent, ManualAgent
 
 # --- Canonical world setup from canonical_demo.py ---
-from .text_adventure_games.house import build_house_game
+from .text_adventure_games.world import build_house_game
 
 from .config.schema import AgentActionOutput
 from .log_config import log_game_event, log_action_execution
@@ -191,7 +191,7 @@ class GameLoop:
                 if self.game and character_name in self.game.characters:
                     character = self.game.characters[character_name]
                     initial_world_state = self._get_initial_world_state_for_agent(character)
-                    return KaniAgent(character_name, persona, initial_world_state)
+                    return KaniAgent(character_name, persona, initial_world_state, game=self.game, character=character)
                 else:
                     logger.warning(f"Character {character_name} not found, creating agent without initial state")
                     return KaniAgent(character_name, persona)
@@ -211,9 +211,9 @@ class GameLoop:
         
         # Execute the look action to get formatted world state
         try:
-            narration, schema = look_action.apply_effects()
+            result = look_action.apply_effects()
             # Return the description which contains the formatted world state
-            return schema.description if schema and schema.description else "You are in an unknown location."
+            return result.description if result and result.description else "You are in an unknown location."
         except Exception as e:
             logger.error(f"Error getting initial world state for {character.name}: {e}")
             return "You are in an unknown location. Use 'look' to see your surroundings."

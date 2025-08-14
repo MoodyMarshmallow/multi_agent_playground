@@ -48,7 +48,7 @@ class Go(base.Action):
                 name=self.character.capitalize(),
                 location_name=self.location.name.capitalize(),
             )
-            self.parser.fail(message)
+            self.parser.last_error_message = message
             return False
 
         if not self.location.get_connection(self.direction):
@@ -56,7 +56,7 @@ class Go(base.Action):
             description = d.format(
                 location_name=self.location.name.capitalize(), direction=self.direction
             )
-            self.parser.fail(description)
+            self.parser.last_error_message = description
             return False
 
         if self.location.is_blocked(self.direction):
@@ -67,7 +67,7 @@ class Go(base.Action):
                     location_name=self.location.name.capitalize(),
                     direction=self.direction,
                 )
-            self.parser.fail(description)
+            self.parser.last_error_message = description
             return False
 
         return True
@@ -99,18 +99,24 @@ class Go(base.Action):
         if to_loc.get_property("game_over") and is_main_player:
             self.game.game_over = True
             self.game.game_over_description = to_loc.description
-            return self.parser.ok(to_loc.description)
+            return base.ActionResult(description=to_loc.description)
         else:
             # Create proper GoToAction schema
             move_action = GoToAction(action_type="go_to", target=to_loc.name)
             
             # Get description from Describe action
             action = base.Look(self.game, command=self.command)
-            narration, _ = action()
+            look_result = action()
+            
+            # Extract description from ActionResult
+            if hasattr(look_result, 'description'):
+                description = look_result.description
+            else:
+                description = f"You move to {to_loc.name}."
             
             # Return ActionResult with proper schema
-            return narration, base.ActionResult(
-                description=narration,
+            return base.ActionResult(
+                description=description,
                 house_action=move_action,
                 object_id=to_loc.name
             )

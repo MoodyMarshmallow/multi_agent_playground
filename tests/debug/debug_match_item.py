@@ -5,7 +5,7 @@
 import sys
 sys.path.insert(0, 'backend')
 
-from backend.text_adventure_games.house import build_house_game
+from backend.text_adventure_games.world import build_house_game
 from backend.text_adventure_games.things import Character, Item
 from backend.text_adventure_games.actions.things import Get
 

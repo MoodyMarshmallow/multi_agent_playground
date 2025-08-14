@@ -48,35 +48,39 @@ class Action:
     def apply_effects(self):
         """
         This method applies the action and changes the state of the game.
-        Returns a (narration, schema) tuple.
+        Returns an ActionResult.
         """
-        narration = self.parser.ok("no effect")
-        schema = ActionResult(description="no effect")
-        return narration, schema
+        return ActionResult(description="no effect")
 
     def __call__(self):
         if self.check_preconditions():
             result = self.apply_effects()
-            # If result is not a tuple, wrap it
-            if not (isinstance(result, tuple) and len(result) == 2):
-                narration = str(result)
-                schema = ActionResult(description=narration)
-                result = (narration, schema)
+            # Handle both new ActionResult format and legacy tuple format for compatibility
+            if isinstance(result, tuple) and len(result) == 2:
+                # Legacy format - extract ActionResult
+                schema = result[1]
+            elif isinstance(result, ActionResult):
+                # New format - use directly
+                schema = result
+            else:
+                # Fallback - create ActionResult from string
+                schema = ActionResult(description=str(result))
+            
             # Store last action result in the game for schema export
             if hasattr(self.game, '_last_action_result'):
-                self.game._last_action_result = result[1]
+                self.game._last_action_result = schema
             else:
-                self.game._last_action_result = result[1]
-            return result
+                self.game._last_action_result = schema
+            return schema
         else:
-            # On precondition failure, return last error message as narration and schema
-            narration = self.parser.last_error_message or "Action could not be performed."
-            schema = ActionResult(description=narration)
+            # On precondition failure, return ActionResult with error message
+            error_message = self.parser.last_error_message or "Action could not be performed."
+            schema = ActionResult(description=error_message)
             if hasattr(self.game, '_last_action_result'):
                 self.game._last_action_result = schema
             else:
                 self.game._last_action_result = schema
-            return narration, schema
+            return schema
 
 
     ###
@@ -392,9 +396,7 @@ class ActionSequence(Action):
         for cmd in self.command.split(","):
             cmd = cmd.strip()
             responses.append(self.parser.parse_command(cmd))
-        narration = "; ".join(str(r[0]) for r in responses)
-        schema = ActionResult(description="Sequence of actions executed.")
-        return narration, schema
+        return ActionResult(description="Sequence of actions executed.")
 
 
 class Quit(Action):
@@ -419,12 +421,8 @@ class Quit(Action):
             self.game.game_over = True
             if not self.game.game_over_description:
                 self.game.game_over_description = "The End"
-            narration = self.parser.ok(self.game.game_over_description)
-            schema = ActionResult(description="Game ended.")
-            return narration, schema
-        narration = self.parser.fail("Game already ended.")
-        schema = ActionResult(description="Game already ended.")
-        return narration, schema
+            return ActionResult(description="Game ended.")
+        return ActionResult(description="Game already ended.")
 
 
 class Look(Action):
@@ -458,11 +456,9 @@ class Look(Action):
             for action in available_actions:
                 enhanced_description += f"\n• {action['command']}: {action['description']}"
         
-        narration = self.parser.ok(enhanced_description)
         look_action = LookAction(action_type="look")
-        schema = ActionResult(
-            description="Described current location.",
+        return ActionResult(
+            description=enhanced_description,
             house_action=look_action,
             object_id=self.game.player.location.name if self.game.player.location else None
         )
-        return narration, schema

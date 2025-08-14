@@ -70,6 +70,12 @@ class AgentManager:
             return None, True  # Default to ending turn if no strategy
             
         try:
+            strategy = self.agent_strategies[agent.name]
+            
+            # Reset execution flag for agents that support immediate execution
+            if hasattr(strategy, 'command_executed_this_turn'):
+                setattr(strategy, 'command_executed_this_turn', False)
+            
             # Get the previous action result for this agent (empty string for first turn)
             previous_result = self.previous_action_results.get(agent.name, "Welcome to the game! This is your first turn.")
             
@@ -79,40 +85,59 @@ class AgentManager:
                 chat_notifications = self._format_chat_notifications(pending_requests)
                 previous_result += "\n\n" + chat_notifications
             
-            # Let the strategy decide
-            strategy = self.agent_strategies[agent.name]
+            # Let the strategy decide (execution may happen immediately in submit_command)
             command = await strategy.select_action(previous_result)
             
-            # Execute the command
-            log_agent_decision(agent.name, command, {"previous_result": previous_result})
-            result = self.game.parser.parse_command(command, character=agent)
+            # Check if command was already executed (immediate execution model)
+            if (hasattr(strategy, 'game') and getattr(strategy, 'game', None) and 
+                hasattr(self.game, '_last_action_result') and self.game._last_action_result and
+                hasattr(self.game, '_last_action_agent_id') and self.game._last_action_agent_id == agent.name):
+                
+                # Command was executed immediately in submit_command
+                log_agent_decision(agent.name, command, {"previous_result": previous_result, "execution": "immediate"})
+                
+                # Get the schema from the already-executed action
+                action_schema = self.game.schema_exporter.get_schema()
+                
+                # Extract and store action result for next turn
+                action_result = getattr(action_schema, 'description', None) or "Action completed"
+                self.previous_action_results[agent.name] = action_result
+                
+                # Check if the action ended the turn
+                action_ended_turn = True  # Default to ending turn
+                if hasattr(self.game, '_last_executed_action') and self.game._last_executed_action:
+                    action_ended_turn = getattr(self.game._last_executed_action, 'ends_turn', True)
+                
+                return action_schema, action_ended_turn
             
-            # Get the schema immediately after execution
-            action_schema = self.game.schema_exporter.get_schema()
-            
-            # Check if this was a noop action (non-fatal error)
-            is_noop = action_schema.action.action_type == "noop"
-            
-            # Extract and store action result for next turn
-            if is_noop:
-                # For noop actions, store error message
-                action_result = f"Action failed: {action_schema.description or 'Unknown error'}"
             else:
-                # For successful actions, store result description
-                if isinstance(result, tuple) and len(result) >= 1:
-                    action_result = result[0]
+                # Fallback to old execution model for agents without immediate execution
+                log_agent_decision(agent.name, command, {"previous_result": previous_result, "execution": "deferred"})
+                action_result = self.game.parser.parse_command(command, character=agent)
+                
+                # Get the schema immediately after execution
+                action_schema = self.game.schema_exporter.get_schema()
+                
+                # Check if this was a noop action (non-fatal error)
+                is_noop = action_schema.action.action_type == "noop"
+                
+                # Extract and store action result for next turn
+                if is_noop:
+                    # For noop actions, store error message
+                    stored_result = f"Action failed: {action_schema.description or 'Unknown error'}"
                 else:
-                    action_result = str(result)
-            
-            # Store the action result for this agent's next turn
-            self.previous_action_results[agent.name] = action_result
-            
-            # Check if the action ended the turn
-            action_ended_turn = True  # Default to ending turn
-            if hasattr(self.game, '_last_executed_action') and self.game._last_executed_action:
-                action_ended_turn = getattr(self.game._last_executed_action, 'ends_turn', True)
-            
-            return action_schema, action_ended_turn
+                    # For successful actions, store result description from ActionResult
+                    stored_result = getattr(action_result, 'description', str(action_result))
+                
+                # Store the action result for this agent's next turn
+                self.previous_action_results[agent.name] = stored_result
+                
+                # Check if the action ended the turn
+                action_ended_turn = True  # Default to ending turn
+                if hasattr(self.game, '_last_executed_action') and self.game._last_executed_action:
+                    action_ended_turn = getattr(self.game._last_executed_action, 'ends_turn', True)
+                
+                return action_schema, action_ended_turn
             
         except Exception as e:
             logger.error(f"Error in execute_agent_turn for {agent.name}: {e}")

@@ -91,8 +91,6 @@ class Game:
         # Parser
         self.parser = parsing.Parser(self)
 
-        # NOTE: Custom actions are no longer added to parser - using pattern-based discovery only
-
         # Visit each location and add any blocks found to parser
         seen_before = {}
         for name, location in self.locations.items():
