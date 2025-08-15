@@ -13,6 +13,9 @@ from typing import Protocol, Optional
 from kani import Kani, ChatMessage, ai_function
 from kani.engines.openai import OpenAIEngine
 
+# Configuration imports
+from ..config.yaml_config import get_config_manager
+
 # Module-level logger
 logger = logging.getLogger(__name__)
 
@@ -33,17 +36,50 @@ class KaniAgent(Kani):
     Extends Kani directly to enable proper function calling support.
     """
     
-    def __init__(self, character_name: str, persona: str, initial_world_state: Optional[str] = None, model="gpt-4o-mini", api_key: Optional[str] = None, game=None, character=None):
+    def __init__(self, character_name: str, persona: Optional[str] = None, initial_world_state: Optional[str] = None, model: Optional[str] = None, api_key: Optional[str] = None, game=None, character=None, config_manager=None):
         self.character_name = character_name
-        self.persona = persona
+        
+        # Get configuration manager
+        if config_manager is None:
+            config_manager = get_config_manager()
+        self.config_manager = config_manager
         
         # Store game and character references for immediate execution
         self.game = game
         self.character = character
         
-        # Get API key from environment if not provided
-        if api_key is None:
-            api_key = os.getenv("OPENAI_API_KEY")
+        # Initialize variables with defaults
+        engine_name = "openai_mini"
+        temperature = 0.7
+        max_tokens = None
+        
+        # Get agent configuration (persona, engine settings, etc.)
+        try:
+            agent_config = self.config_manager.get_effective_agent_config(character_name)
+            self.persona = persona or agent_config['persona']
+            engine_name = agent_config['engine']
+            model = model or agent_config['model']
+            temperature = agent_config['temperature']
+            max_tokens = agent_config['max_tokens']
+        except Exception as e:
+            logger.warning(f"Failed to get agent config for {character_name}: {e}. Using fallbacks.")
+            self.persona = persona or f"I am {character_name}, a helpful agent."
+            
+        # Get engine configuration
+        try:
+            engine_config = self.config_manager.get_engine_config(engine_name)
+            if api_key is None:
+                api_key = engine_config.get_api_key()
+            if model is None:
+                model = engine_config.model
+            temperature = temperature or engine_config.temperature
+            max_tokens = max_tokens or engine_config.max_tokens
+        except Exception as e:
+            logger.warning(f"Failed to get engine config for {engine_name}: {e}. Using fallbacks.")
+            if api_key is None:
+                api_key = os.getenv("OPENAI_API_KEY")
+            if model is None:
+                model = "gpt-4o-mini"
         
         if not api_key:
             raise ValueError("OpenAI API key required. Set OPENAI_API_KEY environment variable or pass api_key parameter.")
@@ -76,13 +112,30 @@ class KaniAgent(Kani):
                     logger.info(f"Fixed SSL_CERT_FILE to: {cert_file}")
                     break
         
-        # Initialize kani with OpenAI
-        engine = OpenAIEngine(api_key=api_key, model=model)
+        # Initialize kani with OpenAI engine and configured parameters
+        engine_kwargs = {
+            'api_key': api_key,
+            'model': model,
+            'temperature': temperature
+        }
+        if max_tokens is not None:
+            engine_kwargs['max_tokens'] = max_tokens
+            
+        engine = OpenAIEngine(**engine_kwargs)
         
-        # Create system prompt focused on function calling
-        system_prompt = f"""You are {character_name}, a character in a text adventure game.
+        # Build system prompt using configuration
+        try:
+            system_prompt = self.config_manager.build_system_prompt(
+                character_name, 
+                {'character_name': character_name, 'persona': self.persona}
+            )
+            logger.debug(f"Built system prompt for {character_name} from configuration")
+        except Exception as e:
+            logger.warning(f"Failed to build system prompt for {character_name}: {e}. Using fallback.")
+            # Fallback to hardcoded prompt
+            system_prompt = f"""You are {character_name}, a character in a text adventure game.
 
-Your persona: {persona}
+Your persona: {self.persona}
 
 You will receive descriptions of your current situation including:
 - Your current location and its description

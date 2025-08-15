@@ -1,0 +1,28 @@
+# Default Configuration Values
+# ============================
+# System-wide defaults and fallback values
+
+llm_defaults:
+  temperature: 0.7
+  max_tokens: null
+  timeout: 30
+  retry_attempts: 3
+  default_engine: "openai"
+
+agent_defaults:
+  engine: "openai"
+  model: "gpt-4o-mini"
+  temperature: 0.7
+  max_tokens: null
+  prompt_template: "default_agent_prompt"
+  persona: "I am a helpful agent in a text adventure game."
+
+prompt_defaults:
+  separator: "\n\n"
+  default_composition: "default_agent_prompt"
+
+system_defaults:
+  config_reload_enabled: false
+  validation_enabled: true
+  fallback_to_hardcoded: true
+  log_config_usage: true

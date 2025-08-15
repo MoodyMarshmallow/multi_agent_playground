@@ -423,5 +423,45 @@
     "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_adventure_games\\actions\\generic.py",
     "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_adventure_games\\actions\\generic.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_adventure_games\\actions\\generic.py:593:22 - error: \"ActionResult\" is unbound (reportUnboundVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\text_adventure_games\\actions\\generic.py:600:20 - error: \"ActionResult\" is possibly unbound (reportPossiblyUnboundVariable)\n2 errors, 0 warnings, 0 informations \n",
     "session_id": "25112932-c70a-45bb-a938-e3f062420417"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\agent_strategies.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\agent_strategies.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\agent_strategies.py:71:16 - error: \"temperature\" is possibly unbound (reportPossiblyUnboundVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\agent_strategies.py:73:16 - error: \"max_tokens\" is possibly unbound (reportPossiblyUnboundVariable)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\agent\\agent_strategies.py:81:16 - error: \"temperature\" is possibly unbound (reportPossiblyUnboundVariable)\n3 errors, 0 warnings, 0 informations \n",
+    "session_id": "f39657dd-70bf-4d7f-b2e6-8f103a0aa4b6"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\game_loop.py:163:72 - error: Argument of type \"ConfigManager\" cannot be assigned to parameter \"persona\" of type \"str\" in function \"_create_agent_strategy\"\n  \u00c2\u00a0\u00c2\u00a0\"ConfigManager\" is not assignable to \"str\" (reportArgumentType)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "f39657dd-70bf-4d7f-b2e6-8f103a0aa4b6"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py:268:14 - error: Import \".llm_config\" could not be resolved (reportMissingImports)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "f39657dd-70bf-4d7f-b2e6-8f103a0aa4b6"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py:266:14 - error: Import \".llm_config\" could not be resolved (reportMissingImports)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "f39657dd-70bf-4d7f-b2e6-8f103a0aa4b6"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py:140:21 - error: Cannot access attribute \"fallback_enabled\" for class \"ConfigManager*\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"fallback_enabled\" is unknown (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py:153:21 - error: Cannot access attribute \"fallback_enabled\" for class \"ConfigManager*\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"fallback_enabled\" is unknown (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py:227:21 - error: Cannot access attribute \"fallback_enabled\" for class \"ConfigManager*\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"fallback_enabled\" is unknown (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py:263:14 - error: Import \".llm_config\" could not be resolved (reportMissingImports)\n4 errors, 0 warnings, 0 informations \n",
+    "session_id": "f39657dd-70bf-4d7f-b2e6-8f103a0aa4b6"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py:140:21 - error: Cannot access attribute \"fallback_enabled\" for class \"ConfigManager*\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"fallback_enabled\" is unknown (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py:225:21 - error: Cannot access attribute \"fallback_enabled\" for class \"ConfigManager*\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"fallback_enabled\" is unknown (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py:261:14 - error: Import \".llm_config\" could not be resolved (reportMissingImports)\n3 errors, 0 warnings, 0 informations \n",
+    "session_id": "f39657dd-70bf-4d7f-b2e6-8f103a0aa4b6"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py:223:21 - error: Cannot access attribute \"fallback_enabled\" for class \"ConfigManager*\"\n  \u00c2\u00a0\u00c2\u00a0Attribute \"fallback_enabled\" is unknown (reportAttributeAccessIssue)\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py:259:14 - error: Import \".llm_config\" could not be resolved (reportMissingImports)\n2 errors, 0 warnings, 0 informations \n",
+    "session_id": "f39657dd-70bf-4d7f-b2e6-8f103a0aa4b6"
+  },
+  {
+    "file_path": "C:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py",
+    "errors": "c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py\n  c:\\Users\\milos\\Desktop\\GitHub\\multi_agent_playground\\backend\\config\\yaml_config.py:257:14 - error: Import \".llm_config\" could not be resolved (reportMissingImports)\n1 error, 0 warnings, 0 informations \n",
+    "session_id": "f39657dd-70bf-4d7f-b2e6-8f103a0aa4b6"
   }
 ]

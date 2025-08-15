@@ -28,6 +28,7 @@ from .agent.agent_strategies import KaniAgent, ManualAgent
 from .text_adventure_games.world import build_house_game
 
 from .config.schema import AgentActionOutput
+from .config.yaml_config import get_config_manager
 from .log_config import log_game_event, log_action_execution
 
 # Module-level logger
@@ -145,17 +146,23 @@ class GameLoop:
     async def _setup_agents(self):
         """Setup agents based on configuration (AI or manual)."""
         try:
-            # Define agent personas
-            agent_personas = {
-                "alex_001": "I am Alex, a friendly and social person who loves to chat with others. I enjoy reading books and might want to explore the house. I'm curious about what others are doing and like to help when I can.",
-                "alan_002": "I am Alan, a quiet and thoughtful person who likes to observe and think. I prefer to explore slowly and examine things carefully. I might be interested in food and practical items."
-            }
+            # Get configuration manager
+            config_manager = get_config_manager()
+            
+            # Get available agents from configuration
+            try:
+                agents_config = config_manager.agents_config
+                agent_ids = list(agents_config.agents.keys())
+                logger.info(f"Found agents in configuration: {agent_ids}")
+            except Exception as e:
+                logger.warning(f"Failed to load agents from configuration: {e}. Using fallback agents.")
+                agent_ids = ["alex_001", "alan_002"]
             
             # Create agents based on configuration
-            for agent_name, persona in agent_personas.items():
-                agent_strategy = self._create_agent_strategy(agent_name, persona)
+            for agent_id in agent_ids:
+                agent_strategy = self._create_agent_strategy(agent_id, config_manager)
                 if agent_strategy and self.agent_manager:
-                    self.agent_manager.register_agent_strategy(agent_name, agent_strategy)
+                    self.agent_manager.register_agent_strategy(agent_id, agent_strategy)
             
             logger.info("Agents set up successfully")
             if self.agent_config:
@@ -176,9 +183,17 @@ class GameLoop:
             if self.agent_manager:
                 self.agent_manager.active_agents.extend(["alex_001", "alan_002"])
     
-    def _create_agent_strategy(self, character_name: str, persona: str):
+    def _create_agent_strategy(self, character_name: str, config_manager):
         """Create either a manual or AI agent based on configuration."""
         agent_type = self.agent_config.get(character_name, "ai")  # Default to AI
+        
+        # Get persona from configuration
+        try:
+            agent_config = config_manager.get_effective_agent_config(character_name)
+            persona = agent_config['persona']
+        except Exception as e:
+            logger.warning(f"Failed to get persona for {character_name}: {e}. Using fallback.")
+            persona = f"I am {character_name}, a helpful agent."
         
         if agent_type == "manual":
             logger.info(f"Creating manual agent for {character_name}")
@@ -191,10 +206,10 @@ class GameLoop:
                 if self.game and character_name in self.game.characters:
                     character = self.game.characters[character_name]
                     initial_world_state = self._get_initial_world_state_for_agent(character)
-                    return KaniAgent(character_name, persona, initial_world_state, game=self.game, character=character)
+                    return KaniAgent(character_name, persona, initial_world_state, game=self.game, character=character, config_manager=config_manager)
                 else:
                     logger.warning(f"Character {character_name} not found, creating agent without initial state")
-                    return KaniAgent(character_name, persona)
+                    return KaniAgent(character_name, persona, config_manager=config_manager)
                     
             except Exception as e:
                 logger.warning(f"Failed to create AI agent for {character_name}: {e}")

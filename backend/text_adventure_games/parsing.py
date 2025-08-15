@@ -42,15 +42,6 @@ class Parser:
         self.game = self._command_parser.game
         self.last_error_message = self._command_parser.last_error_message
 
-    def ok(self, description: str):
-        """DEPRECATED: Success message handler - use ActionResult instead."""
-        self._command_parser.last_error_message = None
-        return description
-
-    def fail(self, description: str):
-        """DEPRECATED: Failure message handler - use ActionResult instead."""
-        self._command_parser.last_error_message = description
-        return description
 
     def add_block(self, block):
         """Adds a block class to the list of blocks a parser can use."""

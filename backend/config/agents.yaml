@@ -1,0 +1,30 @@
+# Agent Configuration
+# ===================
+# Configuration for individual agents including personas and engine preferences
+
+agents:
+  alex_001:
+    name: "Alex"
+    persona: "I am Alex, a friendly and social person who loves to chat with others. I enjoy reading books and might want to explore the house. I'm curious about what others are doing and like to help when I can."
+    engine: "openai"
+    model: null  # Use engine default
+    temperature: null  # Use engine default
+    max_tokens: null
+    prompt_template: null  # Use default composition
+  
+  alan_002:
+    name: "Alan"
+    persona: "I am Alan, a quiet and thoughtful person who likes to observe and think. I prefer to explore slowly and examine things carefully. I might be interested in food and practical items."
+    engine: "openai"
+    model: null  # Use engine default
+    temperature: null  # Use engine default
+    max_tokens: null
+    prompt_template: null  # Use default composition
+
+# Default configuration applied to all agents
+default_agent_config:
+  engine: "openai"
+  model: "gpt-4o-mini"
+  temperature: 0.7
+  max_tokens: null
+  prompt_template: "default_agent_prompt"

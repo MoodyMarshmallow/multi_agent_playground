@@ -98,7 +98,7 @@ class Action:
                 name=thing.name.capitalize(), loc=location.name
             )
             if describe_error:
-                self.parser.fail(message)
+                self.parser.last_error_message = message
             return False
         else:
             return True
@@ -115,7 +115,7 @@ class Action:
                 location_name=location.name.capitalize(), direction=direction
             )
             if describe_error:
-                self.parser.fail(message)
+                self.parser.last_error_message = message
             return False
         else:
             return True
@@ -129,7 +129,7 @@ class Action:
         if location.is_blocked(direction):
             message = location.get_block_description(direction)
             if describe_error:
-                self.parser.fail(message)
+                self.parser.last_error_message = message
             return True
         else:
             return False
@@ -155,7 +155,7 @@ class Action:
                         value=property_value,
                     )
                 if describe_error:
-                    self.parser.fail(error_message)
+                    self.parser.last_error_message = error_message
             return False
         else:
             if display_message_upon is True:
@@ -166,7 +166,7 @@ class Action:
                         value=property_value,
                     )
                 if describe_error:
-                    self.parser.fail(error_message)
+                    self.parser.last_error_message = error_message
             return True
 
     def has_property(
@@ -187,7 +187,7 @@ class Action:
                         name=thing.name.capitalize(), property_name=property_name
                     )
                 if describe_error:
-                    self.parser.fail(error_message)
+                    self.parser.last_error_message = error_message
             return False
         else:
             if display_message_upon is True:
@@ -196,7 +196,7 @@ class Action:
                         name=thing.name.capitalize(), property_name=property_name
                     )
                 if describe_error:
-                    self.parser.fail(error_message)
+                    self.parser.last_error_message = error_message
             return True
 
     def loc_has_item(
@@ -213,7 +213,7 @@ class Action:
                 loc=location.name, item=item.name
             )
             if describe_error:
-                self.parser.fail(message)
+                self.parser.last_error_message = message
             return False
 
     def is_in_inventory(
@@ -227,7 +227,7 @@ class Action:
                 name=character.name.capitalize(), item_name=item.name
             )
             if describe_error:
-                self.parser.fail(message)
+                self.parser.last_error_message = message
             return False
         else:
             return True
@@ -245,7 +245,7 @@ class Action:
             if not error_message:
                 message = "Something was not matched by the self.parser."
             if describe_error:
-                self.parser.fail(error_message)
+                self.parser.last_error_message = error_message
             return False
         else:
             return True

@@ -91,14 +91,6 @@ class Game:
         # Parser
         self.parser = parsing.Parser(self)
 
-        # Visit each location and add any blocks found to parser
-        seen_before = {}
-        for name, location in self.locations.items():
-            if len(location.blocks) > 0 and name not in seen_before:
-                for b in location.blocks:
-                    self.parser.add_block(b)
-                    seen_before[name] = True
-
         self._last_action_result = None
         self._last_action_agent_id = None
         self._last_executed_action = None  # Track the last executed action instance

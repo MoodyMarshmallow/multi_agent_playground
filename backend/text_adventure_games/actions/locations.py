@@ -93,7 +93,6 @@ class Go(base.Action):
         # description = "{character_name} moved to {place}".format(
         #     character_name=self.character.name, place=to_loc.name
         # )
-        # self.parser.ok(description)
 
         # Some locations finish game
         if to_loc.get_property("game_over") and is_main_player:
