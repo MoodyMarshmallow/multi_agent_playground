@@ -46,7 +46,7 @@ uv run python tests/manual/run_backend.py
 
 Agent configurations are externalized to YAML files:
 
-- **`backend/config/llm.yaml`**: LLM engine settings (OpenAI, Anthropic)
+- **`backend/config/llm.yaml`**: LLM engine settings
 - **`backend/config/agents.yaml`**: Agent personas and preferences
 - **`backend/config/prompts.yaml`**: System prompt templates
 - **`backend/config/defaults.yaml`**: Fallback values
