@@ -63,12 +63,12 @@ def test_api():
         else:
             print(f"Error: {response.text}")
         
-        print("\n✅ All API tests completed successfully!")
+        print("\nAll API tests completed successfully!")
         
     except requests.exceptions.ConnectionError:
-        print("❌ Could not connect to server. Make sure it's running on port 8000.")
+        print("Could not connect to server. Make sure it's running on port 8000.")
     except Exception as e:
-        print(f"❌ Error testing API: {e}")
+        print(f"Error testing API: {e}")
 
 if __name__ == "__main__":
     test_api() 

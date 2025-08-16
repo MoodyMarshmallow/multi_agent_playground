@@ -2,168 +2,110 @@
 
 ![Multi-Agent Playground Demo](assets/multi_agent_playground_demo.gif)
 
-A multi-agent simulation framework with LLM-powered agents and real-time Godot frontend visualization. Features a turn-based agent execution in a text adventure game world with comprehensive testing framework.
+A multi-agent simulation framework with LLM-powered agents and real-time Godot frontend visualization. Features turn-based agent execution in a text adventure world with comprehensive testing.
 
-## Project Structure
-- **`backend/`**: FastAPI server, LLM agents (Kani), text adventure framework
-- **`frontend/Godot-Multi-Agent-Playground/`**: Real-time visualization and interaction
-- **`tests/`**: Comprehensive testing including agent goal-based tests
-- **`data/`**: Game world and agent configurations
+## Features
+- **LLM Agents**: Kani framework with OpenAI integration and YAML configuration
+- **Real-time Visualization**: Godot Engine 4.x frontend
+- **Agent Goal Testing**: Comprehensive behavioral testing framework
+- **Text Adventure Engine**: Modular game world with locations, items, and actions
 
-## Tech Stack
-- **Backend**: FastAPI, Kani (LLM framework), OpenAI API, Pydantic
-- **Frontend**: Godot Engine 4.x
-- **Testing**: Agent goal-based testing framework, pytest
-- **Logging**: Centralized logging with verbose mode support
+## Quick Start
 
----
-## Setup Instructions
-
-### 1. Clone the Repository
+### 1. Setup
 ```bash
 git clone <repository-url>
 cd multi_agent_playground
-```
 
-### 2. Environment Setup
-```bash
-# Create virtual environment
-python -m venv venv
+# Install dependencies with uv (recommended)
+uv sync
 
-# Activate (Windows)
-venv\Scripts\activate
-# Activate (Linux/Mac)
-source venv/bin/activate
-
-# Install dependencies
+# Or use pip
 pip install -r requirements.txt
 ```
 
-### 3. Configure OpenAI API
+### 2. Configure API Key
 ```bash
-# Set your OpenAI API key
-export OPENAI_API_KEY="your-api-key-here"
-# Or create a .env file with:
+# Create .env file with your OpenAI API key
 echo "OPENAI_API_KEY=your-api-key-here" > .env
 ```
 
-### 4. Backend Server
-
-#### Option A: Standard uvicorn (Recommended)
+### 3. Run Backend
 ```bash
-# Clean output (errors/warnings only)
-python -m uvicorn backend.main:app --reload
+# Start server (recommended)
+uv run python -m uvicorn backend.main:app --reload
 
-# Verbose mode (detailed logging)
-# Linux/Mac:
-VERBOSE=true python -m uvicorn backend.main:app --reload
-# Windows:
-set VERBOSE=true && python -m uvicorn backend.main:app --reload
-
-# Custom port with verbose mode
-VERBOSE=true python -m uvicorn backend.main:app --reload --port 8001
+# Alternative manual startup
+uv run python tests/manual/run_backend.py
 ```
 
-#### Option B: Direct Python (Alternative)
+### 4. Run Frontend (Optional)
+1. Install [Godot Engine 4.x](https://godotengine.org/)
+2. Open `frontend/Godot-Multi-Agent-Playground/project.godot`
+3. Run scene `scenes/test/test_scene_multi_agent.tscn`
+
+**Controls**: Arrow keys (move), Right-click (move to position), R key (request action)
+
+## Configuration
+
+Agent configurations are now externalized to YAML files:
+
+- **`backend/config/llm.yaml`**: LLM engine settings (OpenAI, Anthropic)
+- **`backend/config/agents.yaml`**: Agent personas and preferences
+- **`backend/config/prompts.yaml`**: System prompt templates
+- **`backend/config/defaults.yaml`**: Fallback values
+
+## Testing
+
+All tests use `uv run` for proper dependency management:
+
 ```bash
-# With command line arguments
-python backend/main.py --verbose --reload --port 8000
+# Run all tests
+uv run python -m pytest tests/
 
-# User-friendly startup script
-python tests/manual/run_backend.py --verbose
+# Backend API tests
+uv run python -m pytest tests/test_backend_endpoints.py
+
+# Agent behavior tests
+uv run python -m pytest tests/integration/test_agent_runner.py
+
+# Integration tests
+uv run python -m pytest tests/integration/
+
+# Quick API test
+uv run python tests/integration/test_api.py
 ```
-
-### 5. Frontend Setup (Godot)
-1. **Install Godot Engine 4.x** (version 4.0 or later)
-2. **Open Project**: `frontend/Godot-Multi-Agent-Playground/project.godot`
-3. **Run Test Scene**: `scenes/test/test_scene_multi_agent.tscn`
-
-#### Frontend Controls:
-- **Arrow Keys**: Move agent manually
-- **Right-click**: Move agent to position
-- **R Key**: Request next action from backend
-
-## Usage Examples
-
-### Backend Server
-```bash
-# Standard uvicorn (clean output)
-python -m uvicorn backend.main:app --reload
-
-# Uvicorn with verbose logging
-VERBOSE=true python -m uvicorn backend.main:app --reload
-
-# Direct Python with arguments
-python backend/main.py --verbose --reload
-```
-
-### Text Adventure Demo
-```bash
-# Interactive text game (clean)
-python backend/text_game_demo.py
-
-# With verbose debugging
-python backend/text_game_demo.py --verbose
-```
-
-### Agent Testing
-```bash
-# Run agent goal tests (clean)
-python tests/integration/run_agent_tests.py
-
-# With verbose test progress
-python tests/integration/run_agent_tests.py --verbose
-
-# Full test suite
-python -m pytest tests/agent_goals/
-```
-
-## Logging System
-
-### Default Mode (Clean Output)
-- Shows only **errors** and **warnings**
-- Perfect for production and clean development
-- Critical issues always visible
-
-### Verbose Mode (`--verbose` flag)
-- Shows **detailed operational information**
-- Agent decisions and actions
-- Game flow and turn progression
-- Test execution progress
-- API request/response details
-
-### Debug Logging
-- All messages logged to `debug.log` file
-- Includes detailed LLM interactions
-- Function call debugging
-- Internal state information
-
-### API Endpoints
-Once the backend is running, access:
-- **API Documentation**: http://localhost:8000/docs
-- **Agent Actions**: http://localhost:8000/agent_act/next
-- **World State**: http://localhost:8000/world_state
-- **Game Events**: http://localhost:8000/game/events
-
-## Testing Framework
 
 ### Agent Goal Testing
-The project includes a comprehensive agent testing framework:
+Test LLM agent capabilities with goal-based scenarios:
+- **Navigation**: Pathfinding and movement
+- **Interaction**: Object manipulation and world interaction  
+- **Behavior**: Decision-making and goal achievement
 
-```bash
-# Run navigation tests
-python -m pytest tests/agent_goals/test_navigation.py
+## API Endpoints
 
-# Run interaction tests  
-python -m pytest tests/agent_goals/test_interactions.py
+Once running on http://localhost:8000:
+- **Documentation**: `/docs`
+- **Agent Actions**: `/agent_act/next`
+- **World State**: `/world_state`  
+- **Game Events**: `/game/events`
 
-# Custom agent test runner
-python tests/integration/run_agent_tests.py --verbose
+## Tech Stack
+- **Backend**: FastAPI, Kani (LLM), OpenAI API, Pydantic, YAML configs
+- **Frontend**: Godot Engine 4.x
+- **Testing**: pytest, pytest-asyncio, agent goal-based testing
+- **Package Management**: uv (recommended) or pip
+
+## Project Structure
 ```
+backend/           # FastAPI server & LLM agents
+├── config/        # YAML configurations  
+├── agent/         # Agent management
+├── testing/       # Goal-based test framework
+└── text_adventure_games/  # Game engine
 
-### Test Categories
-- **Navigation Tests**: Agent pathfinding and movement
-- **Interaction Tests**: Object manipulation and world interaction
-- **Behavior Tests**: Decision-making and goal achievement
-- **Integration Tests**: End-to-end system validation
+frontend/          # Godot visualization
+tests/             # Test suites
+data/              # Agent memory & world data
+```
 

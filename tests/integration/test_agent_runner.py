@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Agent Goal Testing Runner
-========================
+Agent Goal Testing Runner - Pytest Compatible
+==============================================
 
-Simple script to run agent goal tests and see the results.
+Pytest-compatible version of the agent goal test runner.
 """
 
+import pytest
 import asyncio
-import sys
 import os
 import logging
 
@@ -18,41 +18,15 @@ try:
 except ImportError:
     print("Warning: python-dotenv not installed. Environment variables from .env file won't be loaded.")
 
-# Configure logging
-def setup_logging(debug=False):
-    """Setup logging configuration.
-    
-    Args:
-        debug: If True, enable debug level logging for action debugging
-    """
-    if debug:
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format='[%(name)s] %(levelname)s: %(message)s',
-            handlers=[logging.StreamHandler()]
-        )
-        # Set specific loggers for action debugging
-        parsing_logger = logging.getLogger('backend.text_adventure_games.parsing')
-        parsing_logger.setLevel(logging.DEBUG)
-        
-        # Make sure the parsing logger uses the console handler
-        if not parsing_logger.handlers:
-            console_handler = logging.StreamHandler()
-            console_handler.setFormatter(logging.Formatter('[%(name)s] %(levelname)s: %(message)s'))
-            parsing_logger.addHandler(console_handler)
-        print("Debug logging enabled for action parsing")
-    else:
-        # Default logging level
-        logging.basicConfig(level=logging.WARNING)
-
 from backend.testing.agent_goal_test import AgentGoalTest
 from backend.testing.agent_test_runner import AgentTestRunner
 from backend.testing.criteria import LocationCriterion, InventoryCriterion
 from backend.testing.config import WorldStateConfig, AgentConfig
 
 
-async def run_simple_test():
-    """Run a simple navigation test."""
+@pytest.mark.asyncio
+async def test_simple_navigation():
+    """Test simple navigation from bedroom to kitchen."""
     print("Running simple navigation test...")
     
     test = AgentGoalTest(
@@ -79,11 +53,13 @@ async def run_simple_test():
     print(f"Duration: {result.duration_seconds:.2f}s")
     print(f"Final location: {result.final_state.get('agent_location', 'Unknown')}")
     
-    return result
+    assert result.success, f"Navigation test failed: {result.error_message}"
+    assert result.turns_taken <= 10, f"Too many turns taken: {result.turns_taken}"
 
 
-async def run_collection_test():
-    """Run an item collection test."""
+@pytest.mark.asyncio
+async def test_item_collection():
+    """Test item collection functionality."""
     print("\nRunning item collection test...")
     
     test = AgentGoalTest(
@@ -98,7 +74,7 @@ async def run_collection_test():
             }
         ),
         agent_config=AgentConfig(
-            persona="You want should find and collect an apple.",
+            persona="I want to find and collect an apple.",
             name="collector_agent"
         ),
         success_criteria=[
@@ -115,38 +91,8 @@ async def run_collection_test():
     print(f"Duration: {result.duration_seconds:.2f}s")
     print(f"Final inventory: {result.final_state.get('agent_inventory', [])}")
     
-    return result
-
-
-async def main():
-    """Main function to run various test scenarios."""
-    # Check for debug and verbose flags in command line arguments
-    debug_mode = '--debug' in sys.argv or '-d' in sys.argv
-    verbose_mode = '--verbose' in sys.argv or '-v' in sys.argv
-    
-    if debug_mode:
-        setup_logging(debug=debug_mode)
-    else:
-        # Use centralized logging configuration
-        from backend.log_config import setup_logging as setup_main_logging
-        setup_main_logging(verbose=verbose_mode)
-    
-    print("Agent Goal-Based Testing System")
-    print("="*50)
-    
-    try:
-        # Run simple tests
-        # await run_simple_test()
-        await run_collection_test()
-        
-        print(f"\nOverall Results:")
-        # print(f"Suite success rate: {suite_result.success_rate:.1f}%")
-        # print(f"Total duration: {suite_result.total_duration:.2f}s")
-        
-    except Exception as e:
-        print(f"Error running tests: {e}")
-        import traceback
-        traceback.print_exc()
+    assert result.success, f"Collection test failed: {result.error_message}"
+    assert result.turns_taken <= 20, f"Too many turns taken: {result.turns_taken}"
 
 
 if __name__ == "__main__":
@@ -154,6 +100,8 @@ if __name__ == "__main__":
     if not os.getenv("OPENAI_API_KEY"):
         print("Warning: OPENAI_API_KEY environment variable not set!")
         print("Please set your OpenAI API key to run these tests.")
-        sys.exit(1)
+        exit(1)
     
-    asyncio.run(main())
+    # Run tests manually if called directly
+    asyncio.run(test_simple_navigation())
+    asyncio.run(test_item_collection())

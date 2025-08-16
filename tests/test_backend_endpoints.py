@@ -2,17 +2,18 @@
 """
 Backend Server Comprehensive Test
 ================================
-Tests all endpoints to verify the arush_llm migration is working correctly.
+Tests all endpoints to verify the backend is working correctly.
 """
 
 import requests
 import json
 import time
 import sys
+import pytest
 
 BASE_URL = "http://localhost:8000"
 
-def test_endpoint(name, method, url, data=None, expected_status=200):
+def make_request(name, method, url, data=None, expected_status=200):
     """Test an endpoint and return results."""
     print(f"\n🔍 Testing {name}...")
     
@@ -49,19 +50,20 @@ def test_endpoint(name, method, url, data=None, expected_status=200):
         print(f"   ❌ Error: {e}")
         return False, None
 
-def main():
+def test_backend_endpoints():
+    """Test all backend endpoints"""
     print("🚀 Backend Server Comprehensive Test")
     print("=" * 50)
     
     # Test 1: Health Check
-    success1, _ = test_endpoint(
+    success1, _ = make_request(
         "Health Check",
         "GET",
         f"{BASE_URL}/health"
     )
     
     # Test 2: Agent Initialization
-    success2, agents_data = test_endpoint(
+    success2, agents_data = make_request(
         "Agent Initialization",
         "GET", 
         f"{BASE_URL}/agents/init"
@@ -80,7 +82,7 @@ def main():
         }
     }]
     
-    success3, plan_data = test_endpoint(
+    success3, plan_data = make_request(
         "Action Planning",
         "POST",
         f"{BASE_URL}/agent_act/plan",
@@ -104,7 +106,7 @@ def main():
         }
     }]
     
-    success4, confirm_data = test_endpoint(
+    success4, confirm_data = make_request(
         "Action Confirmation",
         "POST",
         f"{BASE_URL}/agent_act/confirm",
@@ -133,14 +135,15 @@ def main():
     print(f"\nResult: {passed}/{total} tests passed")
     
     if passed == total:
-        print("\n🎉 ALL TESTS PASSED! Backend server is fully operational with arush_llm!")
-        print("✅ Character agent migration successful")
+        print("\n🎉 ALL TESTS PASSED! Backend server is fully operational!")
         print("✅ All endpoints working correctly")
         print("✅ Ready for frontend integration")
-        return 0
     else:
         print(f"\n⚠️  {total - passed} tests failed. Server needs attention.")
-        return 1
+        
+    # Use pytest assertions for proper test reporting
+    assert passed == total, f"{total - passed} tests failed"
 
 if __name__ == "__main__":
-    sys.exit(main()) 
+    # For manual testing
+    test_backend_endpoints() 

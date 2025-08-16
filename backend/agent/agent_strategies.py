@@ -59,8 +59,8 @@ class KaniAgent(Kani):
             self.persona = persona or agent_config['persona']
             engine_name = agent_config['engine']
             model = model or agent_config['model']
-            temperature = agent_config['temperature']
-            max_tokens = agent_config['max_tokens']
+            temperature = agent_config.get('temperature', 0.7)
+            max_tokens = agent_config.get('max_tokens')
         except Exception as e:
             logger.warning(f"Failed to get agent config for {character_name}: {e}. Using fallbacks.")
             self.persona = persona or f"I am {character_name}, a helpful agent."
@@ -79,7 +79,7 @@ class KaniAgent(Kani):
             if api_key is None:
                 api_key = os.getenv("OPENAI_API_KEY")
             if model is None:
-                model = "gpt-4o-mini"
+                model = "gpt-4.1-mini"
         
         if not api_key:
             raise ValueError("OpenAI API key required. Set OPENAI_API_KEY environment variable or pass api_key parameter.")
@@ -113,15 +113,15 @@ class KaniAgent(Kani):
                     break
         
         # Initialize kani with OpenAI engine and configured parameters
-        engine_kwargs = {
-            'api_key': api_key,
-            'model': model,
-            'temperature': temperature
-        }
+        engine_kwargs = {}
+        
+        # Add parameters conditionally (standard GPT-4 parameters)
+        if temperature is not None:
+            engine_kwargs['temperature'] = temperature
         if max_tokens is not None:
             engine_kwargs['max_tokens'] = max_tokens
             
-        engine = OpenAIEngine(**engine_kwargs)
+        engine = OpenAIEngine(api_key=api_key, model=model, **engine_kwargs) 
         
         # Build system prompt using configuration
         try:
@@ -243,7 +243,7 @@ Remember: You can only choose from the available actions provided. If unsure, su
                 observation += "\nTry to do something different if you've been repeating actions."
             
             # Add instruction about function calling
-            observation += "\n\nYou must call the submit_command function with your chosen action. Submit \"look\" to show what commands you can take."
+            observation += "\n\nYou must call the submit_command function with your chosen action. Submit \"look\" to show what actions you can take."
             
             # Debug: Log the full observation sent to the LLM
             logger.debug(f"[{self.character_name}] OBSERVATION:")

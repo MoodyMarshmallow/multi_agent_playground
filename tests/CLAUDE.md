@@ -64,29 +64,33 @@ Located in `backend/testing/`, the framework provides:
 
 ### Running Tests
 
+**IMPORTANT**: All tests should be run using `uv run` for proper dependency management and module resolution.
+
 #### Standard Tests
 ```bash
 # Run all tests
-python -m pytest tests/
+uv run python -m pytest tests/
 
 # Backend endpoints
-python -m pytest tests/test_backend_endpoints.py
+uv run python -m pytest tests/test_backend_endpoints.py
 
-# Godot integration
-python -m pytest tests/test_godot_r_key_simulation.py
+# Integration tests
+uv run python -m pytest tests/integration/
+
+# Agent goal tests (pytest-compatible)
+uv run python -m pytest tests/integration/test_agent_runner.py
 ```
 
-#### Agent Goal Tests
+#### Agent Goal Tests (Legacy Scripts)
 ```bash
-# Run simple agent tests
-python tests/integration/run_agent_tests.py
+# Note: These may have import issues - use pytest versions above instead
 
 # Specific test categories
-python -m pytest tests/agent_goals/test_navigation.py
-python -m pytest tests/agent_goals/test_interactions.py
+uv run python -m pytest tests/agent_goals/examples/test_navigation.py
+uv run python -m pytest tests/agent_goals/examples/test_interactions.py
 
 # Example test suite
-python tests/agent_goals/test_suite_example.py
+uv run python tests/agent_goals/test_suite_example.py
 ```
 
 #### Integration Tests

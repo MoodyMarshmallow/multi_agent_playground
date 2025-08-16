@@ -38,28 +38,24 @@ This is a multi-agent simulation framework with a FastAPI backend and Godot fron
 ### Backend
 ```bash
 # Start backend server
-python -m uvicorn backend.main:app --reload
+uv run python -m uvicorn backend.main:app --reload
 
-# Run tests
-python -m pytest tests/
+# Run all tests
+uv run python -m pytest tests/
 
-# Run specific test
-python -m pytest tests/test_backend_endpoints.py
+# Run specific test categories
+uv run python -m pytest tests/test_backend_endpoints.py
+uv run python -m pytest tests/integration/
+uv run python -m pytest tests/integration/test_agent_runner.py
 
-# Quick API test
-python tests/integration/test_api.py
-
-# Run agent goal tests
-python tests/integration/run_agent_tests.py
+# Quick API test (direct script)
+uv run python tests/integration/test_api.py
 
 # Manual backend startup
-python tests/manual/run_backend.py
+uv run python tests/manual/run_backend.py
 
 # Debug utilities
-python tests/debug/debug_actions.py
-
-# Run agent goal test suite
-python -m pytest tests/agent_goals/
+uv run python tests/debug/debug_actions.py
 ```
 
 ### Frontend (Godot)

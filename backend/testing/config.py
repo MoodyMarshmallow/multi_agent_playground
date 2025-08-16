@@ -24,7 +24,7 @@ class AgentConfig:
     """Configuration for the test agent."""
     name: str = "test_agent"
     persona: str = "I am a helpful agent who follows instructions."
-    model: str = "gpt-4o-mini"
+    model: str = "gpt-4.1-mini"
     api_key: Optional[str] = None
 
 
