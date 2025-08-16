@@ -2,13 +2,11 @@
 
 ![Multi-Agent Playground Demo](assets/multi_agent_playground_demo.gif)
 
-A multi-agent simulation framework with LLM-powered agents and real-time Godot frontend visualization. Features turn-based agent execution in a text adventure world with comprehensive testing.
+A multi-agent simulation framework with LLM-powered agents and Godot frontend visualization. Features a house with multi-stage, interactable objects and items and a visualisation system made in Godot. Made with [Kani](https://github.com/zhudotexe/kani).
 
-## Features
-- **LLM Agents**: Kani framework with OpenAI integration and YAML configuration
-- **Real-time Visualization**: Godot Engine 4.x frontend
-- **Agent Goal Testing**: Comprehensive behavioral testing framework
-- **Text Adventure Engine**: Modular game world with locations, items, and actions
+## Tech Stack
+- **Backend**: FastAPI, Kani (LLM), OpenAI API
+- **Frontend**: Godot Engine
 
 ## Quick Start
 
@@ -44,11 +42,9 @@ uv run python tests/manual/run_backend.py
 2. Open `frontend/Godot-Multi-Agent-Playground/project.godot`
 3. Run scene `scenes/test/test_scene_multi_agent.tscn`
 
-**Controls**: Arrow keys (move), Right-click (move to position), R key (request action)
-
 ## Configuration
 
-Agent configurations are now externalized to YAML files:
+Agent configurations are externalized to YAML files:
 
 - **`backend/config/llm.yaml`**: LLM engine settings (OpenAI, Anthropic)
 - **`backend/config/agents.yaml`**: Agent personas and preferences
@@ -74,38 +70,5 @@ uv run python -m pytest tests/integration/
 
 # Quick API test
 uv run python tests/integration/test_api.py
-```
-
-### Agent Goal Testing
-Test LLM agent capabilities with goal-based scenarios:
-- **Navigation**: Pathfinding and movement
-- **Interaction**: Object manipulation and world interaction  
-- **Behavior**: Decision-making and goal achievement
-
-## API Endpoints
-
-Once running on http://localhost:8000:
-- **Documentation**: `/docs`
-- **Agent Actions**: `/agent_act/next`
-- **World State**: `/world_state`  
-- **Game Events**: `/game/events`
-
-## Tech Stack
-- **Backend**: FastAPI, Kani (LLM), OpenAI API, Pydantic, YAML configs
-- **Frontend**: Godot Engine 4.x
-- **Testing**: pytest, pytest-asyncio, agent goal-based testing
-- **Package Management**: uv (recommended) or pip
-
-## Project Structure
-```
-backend/           # FastAPI server & LLM agents
-├── config/        # YAML configurations  
-├── agent/         # Agent management
-├── testing/       # Goal-based test framework
-└── text_adventure_games/  # Game engine
-
-frontend/          # Godot visualization
-tests/             # Test suites
-data/              # Agent memory & world data
 ```
 
